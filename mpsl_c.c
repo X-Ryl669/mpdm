@@ -380,6 +380,13 @@ static mpdm_v _mpsl_op_local(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_uminus(mpdm_v c, mpdm_v args)
+/* unary minus */
+{
+	return(MPDM_R(mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args)) * -1));
+}
+
+
 static mpdm_v _mpsl_op_brmath(mpdm_v c, mpdm_v args)
 /* binary, real math operations */
 {
@@ -547,6 +554,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_BLKFRAME: ret=_mpsl_op_blkframe(c, args); break;
 	case MPSL_OP_LOCAL: ret=_mpsl_op_local(c, args); break;
+	case MPSL_OP_UMINUS: ret=_mpsl_op_uminus(c, args); break;
 	case MPSL_OP_ADD: /* falls */
 	case MPSL_OP_SUB: /* falls */
 	case MPSL_OP_MUL: /* falls */
