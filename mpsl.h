@@ -75,5 +75,9 @@ typedef enum
 
 int mpsl_is_true(mpdm_v v);
 mpdm_v mpsl_true_or_false(int b);
+
+mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v);
+mpdm_v mpsl_get_symbol(mpdm_v s);
+
 mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args);
 mpdm_v mpsl_compile(mpdm_v code);

@@ -143,6 +143,11 @@ mpdm_v mpsl_true_or_false(int b)
 }
 
 
+/**
+ * mpsl_local_add_subframe - Creates a subroutine frame
+ *
+ * Creates a subroutine subframe in the local variable symbol table.
+ */
 mpdm_v mpsl_local_add_subframe(void)
 {
 	/* if local symbol table don't exist, create */
@@ -154,6 +159,12 @@ mpdm_v mpsl_local_add_subframe(void)
 }
 
 
+/**
+ * mpsl_local_del_subframe - Deletes a subroutine frame
+ *
+ * Deletes a subroutine frame previously created by
+ * mpsl_local_add_subframe().
+ */
 void mpsl_local_del_subframe(void)
 {
 	/* simply pops the subframe */
@@ -161,6 +172,11 @@ void mpsl_local_del_subframe(void)
 }
 
 
+/**
+ * mpsl_local_add_blkframe - Creates a block frame
+ *
+ * Creates a block subframe in the local variable symbol table.
+ */
 mpdm_v mpsl_local_add_blkframe(void)
 {
 	/* pushes a new hash onto the last subframe */
@@ -168,6 +184,12 @@ mpdm_v mpsl_local_add_blkframe(void)
 }
 
 
+/**
+ * mpsl_local_del_blkframe - Deletes a block frame
+ *
+ * Deletes a block frame previously created by
+ * mpsl_local_add_blkframe().
+ */
 void mpsl_local_del_blkframe(void)
 {
 	/* simply pops the blkframe */
@@ -203,6 +225,15 @@ mpdm_v mpsl_local_find_symbol(mpdm_v s)
 }
 
 
+/**
+ * mpsl_set_symbol - Sets value to a symbol
+ * @s: symbol name
+ * @v: value
+ *
+ * Assigns the value @v to the @s symbol. If the value exists as
+ * a local symbol, it's assigned to it; otherwise, it's set as a global
+ * symbol (and created if it does not exist).
+ */
 mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
 {
 	mpdm_v l;
@@ -221,6 +252,13 @@ mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
 }
 
 
+/**
+ * mpsl_get_symbol - Gets the value of a symbol
+ * @s: symbol name
+ *
+ * Gets the value of a symbol. The symbol can be local or global
+ * (if the symbol exists in both tables, the local value will be returned).
+ */
 mpdm_v mpsl_get_symbol(mpdm_v s)
 {
 	mpdm_v l;
