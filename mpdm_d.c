@@ -104,11 +104,28 @@ void _mpdm_dump(mpdm_v v, int l)
 	/* dump */
 	mpdm_exec(_mpdm_dump_cb, w);
 
-	/* if value is multiple, repeat recursively for each value */
-	if(v!= NULL && v->flags & MPDM_MULTIPLE)
+	if(v != NULL)
 	{
-		for(n=0;n < mpdm_size(v);n++)
-			_mpdm_dump(mpdm_aget(v, n), l + 1);
+		/* if it's a hash, iterate it using hkeys
+		   (and not assuming a hash is an array) */
+		if(v->flags & MPDM_HASH)
+		{
+			w=mpdm_hkeys(v);
+
+			for(n=0;n < mpdm_size(w);n++)
+			{
+				t=mpdm_aget(w, n);
+
+				_mpdm_dump(t, l + 1);
+				_mpdm_dump(mpdm_hget(v, t), l + 2);
+			}
+		}
+		else
+		if(v->flags & MPDM_MULTIPLE)
+		{
+			for(n=0;n < mpdm_size(v);n++)
+				_mpdm_dump(mpdm_aget(v, n), l + 1);
+		}
 	}
 }
 
