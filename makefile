@@ -19,5 +19,4 @@ clean:
 	rm -f *.o *.a tags
 
 stress: stress.c $(LIB)
-	$(CC) $< -L. -lfdm -o $@
-	./stress
+	$(CC) $(CFLAGS) $< -L. -lfdm -o $@
