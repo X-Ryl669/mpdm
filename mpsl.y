@@ -515,7 +515,7 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_LITERAL:
 
 		/* literal value */
-		ret=mpdm_aget(c, 1);
+		ret=mpdm_clone(mpdm_aget(c, 1));
 		break;
 
 	case MPSL_OP_LIST:
