@@ -305,12 +305,12 @@ mpdm_v mpdm_root(void)
  * @c: the code value
  * @args: the arguments
  *
- * Executes an executable value. If @c is a scalar value, it's data
+ * Executes an executable value. If @c is a scalar value, its data
  * should be a pointer to a directly executable C function with a
  * prototype of mpdm_v func(mpdm_v args); if it's a multiple one,
  * the first value should be a pointer to a directly executable C
  * function with a prototype of mpdm_v func(mpdm_v c, mpdm_v args).
- * The rest of the elements of @c can be any data, and is used to
+ * The rest of the elements of @c can be any data, and are used to
  * store bytecode or so when implementing virtual machines or compilers.
  *
  * Returns the return value of the code. If @c is NULL or not executable,
