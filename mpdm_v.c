@@ -74,8 +74,6 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
 fdm_v _fdm_new(int flags, void * data, int size)
 {
 	fdm_v v;
-	char tmp[32];
-	int ival=0;
 
 	/* sanity checks */
 	if(flags & FDM_MULTIPLE)
@@ -83,18 +81,6 @@ fdm_v _fdm_new(int flags, void * data, int size)
 		/* multiple values are always copies and never strings */
 		flags |= FDM_COPY;
 		flags &= ~ (FDM_STRING | FDM_INTEGER);
-	}
-
-	/* is data an integer? */
-	if(flags & FDM_INTEGER)
-	{
-		ival=(int) data;
-		snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
-		data=tmp;
-
-		/* force copy, string and calculation */
-		flags |= (FDM_COPY | FDM_STRING);
-		size=-1;
 	}
 
 	/* local copies will be freed */
@@ -119,9 +105,8 @@ fdm_v _fdm_new(int flags, void * data, int size)
 
 	v->flags=flags;
 	v->size=size;
-	v->ival=ival;
 
-	if((flags & FDM_COPY) && size)
+	if((flags & FDM_COPY))
 	{
 		int s;
 
@@ -159,42 +144,43 @@ fdm_v _fdm_new(int flags, void * data, int size)
 }
 
 
-fdm_v _fdm_cache(int flags, void * data, int size)
+fdm_v _fdm_cache(int tag, void * data, int size)
 {
-	static fdm_v _fdm_0=NULL;
-	static fdm_v _fdm_1=NULL;
-	static fdm_v _fdm_empty=NULL;
+	static fdm_v * _cache=NULL;
 	fdm_v v=NULL;
 
-	/* first time init */
-	if(_fdm_0 == NULL)
+	/* first time initialization */
+	if(_cache == NULL)
 	{
-		_fdm_0=_fdm_new(FDM_INTEGER, (void *)0, -1);
-		_fdm_1=_fdm_new(FDM_INTEGER, (void *)1, -1);
-		_fdm_empty=_fdm_new(FDM_STRING, "", 0);
-
-		/* reference them */
-		fdm_ref(_fdm_0);
-		fdm_ref(_fdm_1);
-		fdm_ref(_fdm_empty);
+		_cache=(fdm_v *)malloc(255 * sizeof(fdm_v));
+		memset(_cache, '\0', 255 * sizeof(fdm_v));
 	}
 
-	/* try very common values */
-	if(flags & FDM_INTEGER)
+	/* try one-char cached values */
+	if(data != NULL && (tag & FDM_STRING) && ! (tag & FDM_FREE))
 	{
-		if((int) data == 0)
-			v=_fdm_0;
+		int c=-1;
+		unsigned char * ptr;
+
+		ptr=data;
+
+		if(*ptr == '\0')
+			c=0;
 		else
-		if((int) data == 1)
-			v=_fdm_1;
-	}
-	else
-	if(data != NULL && (flags & FDM_STRING))
-	{
-		if(*((char *)data) == '\0')
-			v=_fdm_empty;
+		if(*(ptr + 1) == '\0')
+			c=*ptr;
+
+		if(c != -1)
+		{
+			if(_cache[c] != NULL)
+				v=_cache[c];
+			else
+				_cache[c]=v=_fdm_new(tag, data, size);
+		}
 	}
 
+	if(v == NULL)
+		v=_fdm_new(tag, data, size);
 
 	return(v);
 }
@@ -221,12 +207,6 @@ fdm_v _fdm_cache(int flags, void * data, int size)
  * values, @size can be -1 to force a calculation using strlen().
  * This flag is incompatible with FDM_MULTIPLE.
  *
- * If FDM_INTEGER is set, it means @data holds an integer instead of
- * a pointer to void. The integer value will be converted to string
- * and stored as the value's data and cached internally for future
- * use. FDM_INTEGER implies FDM_COPY and FDM_STRING, and is incompatible
- * with FDM_MULTIPLE.
- *
  * IF FDM_MULTIPLE is set, it means the value itself is an array
  * of values. @Size indicates the number of elements instead of
  * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
@@ -248,6 +228,21 @@ fdm_v fdm_new(int tag, void * data, int size)
 
 	if((v=_fdm_cache(tag, data, size)) == NULL)
 		v=_fdm_new(tag, data, size);
+
+	return(v);
+}
+
+
+fdm_v fdm_inew(int ival)
+{
+	fdm_v v;
+	char tmp[32];
+
+	/* creates the visual representation */
+	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
+
+	v=fdm_new(FDM_COPY | FDM_STRING | FDM_INTEGER, tmp, - 1);
+	v->ival=ival;
 
 	return(v);
 }
