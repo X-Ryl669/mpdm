@@ -33,7 +33,7 @@
 #define FDM_TYPE(t)	((t) & ~ FDM_FLAGS_MASK)
 
 #define FDM_A(n)	fdm_new(FDM_MULTIPLE,NULL,n)
-#define FDM_H()		fdm_new(FDM_MULTIPLE,NULL,0)
+#define FDM_H(n)	fdm_new(FDM_MULTIPLE,NULL,n)
 #define FDM_LS(s)	fdm_new(FDM_STRING,s,-1)
 #define FDM_S(s)	fdm_new(FDM_STRING|FDM_COPY,s,-1)
 
