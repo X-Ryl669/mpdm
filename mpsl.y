@@ -58,6 +58,7 @@ expr:
 	INTEGER			{ $$ = $1; }
 	| STRING		{ $$ = $1; }
 	| SYMBOL		{ $$ = fdm_sget(NULL, $1); }
+	| SYMBOL '(' list ')'	{ printf("call!!!\n"); fdm_dump($3, 0); }
 	| expr '+' expr		{ $$ = FDM_I(fdm_ival($1) + fdm_ival($3)); }
 	| expr '-' expr		{ $$ = FDM_I(fdm_ival($1) - fdm_ival($3)); }
 	| expr '*' expr		{ $$ = FDM_I(fdm_ival($1) * fdm_ival($3)); }
