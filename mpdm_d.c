@@ -63,7 +63,7 @@ void _mpdm_dump(mpdm_v v, int l)
 
 	/* create the dumping callback */
 	if(_mpdm_dump_cb == NULL)
-		_mpdm_dump_cb=MPDM_X(_mpdm_dump_def_cb);
+		_mpdm_dump_cb=mpdm_ref(MPDM_X(_mpdm_dump_def_cb));
 
 	w=MPDM_A(0);
 
