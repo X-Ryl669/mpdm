@@ -186,7 +186,9 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value, and substitutes the
- * found substring with @s.
+ * found substring with @s. Valid flags are 'i', for case-insensitive
+ * matching, and 'g', for global replacements (all ocurrences in @v
+ * will be replaced, instead of just the first found one).
  *
  * Returns the modified string, or the original one if no substitutions
  * were done.
