@@ -80,7 +80,7 @@ static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
 %left BOOLAND BOOLOR
 %left INC DEC IADD ISUB IMUL IDIV
 %left '!'
-%left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
+%left STRCAT STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
 %left '*' '/' MODULO
 %nonassoc UMINUS
@@ -332,6 +332,11 @@ expr:
 					$$ = INS1(MPSL_OP_NOT,
 						INS2(MPSL_OP_NUMEQ, $1, $3));
 				}
+
+	| expr STRCAT expr	{
+					/* string concatenation */
+					$$ = INS2(MPSL_OP_STRCAT, $1, $3);
+				}
 	| expr STREQ expr       {
 					/* bool string equal */
 					$$ = INS2(MPSL_OP_STREQ, $1, $3);
@@ -341,6 +346,7 @@ expr:
 					$$ = INS1(MPSL_OP_NOT,
 						INS2(MPSL_OP_STREQ, $1, $3));
 				}
+
 	| expr BOOLAND expr	{
 					/* boolean and */
 					$$ = INS2(MPSL_OP_AND, $1, $3);

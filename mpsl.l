@@ -85,14 +85,16 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 "=="		return NUMEQ;
 "!="		return NUMNE;
-"eq"		return STREQ;
-"ne"		return STRNE;
 ">="		return NUMGE;
 "<="		return NUMLE;
 "&&"		return BOOLAND;
 "||"		return BOOLOR;
 "=>"		return HASHPAIR;
 ".."		return RANGE;
+
+"eq"		return STREQ;
+"ne"		return STRNE;
+"~"		return STRCAT;
 
 "++"		return INC;
 "--"		return DEC;
