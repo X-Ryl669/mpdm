@@ -706,16 +706,23 @@ void test_nondyn(void)
 	MPDM_ND_LS(v,L"This is a non-dynamic value");
 	mpdm_dump(&v);
 
+	/* when referencing a ND_LS value, it should be cloned */
+	w=mpdm_ref(&v);
+
+	_test("Referenced ND_LS value should be different", &v != w);
+	_test("Referenced ND_LS value should no longer be nondyn",
+		(w->flags & MPDM_NONDYN) == 0);
+
 	_test("Non-dynamic literal value size", mpdm_size(&v) == 27);
 
 	MPDM_ND_A(v,av);
 	mpdm_dump(&v);
 
-	/* when referencing a nondyn value, it should be cloned */
+	/* when referencing a ND_A value, it should be cloned */
 	w=mpdm_ref(&v);
 
-	_test("Referenced nondyn value should be different", &v != w);
-	_test("Referenced nondyn value should no longer be nondyn",
+	_test("Referenced ND_A value should be different", &v != w);
+	_test("Referenced ND_A value should no longer be nondyn",
 		(w->flags & MPDM_NONDYN) == 0);
 }
 
