@@ -7,6 +7,7 @@ VERSION=`cut -f2 -d\" VERSION`
 
 # parse arguments
 for a in $* ; do
+	[ "$a" = "--without-win32" ] && WITHOUT_WIN32=1
 	[ "$a" = "--without-unix-glob" ] && WITHOUT_UNIX_GLOB=1
 	[ "$a" = "--without-regex" ] && WITHOUT_REGEX=1
 	[ "$a" = "--with-included-regex" ] && WITH_INCLUDED_REGEX=1
@@ -17,6 +18,7 @@ done
 if [ "$CONFIG_HELP" = "1" ] ; then
 
 	echo "Available options:"
+	echo "--without-win32       Disable win32 interface detection."
 	echo "--without-unix-glob   Disable glob.h usage (use workaround)."
 	echo "--with-included-regex Use included regex code (gnu_regex.c)."
 	echo "--without-pcre        Disable PCRE library detection."
@@ -43,7 +45,13 @@ if [ "$CC" = "" ] ; then
 	which gcc > /dev/null && CC=gcc
 fi
 
+# set archiver
+if [ "$AR" = "" ] ; then
+	AR=ar
+fi
+
 echo "CC=$CC" >> makefile.opts
+echo "AR=$AR" >> makefile.opts
 
 # add version
 cat VERSION >> config.h
@@ -51,6 +59,29 @@ cat VERSION >> config.h
 #########################################################
 
 # configuration directives
+
+# Win32
+echo -n "Testing for win32... "
+if [ "$WITHOUT_WIN32" = "1" ] ; then
+	echo "Disabled by user"
+else
+	echo "#include <windows.h>" > .tmp.c
+	echo "#include <commctrl.h>" >> .tmp.c
+	echo "int STDCALL WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
+	echo "{ return 0; }" >> .tmp.c
+
+	TMP_LDFLAGS="-mwindows -lcomctl32"
+	$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+	if [ $? = 0 ] ; then
+		echo "#define CONFOPT_WIN32 1" >> config.h
+		echo "$TMP_LDFLAGS " >> config.ldflags
+		echo "OK"
+		WITHOUT_UNIX_GLOB=1
+	else
+		echo "No"
+	fi
+fi
 
 # glob.h support
 if [ "$WITHOUT_UNIX_GLOB" != 1 ] ; then
