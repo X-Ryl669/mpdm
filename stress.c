@@ -195,6 +195,17 @@ void test_splice(void)
 	_test("splice insertion at the end", 
 		fdm_cmp(fdm_aget(w, 0), FDM_LS("It doesn't matter two")) == 0);
 	fdm_dump(w);
+
+	w=fdm_splice(NULL, NULL, 0, 0);
+	_test("splice with two NULLS", (fdm_aget(w, 0) == NULL));
+
+	w=fdm_splice(NULL, FDM_LS("foo"), 0, 0);
+	_test("splice with first value NULL",
+		(fdm_cmp(fdm_aget(w, 0), FDM_LS("foo")) == 0));
+
+	w=fdm_splice(FDM_LS("foo"), NULL, 0, 0);
+	_test("splice with second value NULL",
+		(fdm_cmp(fdm_aget(w, 0), FDM_LS("foo")) == 0));
 }
 
 

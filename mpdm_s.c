@@ -109,49 +109,59 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	int ns, r;
 	int ins=0;
 
-	/* negative offsets start from the end */
-	if(offset < 0) offset=v->size + 1 - offset;
-
-	/* never add further the end */
-	if(offset > v->size) offset=v->size;
-
-	/* never delete further the end */
-	if(offset + del > v->size) del=v->size - offset;
-
-	/* deleted space */
-	if(del > 0)
+	if(v != NULL)
 	{
-		d=fdm_new(FDM_COPY | FDM_STRING, NULL, del);
+		/* negative offsets start from the end */
+		if(offset < 0) offset=v->size + 1 - offset;
 
-		memcpy(d->data, v->data + offset, del);
-		((char *)(d->data))[del]='\0';
+		/* never add further the end */
+		if(offset > v->size) offset=v->size;
+
+		/* never delete further the end */
+		if(offset + del > v->size) del=v->size - offset;
+
+		/* deleted space */
+		if(del > 0)
+		{
+			d=fdm_new(FDM_COPY | FDM_STRING, NULL, del);
+
+			memcpy(d->data, v->data + offset, del);
+			((char *)(d->data))[del]='\0';
+		}
+
+		/* something to insert? */
+		if(i != NULL)
+			ins=i->size;
+
+		/* new size and remainder */
+		ns=v->size + ins - del;
+		r=offset + del;
+
+		if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
+			return(NULL);
+
+		/* copy the beginning */
+		if(offset > 0)
+			memcpy(n->data, v->data, offset);
+
+		/* copy the text to be inserted */
+		if(ins > 0)
+			memcpy(n->data + offset, i->data, ins);
+
+		/* copy the remaining */
+		if(v->size - r > 0)
+			memcpy(n->data + offset + ins,
+				v->data + r, v->size - r);
+
+		/* null terminate */
+		((char *)(n->data))[ns]='\0';
 	}
-
-	/* something to insert? */
-	if(i != NULL)
-		ins=i->size;
-
-	/* new size and remainder */
-	ns=v->size + ins - del;
-	r=offset + del;
-
-	if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
-		return(NULL);
-
-	/* copy the beginning */
-	if(offset > 0)
-		memcpy(n->data, v->data, offset);
-
-	/* copy the text to be inserted */
-	if(ins > 0)
-		memcpy(n->data + offset, i->data, ins);
-
-	/* copy the remaining */
-	if(v->size - r > 0)
-		memcpy(n->data + offset + ins, v->data + r, v->size - r);
-
-	/* null terminate */
-	((char *)(n->data))[ns]='\0';
+	else
+	{
+		/* if i is not NULL, it will become the new string */
+		if(i != NULL)
+			n=i;
+	}
 
 	/* creates the output array */
 	w=FDM_A(2);
