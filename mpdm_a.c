@@ -198,7 +198,7 @@ fdm_v fdm_adel(fdm_v a, int offset)
 void fdm_apush(fdm_v a, fdm_v e)
 {
 	/* inserts at the end */
-	fdm_ains(a, e, a->size - 1);
+	fdm_ains(a, e, a->size);
 }
 
 
