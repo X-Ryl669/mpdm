@@ -777,6 +777,15 @@ void test_nondyn(void)
 }
 
 
+void test_mpsl(void)
+{
+	mpdm_v v;
+
+	v=mpsl_compile(MPDM_LS(L"a=1;"));
+	mpdm_dump(v);
+}
+
+
 int main(void)
 {
 	mpdm_startup();
@@ -793,6 +802,7 @@ int main(void)
 	test_exec();
 	test_dh();
 	test_nondyn();
+	test_mpsl();
 
 	mpdm_shutdown();
 

@@ -31,6 +31,12 @@
 #include "y.tab.h"
 
 void yyerror(char * s);
+int yy_input_for_flex(char * buf, int max);
+
+/* redefinition of input function for GNU Flex */
+#undef YY_INPUT
+#define YY_INPUT(b,r,m) (r=yy_input_for_flex(b,m))
+
 %}
 
 DIGIT		[0-9]
@@ -48,7 +54,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 %%
 
 {INTEGER}	{
-			/* integer */
+			/* integers */
 			yylval.v=MPDM_MBS(yytext);
 			return(INTEGER);
 		}
@@ -102,3 +108,20 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 %%
 
 int yywrap(void) { return(1); }
+
+int code_getchar(void)
+{
+	int c;
+
+	c=getchar();
+
+	return(c == EOF ? '\0' : c);
+}
+
+
+int yy_input_for_flex(char * buf, int max)
+{
+	buf[0]=code_getchar();
+
+	return(buf[0] == '\0' ? 0 : 1);
+}

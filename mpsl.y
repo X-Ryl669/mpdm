@@ -28,7 +28,7 @@
 #include "mpdm.h"
 
 /* the script being compiled */
-static mpdm_v _pcode=NULL;
+static mpdm_v _bytecode=NULL;
 
 int yylex(void);
 void yyerror(char * s);
@@ -73,7 +73,7 @@ program:
 	;
 
 function:
-	function stmt		{ mpdm_apush(_pcode, $2); }
+	function stmt		{ mpdm_apush(_bytecode, $2); }
 	| /* NULL */
 	;
 
@@ -213,21 +213,14 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 }
 
 
-int main(void)
+mpdm_v mpsl_compile(mpdm_v code)
 {
-	mpdm_startup();
-
-	/* create a new pcode */
-	_pcode=MPDM_A(0);
-	mpdm_ref(_pcode);
-	mpdm_apush(_pcode, MPDM_LS(L"PROG"));
+	/* create a new holder for the bytecode */
+	_bytecode=MPDM_A(0);
+	mpdm_ref(_bytecode);
+	mpdm_apush(_bytecode, MPDM_LS(L"PROG"));
 
 	yyparse();
 
-	mpdm_dump(_pcode);
-
-	mpdm_shutdown();
-
-	printf("Exiting main...\n");
-	exit(0);
+	return(_bytecode);
 }

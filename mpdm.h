@@ -186,5 +186,7 @@ mpdm_v _mpdm_tie_hash(void);
 #define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\
 			v,(sizeof(v) / sizeof(mpdm_v)),_mpdm_tie_nd_mul())
 
+mpdm_v mpsl_compile(mpdm_v code);
+
 int mpdm_startup(void);
 void mpdm_shutdown(void);
