@@ -96,10 +96,10 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 "++"		return INC;
 "--"		return DEC;
-"+="		return IMMADD;
-"-="		return IMMSUB;
-"*="		return IMMMUL;
-"/="		return IMMDIV;
+"+="		return IADD;
+"-="		return ISUB;
+"*="		return IMUL;
+"/="		return IDIV;
 "%"		return MODULO;
 
 {SYMBOL}	{

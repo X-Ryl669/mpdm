@@ -179,8 +179,7 @@ mpdm_v mpsl_local_find_symbol(mpdm_v s)
 	mpdm_v v = NULL;
 
 	/* if s is multiple, take just the first element */
-	if(s->flags & MPDM_MULTIPLE)
-		s=mpdm_aget(s, 0);
+	if(s->flags & MPDM_MULTIPLE) s=mpdm_aget(s, 0);
 
 	l=mpdm_aget(_mpsl_local, -1);
 
@@ -206,6 +205,9 @@ mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
 
 	if((l=mpsl_local_find_symbol(s)) != NULL)
 	{
+		if(s->flags & MPDM_MULTIPLE)
+			s=mpdm_aget(s, 0);
+
 		mpdm_hset(l, s, v);
 		return(v);
 	}
@@ -308,6 +310,23 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 		v=_mpsl_machine(v, args);
 
 	return(mpdm_exec(_mpsl_machine(mpdm_aget(c, 1), args), v));
+}
+
+
+static mpdm_v _mpsl_op_if(mpdm_v c, mpdm_v args)
+/* if/then/else structure */
+{
+	mpdm_v ret=NULL;
+
+	if(mpsl_is_true(_mpsl_machine(mpdm_aget(c, 1), args)))
+		ret=_mpsl_machine(mpdm_aget(c, 2), args);
+	else
+	{
+		if(mpdm_size(c) > 3)
+			ret=_mpsl_machine(mpdm_aget(c, 3), args);
+	}
+
+	return(ret);
 }
 
 
@@ -604,6 +623,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_SYMVAL: ret=_mpsl_op_symval(c, args); break;
 	case MPSL_OP_ASSIGN: ret=_mpsl_op_assign(c, args); break;
 	case MPSL_OP_EXEC: ret=_mpsl_op_exec(c, args); break;
+	case MPSL_OP_IF: ret=_mpsl_op_if(c, args); break;
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_BLKFRAME: ret=_mpsl_op_blkframe(c, args); break;
 	case MPSL_OP_LOCAL: ret=_mpsl_op_local(c, args); break;

@@ -78,7 +78,7 @@ static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
 %nonassoc ELSE
 
 %left BOOLAND BOOLOR
-%left INC DEC IMMADD IMMSUB IMMMUL IMMDIV
+%left INC DEC IADD ISUB IMUL IDIV
 %left '!'
 %left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
@@ -298,10 +298,10 @@ expr:
 	| compsym INC		{ $$ = INS1(MPSL_OP_SINC, $1); }
 	| DEC compsym		{ $$ = INS1(MPSL_OP_PDEC, $2); }
 	| compsym DEC		{ $$ = INS1(MPSL_OP_SDEC, $1); }
-	| compsym IMMADD expr	{ $$ = INS2(MPSL_OP_IMMADD, $1, $3); }
-	| compsym IMMSUB expr	{ $$ = INS2(MPSL_OP_IMMSUB, $1, $3); }
-	| compsym IMMMUL expr	{ $$ = INS2(MPSL_OP_IMMMUL, $1, $3); }
-	| compsym IMMDIV expr	{ $$ = INS2(MPSL_OP_IMMDIV, $1, $3); }
+	| compsym IADD expr	{ $$ = INS2(MPSL_OP_IADD, $1, $3); }
+	| compsym ISUB expr	{ $$ = INS2(MPSL_OP_ISUB, $1, $3); }
+	| compsym IMUL expr	{ $$ = INS2(MPSL_OP_IMUL, $1, $3); }
+	| compsym IDIV expr	{ $$ = INS2(MPSL_OP_IDIV, $1, $3); }
 
 	| '!' expr		{
 					/* boolean not */
