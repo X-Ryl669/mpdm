@@ -102,12 +102,7 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 	mpdm_v ins;	/* an 'instruction': [ opcode, args ] */
 };
 
-%token <v> NULLV
-%token <v> INTEGER
-%token <v> REAL
-%token <v> STRING
-%token <v> SYMBOL
-%token <v> LITERAL
+%token <v> NULLV INTEGER REAL STRING SYMBOL LITERAL
 %token WHILE IF SUB FOREACH
 %nonassoc IFI
 %nonassoc ELSE
@@ -233,7 +228,7 @@ expr:
 
 	| '[' ']'		{ $$ = INS0(MPDM_LS(L"LIST")); }
 	| '[' list ']'		{ $$ = $2; }
-	| '[' expr RANGE expr ']' { $$ = INS2(MPDM_LS(L"RANGE"), $2, $4); }
+	| expr RANGE expr	{ $$ = INS2(MPDM_LS(L"RANGE"), $1, $3); }
 
 	| '{' '}'		{ $$ = INS0(MPDM_LS(L"HASH")); }
 	| '{' hash '}'		{ $$ = $2; }
