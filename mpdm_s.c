@@ -235,6 +235,16 @@ int mpdm_ival(mpdm_v v)
 }
 
 
+/**
+ * mpdm_rval - Returns a value's data as an real number (double)
+ * @v: the value
+ *
+ * Returns a value's data as a real number (double float). If the value
+ * is a string, it's converted via sscanf and returned; non-string values
+ * have all an rval of 0. The converted double is cached, so costly string
+ * conversions are only done once. Values created with the MPDM_RVAL
+ * flag set have its rval cached from the beginning.
+ */
 double mpdm_rval(mpdm_v v)
 {
 	if(v == NULL)
