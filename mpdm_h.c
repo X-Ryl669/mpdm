@@ -294,6 +294,14 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 }
 
 
+/**
+ * mpdm_hget_s - Gets the value from a hash (string version).
+ * @h: the hash
+ * @k: the key
+ *
+ * Gets the value from the hash @h having @k as key, or
+ * NULL if the key does not exist.
+ */
 mpdm_v mpdm_hget_s(mpdm_v h, wchar_t * k)
 {
 	mpdm_v v;
@@ -347,6 +355,16 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 }
 
 
+/**
+ * mpdm_hset - Sets a value in a hash (string version)
+ * @h: the hash
+ * @k: the key
+ * @v: the value
+ *
+ * Sets the value @v to the key @k in the hash @h. Returns
+ * the previous value of the key, or NULL if the key was
+ * previously undefined.
+ */
 mpdm_v mpdm_hset_s(mpdm_v h, wchar_t * k, mpdm_v v)
 {
 	MPDM_ND_BEGIN();
