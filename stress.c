@@ -1094,6 +1094,18 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("streq 1", mpdm_ival(v) > 0);
 
+	v=_test_mpsl("a = 6; ++ a;");
+	v=mpdm_exec(v, NULL);
+	_test("pinc", mpdm_ival(v) == 7);
+
+	v=_test_mpsl("a++;");
+	v=mpdm_exec(v, NULL);
+	_test("sinc", mpdm_ival(v) == 7);
+
+	v=_test_mpsl("a += 10;");
+	v=mpdm_exec(v, NULL);
+	_test("iadd", mpdm_ival(v) == 18);
+
 	mpdm_dump(mpdm_root());
 }
 

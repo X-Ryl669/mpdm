@@ -55,10 +55,10 @@ typedef enum
 	MPSL_OP_SINC,		/* suffix increment */
 	MPSL_OP_PDEC,		/* prefix decrement */
 	MPSL_OP_SDEC,		/* suffix decrement */
-	MPSL_OP_IMMADD,		/* immediate add */
-	MPSL_OP_IMMSUB,		/* immediate sub */
-	MPSL_OP_IMMMUL,		/* immediate mul */
-	MPSL_OP_IMMDIV,		/* immediate div */
+	MPSL_OP_IADD,		/* immediate add */
+	MPSL_OP_ISUB,		/* immediate sub */
+	MPSL_OP_IMUL,		/* immediate mul */
+	MPSL_OP_IDIV,		/* immediate div */
 
 	MPSL_OP_NOT,		/* boolean negation */
 	MPSL_OP_AND,		/* boolean and */
