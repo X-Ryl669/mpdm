@@ -1,9 +1,9 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
-    fdm_f.c - File management
+    mpdm_f.c - File management
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@
 #include <unistd.h>
 #endif
 
-#include "fdm.h"
+#include "mpdm.h"
 
 /*******************
 	Code
@@ -45,34 +45,34 @@
  * @mode: an fopen-like mode string
  *
  * Opens a file. If @filename can be open in the specified @mode, an
- * fdm_v value will be returned containing the file descriptor, or NULL
+ * mpdm_v value will be returned containing the file descriptor, or NULL
  * otherwise.
  */
-fdm_v fdm_open(fdm_v filename, fdm_v mode)
+mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 {
 	FILE * f;
-	fdm_v fd;
+	mpdm_v fd;
 
 	if((f=fopen((char *)filename->data, (char *)mode->data)) == NULL)
 		return(NULL);
 
 	/* creates the file value */
-	fd=fdm_new(FDM_FILE, f, 0);
+	fd=mpdm_new(MPDM_FILE, f, 0);
 
 	return(fd);
 }
 
 
 /**
- * fdm_close - Closes a file descriptor.
+ * mpdm_close - Closes a file descriptor.
  * @fd: the value containing the file descriptor
  *
- * Closes the file descriptor. If @fd hasn't the FDM_FILE flag,
+ * Closes the file descriptor. If @fd hasn't the MPDM_FILE flag,
  * returns -1, or the return value from fclose() instead.
  */
-int fdm_close(fdm_v fd)
+int mpdm_close(mpdm_v fd)
 {
-	if(! (fd->flags & FDM_FILE))
+	if(! (fd->flags & MPDM_FILE))
 		return(-1);
 
 	return(fclose((FILE *)fd->data));
@@ -80,15 +80,15 @@ int fdm_close(fdm_v fd)
 
 
 /**
- * fdm_read - Reads a line from a file descriptor.
+ * mpdm_read - Reads a line from a file descriptor.
  * @fd: the value containing the file descriptor
  *
  * Reads a line from @fd. Returns the line, or NULL on EOF.
  */
-fdm_v fdm_read(fdm_v fd)
+mpdm_v mpdm_read(mpdm_v fd)
 {
 	char line[128];
-	fdm_v v=NULL;
+	mpdm_v v=NULL;
 	int i;
 	FILE * f;
 
@@ -107,7 +107,7 @@ fdm_v fdm_read(fdm_v fd)
 		}
 
 		/* store */
-		v=fdm_strcat(v, FDM_S(line));
+		v=mpdm_strcat(v, MPDM_S(line));
 
 		/* exit if the line is completely read */
 		if(i == 0) break;
@@ -118,48 +118,48 @@ fdm_v fdm_read(fdm_v fd)
 
 
 /**
- * fdm_write - Writes a value into a file descriptor.
+ * mpdm_write - Writes a value into a file descriptor.
  * @fd: the value containing the file descriptor
  * @v: the value to be written.
  *
  * Writes @v into @fd. If @v is an array, each element will be written
  * as separate lines (using \n as a separator).
  */
-int fdm_write(fdm_v fd, fdm_v v)
+int mpdm_write(mpdm_v fd, mpdm_v v)
 {
-	if(v->flags & FDM_MULTIPLE)
+	if(v->flags & MPDM_MULTIPLE)
 	{
 		int n;
 
 		for(n=0;n < v->size;n++)
-			fdm_write(fd, fdm_aget(v, n));
+			mpdm_write(fd, mpdm_aget(v, n));
 	}
 	else
-		fprintf((FILE *)fd->data, "%s\n", fdm_string(v));
+		fprintf((FILE *)fd->data, "%s\n", mpdm_string(v));
 
 	return(0);
 }
 
 
 /*
-fdm_v fdm_bread(fdm_v fd, int size)
+mpdm_v mpdm_bread(mpdm_v fd, int size)
 {
 }
 
 
-int fdm_bwrite(fdm_vfd, fdm_v v, int size)
+int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
 {
 }
 */
 
 
 /**
- * fdm_unlink - Deletes a file.
+ * mpdm_unlink - Deletes a file.
  * @filename: file name to be deleted
  *
  * Deletes a file.
  */
-int fdm_unlink(fdm_v filename)
+int mpdm_unlink(mpdm_v filename)
 {
 	return(unlink((char *)filename->data));
 }

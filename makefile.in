@@ -1,16 +1,16 @@
 # -*- Mode: sh
 
-TARGET=libfdm.a
+TARGET=libmpdm.a
 LIB=$(TARGET)
 
 all: $(TARGET)
 
-PROJ=fdm
+PROJ=mpdm
 CFLAGS=-g -Wall
 DOCS=
 PREFIX=/usr/local
 
-OBJS=fdm_v.o fdm_a.o fdm_h.o fdm_d.o fdm_s.o fdm_f.o gnu_regex.o
+OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o gnu_regex.o
 
 ##################################################################
 
@@ -30,7 +30,7 @@ $(LIB): $(OBJS)
 	$(AR) rv $(LIB) $(OBJS)
 
 stress: stress.c $(LIB)
-	$(CC) $(CFLAGS) $< -L. -lfdm -o $@
+	$(CC) $(CFLAGS) $< -L. -lmpdm -o $@
 
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress

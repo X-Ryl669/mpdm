@@ -1,9 +1,9 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
-    fdm_s.c - String management
+    mpdm_s.c - String management
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -29,14 +29,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fdm.h"
+#include "mpdm.h"
 
 /*******************
 	Code
 ********************/
 
 /**
- * fdm_string - Returns a printable representation of a value.
+ * mpdm_string - Returns a printable representation of a value.
  * @v: the value
  *
  * Returns a printable representation of a value. For strings, it's
@@ -44,7 +44,7 @@
  * is returned instead. This value should be used immediately, as it
  * can be a pointer to a static buffer.
  */
-char * fdm_string(fdm_v v)
+char * mpdm_string(mpdm_v v)
 {
 	static char tmp[32];
 
@@ -53,7 +53,7 @@ char * fdm_string(fdm_v v)
 		return("[NULL]");
 
 	/* if it's a string, return it */
-	if(v->flags & FDM_STRING)
+	if(v->flags & MPDM_STRING)
 		return((char *)v->data);
 
 	/* otherwise, convert to printable */
@@ -63,15 +63,15 @@ char * fdm_string(fdm_v v)
 
 
 /**
- * fdm_cmp - Compares two values.
+ * mpdm_cmp - Compares two values.
  * @v1: the first value
  * @v2: the second value
  *
- * Compares two values. If both has the FDM_STRING flag set,
+ * Compares two values. If both has the MPDM_STRING flag set,
  * a comparison using strcmp() is returned; otherwise, a
  * simple pointer comparison is done.
  */
-int fdm_cmp(fdm_v v1, fdm_v v2)
+int mpdm_cmp(mpdm_v v1, mpdm_v v2)
 {
 	/* special treatment to NULL values */
 	if(v1 == NULL)
@@ -80,7 +80,7 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
 		return(1);
 
 	/* if both values are strings, compare as such */
-	if((v1->flags & FDM_STRING) && (v2->flags & FDM_STRING))
+	if((v1->flags & MPDM_STRING) && (v2->flags & MPDM_STRING))
 		return(strcmp((char *)v1->data, (char *)v2->data));
 
 	/* in any other case, compare just pointers */
@@ -89,7 +89,7 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
 
 
 /**
- * fdm_splice - Creates a new string value from another.
+ * mpdm_splice - Creates a new string value from another.
  * @v: the original value
  * @i: the value to be inserted
  * @offset: offset where the substring is to be inserted
@@ -107,11 +107,11 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
  * element and the deleted string in the second (with a NULL value
  * if @del is 0).
  */
-fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
+mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 {
-	fdm_v w;
-	fdm_v n=NULL;
-	fdm_v d=NULL;
+	mpdm_v w;
+	mpdm_v n=NULL;
+	mpdm_v d=NULL;
 	int ns, r;
 	int ins=0;
 
@@ -128,7 +128,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 
 		/* deleted space */
 		if(del > 0)
-			d=fdm_new(FDM_COPY | FDM_STRING,
+			d=mpdm_new(MPDM_COPY | MPDM_STRING,
 				v->data + offset, del);
 
 		/* something to insert? */
@@ -139,7 +139,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 		ns=v->size + ins - del;
 		r=offset + del;
 
-		if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
+		if((n=mpdm_new(MPDM_COPY | MPDM_STRING, NULL, ns)) == NULL)
 			return(NULL);
 
 		/* copy the beginning */
@@ -162,75 +162,75 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 		n=i;
 
 	/* creates the output array */
-	w=FDM_A(2);
+	w=MPDM_A(2);
 
-	fdm_aset(w, n, 0);
-	fdm_aset(w, d, 1);
+	mpdm_aset(w, n, 0);
+	mpdm_aset(w, d, 1);
 
 	return(w);
 }
 
 
 /**
- * fdm_strcat - Concatenates two strings
+ * mpdm_strcat - Concatenates two strings
  * @s1: the first string
  * @s2: the second string
  *
  * Returns a new string formed by the concatenation of @s1 and @s2.
  */
-fdm_v fdm_strcat(fdm_v s1, fdm_v s2)
+mpdm_v mpdm_strcat(mpdm_v s1, mpdm_v s2)
 {
-	fdm_v v;
+	mpdm_v v;
 
-	v=fdm_splice(s1, s2, -1, 0);
-	v=fdm_aget(v, 0);
+	v=mpdm_splice(s1, s2, -1, 0);
+	v=mpdm_aget(v, 0);
 
 	return(v);
 }
 
 
 /**
- * fdm_ival - Returns a value's data as an integer
+ * mpdm_ival - Returns a value's data as an integer
  * @v: the value
  *
  * Returns a value's data as an integer. If the value is a string,
  * it's converted via sscanf and returned; non-string values have all
  * an ival of 0. The converted integer is cached, so costly string
- * conversions are only done once. Values created with the FDM_IVAL
+ * conversions are only done once. Values created with the MPDM_IVAL
  * flag set have its ival cached from the beginning.
  */
-int fdm_ival(fdm_v v)
+int mpdm_ival(mpdm_v v)
 {
 	if(v == NULL)
 		return(0);
 
 	/* if there is no cached integer, calculate it */
-	if(!(v->flags & FDM_IVAL))
+	if(!(v->flags & MPDM_IVAL))
 	{
 		int i=0;
 
 		/* if it's a string, calculate it; other
 		   values will have an ival of 0 */
-		if(v->flags & FDM_STRING)
+		if(v->flags & MPDM_STRING)
 			sscanf((char *)v->data, "%i", &i);
 
 		v->ival=i;
-		v->flags |= FDM_IVAL;
+		v->flags |= MPDM_IVAL;
 	}
 
 	return(v->ival);
 }
 
 
-fdm_v _fdm_inew(int ival)
+mpdm_v _mpdm_inew(int ival)
 {
-	fdm_v v;
+	mpdm_v v;
 	char tmp[32];
 
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
 
-	v=fdm_new(FDM_COPY | FDM_STRING | FDM_IVAL, tmp, -1);
+	v=mpdm_new(MPDM_COPY | MPDM_STRING | MPDM_IVAL, tmp, -1);
 	v->ival=ival;
 
 	return(v);

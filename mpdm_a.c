@@ -1,9 +1,9 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
-    fdm_a.c - Array management
+    mpdm_a.c - Array management
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -29,13 +29,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fdm.h"
+#include "mpdm.h"
 
 /*******************
 	Code
 ********************/
 
-int _fdm_wrap_offset(fdm_v a, int offset)
+int _mpdm_wrap_offset(mpdm_v a, int offset)
 {
 	/* negative offset means expand from the end */
 	if(offset < 0)
@@ -46,7 +46,7 @@ int _fdm_wrap_offset(fdm_v a, int offset)
 
 
 /**
- * fdm_aexpand - Expands an array.
+ * mpdm_aexpand - Expands an array.
  * @a: the array
  * @offset: insertion offset
  * @num: number of elements to insert
@@ -54,14 +54,14 @@ int _fdm_wrap_offset(fdm_v a, int offset)
  * Expands an array value, inserting @num elements (initialized
  * to NULL) at the specified @offset.
  */
-void fdm_aexpand(fdm_v a, int offset, int num)
+void mpdm_aexpand(mpdm_v a, int offset, int num)
 {
 	int n;
-	fdm_v * p;
+	mpdm_v * p;
 
 	/* array is now longer */
 	a->size += num;
-	p=(fdm_v *) realloc(a->data, a->size * sizeof(fdm_v));
+	p=(mpdm_v *) realloc(a->data, a->size * sizeof(mpdm_v));
 
 	/* moves up from top of the array */
 	for(n=a->size - 1;n >= offset + num;n--)
@@ -76,7 +76,7 @@ void fdm_aexpand(fdm_v a, int offset, int num)
 
 
 /**
- * fdm_acollapse - Collapses an array.
+ * mpdm_acollapse - Collapses an array.
  * @a: the array
  * @offset: deletion offset
  * @num: number of elements to collapse
@@ -84,10 +84,10 @@ void fdm_aexpand(fdm_v a, int offset, int num)
  * Collapses an array value, deleting @num elements at
  * the specified @offset.
  */
-void fdm_acollapse(fdm_v a, int offset, int num)
+void mpdm_acollapse(mpdm_v a, int offset, int num)
 {
 	int n;
-	fdm_v * p;
+	mpdm_v * p;
 
 	/* don't try to delete beyond the limit */
 	if(offset + num > a->size)
@@ -95,23 +95,23 @@ void fdm_acollapse(fdm_v a, int offset, int num)
 
 	/* cleans the about-to-be-deleted space */
 	for(n=offset;n < offset + num;n++)
-		fdm_aset(a, NULL, n);
+		mpdm_aset(a, NULL, n);
 
 	/* array is now shorter */
 	a->size -= num;
 
 	/* moves down the elements */
-	p=(fdm_v *) a->data;
+	p=(mpdm_v *) a->data;
 	for(n=offset;n < a->size;n++)
 		p[n]=p[n + num];
 
 	/* finally shrinks the memory block */
-	a->data=realloc(p, a->size * sizeof(fdm_v));
+	a->data=realloc(p, a->size * sizeof(mpdm_v));
 }
 
 
 /**
- * fdm_aset - Sets the value of an array's element.
+ * mpdm_aset - Sets the value of an array's element.
  * @a: the array
  * @e: the element to be assigned
  * @offset: the subscript of the element
@@ -119,48 +119,48 @@ void fdm_acollapse(fdm_v a, int offset, int num)
  * Sets the element of the array @a at @offset to be the @e value.
  * Returns the previous element.
  */
-fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
+mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 {
-	fdm_v v;
-	fdm_v * p;
+	mpdm_v v;
+	mpdm_v * p;
 
 	/* boundary checks */
 	if(offset < 0 || offset >= a->size)
 		return(NULL);
 
-	p=(fdm_v *)a->data;
+	p=(mpdm_v *)a->data;
 	v=p[offset];
 	p[offset]=e;
 
-	if(v != NULL) fdm_unref(v);
-	if(e != NULL) fdm_ref(e);
+	if(v != NULL) mpdm_unref(v);
+	if(e != NULL) mpdm_ref(e);
 
 	return(v);
 }
 
 
 /**
- * fdm_aget - Gets an element of an array.
+ * mpdm_aget - Gets an element of an array.
  * @a: the array
  * @offset: the subscript of the element
  *
  * Returns the element at @offset of the array @a.
  */
-fdm_v fdm_aget(fdm_v a, int offset)
+mpdm_v mpdm_aget(mpdm_v a, int offset)
 {
-	fdm_v * p;
+	mpdm_v * p;
 
 	/* boundary checks */
 	if(offset < 0 || offset >= a->size)
 		return(NULL);
 
-	p=(fdm_v *)a->data;
+	p=(mpdm_v *)a->data;
 	return(p[offset]);
 }
 
 
 /**
- * fdm_ains - Insert an element in an array.
+ * mpdm_ains - Insert an element in an array.
  * @a: the array
  * @e: the element to be inserted
  * @offset: subscript where the element is going to be inserted
@@ -169,18 +169,18 @@ fdm_v fdm_aget(fdm_v a, int offset)
  * Further elements are pushed up, so the array increases its size
  * by one.
  */
-void fdm_ains(fdm_v a, fdm_v e, int offset)
+void mpdm_ains(mpdm_v a, mpdm_v e, int offset)
 {
 	/* open room */
-	fdm_aexpand(a, offset, 1);
+	mpdm_aexpand(a, offset, 1);
 
 	/* set value */
-	fdm_aset(a, e, offset);
+	mpdm_aset(a, e, offset);
 }
 
 
 /**
- * fdm_adel - Deletes an element of an array.
+ * mpdm_adel - Deletes an element of an array.
  * @a: the array
  * @offset: subscript of the element to be deleted
  *
@@ -188,50 +188,50 @@ void fdm_ains(fdm_v a, fdm_v e, int offset)
  * is shrinked by one.
  * Returns the deleted element.
  */
-fdm_v fdm_adel(fdm_v a, int offset)
+mpdm_v mpdm_adel(mpdm_v a, int offset)
 {
-	fdm_v v;
+	mpdm_v v;
 
 	/* gets current value */
-	v=fdm_aget(a, offset);
+	v=mpdm_aget(a, offset);
 
 	/* shrinks the array */
-	fdm_acollapse(a, offset, 1);
+	mpdm_acollapse(a, offset, 1);
 
 	return(v);
 }
 
 
 /**
- * fdm_apush - Pushes a value into an array.
+ * mpdm_apush - Pushes a value into an array.
  * @a: the array
  * @e: the value
  *
  * Pushes a value into an array (i.e. inserts at the end).
  */
-void fdm_apush(fdm_v a, fdm_v e)
+void mpdm_apush(mpdm_v a, mpdm_v e)
 {
 	/* inserts at the end */
-	fdm_ains(a, e, a->size);
+	mpdm_ains(a, e, a->size);
 }
 
 
 /**
- * fdm_apop - Pops a value from an array.
+ * mpdm_apop - Pops a value from an array.
  * @a: the array
  *
  * Pops a value from the array (i.e. deletes from the end
  * and returns it).
  */
-fdm_v fdm_apop(fdm_v a)
+mpdm_v mpdm_apop(mpdm_v a)
 {
 	/* deletes from the end */
-	return(fdm_adel(a, a->size - 1));
+	return(mpdm_adel(a, a->size - 1));
 }
 
 
 /**
- * fdm_aqueue - Implements a queue in an array.
+ * mpdm_aqueue - Implements a queue in an array.
  * @a: the array
  * @e: the element to be pushed
  * @size: maximum size of array
@@ -243,20 +243,20 @@ fdm_v fdm_apop(fdm_v a)
  * Returns the deleted element, or NULL if the array doesn't have
  * @size elements yet.
  */
-fdm_v fdm_aqueue(fdm_v a, fdm_v e, int size)
+mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size)
 {
-	fdm_v v=NULL;
+	mpdm_v v=NULL;
 
 	if(a->size > size - 1)
-		v=fdm_adel(a, 0);
+		v=mpdm_adel(a, 0);
 
-	fdm_apush(a, e);
+	mpdm_apush(a, e);
 	return(v);
 }
 
 
 /**
- * fdm_aseek - Seeks a value in an array (sequential).
+ * mpdm_aseek - Seeks a value in an array (sequential).
  * @a: the array
  * @k: the key
  * @step: number of elements to step
@@ -265,15 +265,15 @@ fdm_v fdm_aqueue(fdm_v a, fdm_v e, int size)
  * increments of @step. A complete search should use a step of 1.
  * Returns the offset of the element if found, or -1 otherwise.
  */
-int fdm_aseek(fdm_v a, fdm_v k, int step)
+int mpdm_aseek(mpdm_v a, mpdm_v k, int step)
 {
 	int n;
 
 	for(n=0;n < a->size;n+=step)
 	{
-		fdm_v v=fdm_aget(a, n);
+		mpdm_v v=mpdm_aget(a, n);
 
-		if(fdm_cmp(v, k) == 0)
+		if(mpdm_cmp(v, k) == 0)
 			return(n);
 	}
 
@@ -282,7 +282,7 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
 
 
 /**
- * fdm_abseek - Seeks a value in an array (binary).
+ * mpdm_abseek - Seeks a value in an array (binary).
  * @a: the ordered array
  * @k: the key
  * @step: number of elements to step
@@ -297,7 +297,7 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
  * where the element should be is stored in @pos. You can set @pos
  * to NULL if you don't mind.
  */
-int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
+int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos)
 {
 	int b, t, n, c;
 
@@ -305,13 +305,13 @@ int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
 
 	while(t >= b)
 	{
-		fdm_v v;
+		mpdm_v v;
 
 		n=(b + t) / 2;
-		if((v=fdm_aget(a, n * step)) == NULL)
+		if((v=mpdm_aget(a, n * step)) == NULL)
 			break;
 
-		c=fdm_cmp(k, v);
+		c=mpdm_cmp(k, v);
 
 		if(c == 0)
 			return(n * step);
@@ -327,28 +327,28 @@ int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
 }
 
 
-static int _fdm_asort_cmp(const void * s1, const void * s2)
+static int _mpdm_asort_cmp(const void * s1, const void * s2)
 {
-	return(fdm_cmp(*(fdm_v *)s1, *(fdm_v *)s2));
+	return(mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2));
 }
 
 
 /**
- * fdm_asort - Sorts an array.
+ * mpdm_asort - Sorts an array.
  * @a: the array
  * @step: increment step
  *
  * Sorts the array. @step is the number of elements to group together.
  */
-void fdm_asort(fdm_v a, int step)
+void mpdm_asort(mpdm_v a, int step)
 {
 	qsort(a->data, a->size / step,
-		sizeof(fdm_v) * step, _fdm_asort_cmp);
+		sizeof(mpdm_v) * step, _mpdm_asort_cmp);
 }
 
 
 /**
- * fdm_asplit - Separates a string into an array of pieces
+ * mpdm_asplit - Separates a string into an array of pieces
  * @s: the separator
  * @v: the value to be separated
  *
@@ -356,50 +356,50 @@ void fdm_asort(fdm_v a, int step)
  * as a separator. If the string does not contain the separator,
  * an array holding the complete string is returned.
  */
-fdm_v fdm_asplit(fdm_v s, fdm_v v)
+mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
 {
-	fdm_v w;
+	mpdm_v w;
 	char * ptr;
 	char * sptr;
 
-	w=FDM_A(0);
+	w=MPDM_A(0);
 
 	/* travels the string finding separators and creating new values */
 	for(ptr=v->data;
 		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
 		ptr=sptr + s->size)
-		fdm_apush(w, fdm_new(FDM_COPY|FDM_STRING, ptr, sptr - ptr));
+		mpdm_apush(w, mpdm_new(MPDM_COPY|MPDM_STRING, ptr, sptr - ptr));
 
 	/* add last part */
-	fdm_apush(w, FDM_S(ptr));
+	mpdm_apush(w, MPDM_S(ptr));
 
 	return(w);
 }
 
 
 /**
- * fdm_ajoin - Joins all elements of an array into one
+ * mpdm_ajoin - Joins all elements of an array into one
  * @s: joiner string
  * @a: array to be joined
  *
  * Joins all elements from @a into one string, using @s as a glue.
  */
-fdm_v fdm_ajoin(fdm_v s, fdm_v a)
+mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 {
-#ifdef FDM_OPT_RAW_AJOIN
-	fdm_v v;
-	fdm_v w;
+#ifdef MPDM_OPT_RAW_AJOIN
+	mpdm_v v;
+	mpdm_v w;
 	int n, t;
 
 	/* special case optimization: only one element */
 	if(a->size == 1)
-		return(fdm_aget(a, 0));
+		return(mpdm_aget(a, 0));
 
 	/* first counts the total size */
-	v=fdm_aget(a, 0);
+	v=mpdm_aget(a, 0);
 	for(t=v->size,n=1;n < a->size;n++)
 	{
-		v=fdm_aget(a, n);
+		v=mpdm_aget(a, n);
 		t+=v->size;
 	}
 
@@ -408,14 +408,14 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 		t += s->size * (a->size - 1);
 
 	/* create the value */
-	w=fdm_new(FDM_STRING | FDM_COPY, NULL, t);
+	w=mpdm_new(MPDM_STRING | MPDM_COPY, NULL, t);
 
 	/* copy now */
-	v=fdm_aget(a, 0);
+	v=mpdm_aget(a, 0);
 	memcpy(w->data, v->data, v->size);
 	for(t=v->size,n=1;n < a->size;n++)
 	{
-		v=fdm_aget(a, n);
+		v=mpdm_aget(a, n);
 
 		if(s != NULL)
 		{
@@ -430,20 +430,20 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 	*((char *)(w->data + t))='\0';
 	return(w);
 #else
-	fdm_v v;
+	mpdm_v v;
 	int n;
 
 	/* unoptimized, but intelligible join */
-	v=fdm_aget(a, 0);
+	v=mpdm_aget(a, 0);
 
 	for(n=1;n < a->size;n++)
 	{
 		/* add separator */
 		if(s != NULL)
-			v=fdm_strcat(v, s);
+			v=mpdm_strcat(v, s);
 
 		/* add element */
-		v=fdm_strcat(v, fdm_aget(a, n));
+		v=mpdm_strcat(v, mpdm_aget(a, n));
 	}
 
 	return(v);

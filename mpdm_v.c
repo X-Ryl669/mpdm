@@ -1,9 +1,9 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
-    fdm_v.c - Basic value management
+    mpdm_v.c - Basic value management
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fdm.h"
+#include "mpdm.h"
 
 /*******************
 	Data
@@ -39,51 +39,51 @@
 
 static struct
 {
-	fdm_v root;		/* the root hash */
-	fdm_v head;		/* head of values */
-	fdm_v tail;		/* tail of values */
+	mpdm_v root;		/* the root hash */
+	mpdm_v head;		/* head of values */
+	mpdm_v tail;		/* tail of values */
 	int count;		/* total count */
 	int lcount;		/* last count */
-} _fdm;
+} _mpdm;
 
 
 /*******************
 	Code
 ********************/
 
-#define _fdm_alloc() (fdm_v)malloc(sizeof(struct _fdm_v))
-#define _fdm_free(v) free(v)
+#define _mpdm_alloc() (mpdm_v)malloc(sizeof(struct _mpdm_v))
+#define _mpdm_free(v) free(v)
 
 
-fdm_v _fdm_new(int flags, void * data, int size)
+mpdm_v _mpdm_new(int flags, void * data, int size)
 /* Creates a new value (overriding cache) */
 {
-	fdm_v v;
+	mpdm_v v;
 
 	/* a size of -1 means 'calculate it' */
 	if(size == -1)
 	{
 		/* only calculate size for string values; others get 0 */
-		if((flags & FDM_STRING) && data != NULL)
+		if((flags & MPDM_STRING) && data != NULL)
 			size=strlen((char *) data);
 		else
 			size=0;
 	}
 
 	/* alloc new value and init */
-	if((v=_fdm_alloc()) == NULL)
+	if((v=_mpdm_alloc()) == NULL)
 		return(NULL);
 
-	memset(v, '\0', sizeof(struct _fdm_v));
+	memset(v, '\0', sizeof(struct _mpdm_v));
 
 	v->flags=flags;
 
-	if(flags & FDM_MULTIPLE)
-		fdm_aexpand(v, 0, size);
+	if(flags & MPDM_MULTIPLE)
+		mpdm_aexpand(v, 0, size);
 	else
-	if(flags & FDM_COPY)
+	if(flags & MPDM_COPY)
 	{
-		v->flags |= FDM_FREE;
+		v->flags |= MPDM_FREE;
 		v->size=size;
 
 		/* alloc new space for data */
@@ -95,7 +95,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 			memset(v->data, '\0', size);
 		else
 		{
-			if(flags & FDM_STRING)
+			if(flags & MPDM_STRING)
 			{
 				strncpy(v->data, data, size);
 				((char *)v->data)[size]='\0';
@@ -111,29 +111,29 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	}
 
 	/* add to the value chain and count */
-	if(_fdm.head == NULL) _fdm.head=v;
-	if(_fdm.tail != NULL) _fdm.tail->next=v;
-	_fdm.tail=v;
-	_fdm.count ++;
+	if(_mpdm.head == NULL) _mpdm.head=v;
+	if(_mpdm.tail != NULL) _mpdm.tail->next=v;
+	_mpdm.tail=v;
+	_mpdm.count ++;
 
 	return(v);
 }
 
 
-fdm_v _fdm_cache(int tag, void * data, int size)
+mpdm_v _mpdm_cache(int tag, void * data, int size)
 {
-	static fdm_v _cache=NULL;
-	fdm_v v=NULL;
+	static mpdm_v _cache=NULL;
+	mpdm_v v=NULL;
 
 	/* first time initialization */
 	if(_cache == NULL)
 	{
-		_cache=_fdm_new(FDM_MULTIPLE, NULL, 256);
-		fdm_ref(_cache);
+		_cache=_mpdm_new(MPDM_MULTIPLE, NULL, 256);
+		mpdm_ref(_cache);
 	}
 
 	/* try one-char cached values */
-	if(data != NULL && (tag & FDM_STRING) && ! (tag & FDM_FREE))
+	if(data != NULL && (tag & MPDM_STRING) && ! (tag & MPDM_FREE))
 	{
 		int c=-1;
 		unsigned char * ptr;
@@ -148,10 +148,10 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 
 		if(c != -1)
 		{
-			if((v=fdm_aget(_cache, c)) == NULL)
+			if((v=mpdm_aget(_cache, c)) == NULL)
 			{
-				v=_fdm_new(tag, data, size);
-				fdm_aset(_cache, v, c);
+				v=_mpdm_new(tag, data, size);
+				mpdm_aset(_cache, v, c);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 
 
 /**
- * fdm_new - Creates a new value.
+ * mpdm_new - Creates a new value.
  * @flags: flags
  * @data: pointer to real data
  * @size: size of data
@@ -171,171 +171,171 @@ fdm_v _fdm_cache(int tag, void * data, int size)
  * store and @size the size of these data. The flags in @tag define
  * how the data will be stored and its behaviour:
  *
- * If the FDM_COPY flag is set, the value will store a copy of the data
+ * If the MPDM_COPY flag is set, the value will store a copy of the data
  * using an allocated block of memory. Otherwise, the @data pointer is
- * stored inside the value as is. FDM_COPY implies FDM_FREE.
+ * stored inside the value as is. MPDM_COPY implies MPDM_FREE.
  *
- * If FDM_STRING is set, it means @data can be treated as a string
+ * If MPDM_STRING is set, it means @data can be treated as a string
  * (i.e., operations like strcmp() or strlen() can be done on it).
- * Otherwise, @data is treated as an opaque value. For FDM_STRING
+ * Otherwise, @data is treated as an opaque value. For MPDM_STRING
  * values, @size can be -1 to force a calculation using strlen().
- * This flag is incompatible with FDM_MULTIPLE.
+ * This flag is incompatible with MPDM_MULTIPLE.
  *
- * IF FDM_MULTIPLE is set, it means the value itself is an array
+ * IF MPDM_MULTIPLE is set, it means the value itself is an array
  * of values. @Size indicates the number of elements instead of
- * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
- * FDM_STRING, and @data is ignored.
+ * a quantity in bytes. MPDM_MULTIPLE implies MPDM_COPY and not
+ * MPDM_STRING, and @data is ignored.
  *
- * If FDM_FREE is set, memory in @data will be released using free()
+ * If MPDM_FREE is set, memory in @data will be released using free()
  * when the value is destroyed.
  *
  * There are other informative flags that do nothing but describe
- * the information stored in the value: they are FDM_HASH, FDM_FILE
- * and FDM_BINCODE.
+ * the information stored in the value: they are MPDM_HASH, MPDM_FILE
+ * and MPDM_BINCODE.
  */
-fdm_v fdm_new(int tag, void * data, int size)
+mpdm_v mpdm_new(int tag, void * data, int size)
 {
-	fdm_v v;
+	mpdm_v v;
 
-	if((v=_fdm_cache(tag, data, size)) == NULL)
-		v=_fdm_new(tag, data, size);
+	if((v=_mpdm_cache(tag, data, size)) == NULL)
+		v=_mpdm_new(tag, data, size);
 
 	return(v);
 }
 
 
 /**
- * fdm_ref - Increments the reference count of a value.
+ * mpdm_ref - Increments the reference count of a value.
  * @v: the value
  *
  * Increments the reference count of a value.
  */
-int fdm_ref(fdm_v v)
+int mpdm_ref(mpdm_v v)
 {
 	return(v->ref++);
 }
 
 
 /**
- * fdm_unref - Decrements the reference count of a value.
+ * mpdm_unref - Decrements the reference count of a value.
  * @v: the value
  *
  * Decrements the reference count of a value.
  */
-int fdm_unref(fdm_v v)
+int mpdm_unref(mpdm_v v)
 {
 	return(v->ref--);
 }
 
 
 /**
- * fdm_sweep - Sweeps unreferenced values
+ * mpdm_sweep - Sweeps unreferenced values
  * @count: number of values to be swept
  *
  * Destroys values with a reference count of 0. @count is the
  * number of values to be checked for deletion; special values of
  * @count are -1, that forces a check of all currently known values
- * (can be time-consuming) and 0, which tells fdm_sweep() to check a
+ * (can be time-consuming) and 0, which tells mpdm_sweep() to check a
  * small group of them on each call.
  */
-void fdm_sweep(int count)
+void mpdm_sweep(int count)
 {
 	/* if it's worthless, don't do it */
-	if(_fdm.count < 16)
+	if(_mpdm.count < 16)
 	{
 		/* store current count, to avoid a sweeping
 		   rush when the threshold is crossed */
-		_fdm.lcount=_fdm.count;
+		_mpdm.lcount=_mpdm.count;
 		return;
 	}
 
 	/* if count is -1, sweep all */
-	if(count == -1) count=_fdm.count * 2;
+	if(count == -1) count=_mpdm.count * 2;
 
 	/* if count is zero, sweep 'some' values */
-	if(count == 0) count=_fdm.count - _fdm.lcount + 2;
+	if(count == 0) count=_mpdm.count - _mpdm.lcount + 2;
 
 	while(count > 0)
 	{
 		/* is the value referenced? */
-		if(_fdm.head->ref)
+		if(_mpdm.head->ref)
 		{
 			/* yes; rotate to next */
-			_fdm.tail->next=_fdm.head;
-			_fdm.head=_fdm.head->next;
-			_fdm.tail=_fdm.tail->next;
-			_fdm.tail->next=NULL;
+			_mpdm.tail->next=_mpdm.head;
+			_mpdm.head=_mpdm.head->next;
+			_mpdm.tail=_mpdm.tail->next;
+			_mpdm.tail->next=NULL;
 		}
 		else
 		{
-			fdm_v v;
+			mpdm_v v;
 
 			/* value is to be destroyed */
-			v=_fdm.head;
-			_fdm.head=_fdm.head->next;
+			v=_mpdm.head;
+			_mpdm.head=_mpdm.head->next;
 
 			/* destroy */
-			if(v->flags & FDM_MULTIPLE)
-				fdm_acollapse(v, 0, v->size);
+			if(v->flags & MPDM_MULTIPLE)
+				mpdm_acollapse(v, 0, v->size);
 			else
-			if(v->flags & FDM_FREE)
+			if(v->flags & MPDM_FREE)
 				free(v->data);
 
 			/* free the value itself */
-			_fdm_free(v);
+			_mpdm_free(v);
 
 			/* one value less */
-			_fdm.count--;
+			_mpdm.count--;
 		}
 
 		count--;
 	}
 
-	_fdm.lcount=_fdm.count;
+	_mpdm.lcount=_mpdm.count;
 }
 
 
 /**
- * fdm_clone - Creates a clone of a value
+ * mpdm_clone - Creates a clone of a value
  * @v: the value
  *
  * Creates a clone of a value. If the value is multiple, a new value will
  * be created containing clones of all its elements; otherwise,
  * the same unchanged value is returned.
  */
-fdm_v fdm_clone(fdm_v v)
+mpdm_v mpdm_clone(mpdm_v v)
 {
-	fdm_v w;
+	mpdm_v w;
 	int n;
 
 	/* if NULL or value is not multiple, return as is */
-	if(v == NULL || !(v->flags & FDM_MULTIPLE))
+	if(v == NULL || !(v->flags & MPDM_MULTIPLE))
 		return(v);
 
 	/* create new */
-	w=fdm_new(v->flags, NULL, v->size);
+	w=mpdm_new(v->flags, NULL, v->size);
 
 	/* fills each element with duplicates of the original */
 	for(n=0;n < v->size;n++)
-		fdm_aset(w, fdm_clone(fdm_aget(v, n)), n);
+		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
 	return(w);
 }
 
 
 /**
- * fdm_root - Returns the root hash.
+ * mpdm_root - Returns the root hash.
  *
  * Returns the root hash. This hash is stored internally and can be used
  * as a kind of global symbol table.
  */
-fdm_v fdm_root(void)
+mpdm_v mpdm_root(void)
 {
-	if(_fdm.root == NULL)
+	if(_mpdm.root == NULL)
 	{
-		_fdm.root=FDM_H(0);
-		fdm_ref(_fdm.root);
+		_mpdm.root=MPDM_H(0);
+		mpdm_ref(_mpdm.root);
 	}
 
-	return(_fdm.root);
+	return(_mpdm.root);
 }
