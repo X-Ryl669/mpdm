@@ -1,4 +1,4 @@
-OBJS=fdm_v.o fdm_a.o fdm_h.o
+OBJS=fdm_v.o fdm_a.o fdm_h.o fdm_d.o
 
 CFLAGS=-Wall -g
 LIB=libfdm.a

@@ -77,3 +77,5 @@ fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
 fdm_v fdm_hdel(fdm_v h, fdm_v k);
 fdm_v fdm_hkeys(fdm_v h);
+
+void fdm_dump(fdm_v v, int l);
