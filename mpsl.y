@@ -49,82 +49,82 @@ function:
 	;
 
 stmt:
-	';'			{ $$ = _ins(MPDM_LS(";"), NULL, NULL, NULL); }
+	';'			{ $$ = _ins(MPDM_LS(L";"), NULL, NULL, NULL); }
 	| expr ';'		{ $$ = $1; }
-	| compsym '=' expr ';'	{ $$ = _ins(MPDM_LS("="), $1, $3, NULL); }
-	| DUMP expr ';'		{ $$ = _ins(MPDM_LS("DUMP"), $2, NULL, NULL); }
+	| compsym '=' expr ';'	{ $$ = _ins(MPDM_LS(L"="), $1, $3, NULL); }
+	| DUMP expr ';'		{ $$ = _ins(MPDM_LS(L"DUMP"), $2, NULL, NULL); }
 	| WHILE '(' expr ')' stmt
-				{ $$ = _ins(MPDM_LS("WHILE"), $3, $5, NULL); }
+				{ $$ = _ins(MPDM_LS(L"WHILE"), $3, $5, NULL); }
 	| IF '(' expr ')' stmt %prec IFI
-				{ $$ = _ins(MPDM_LS("IF"), $3, $5, NULL); }
+				{ $$ = _ins(MPDM_LS(L"IF"), $3, $5, NULL); }
 	| IF '(' expr ')' stmt ELSE stmt
-				{ $$ = _ins(MPDM_LS("IFELSE"), $3, $5, $7); }
+				{ $$ = _ins(MPDM_LS(L"IFELSE"), $3, $5, $7); }
 	| SUB compsym '{' stmt_list '}'
-				{ $$ = _ins(MPDM_LS("SUB"), $2, $4, NULL); }
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, NULL); }
 	| '{' stmt_list '}'	{ $$ = $2; }
 	;
 
 stmt_list:
 	stmt			{ $$ = $1; }
-	| stmt_list stmt	{ $$ = _ins(MPDM_LS(";"), $1, $2, NULL); }
+	| stmt_list stmt	{ $$ = _ins(MPDM_LS(L";"), $1, $2, NULL); }
 	;
 
 list:
-	expr			{ $$ = _ins(MPDM_LS("LIST"), $1, NULL, NULL); }
+	expr			{ $$ = _ins(MPDM_LS(L"LIST"), $1, NULL, NULL); }
 	| list ',' expr		{ mpdm_apush($1, $3); $$ = $1; }
 	;
 
 hash:
-	expr HASHPAIR expr	{ $$ = _ins(MPDM_LS("HASH"), $1, $3, NULL); }
+	expr HASHPAIR expr	{ $$ = _ins(MPDM_LS(L"HASH"), $1, $3, NULL); }
 	| hash ',' expr HASHPAIR expr
 				{ mpdm_apush($1, $3); mpdm_apush($1, $5); $$ = $1; }
 	;
 
 compsym:
-	SYMBOL			{ $$ = _ins(MPDM_LS("SYMBOL"),
-					_ins(MPDM_LS("LITERAL"), $1, NULL, NULL),
+	SYMBOL			{ $$ = _ins(MPDM_LS(L"SYMBOL"),
+					_ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL),
 					NULL, NULL); }
 	| compsym '.' INTEGER	{ mpdm_apush($1,
-				  _ins(MPDM_LS("LITERAL"), $3, NULL, NULL));
+				  _ins(MPDM_LS(L"LITERAL"), $3, NULL, NULL));
 				  $$ = $1; }
 	| compsym '.' SYMBOL	{ mpdm_apush($1,
-				  _ins(MPDM_LS("LITERAL"), $3, NULL, NULL));
+				  _ins(MPDM_LS(L"LITERAL"), $3, NULL, NULL));
 				  $$ = $1; }
 	| compsym '[' expr ']'	{ mpdm_apush($1, $3); $$ = $1; }
 	;
 
 expr:
-	INTEGER			{ $$ = _ins(MPDM_LS("LITERAL"), $1, NULL, NULL); }
-	| STRING		{ $$ = _ins(MPDM_LS("LITERAL"), $1, NULL, NULL); }
-	| REAL			{ $$ = _ins(MPDM_LS("LITERAL"), $1, NULL, NULL); }
+	INTEGER			{ $$ = _ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL); }
+	| STRING		{ $$ = _ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL); }
+	| REAL			{ $$ = _ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL); }
 /*	| compsym		{ $$ = _ins(MPDM_LS("SYMVAL"), $1, NULL, NULL); } */
-	| compsym		{ mpdm_aset($1, MPDM_LS("SYMVAL"), 0); $$ = $1; }
-	| NULLV			{ $$ = _ins(MPDM_LS("NULL"), NULL, NULL, NULL); }
+	| compsym		{ mpdm_aset($1, MPDM_LS(L"SYMVAL"), 0); $$ = $1; }
+	| NULLV			{ $$ = _ins(MPDM_LS(L"NULL"), NULL, NULL, NULL); }
 
-	| '-' expr %prec UMINUS	{ $$ = _ins(MPDM_LS("UMINUS"), $2, NULL, NULL); }
+	| '-' expr %prec UMINUS	{ $$ = _ins(MPDM_LS(L"UMINUS"), $2, NULL, NULL); }
 
-	| expr '+' expr		{ $$ = _ins(MPDM_LS("+"), $1, $3, NULL); }
-	| expr '-' expr		{ $$ = _ins(MPDM_LS("-"), $1, $3, NULL); }
-	| expr '*' expr		{ $$ = _ins(MPDM_LS("*"), $1, $3, NULL); }
-	| expr '/' expr		{ $$ = _ins(MPDM_LS("/"), $1, $3, NULL); }
+	| expr '+' expr		{ $$ = _ins(MPDM_LS(L"+"), $1, $3, NULL); }
+	| expr '-' expr		{ $$ = _ins(MPDM_LS(L"-"), $1, $3, NULL); }
+	| expr '*' expr		{ $$ = _ins(MPDM_LS(L"*"), $1, $3, NULL); }
+	| expr '/' expr		{ $$ = _ins(MPDM_LS(L"/"), $1, $3, NULL); }
 
-	| expr '<' expr		{ $$ = _ins(MPDM_LS("<"), $1, $3, NULL); }
-	| expr '>' expr		{ $$ = _ins(MPDM_LS(">"), $1, $3, NULL); }
-	| expr NUMEQ expr       { $$ = _ins(MPDM_LS("NUMEQ"), $1, $3, NULL); }
-	| expr NUMNE expr       { $$ = _ins(MPDM_LS("NUMNE"), $1, $3, NULL); }
-	| expr STREQ expr       { $$ = _ins(MPDM_LS("STREQ"), $1, $3, NULL); }
-	| expr STRNE expr       { $$ = _ins(MPDM_LS("STRNE"), $1, $3, NULL); }
+	| expr '<' expr		{ $$ = _ins(MPDM_LS(L"<"), $1, $3, NULL); }
+	| expr '>' expr		{ $$ = _ins(MPDM_LS(L">"), $1, $3, NULL); }
+	| expr NUMEQ expr       { $$ = _ins(MPDM_LS(L"NUMEQ"), $1, $3, NULL); }
+	| expr NUMNE expr       { $$ = _ins(MPDM_LS(L"NUMNE"), $1, $3, NULL); }
+	| expr STREQ expr       { $$ = _ins(MPDM_LS(L"STREQ"), $1, $3, NULL); }
+	| expr STRNE expr       { $$ = _ins(MPDM_LS(L"STRNE"), $1, $3, NULL); }
  
 	| '(' expr ')'		{ $$ = $2; }
 
-	| '[' ']'		{ $$ = _ins(MPDM_LS("LIST"), NULL, NULL, NULL); }
+	| '[' ']'		{ $$ = _ins(MPDM_LS(L"LIST"), NULL, NULL, NULL); }
 	| '[' list ']'		{ $$ = $2; }
 
-	| '{' '}'		{ $$ = _ins(MPDM_LS("HASH"), NULL, NULL, NULL); }
+	| '{' '}'		{ $$ = _ins(MPDM_LS(L"HASH"), NULL, NULL, NULL); }
 	| '{' hash '}'		{ $$ = $2; }
 
-	| compsym '(' ')'	{ $$ = _ins(MPDM_LS("CALL"), $1, NULL, NULL); }
-	| compsym '(' list ')'	{ $$ = _ins(MPDM_LS("CALL"), $1, $3, NULL); }
+	| compsym '(' ')'	{ $$ = _ins(MPDM_LS(L"CALL"), $1, NULL, NULL); }
+	| compsym '(' list ')'	{ $$ = _ins(MPDM_LS(L"CALL"), $1, $3, NULL); }
 
 	;
 
@@ -157,7 +157,7 @@ int main(void)
 	/* create a new pcode */
 	_pcode=MPDM_A(0);
 	mpdm_ref(_pcode);
-	mpdm_apush(_pcode, MPDM_LS("PROG"));
+	mpdm_apush(_pcode, MPDM_LS(L"PROG"));
 
 	yyparse();
 
