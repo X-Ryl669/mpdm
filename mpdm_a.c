@@ -247,7 +247,12 @@ mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size)
 {
 	mpdm_v v=NULL;
 
-	if(a->size > size - 1)
+	/* a zero size queue is nonsense */
+	if(size == 0)
+		return(NULL);
+
+	/* loop until a has the desired size */
+	while(a->size > size - 1)
 		v=mpdm_adel(a, 0);
 
 	mpdm_apush(a, e);
