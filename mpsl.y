@@ -71,6 +71,8 @@ typedef enum
 	MPSL_OP_LASTOP		/* last opcode */
 } mpsl_op;
 
+/* array containing the opcodes */
+mpdm_v _mpsl_ops=NULL;
 
 /* the bytecode */
 static mpdm_v _mpsl_bytecode=NULL;
@@ -93,6 +95,49 @@ mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 /*******************
 	Code
 ********************/
+
+#define OP(o) { mpdm_v v = MPDM_MBS(#o); v->ival=o; \
+		v->flags |= MPDM_IVAL ; mpdm_aset(_mpsl_ops, v, o); }
+
+mpdm_v _op(mpsl_op opcode)
+{
+	if(_mpsl_ops == NULL)
+	{
+		_mpsl_ops=MPDM_A(0);
+
+		OP(MPSL_OP_MULTI);
+		OP(MPSL_OP_LITERAL);
+		OP(MPSL_OP_SYMVAL);
+		OP(MPSL_OP_ASSIGN);
+		OP(MPSL_OP_EXEC);
+		OP(MPSL_OP_LIST);
+		OP(MPSL_OP_HASH);
+		OP(MPSL_OP_RANGE);
+		OP(MPSL_OP_WHILE);
+		OP(MPSL_OP_IF);
+		OP(MPSL_OP_FOREACH);
+		OP(MPSL_OP_SUBFRAME);
+		OP(MPSL_OP_BLKFRAME);
+		OP(MPSL_OP_ARGS);
+		OP(MPSL_OP_LOCAL);
+		OP(MPSL_OP_UMINUS);
+		OP(MPSL_OP_ADD);
+		OP(MPSL_OP_SUB);
+		OP(MPSL_OP_MUL);
+		OP(MPSL_OP_DIV);
+		OP(MPSL_OP_MOD);
+		OP(MPSL_OP_NOT);
+		OP(MPSL_OP_NUMEQ);
+		OP(MPSL_OP_STREQ);
+		OP(MPSL_OP_NUMLT);
+		OP(MPSL_OP_NUMLE);
+		OP(MPSL_OP_AND);
+		OP(MPSL_OP_OR);
+	}
+
+	return(mpdm_aget(_mpsl_ops, opcode));
+}
+
 
 %}
 
@@ -304,7 +349,7 @@ expr:
 				}
 	| compsym		{
 					/* compound symbol */
-					mpdm_aset($1, MPDM_I(MPSL_OP_SYMVAL), 0);
+					mpdm_aset($1, _op(MPSL_OP_SYMVAL), 0);
 					$$ = $1;
 				}
 	| NULLV			{
@@ -443,7 +488,8 @@ mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 	v=MPDM_A(args + 1);
 
 	/* inserts the opcode */
-	mpdm_aset(v, MPDM_I((int)opcode), 0);
+/*	mpdm_aset(v, MPDM_I((int)opcode), 0);*/
+	mpdm_aset(v, _op(opcode), 0);
 	if(args > 0) mpdm_aset(v, a1, 1);
 	if(args > 1) mpdm_aset(v, a2, 2);
 	if(args > 2) mpdm_aset(v, a3, 3);
@@ -476,7 +522,7 @@ mpdm_v mpsl_compile(mpdm_v code)
 	/* compile! */
 	if(yyparse() == 0)
 	{
-		mpdm_aset(_mpsl_bytecode, MPDM_I(MPSL_OP_SUBFRAME), 0);
+		mpdm_aset(_mpsl_bytecode, _op(MPSL_OP_SUBFRAME), 0);
 		x=MPDM_X2(_mpsl_machine, _mpsl_bytecode);
 	}
 
