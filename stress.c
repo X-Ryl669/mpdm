@@ -795,6 +795,17 @@ void test_nondyn(void)
 }
 
 
+void test_iconv(void)
+{
+	mpdm_v v;
+
+	v=mpdm_iconv_from(MPDM_LS(L"ISO-8859-1"),
+		MPDM_LS(L"¡España! (non-ASCII string, as ISO-8859-1 char *)"));
+	mpdm_dump(v);
+	_test("iconv from ISO-8859-1", v != NULL);
+}
+
+
 int main(void)
 {
 	mpdm_startup();
@@ -811,6 +822,7 @@ int main(void)
 	test_exec();
 	test_dh();
 	test_nondyn();
+	test_iconv();
 
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
