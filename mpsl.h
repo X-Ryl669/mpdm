@@ -42,7 +42,6 @@ typedef enum
 	MPSL_OP_FOREACH,	/* foreach */
 	MPSL_OP_SUBFRAME,	/* subroutine frame */
 	MPSL_OP_BLKFRAME,	/* block frame */
-	MPSL_OP_ARGS,		/* argument list */
 	MPSL_OP_LOCAL,		/* create local variables */
 
 	MPSL_OP_UMINUS,		/* unary minus */
