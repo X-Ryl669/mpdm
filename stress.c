@@ -71,7 +71,9 @@ void test_hash(void)
 	_test("hash: v == 66", (i == 66));
 
 	/* fills 100 values */
-	for(n=0;n < 100;n++)
+	for(n=0;n < 50;n++)
+		fdm_hset(h, FDM_I(n), FDM_I(n * 10));
+	for(n=100;n >= 50;n--)
 		fdm_hset(h, FDM_I(n), FDM_I(n * 10));
 
 	/* tests 100 values */
