@@ -35,54 +35,21 @@
 	Data
 ********************/
 
-mpdm_v _mpdm_dump_cb=NULL;
-
 /*******************
 	Code
 ********************/
 
-mpdm_v _mpdm_dump_def_cb(mpdm_v v)
-/* default dumping callback */
-{
-	mpdm_v w;
-	int n;
-
-	for(n=0;n < mpdm_size(v);n++)
-	{
-		if((w=mpdm_aget(v, n)) != NULL)
-			printf("%ls", (wchar_t *)w->data);
-	}
-	printf("\n");
-
-	return(NULL);
-}
-
-
 void _mpdm_dump(mpdm_v v, int l)
 {
-	mpdm_v w;
-	mpdm_v t=NULL;
 	int n;
-
-	/* create the dumping callback */
-	if(_mpdm_dump_cb == NULL)
-		_mpdm_dump_cb=mpdm_ref(MPDM_X(_mpdm_dump_def_cb));
-
-	w=MPDM_A(0);
 
 	/* indent */
 	for(n=0;n < l;n++)
-		t=mpdm_strcat(t, MPDM_LS(L"  "));
-
-	mpdm_apush(w, t);
+		printf("  ");
 
 	if(v != NULL)
 	{
-		wchar_t tmp[32];
-
-		/* build flag information */
-		SWPRINTF(tmp, sizeof(tmp) / sizeof(wchar_t),
-		L"%d,%c%c%c:", v->ref,
+		printf("%d,%c%c%c:", v->ref,
 		v->flags & MPDM_FILE	? 'F' :
 			(v->flags & MPDM_STRING	? 'S' :
 				(v->flags & MPDM_EXEC ? 'X' : '-')),
@@ -91,23 +58,14 @@ void _mpdm_dump(mpdm_v v, int l)
 		v->flags & MPDM_DESTROY ? 'D' :
 			(v->flags & MPDM_IVAL	? 'I' : '-'));
 
-		mpdm_apush(w, MPDM_S(tmp));
-
 		/* if it's a multiple value, add also the number
 		   of elements */
 		if(v->flags & MPDM_MULTIPLE)
-		{
-			SWPRINTF(tmp, sizeof(tmp) / sizeof(wchar_t),
-				L"[%d] ", mpdm_size(v));
-			mpdm_apush(w, MPDM_S(tmp));
-		}
+			printf("[%d] ", mpdm_size(v));
 	}
 
 	/* add the visual representation of the value */
-	mpdm_apush(w, MPDM_S(mpdm_string(v)));
-
-	/* dump */
-	mpdm_exec(_mpdm_dump_cb, w);
+	printf("%ls\n", mpdm_string(v));
 
 	if(v != NULL)
 	{
@@ -115,6 +73,9 @@ void _mpdm_dump(mpdm_v v, int l)
 		   (and not assuming a hash is an array) */
 		if(v->flags & MPDM_HASH)
 		{
+			mpdm_v w;
+			mpdm_v t;
+
 			w=mpdm_hkeys(v);
 
 			for(n=0;n < mpdm_size(w);n++)
