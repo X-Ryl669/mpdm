@@ -1,0 +1,30 @@
+Mpdm internals
+==============
+
+ Angel Ortega <angel@triptico.com>
+
+This document describes the internal details of the mpdm implementation.
+
+Values
+------
+
+Scalars
+~~~~~~~
+
+Arrays
+~~~~~~
+
+Hashes
+~~~~~~
+
+The 'garbage collector'
+-----------------------
+
+Ties
+----
+
+Executable values
+-----------------
+
+----
+Angel Ortega - http://www.triptico.com
