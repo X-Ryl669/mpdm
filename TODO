@@ -5,7 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1023: Implement the 'break' directive in mpsl.
- * 1024: Implement the 'continue' directive in mpsl.
  * 1050: Document the virtual machine.
  * 1051: Document the scripting language.
  * 1052: Implement the 'return' directive in mpsl.
@@ -44,6 +43,7 @@ Pending Enhancements
    not be necessary on normal shutdown, as memory will be freed by
    the operating system anyway.
  * 1029: Store the regex cache in the main control structure.
+ * 1024: Implement the 'continue' directive in mpsl.
 
 Closed
 ------
