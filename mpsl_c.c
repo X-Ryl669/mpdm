@@ -138,6 +138,211 @@ mpdm_v mpsl_true_or_false(int b)
 }
 
 
+/** opcodes **/
+
+static mpdm_v _mpsl_op_multi(mpdm_v c, mpdm_v args)
+/* multi-instruction */
+{
+	int n;
+	mpdm_v ret=NULL;
+
+	/* executes all following instructions */
+	for(n=1;n < mpdm_size(c);n++)
+		ret=_mpsl_machine(mpdm_aget(c, n), args);
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_literal(mpdm_v c)
+/* literal value */
+{
+	return(mpdm_clone(mpdm_aget(c, 1)));
+}
+
+
+static mpdm_v _mpsl_op_list(mpdm_v c, mpdm_v args)
+/* build list from instructions */
+{
+	int n;
+	mpdm_v ret=MPDM_A(mpdm_size(c) - 1);
+
+	for(n=1;n < mpdm_size(c);n++)
+	{
+		mpdm_v v = mpdm_aget(c, n);
+		mpdm_aset(ret, _mpsl_machine(v, args), n - 1);
+	}
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_hash(mpdm_v c, mpdm_v args)
+/* build hash from instructions */
+{
+	int n;
+	mpdm_v ret=MPDM_H(0);
+
+	for(n=1;n < mpdm_size(c);n += 2)
+	{
+		mpdm_v k = mpdm_aget(c, n);
+		mpdm_v v = mpdm_aget(c, n + 1);
+
+		mpdm_hset(ret, _mpsl_machine(k, NULL),
+			_mpsl_machine(v, NULL));
+	}
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
+{
+	int n;
+	mpdm_v ret=NULL;
+
+	/* creates a subroutine frame */
+	/* ... */
+
+	/* executes all following instructions */
+	for(n=1;n < mpdm_size(c);n++)
+		ret=_mpsl_machine(mpdm_aget(c, n), args);
+
+	/* destroys the subroutine frame */
+	/* ... */
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_brmath(mpdm_v c, mpdm_v args)
+/* binary, real math operations */
+{
+	mpsl_op op;
+	double r, r1, r2;
+
+	/* gets the opcode */
+	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
+
+	r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
+	r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+
+	switch(op)
+	{
+	case MPSL_OP_ADD: r = r1 + r2; break;
+	case MPSL_OP_SUB: r = r1 - r2; break;
+	case MPSL_OP_MUL: r = r1 * r2; break;
+	case MPSL_OP_DIV: r = r1 / r2; break;
+	default: r=0; break;
+	}
+
+	return(MPDM_R(r));
+}
+
+
+static mpdm_v _mpsl_op_bimath(mpdm_v c, mpdm_v args)
+/* binary, integer math operations */
+{
+	mpsl_op op;
+	int i, i1, i2;
+
+	/* gets the opcode */
+	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
+
+	i1=mpdm_ival(_mpsl_machine(mpdm_aget(c, 1), args));
+	i2=mpdm_ival(_mpsl_machine(mpdm_aget(c, 2), args));
+
+	switch(op)
+	{
+	case MPSL_OP_MOD: i = i1 % i2; break;
+	default: i=0; break;
+	}
+
+	return(MPDM_I(i));
+}
+
+
+static mpdm_v _mpsl_op_not(mpdm_v c, mpdm_v args)
+/* boolean not */
+{
+	mpdm_v v;
+
+	v=_mpsl_machine(mpdm_aget(c, 1), args);
+	return(mpsl_true_or_false(! mpsl_is_true(v)));
+}
+
+
+static mpdm_v _mpsl_op_and(mpdm_v c, mpdm_v args)
+/* boolean 'and' */
+{
+	mpdm_v v;
+	mpdm_v w;
+	mpdm_v ret=NULL;
+
+	v=_mpsl_machine(mpdm_aget(c, 1), args);
+
+	if(mpsl_is_true(v))
+	{
+		w=_mpsl_machine(mpdm_aget(c, 2), args);
+
+		if(mpsl_is_true(w))
+			ret=w;
+	}
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_or(mpdm_v c, mpdm_v args)
+/* boolean 'or' */
+{
+	mpdm_v v;
+	mpdm_v w;
+	mpdm_v ret=NULL;
+
+	v=_mpsl_machine(mpdm_aget(c, 1), args);
+
+	if(mpsl_is_true(v))
+		ret=v;
+	else
+	{
+		w=_mpsl_machine(mpdm_aget(c, 2), args);
+
+		if(mpsl_is_true(w))
+			ret=w;
+	}
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_nbool(mpdm_v c, mpdm_v args)
+/* boolean numeric comparisons */
+{
+	int i;
+	double r1, r2;
+	mpsl_op op;
+
+	/* gets the opcode */
+	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
+
+	r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
+	r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+
+	switch(op)
+	{
+	case MPSL_OP_NUMEQ: i = (r1 == r2); break;
+	case MPSL_OP_NUMLT: i = (r1 < r2); break;
+	case MPSL_OP_NUMLE: i = (r1 <= r2); break;
+	case MPSL_OP_NUMGT: i = (r1 > r2); break;
+	case MPSL_OP_NUMGE: i = (r1 >= r2); break;
+	default: i = 0; break;
+	}
+
+	return(mpsl_true_or_false(i));
+}
+
+
 /**
  * _mpsl_machine - The mpsl virtual machine
  * @c: Multiple value containing the bytecode
@@ -152,10 +357,6 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 {
 	mpsl_op op;
 	mpdm_v ret=NULL;
-	int n;
-	double r, r1, r2;
-	int i, i1, i2;
-	mpdm_v v, w;
 
 	/* gets the opcode */
 	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
@@ -163,155 +364,24 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	/* the very big switch */
 	switch(op)
 	{
-	case MPSL_OP_MULTI:
-
-		/* multi-instruction */
-
-		/* executes all following instructions */
-		for(n=1;n < mpdm_size(c);n++)
-			ret=_mpsl_machine(mpdm_aget(c, n), args);
-
-		/* returns the output of the last one */
-		break;
-
-	case MPSL_OP_LITERAL:
-
-		/* literal value */
-		ret=mpdm_clone(mpdm_aget(c, 1));
-		break;
-
-	case MPSL_OP_LIST:
-
-		/* build list from instructions */
-		ret=MPDM_A(mpdm_size(c) - 1);
-
-		for(n=1;n < mpdm_size(c);n++)
-		{
-			v = mpdm_aget(c, n);
-			mpdm_aset(ret, _mpsl_machine(v, args), n - 1);
-		}
-
-		break;
-
-	case MPSL_OP_HASH:
-
-		/* build hash from instructions */
-		ret=MPDM_H(0);
-
-		for(n=1;n < mpdm_size(c);n += 2)
-		{
-			w = mpdm_aget(c, n);
-			v = mpdm_aget(c, n + 1);
-
-			mpdm_hset(ret, _mpsl_machine(w, NULL),
-				_mpsl_machine(v, NULL));
-		}
-
-		break;
-
-	case MPSL_OP_SUBFRAME:
-
-		/* creates a subroutine frame */
-		/* ... */
-
-		/* executes all following instructions */
-		for(n=1;n < mpdm_size(c);n++)
-			ret=_mpsl_machine(mpdm_aget(c, n), args);
-
-		/* destroys the subroutine frame */
-		/* ... */
-
-		break;
-
+	case MPSL_OP_MULTI: ret=_mpsl_op_multi(c, args); break;
+	case MPSL_OP_LITERAL: ret=_mpsl_op_literal(c); break;
+	case MPSL_OP_LIST: ret=_mpsl_op_list(c, args); break;
+	case MPSL_OP_HASH: ret=_mpsl_op_hash(c, args); break;
+	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_ADD:
 	case MPSL_OP_SUB:
 	case MPSL_OP_MUL:
-	case MPSL_OP_DIV:
-
-		/* binary math operations */
-
-		r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
-		r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
-
-		switch(op)
-		{
-		case MPSL_OP_ADD: r = r1 + r2; break;
-		case MPSL_OP_SUB: r = r1 - r2; break;
-		case MPSL_OP_MUL: r = r1 * r2; break;
-		case MPSL_OP_DIV: r = r1 / r2; break;
-		default: r=0; break;
-		}
-
-		ret=MPDM_R(r);
-
-		break;
-
-	case MPSL_OP_MOD:
-		break;
-
-	case MPSL_OP_NOT:
-
-		/* boolean not */
-		ret=mpsl_true_or_false(! mpsl_is_true(
-				_mpsl_machine(mpdm_aget(c, 1), NULL)));
-
-		break;
-
-	case MPSL_OP_AND:
-
-		/* boolean 'and' */
-		v=_mpsl_machine(mpdm_aget(c, 1), NULL);
-
-		if(mpsl_is_true(v))
-		{
-			w=_mpsl_machine(mpdm_aget(c, 2), NULL);
-
-			if(mpsl_is_true(w))
-				ret=w;
-		}
-
-		break;
-
-	case MPSL_OP_OR:
-
-		/* boolean 'or' */
-		v=_mpsl_machine(mpdm_aget(c, 1), NULL);
-
-		if(mpsl_is_true(v))
-			ret=v;
-		else
-		{
-			w=_mpsl_machine(mpdm_aget(c, 2), NULL);
-
-			if(mpsl_is_true(w))
-				ret=w;
-		}
-
-		break;
-
+	case MPSL_OP_DIV: ret=_mpsl_op_brmath(c, args); break;
+	case MPSL_OP_MOD: ret=_mpsl_op_bimath(c, args); break;
+	case MPSL_OP_NOT: ret=_mpsl_op_not(c, args); break;
+	case MPSL_OP_AND: ret=_mpsl_op_and(c, args); break;
+	case MPSL_OP_OR: ret=_mpsl_op_or(c, args); break;
 	case MPSL_OP_NUMEQ:
 	case MPSL_OP_NUMLT:
 	case MPSL_OP_NUMLE:
 	case MPSL_OP_NUMGT:
-	case MPSL_OP_NUMGE:
-
-		/* boolean numeric comparisons */
-
-		r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
-		r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
-
-		switch(op)
-		{
-		case MPSL_OP_NUMEQ: i = (r1 == r2); break;
-		case MPSL_OP_NUMLT: i = (r1 < r2); break;
-		case MPSL_OP_NUMLE: i = (r1 <= r2); break;
-		case MPSL_OP_NUMGT: i = (r1 > r2); break;
-		case MPSL_OP_NUMGE: i = (r1 >= r2); break;
-		default: i = 0; break;
-		}
-
-		ret=mpsl_true_or_false(i);
-		break;
+	case MPSL_OP_NUMGE: ret=_mpsl_op_nbool(c, args); break;
 	}
 
 	return(ret);
