@@ -47,7 +47,8 @@
  */
 wchar_t * mpdm_string(mpdm_v v)
 {
-	static wchar_t tmp[32];
+	static wchar_t wtmp[32];
+	char tmp[32];
 
 	/* if it's NULL, return a constant */
 	if(v == NULL)
@@ -58,9 +59,10 @@ wchar_t * mpdm_string(mpdm_v v)
 		return((wchar_t *)v->data);
 
 	/* otherwise, return a visual representation */
-	SWPRINTF(tmp, sizeof(tmp) / sizeof(wchar_t), L"%p", v);
+	snprintf(tmp, sizeof(tmp), "%p", v);
+	mbstowcs(wtmp, tmp, sizeof(wtmp));
 
-	return(tmp);
+	return(wtmp);
 }
 
 
@@ -150,21 +152,21 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 		/* copy the beginning */
 		if(offset > 0)
 		{
-			wmemcpy(ptr, v->data, offset);
+			wcsncpy(ptr, v->data, offset);
 			ptr += offset;
 		}
 
 		/* copy the text to be inserted */
 		if(ins > 0)
 		{
-			wmemcpy(ptr, i->data, ins);
+			wcsncpy(ptr, i->data, ins);
 			ptr += ins;
 		}
 
 		/* copy the remaining */
 		if(os - r > 0)
 		{
-			wmemcpy(ptr, ((wchar_t *) v->data) + r, os - r);
+			wcsncpy(ptr, ((wchar_t *) v->data) + r, os - r);
 			ptr += (os - r);
 		}
 
@@ -225,7 +227,12 @@ int mpdm_ival(mpdm_v v)
 		/* if it's a string, calculate it; other
 		   values will have an ival of 0 */
 		if(v->flags & MPDM_STRING)
-			swscanf((wchar_t *)v->data, L"%i", &i);
+		{
+			char tmp[32];
+
+			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
+			sscanf(tmp, "%i", &i);
+		}
 
 		v->ival=i;
 		v->flags |= MPDM_IVAL;
@@ -258,7 +265,12 @@ double mpdm_rval(mpdm_v v)
 		/* if it's a string, calculate it; other
 		   values will have an rval of 0.0 */
 		if(v->flags & MPDM_STRING)
-			swscanf((wchar_t *)v->data, L"%lf", &r);
+		{
+			char tmp[128];
+
+			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
+			sscanf(tmp, "%lf", &r);
+		}
 
 		v->rval=r;
 		v->flags |= MPDM_RVAL;
@@ -271,12 +283,14 @@ double mpdm_rval(mpdm_v v)
 mpdm_v _mpdm_inew(int ival)
 {
 	mpdm_v v;
-	wchar_t tmp[32];
+	wchar_t wtmp[32];
+	char tmp[32];
 
 	/* creates the visual representation */
-	SWPRINTF(tmp, (sizeof(tmp) / sizeof(wchar_t)), L"%d", ival);
+	snprintf(tmp, sizeof(tmp), "%d", ival);
+	mbstowcs(wtmp, tmp, sizeof(wtmp));
 
-	v=MPDM_S(tmp);
+	v=MPDM_S(wtmp);
 	v->flags |= MPDM_IVAL;
 	v->ival=ival;
 
@@ -287,12 +301,14 @@ mpdm_v _mpdm_inew(int ival)
 mpdm_v _mpdm_rnew(double rval)
 {
 	mpdm_v v;
-	wchar_t tmp[128];
+	wchar_t wtmp[128];
+	char tmp[128];
 
 	/* creates the visual representation */
-	SWPRINTF(tmp, (sizeof(tmp) / sizeof(wchar_t)), L"%lf", rval);
+	snprintf(tmp, sizeof(tmp), "%lf", rval);
+	mbstowcs(wtmp, tmp, sizeof(wtmp));
 
-	v=MPDM_S(tmp);
+	v=MPDM_S(wtmp);
 	v->flags |= MPDM_RVAL;
 	v->rval=rval;
 
@@ -380,7 +396,7 @@ static mpdm_v _tie_str_c(mpdm_v v)
 		return(NULL);
 
 	if(v->data == NULL)
-		wmemset(ptr, L'\0', v->size);
+		memset(ptr, '\0', v->size * sizeof(wchar_t));
 	else
 	{
 		wcsncpy(ptr, v->data, v->size);
