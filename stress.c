@@ -622,9 +622,6 @@ static mpdm_v _calculator(mpdm_v c, mpdm_v args)
 	/* to avoid destroying args */
 	a=mpdm_clone(args);
 
-	/* c[0] is a pointer to _calculator(), and c[1] the script itself */
-	c=mpdm_aget(c, 1);
-
 	/* unshift first argument */
 	v=mpdm_adel(a, 0);
 	t=mpdm_ival(v);

@@ -309,7 +309,7 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 			x=mpdm_aget(c, 0);
 			func2=(mpdm_v (*)(mpdm_v, mpdm_v))(x->data);
 
-			if(func2) r=func2(c, args);
+			if(func2) r=func2(mpdm_aget(c, 1), args);
 		}
 		else
 		{
