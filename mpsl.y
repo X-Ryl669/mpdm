@@ -25,6 +25,7 @@
 */
 
 #include <stdio.h>
+#include <wchar.h>
 #include "mpdm.h"
 
 /* the script being compiled */
@@ -32,7 +33,8 @@ static mpdm_v _mpsl_bytecode=NULL;
 
 int yylex(void);
 void yyerror(char * s);
-void _mpsl_store_code(mpdm_v code);
+
+extern wchar_t * _mpsl_next_char;
 
 /* shortcut macros to insert instructions */
 
@@ -229,8 +231,8 @@ mpdm_v mpsl_compile(mpdm_v code)
 	/* create a new holder for the bytecode */
 	_mpsl_bytecode=MPDM_A(0);
 
-	/* stores the code to be compiled */
-	_mpsl_store_code(code);
+	/* point to code */
+	_mpsl_next_char=(wchar_t *) code->data;
 
 	mpdm_ref(code);
 

@@ -39,7 +39,7 @@ int yy_input_for_flex(char * buf, int max);
 #define YY_INPUT(b,r,m) (r=yy_input_for_flex(b,m))
 
 /* internal pointer to next character in code */
-static wchar_t * _mpsl_next_char=NULL;
+wchar_t * _mpsl_next_char=NULL;
 
 %}
 
@@ -108,13 +108,6 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 %%
 
 int yywrap(void) { return(1); }
-
-void _mpsl_store_code(mpdm_v code)
-/* stores the code string */
-{
-	_mpsl_next_char=(wchar_t *) code->data;
-}
-
 
 int yy_input_for_flex(char * buf, int max)
 {
