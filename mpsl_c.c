@@ -330,6 +330,25 @@ _O_TYPE _O_foreach(_O_ARGS)
 }
 
 
+_O_TYPE _O_range(_O_ARGS)
+/* build list from range of two numeric values */
+{
+	double n;
+	double v1=RM1;
+	double v2=RM2;
+	mpdm_v ret=MPDM_A(0);
+
+	if(v1 < v2)
+		for(n=v1;n <= v2;n++)
+			mpdm_apush(ret, MPDM_R(n));
+	else
+		for(n=v1;n >= v2;n--)
+			mpdm_apush(ret, MPDM_R(n));
+
+	return(ret);
+}
+
+
 _O_TYPE _O_list(_O_ARGS)
 /* build list from instructions */
 {
@@ -414,7 +433,7 @@ static struct _op
 	{ L"LOCAL",	_O_local },
 	{ L"LIST",	_O_list },
 	{ L"HASH",	_O_hash },
-	{ L"RANGE",	NULL },
+	{ L"RANGE",	_O_range },
 	{ L"UMINUS",	_O_uminus },
 	{ L"ADD",	_O_add },
 	{ L"SUB",	_O_sub },

@@ -1230,6 +1230,14 @@ void test_mpsl3(void)
 	v=mpdm_exec(v, NULL);
 	_test("foreach", mpdm_ival(v) == 10);
 
+	v=_test_mpsl("b=0; foreach(a, [1 .. 20]) { dump(a); b += a; } return(b);");
+	v=mpdm_exec(v, NULL);
+	_test("foreach+range 1", mpdm_ival(v) == 210);
+
+	v=_test_mpsl("b=0; foreach(a, [20 .. 1]) { dump(a); b += a; } return(b);");
+	v=mpdm_exec(v, NULL);
+	_test("foreach+range 2", mpdm_ival(v) == 210);
+
 /*	mpdm_dump(mpdm_root());*/
 }
 
