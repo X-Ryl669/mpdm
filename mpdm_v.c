@@ -315,14 +315,14 @@ void fdm_sweep(int count)
 
 
 /**
- * fdm_copy - Creates a copy of a value
+ * fdm_clone - Creates a clone of a value
  * @v: the value
  *
- * Creates a copy of a value. If the value is multiple, a new value will
- * be created containing duplicates of all its elements; otherwise,
+ * Creates a clone of a value. If the value is multiple, a new value will
+ * be created containing clones of all its elements; otherwise,
  * the same unchanged value is returned.
  */
-fdm_v fdm_copy(fdm_v v)
+fdm_v fdm_clone(fdm_v v)
 {
 	fdm_v w;
 	int n;
@@ -336,7 +336,7 @@ fdm_v fdm_copy(fdm_v v)
 
 	/* fills each element with duplicates of the original */
 	for(n=0;n < v->size;n++)
-		fdm_aset(w, fdm_copy(fdm_aget(v, n)), n);
+		fdm_aset(w, fdm_clone(fdm_aget(v, n)), n);
 
 	return(w);
 }
