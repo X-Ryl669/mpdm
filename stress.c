@@ -827,6 +827,8 @@ void test_nondyn(void)
 
 void test_iconv(void)
 {
+	mpdm_encoding(MPDM_LS(L"UTF-8"));
+
 /*	mpdm_v v;
 
 	v=mpdm_iconv_from(MPDM_LS(L"ISO-8859-1"),
