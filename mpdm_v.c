@@ -45,6 +45,7 @@ static struct
 	int count;		/* total count of values */
 	int lcount;		/* last count seen in mpdm_sweep() */
 	int low_threshold;	/* minimum number of values to sweep */
+	int high_threshold;	/* maximum number to trigger auto-sweep */
 } _mpdm;
 
 
@@ -76,6 +77,11 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 {
 	mpdm_v v;
 	mpdm_v r=NULL;
+
+	/* if high_threshold is overpassed, auto-sweep */
+	/* CAUTION: auto-sweep is extremely unsafe by now */
+	if(_mpdm.high_threshold && _mpdm.count > _mpdm.high_threshold)
+		mpdm_sweep(_mpdm.count - _mpdm.high_threshold);
 
 	/* alloc new value and init */
 	if((v=_mpdm_alloc()) == NULL)
@@ -368,6 +374,7 @@ int mpdm_startup(void)
 
 	/* sets the defaults */
 	_mpdm.low_threshold=16;
+	_mpdm.high_threshold=0;
 
 	/* sets the atexit function */
 	atexit(_mpdm_atexit);

@@ -25,17 +25,16 @@ Pending Enhancements
  * 1011: Will the scripting language be included here, or as a
    separated package? it could poison the mpdm concept as a 'low
    level utility library'.
- * 1014: Create a new high threshold for values, to force calling
-   mpdm_sweep() from mpdm_new() if that threshold is overpassed (this
-   will allow a limit to be imposed to the number of unreferenced
-   values). But... is this safe?
+ * 1015: The auto-sweep introduced by _mpdm.high_threshold is
+   extremely unsafe. At least, internal parts of mpdm should be
+   autosweep-safe.
 
 Closed
 ------
 
  * 1000: All string operations should use wchar_t instead of char
    (closed by: #1001) (Sat, 3 Jul 2004 11:14:00 +0200).
- * 1001: Merge mpdm-branch-wchar (closes: #1000)
+ * 1001: Merge mpdm-branch-wchar (Closes: #1000)
    (Sun, 4 Jul 2004 11:06:00 +0200).
  * 1002: mpdm_aget() and mpdm_aset() should accept negative offsets
    (Mon, 12 Jul 2004 17:44:00 +0200).
@@ -43,5 +42,9 @@ Closed
  * 1013: Move the hardwired '16' number of minimum elements to an
    struct _mpdm element, set from mpdm_startup()
    (Thu, 26 Aug 2004 20:10:18 +0200)
+ * 1014: Create a new high threshold for values, to force calling
+   mpdm_sweep() from mpdm_new() if that threshold is overpassed (this
+   will allow a limit to be imposed to the number of unreferenced
+   values) (Thu, 26 Aug 2004 20:26:21 +0200).
 
 Email bugs to angel@triptico.com
