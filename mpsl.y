@@ -38,12 +38,13 @@ typedef enum
 {
 	MPSL_OP_MULTI,		/* ; */
 	MPSL_OP_LITERAL,	/* literal values */
-	MPSL_OP_SYMVAL,		/* symbol value */
-	MPSL_OP_ASSIGN,		/* assign to symbol */
-	MPSL_OP_EXEC,		/* execute executable value */
 	MPSL_OP_LIST,		/* build list from instructions */
 	MPSL_OP_HASH,		/* build hash from instructions */
 	MPSL_OP_RANGE,		/* build range from instructions */
+
+	MPSL_OP_SYMVAL,		/* symbol value */
+	MPSL_OP_ASSIGN,		/* assign to symbol */
+	MPSL_OP_EXEC,		/* execute executable value */
 
 	MPSL_OP_WHILE,		/* while */
 	MPSL_OP_IF,		/* if (or ifelse) */
@@ -60,15 +61,22 @@ typedef enum
 	MPSL_OP_DIV,		/* math divide */
 	MPSL_OP_MOD,		/* math modulo */
 
+	MPSL_OP_PINC,		/* prefix increment */
+	MPSL_OP_SINC,		/* suffix increment */
+	MPSL_OP_PDEC,		/* prefix decrement */
+	MPSL_OP_SDEC,		/* suffix decrement */
+	MPSL_OP_IMMADD,		/* immediate add */
+	MPSL_OP_IMMSUB,		/* immediate sub */
+	MPSL_OP_IMMMUL,		/* immediate mul */
+	MPSL_OP_IMMDIV,		/* immediate div */
+
 	MPSL_OP_NOT,		/* boolean negation */
-	MPSL_OP_NUMEQ,		/* numerical equal */
-	MPSL_OP_STREQ,		/* string equal */
-	MPSL_OP_NUMLT,		/* numerical less than */
-	MPSL_OP_NUMLE,		/* numerical less or equal than */
 	MPSL_OP_AND,		/* boolean and */
 	MPSL_OP_OR,		/* boolean or */
-
-	MPSL_OP_LASTOP		/* last opcode */
+	MPSL_OP_NUMEQ,		/* numerical equal */
+	MPSL_OP_NUMLT,		/* numerical less than */
+	MPSL_OP_NUMLE,		/* numerical less or equal than */
+	MPSL_OP_STREQ		/* string equal */
 } mpsl_op;
 
 /* array containing the opcodes */
@@ -107,12 +115,12 @@ mpdm_v _op(mpsl_op opcode)
 
 		OP(MPSL_OP_MULTI);
 		OP(MPSL_OP_LITERAL);
-		OP(MPSL_OP_SYMVAL);
-		OP(MPSL_OP_ASSIGN);
-		OP(MPSL_OP_EXEC);
 		OP(MPSL_OP_LIST);
 		OP(MPSL_OP_HASH);
 		OP(MPSL_OP_RANGE);
+		OP(MPSL_OP_SYMVAL);
+		OP(MPSL_OP_ASSIGN);
+		OP(MPSL_OP_EXEC);
 		OP(MPSL_OP_WHILE);
 		OP(MPSL_OP_IF);
 		OP(MPSL_OP_FOREACH);
@@ -126,13 +134,21 @@ mpdm_v _op(mpsl_op opcode)
 		OP(MPSL_OP_MUL);
 		OP(MPSL_OP_DIV);
 		OP(MPSL_OP_MOD);
+		OP(MPSL_OP_PINC);
+		OP(MPSL_OP_SINC);
+		OP(MPSL_OP_PDEC);
+		OP(MPSL_OP_SDEC);
+		OP(MPSL_OP_IMMADD);
+		OP(MPSL_OP_IMMSUB);
+		OP(MPSL_OP_IMMMUL);
+		OP(MPSL_OP_IMMDIV);
 		OP(MPSL_OP_NOT);
-		OP(MPSL_OP_NUMEQ);
-		OP(MPSL_OP_STREQ);
-		OP(MPSL_OP_NUMLT);
-		OP(MPSL_OP_NUMLE);
 		OP(MPSL_OP_AND);
 		OP(MPSL_OP_OR);
+		OP(MPSL_OP_NUMEQ);
+		OP(MPSL_OP_NUMLT);
+		OP(MPSL_OP_NUMLE);
+		OP(MPSL_OP_STREQ);
 	}
 
 	return(mpdm_aget(_mpsl_ops, opcode));
@@ -369,12 +385,15 @@ expr:
 	| expr '/' expr		{ $$ = INS2(MPSL_OP_DIV, $1, $3); }
 	| expr MODULO expr	{ $$ = INS2(MPSL_OP_MOD, $1, $3); }
 
-/*	| compsym INC		{ $$ = INS1(MPDM_LS(L"++"), $1); }
-	| compsym DEC		{ $$ = INS1(MPDM_LS(L"--"), $1); }
-	| compsym IMMADD expr	{ $$ = INS2(MPDM_LS(L"+="), $1, $3); }
-	| compsym IMMSUB expr	{ $$ = INS2(MPDM_LS(L"-="), $1, $3); }
-	| compsym IMMMUL expr	{ $$ = INS2(MPDM_LS(L"*="), $1, $3); }
-	| compsym IMMDIV expr	{ $$ = INS2(MPDM_LS(L"/="), $1, $3); }*/
+				/* immediate math operations */
+	| INC compsym		{ $$ = INS1(MPSL_OP_PINC, $2); }
+	| compsym INC		{ $$ = INS1(MPSL_OP_SINC, $1); }
+	| DEC compsym		{ $$ = INS1(MPSL_OP_PDEC, $2); }
+	| compsym DEC		{ $$ = INS1(MPSL_OP_SDEC, $1); }
+	| compsym IMMADD expr	{ $$ = INS2(MPSL_OP_IMMADD, $1, $3); }
+	| compsym IMMSUB expr	{ $$ = INS2(MPSL_OP_IMMSUB, $1, $3); }
+	| compsym IMMMUL expr	{ $$ = INS2(MPSL_OP_IMMMUL, $1, $3); }
+	| compsym IMMDIV expr	{ $$ = INS2(MPSL_OP_IMMDIV, $1, $3); }
 
 	| '!' expr		{
 					/* boolean not */
