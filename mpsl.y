@@ -193,6 +193,8 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 
 int main(void)
 {
+	mpdm_startup();
+
 	/* create a new pcode */
 	_pcode=MPDM_A(0);
 	mpdm_ref(_pcode);
@@ -201,6 +203,8 @@ int main(void)
 	yyparse();
 
 	mpdm_dump(_pcode);
+
+	mpdm_shutdown();
 
 	printf("Exiting main...\n");
 	exit(0);
