@@ -41,11 +41,12 @@ struct _fdm_v
 	fdm_v next;	/* next in chain */
 };
 
+fdm_v fdm_new(int tag, void * data, int size);
 int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
-fdm_v fdm_new(int tag, void * data, int size);
 void fdm_sweep(int count);
 int fdm_cmp(fdm_v v1, fdm_v v2);
+void fdm_spoke(fdm_v v, char c, int offset);
 
 void fdm_aexpand(fdm_v a, int offset, int num);
 void fdm_acollapse(fdm_v a, int offset, int num);

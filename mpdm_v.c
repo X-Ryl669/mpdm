@@ -196,3 +196,19 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
 	/* in any other case, compare just pointers */
 	return(v1->data - v2->data);
 }
+
+
+void fdm_spoke(fdm_v v, char c, int offset)
+{
+	char * ptr;
+
+	if(offset >= v->size)
+	{
+		/* increase size */
+		v->size = offset + 32;
+		v->data=realloc(v->data, v->size);
+	}
+
+	ptr=(char *)v->data;
+	ptr[offset]=c;
+}
