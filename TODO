@@ -19,13 +19,6 @@ Pending Enhancements
 
  * 1006: stat().
  * 1007: chmod().
- * 1028: With the closing of bugs #1026, #1027 and #1029, it should be
-   easy to have multiple mpdm engines, just by commuting the _mpdm
-   pointer. So, there should exist an mpdm_cleanup() function,
-   that would, after destroying values by calling mpdm_shutdown(),
-   free the rest of values stored inside. This kind of cleanup should
-   not be necessary on normal shutdown, as memory will be freed by
-   the operating system anyway.
 
 Closed
 ------
@@ -120,5 +113,13 @@ Closed
    control structure (ties no longer exist; Sun, 03 Apr 2005 16:40:12 +0200).
  * 1029: Store the regex cache in the main control structure
    (Sun, 03 Apr 2005 16:40:32 +0200).
+ * 1028: With the closing of bugs #1026, #1027 and #1029, it should be
+   easy to have multiple mpdm engines, just by commuting the _mpdm
+   pointer. So, there should exist an mpdm_cleanup() function,
+   that would, after destroying values by calling mpdm_shutdown(),
+   free the rest of values stored inside. This kind of cleanup should
+   not be necessary on normal shutdown, as memory will be freed by
+   the operating system anyway (Doesn't seem necesary nor useful;
+   Mon, 04 Apr 2005 18:51:48 +0200).
 
 Email bugs to angel@triptico.com
