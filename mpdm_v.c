@@ -336,3 +336,17 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 
 	return(v);
 }
+
+
+void _mpdm_atexit(void)
+{
+	mpdm_v v;
+
+	/* travels the complete list of values */
+	for(v=_mpdm.head;v != NULL;v=v->next)
+	{
+		/* destroys all values that need to be destroyed */
+		if(v->flags & MPDM_DESTROY)
+			mpdm_tie(v, NULL);
+	}
+}
