@@ -399,6 +399,13 @@ static mpdm_v _tie_wcstombs_c(mpdm_v v)
 }
 
 
+static mpdm_v _tie_nd_ls_clo(mpdm_v v)
+/* cloning tie function for nondyn literal string values */
+{
+	return(MPDM_S((wchar_t *)v->data));
+}
+
+
 /* ties */
 
 mpdm_v _mpdm_tie_cpy(void)
@@ -483,6 +490,20 @@ mpdm_v _mpdm_tie_wcstombs(void)
 		_tie=mpdm_ref(MPDM_A(2));
 		mpdm_aset(_tie, MPDM_X(_tie_wcstombs_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_nd_ls(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(0));
+		mpdm_aset(_tie, MPDM_X(_tie_nd_ls_clo), MPDM_TIE_CLONE);
 	}
 
 	return(_tie);

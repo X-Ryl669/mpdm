@@ -138,6 +138,7 @@ mpdm_v _mpdm_tie_lstr(void);
 mpdm_v _mpdm_tie_fre(void);
 mpdm_v _mpdm_tie_mbstowcs(void);
 mpdm_v _mpdm_tie_wcstombs(void);
+mpdm_v _mpdm_tie_nd_ls(void);
 
 /* value creation utility macros */
 
@@ -157,7 +158,8 @@ mpdm_v _mpdm_tie_wcstombs(void);
 
 #define MPDM_ND_LS(v,s) v.ref=0 ; v.tie=v.next=NULL; \
 			v.flags=MPDM_STRING|MPDM_NONDYN; v.data=s; \
-			v.size=(sizeof(s) - 1) / sizeof(wchar_t);
+			v.size=(sizeof(s) - 1) / sizeof(wchar_t); \
+			v.tie=_mpdm_tie_nd_ls();
 
 #define MPDM_ND_A(v,a) v.ref=0 ; v.tie=v.next=NULL; \
 			v.flags=MPDM_MULTIPLE|MPDM_NONDYN; v.data=&a; \
