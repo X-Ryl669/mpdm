@@ -37,9 +37,6 @@
 /* dynamic (standard) values */
 typedef struct _mpdm_v * mpdm_v;
 
-/* non-dynamic values */
-typedef struct _mpdm_v mpdm_ndv;
-
 /* a value */
 struct _mpdm_v
 {
@@ -83,6 +80,9 @@ struct _mpdm_ctl
 };
 
 extern struct _mpdm_ctl * _mpdm;
+
+mpdm_v mpdm_alloc(int flags, int count);
+void mpdm_free(mpdm_v v, int count);
 
 mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie);
 mpdm_v mpdm_ref(mpdm_v v);
@@ -184,18 +184,7 @@ mpdm_v _mpdm_tie_hash(void);
 #define MPDM_ND_END()	_mpdm->nd_index=_mpdm_nd_save
 
 #define MPDM_ND_LS(s)	_mpdm_new_wcs(MPDM_NONDYN,s,-1,_mpdm_tie_nd_ls())
-
-/*
-#define MPDM_ND_LS(v,s) v.ref=0 ; v.tie=v.next=NULL; \
-			v.flags=MPDM_STRING|MPDM_NONDYN; v.data=s; \
-			v.size=(sizeof(s) - 1) / sizeof(wchar_t); \
-			v.tie=_mpdm_tie_nd_ls();
-*/
-
-#define MPDM_ND_A(v,a) v.ref=0 ; v.tie=v.next=NULL; \
-			v.flags=MPDM_MULTIPLE|MPDM_NONDYN; v.data=&a; \
-			v.size=sizeof(a) / sizeof(mpdm_v); \
-			v.tie=_mpdm_tie_nd_mul();
+#define MPDM_ND_A(n)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,NULL,n,_mpdm_tie_nd_mul())
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
