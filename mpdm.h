@@ -52,6 +52,7 @@ struct _mpdm_v
 	mpdm_v next;	/* next in chain */
 };
 
+
 /* tie functions */
 typedef enum
 {
@@ -64,6 +65,7 @@ typedef enum
 	MPDM_TIE_HKEYS,
 	MPDM_TIE_HSIZE
 } _mpdm_tie_func;
+
 
 /* the main control structure */
 struct _mpdm_ctl
@@ -92,7 +94,7 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args);
 mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2);
 mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 
-mpdm_v mpdm_get_tie(mpdm_v v, int tie_func);
+mpdm_v mpdm_get_tie(mpdm_v v, _mpdm_tie_func tie_func);
 mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie);
 
 mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num);
