@@ -71,8 +71,7 @@ typedef enum
 struct _mpdm_ctl
 {
 	mpdm_v root;		/* the root hash */
-	mpdm_v head;		/* head of values */
-	mpdm_v tail;		/* tail of values */
+	mpdm_v cur;		/* current value (circular list) */
 	int count;		/* total count of values */
 	int low_threshold;	/* minimum number of values to sweep */
 	int nd_index;		/* index to next non-dyn value */
