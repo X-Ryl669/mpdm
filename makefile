@@ -17,3 +17,6 @@ dep:
 
 clean:
 	rm -f *.o *.a tags
+
+stress: stress.c $(LIB)
+	$(CC) $< -L. -lfdm -o $@
