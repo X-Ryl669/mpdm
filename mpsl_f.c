@@ -44,6 +44,12 @@ mpdm_v _mpsl_size(mpdm_v args)
 }
 
 
+mpdm_v _mpsl_clone(mpdm_v args)
+{
+	return(mpdm_clone(mpdm_aget(args, 0)));
+}
+
+
 mpdm_v _mpsl_is_array(mpdm_v args)
 {
 	mpdm_v v;
@@ -101,6 +107,7 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"MPSL_LIB", mpsl_true_or_false(1));
 
 	mpdm_hset_s(r, L"size", MPDM_X(_mpsl_size));
+	mpdm_hset_s(r, L"clone", MPDM_X(_mpsl_clone));
 	mpdm_hset_s(r, L"is_array", MPDM_X(_mpsl_is_array));
 	mpdm_hset_s(r, L"is_hash", MPDM_X(_mpsl_is_hash));
 
