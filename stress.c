@@ -32,6 +32,9 @@
 int tests=0;
 int oks=0;
 
+/* failed tests messages */
+char * _failed_msgs[5000];
+int _i_failed_msgs=0;
 
 /*******************
 	Code
@@ -39,10 +42,17 @@ int oks=0;
 
 void _test(char * str, int ok)
 {
-	printf("%s: %s\n", str, ok ? "OK!" : "*** Failed ***");
+	char tmp[1024];
+
+	sprintf(tmp, "%s: %s\n", str, ok ? "OK!" : "*** Failed ***");
+	printf(tmp);
 
 	tests++;
-	if(ok) oks++;
+
+	if(ok)
+		oks++;
+	else
+		_failed_msgs[_i_failed_msgs ++]=strdup(tmp);
 }
 
 
@@ -491,7 +501,7 @@ void test_regex(void)
 
 	w=MPDM_LS(L"Hell street, 666");
 	v=mpdm_regex(MPDM_LS(L"/[0-9]+/"), w, 0);
-	_test("regex 5", v != NULL);
+	_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
 
 	mpdm_dump(v);
 
@@ -760,7 +770,15 @@ int main(void)
 	if(oks == tests)
 		printf("*** ALL TESTS PASSED\n");
 	else
+	{
+		int n;
+
 		printf("*** %d %s\n", tests - oks, "TESTS ---FAILED---");
+
+		printf("\nFailed tests:\n\n");
+		for(n=0;n < _i_failed_msgs;n++)
+			printf("%s\n", _failed_msgs[n]);
+	}
 
 	return(0);
 }
