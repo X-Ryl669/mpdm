@@ -47,7 +47,6 @@ DIGIT		[0-9]
 LETTER		[a-zA-Z_]
 COMMENT		#.*\n
 WSPACE		[ \t\n]+
-OPERATOR	[-()<>=+*/;{}?:.\[\],]
 
 INTEGER		{DIGIT}+
 REAL		{DIGIT}*[\.]?{DIGIT}+
@@ -76,8 +75,6 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 			return(STRING);
 		}
 
-{OPERATOR}	return(*yytext);
-
 "NULL"		return NULLV;
 "while"		return WHILE;
 "if"		return IF;
@@ -102,7 +99,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {WSPACE}	;	/* ignore spaces */
 
-.		yyerror("LEX Unknown character");
+.		{ return(*yytext); }
 
 \/\*		{ BEGIN REM; /* C-like comments */ }
 <REM>\*\/	{ BEGIN 0; }
