@@ -144,38 +144,9 @@ mpdm_v mpsl_boolean(int b)
 
 
 /**
- * mpsl_local_add_subframe - Creates a subroutine frame
- *
- * Creates a subroutine subframe in the local variable symbol table.
- */
-mpdm_v mpsl_local_add_subframe(void)
-{
-	/* if local symbol table don't exist, create */
-	if(_mpsl_local == NULL)
-		_mpsl_local=mpdm_ref(MPDM_A(0));
-
-	/* creates a new array for holding the hashes */
-	return(mpdm_apush(_mpsl_local, MPDM_A(0)));
-}
-
-
-/**
- * mpsl_local_del_subframe - Deletes a subroutine frame
- *
- * Deletes a subroutine frame previously created by
- * mpsl_local_add_subframe().
- */
-void mpsl_local_del_subframe(void)
-{
-	/* simply pops the subframe */
-	mpdm_apop(_mpsl_local);
-}
-
-
-/**
  * mpsl_local_add_blkframe - Creates a block frame
  *
- * Creates a block subframe in the local variable symbol table.
+ * Creates a block frame in the local variable symbol table.
  */
 mpdm_v mpsl_local_add_blkframe(void)
 {
@@ -194,6 +165,39 @@ void mpsl_local_del_blkframe(void)
 {
 	/* simply pops the blkframe */
 	mpdm_apop(mpdm_aget(_mpsl_local, -1));
+}
+
+
+/**
+ * mpsl_local_add_subframe - Creates a subroutine frame
+ *
+ * Creates a subroutine frame in the local variable symbol table.
+ */
+void mpsl_local_add_subframe(void)
+{
+	/* if local symbol table doesn't exist, create */
+	if(_mpsl_local == NULL)
+		_mpsl_local=mpdm_ref(MPDM_A(0));
+
+	/* creates a new array for holding the hashes */
+	mpdm_apush(_mpsl_local, MPDM_A(0));
+
+	mpsl_local_add_blkframe();
+}
+
+
+/**
+ * mpsl_local_del_subframe - Deletes a subroutine frame
+ *
+ * Deletes a subroutine frame previously created by
+ * mpsl_local_add_subframe().
+ */
+void mpsl_local_del_subframe(void)
+{
+	mpsl_local_del_blkframe();
+
+	/* simply pops the subframe */
+	mpdm_apop(_mpsl_local);
 }
 
 
@@ -347,9 +351,8 @@ static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
 {
 	mpdm_v ret;
 
-	/* creates subroutine and block frames */
+	/* creates a subroutine frame */
 	mpsl_local_add_subframe();
-	mpsl_local_add_blkframe();
 
 	/* creates the arguments (if any) as local variables */
 	mpsl_local_set_symbols(M2, a);
@@ -357,8 +360,7 @@ static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
 	/* execute instruction */
 	ret=M1;
 
-	/* destroys the frames */
-	mpsl_local_del_blkframe();
+	/* destroys the frame */
 	mpsl_local_del_subframe();
 
 	return(ret);
@@ -440,10 +442,15 @@ static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) <
 static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) > mpdm_rval(M2))); }
 static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
 
-static mpdm_v _O_numeq(mpdm_v c, mpdm_v a) {
-	mpdm_v v1, v2; v1=M1; v2=M2;
+static mpdm_v _O_numeq(mpdm_v c, mpdm_v a)
+/* numerical and NULL equality test */
+{
+	mpdm_v v1, v2;
+
+	v1=M1; v2=M2;
+
 	return(mpsl_boolean((v1 == NULL || v2 == NULL) ?
-	(v1 == v2) : (mpdm_rval(v1) == mpdm_rval(v2))));
+		(v1 == v2) : (mpdm_rval(v1) == mpdm_rval(v2))));
 }
 
 
