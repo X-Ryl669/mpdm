@@ -944,6 +944,66 @@ void test_mpsl2(void)
 	v=_test_mpsl("0 || 1;");
 	v=mpdm_exec(v, NULL);
 	_test("boolean or 3", v != NULL);
+
+	v=_test_mpsl("6 == 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric == 1", v != NULL);
+	v=_test_mpsl("8.0 == 8.0;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric == 2", v != NULL);
+	v=_test_mpsl("6 == 8;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric == 3", v == NULL);
+
+	v=_test_mpsl("6 != 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric != 1", v == NULL);
+	v=_test_mpsl("8.0 != 8.0;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric != 2", v == NULL);
+	v=_test_mpsl("6 != 8;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric != 3", v != NULL);
+
+	v=_test_mpsl("6 < 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric < 1", v == NULL);
+	v=_test_mpsl("8 < 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric < 2", v == NULL);
+	v=_test_mpsl("5 < 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric < 3", v != NULL);
+
+	v=_test_mpsl("6 > 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric > 1", v == NULL);
+	v=_test_mpsl("8 > 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric > 2", v != NULL);
+	v=_test_mpsl("5 > 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric > 3", v == NULL);
+
+	v=_test_mpsl("6 <= 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric <= 1", v != NULL);
+	v=_test_mpsl("8 <= 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric <= 2", v == NULL);
+	v=_test_mpsl("5 <= 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric <= 3", v != NULL);
+
+	v=_test_mpsl("6 >= 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric >= 1", v != NULL);
+	v=_test_mpsl("8 >= 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric >= 2", v != NULL);
+	v=_test_mpsl("5 >= 6;");
+	v=mpdm_exec(v, NULL);
+	_test("numeric >= 3", v == NULL);
 }
 
 

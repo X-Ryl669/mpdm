@@ -664,6 +664,26 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 
 		ret=_mpsl_true_or_false(i);
 		break;
+
+	case MPSL_OP_NUMEQ:
+	case MPSL_OP_NUMLT:
+	case MPSL_OP_NUMLE:
+
+		/* boolean numeric comparisons */
+
+		r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
+		r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+
+		switch(op)
+		{
+		case MPSL_OP_NUMEQ: i = (r1 == r2); break;
+		case MPSL_OP_NUMLT: i = (r1 < r2); break;
+		case MPSL_OP_NUMLE: i = (r1 <= r2); break;
+		default: i = 0; break;
+		}
+
+		ret=_mpsl_true_or_false(i);
+		break;
 	}
 
 	return(ret);
