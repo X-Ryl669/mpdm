@@ -28,6 +28,9 @@ Pending Enhancements
  * 1015: The auto-sweep introduced by _mpdm.high_threshold is
    extremely unsafe. At least, internal parts of mpdm should be
    autosweep-safe.
+ * 1016: Add optional iconv support.
+ * 1017: Add optional gettext support.
+ * 1018: Options like gdbm should be stored in an mpdm array or hash.
 
 Closed
 ------
