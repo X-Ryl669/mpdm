@@ -415,9 +415,12 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 	for(t=v->size,n=1;n < a->size;n++)
 	{
 		v=fdm_aget(a, n);
-		t+=s->size;
 		t+=v->size;
 	}
+
+	/* if there is a separator, update total size */
+	if(s != NULL)
+		t += s->size * (a->size - 1);
 
 	/* create the value */
 	w=fdm_new(FDM_STRING | FDM_COPY, NULL, t);
@@ -429,8 +432,11 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 	{
 		v=fdm_aget(a, n);
 
-		memcpy(w->data + t, s->data, s->size);
-		t+=s->size;
+		if(s != NULL)
+		{
+			memcpy(w->data + t, s->data, s->size);
+			t+=s->size;
+		}
 
 		memcpy(w->data + t, v->data, v->size);
 		t+=v->size;
