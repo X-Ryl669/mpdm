@@ -89,6 +89,14 @@ void _mpdm_dump(mpdm_v v, int l)
 		v->flags & MPDM_IVAL	? 'I' : '-');
 
 		mpdm_apush(w, MPDM_S(tmp));
+
+		/* if it's a multiple value, add also the number
+		   of elements */
+		if(v->flags & MPDM_MULTIPLE)
+		{
+			snprintf(tmp, sizeof(tmp), "[%d] ", mpdm_size(v));
+			mpdm_apush(w, MPDM_S(tmp));
+		}
 	}
 
 	/* add the visual representation of the value */
