@@ -35,7 +35,7 @@ mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <ins> stmt expr sym_list stmt_list block list hash compsym
+%type <ins> stmt expr sym_list stmt_list list hash compsym
 
 %%
 
@@ -59,23 +59,37 @@ stmt:
 				{ $$ = _ins(MPDM_LS(L"IF"), $3, $5, NULL); }
 	| IF '(' expr ')' stmt ELSE stmt
 				{ $$ = _ins(MPDM_LS(L"IFELSE"), $3, $5, $7); }
-	| SUB compsym block
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $3, NULL); }
-	| SUB compsym '(' ')' block
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $5, NULL); }
-	| SUB compsym '(' sym_list ')' block
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $6, $4); }
+
+	| SUB compsym '{' stmt_list '}'
+				{ mpdm_v w=MPDM_A(3);
+				mpdm_aset(w, _ins(MPDM_LS(L"SUB_PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, $4, 1);
+				mpdm_aset(w, _ins(MPDM_LS(L"SUB_POSTFIX"), NULL, NULL, NULL), 2);
+				$$ = _ins(MPDM_LS(L"SUB"), $2, w, NULL); }
+
+	| SUB compsym '(' ')' '{' stmt_list '}'
+				{ mpdm_v w=MPDM_A(3);
+				mpdm_aset(w, _ins(MPDM_LS(L"SUB_PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, $6, 1);
+				mpdm_aset(w, _ins(MPDM_LS(L"SUB_POSTFIX"), NULL, NULL, NULL), 2);
+				$$ = _ins(MPDM_LS(L"SUB"), $2, w, NULL); }
+
+	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
+				{ mpdm_v w=MPDM_A(4);
+				mpdm_aset(w, _ins(MPDM_LS(L"SUB_PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, _ins(MPDM_LS(L"ARGS"), $4, NULL, NULL), 1);
+				mpdm_aset(w, $7, 2);
+				mpdm_aset(w, _ins(MPDM_LS(L"SUB_POSTFIX"), NULL, NULL, NULL), 3);
+				$$ = _ins(MPDM_LS(L"SUB"), $2, w, NULL); }
+
 	| FOREACH compsym expr stmt
 				{ $$ = _ins(MPDM_LS(L"FOREACH"), $2, $3, $4); }
-	| block			{ $$ = $1; }
-	;
-
-block:
-	'{' stmt_list '}'	{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, _ins(MPDM_LS(L"PREFIX"), NULL, NULL, NULL), 0);
+	| '{' stmt_list '}'	{ mpdm_v w=MPDM_A(3);
+				mpdm_aset(w, _ins(MPDM_LS(L"BLK_PREFIX"), NULL, NULL, NULL), 0);
 				mpdm_aset(w, $2, 1);
-				mpdm_aset(w, _ins(MPDM_LS(L"POSTFIX"), NULL, NULL, NULL), 2);
+				mpdm_aset(w, _ins(MPDM_LS(L"BLK_POSTFIX"), NULL, NULL, NULL), 2);
 				$$ = w; }
+	;
 
 stmt_list:
 	stmt			{ $$ = $1; }
