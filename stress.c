@@ -917,6 +917,33 @@ void test_mpsl2(void)
 	mpdm_dump(v);
 	_test("mpsl hash", mpdm_cmp(mpdm_hget(v,
 		MPDM_LS(L"febrero")), MPDM_LS(L"february")) == 0);
+
+	v=_test_mpsl("! 1;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean not 1", v == NULL);
+	v=_test_mpsl("! 0;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean not 2", v != NULL);
+
+	v=_test_mpsl("1 && 3;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean and 1", v != NULL);
+	v=_test_mpsl("1 && 0;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean and 2", v == NULL);
+	v=_test_mpsl("0 && 1;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean and 3", v == NULL);
+
+	v=_test_mpsl("1 || 3;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean or 1", v != NULL);
+	v=_test_mpsl("1 || 0;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean or 2", v != NULL);
+	v=_test_mpsl("0 || 1;");
+	v=mpdm_exec(v, NULL);
+	_test("boolean or 3", v != NULL);
 }
 
 

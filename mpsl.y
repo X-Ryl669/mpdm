@@ -507,12 +507,45 @@ mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 }
 
 
+int _mpsl_is_true(mpdm_v v)
+{
+	/* if value or its data is NULL, it's false */
+	if(v == NULL || v->data == NULL)
+		return(0);
+
+	/* if it's a printable string... */
+	if(v->flags & MPDM_STRING)
+	{
+		wchar_t * ptr=(wchar_t *)v->data;
+
+		/* ... and it's the "0" string, it's false */
+		if(*ptr == L'0' && *(ptr + 1) == L'\0')
+			return(0);
+	}
+
+	/* any other case is true */
+	return(1);
+}
+
+
+mpdm_v _mpsl_true_or_false(int b)
+{
+	static mpdm_v _true=NULL;
+
+	if(_true == NULL)
+		_true=MPDM_I(1);
+
+	return(b ? _true : NULL);
+}
+
+
 static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 {
 	mpsl_op op;
 	mpdm_v ret=NULL;
 	int n;
 	double r, r1, r2;
+	int i, i1, i2;
 
 	/* gets the opcode */
 	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
@@ -604,6 +637,32 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 		break;
 
 	case MPSL_OP_MOD:
+		break;
+
+	case MPSL_OP_NOT:
+
+		/* boolean not */
+		ret=_mpsl_true_or_false(! _mpsl_is_true(
+				_mpsl_machine(mpdm_aget(c, 1), NULL)));
+
+		break;
+
+	case MPSL_OP_AND:
+	case MPSL_OP_OR:
+
+		/* boolean && and || */
+
+		i1=_mpsl_is_true(_mpsl_machine(mpdm_aget(c, 1), NULL));
+		i2=_mpsl_is_true(_mpsl_machine(mpdm_aget(c, 2), NULL));
+
+		switch(op)
+		{
+		case MPSL_OP_AND: i = i1 && i2; break;
+		case MPSL_OP_OR: i = i1 || i2; break;
+		default: i=0; break;
+		}
+
+		ret=_mpsl_true_or_false(i);
 		break;
 	}
 
