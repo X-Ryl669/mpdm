@@ -33,6 +33,15 @@
 #include <unistd.h>
 #endif
 
+#if defined(CONFOPT_GLOB_H)
+#include <glob.h>
+#endif
+
+#ifdef CONFOPT_WIN32
+#include <windows.h>
+#include <commctrl.h>
+#endif
+
 #include "mpdm.h"
 
 /*******************
@@ -162,4 +171,99 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
 int mpdm_unlink(mpdm_v filename)
 {
 	return(unlink((char *)filename->data));
+}
+
+
+/**
+ * mpdm_glob - Executes a file globbing.
+ * @spec: Globbing spec
+ *
+ * Executes a file globbing. @spec is system-dependent, but usually
+ * the * and ? metacharacters work everywhere. @spec can contain a
+ * directory; if that's the case, the output strings will include it.
+ * In any case, each returned value will be suitable for a call to
+ * mpdm_open().
+ *
+ * Returns an array of files that match the globbing (can be an empty
+ * array if no file matches), or NULL if globbing is unsupported.
+ */
+mpdm_v mpdm_glob(mpdm_v spec)
+{
+	mpdm_v v=NULL;
+
+#ifdef CONFOPT_WIN32
+
+	WIN32_FIND_DATA f;
+	HANDLE h;
+	char * ptr;
+	mpdm_v w;
+	mpdm_v s=NULL;
+
+	/* convert MSDOS dir separators into Unix ones */
+	spec=mpdm_sregex(MPDM_LS("\\\\"), spec, MPDM_LS("/"), 0, "g");
+
+	v=MPDM_A(0);
+
+	if((h=FindFirstFile((char *) spec->data,&f)) != INVALID_HANDLE_VALUE)
+	{
+		/* if spec includes a directory, store in s */
+		if((ptr=strrchr((char *)spec->data, '/')) != NULL)
+		{
+			*(ptr+1)='\0';
+			s=MPDM_S(spec->data);
+		}
+
+		do
+		{
+			/* ignore . and .. */
+			if(strcmp(f.cFileName,".") == 0 ||
+			   strcmp(f.cFileName,"..") == 0)
+				continue;
+
+			/* concat base directory and file names */
+			w=mpdm_strcat(s, MPDM_S(f.cFileName));
+
+			/* if it's a directory, add a / */
+			if(f.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+				w=mpdm_strcat(w, MPDM_LS("/"));
+
+			mpdm_apush(v, w);
+		}
+		while(FindNextFile(h,&f));
+
+		FindClose(h);
+	}
+
+#endif
+
+#if CONFOPT_GLOB_H
+
+	/* glob.h support */
+	int n;
+	glob_t globbuf;
+	char * ptr;
+
+	ptr=spec->data;
+	if(ptr == NULL || *ptr == '\0')
+		ptr="*";
+
+	globbuf.gl_offs=1;
+	v=MPDM_A(0);
+
+	if(glob(ptr, GLOB_MARK, NULL, &globbuf) == 0)
+	{
+		for(n=0;globbuf.gl_pathv[n]!=NULL;n++)
+			mpdm_apush(v, MPDM_S(globbuf.gl_pathv[n]));
+	}
+
+	globfree(&globbuf);
+
+#else
+
+	/* no win32 nor glob.h; try workaround */
+	/* ... */
+
+#endif
+
+	return(v);
 }
