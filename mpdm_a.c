@@ -132,8 +132,12 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 	mpdm_v * p;
 
 	/* boundary checks */
-	if(offset < 0 || offset >= mpdm_size(a))
+	if(offset < 0)
 		return(NULL);
+
+	/* if the array is shorter than offset, expand to make room for it */
+	if(offset >= mpdm_size(a))
+		mpdm_aexpand(a, mpdm_size(a), offset - mpdm_size(a));
 
 	p=(mpdm_v *)a->data;
 
