@@ -76,6 +76,8 @@ typedef enum
 	MPSL_OP_NUMEQ,		/* numerical equal */
 	MPSL_OP_NUMLT,		/* numerical less than */
 	MPSL_OP_NUMLE,		/* numerical less or equal than */
+	MPSL_OP_NUMGT,		/* numerical greater than */
+	MPSL_OP_NUMGE,		/* numerical greater or equal than */
 	MPSL_OP_STREQ		/* string equal */
 } mpsl_op;
 
@@ -148,6 +150,8 @@ mpdm_v _op(mpsl_op opcode)
 		OP(MPSL_OP_NUMEQ);
 		OP(MPSL_OP_NUMLT);
 		OP(MPSL_OP_NUMLE);
+		OP(MPSL_OP_NUMGT);
+		OP(MPSL_OP_NUMGE);
 		OP(MPSL_OP_STREQ);
 	}
 
@@ -405,7 +409,7 @@ expr:
 				}
 	| expr '>' expr		{
 					/* bool greater than */
-					$$ = INS2(MPSL_OP_NUMLE, $3, $1);
+					$$ = INS2(MPSL_OP_NUMGT, $1, $3);
 				}
 	| expr NUMLE expr	{
 					/* bool less or equal than */
@@ -413,7 +417,7 @@ expr:
 				}
 	| expr NUMGE expr	{
 					/* bool greater or equal than */
-					$$ = INS2(MPSL_OP_NUMLT, $3, $1);
+					$$ = INS2(MPSL_OP_NUMGE, $1, $3);
 				}
 	| expr NUMEQ expr       {
 					/* bool numeric equal */
@@ -668,6 +672,8 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_NUMEQ:
 	case MPSL_OP_NUMLT:
 	case MPSL_OP_NUMLE:
+	case MPSL_OP_NUMGT:
+	case MPSL_OP_NUMGE:
 
 		/* boolean numeric comparisons */
 
@@ -679,6 +685,8 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 		case MPSL_OP_NUMEQ: i = (r1 == r2); break;
 		case MPSL_OP_NUMLT: i = (r1 < r2); break;
 		case MPSL_OP_NUMLE: i = (r1 <= r2); break;
+		case MPSL_OP_NUMGT: i = (r1 > r2); break;
+		case MPSL_OP_NUMGE: i = (r1 >= r2); break;
 		default: i = 0; break;
 		}
 
