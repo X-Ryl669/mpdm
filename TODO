@@ -4,22 +4,23 @@ TODO
  * Each value should have a 'destroy' pointer to a function or scripting code
    that destroys v->data. For example, a call to regfree() in compiled
    regular expressions. So, normal MPDM_FREE values could include a standard
-   function that do free(v->data).
- * Hashes should include 'tie' code, that substitutes the default behaviour
-   of mpdm_hset(), mpdm_hget(), mpdm_del(), etc, in the same way as Perl ties.
-   This will be useful for hashes mapped to DBMs on disk, etc. But, it could
-   also be implemented in a higher level, as in the scripting language.
+   function that do free(v->data), MPDM_MULTIPLE another that does the
+   mpdm_acollapse(), MPDM_FILE an fclose(), etc. The 'destroy' callback should
+   be the first one of the 'tie'... (follows)
+ * Any value could include 'tie' code, for customized operations on standard
+   functions (so a hash could be mapped to a DBM on disk, etc.). The 'tie
+   also scriptable' dilemma is solved with mpdm_exec(), so any code (not
+   necessary a C function) could be used.
  * A new version of mpdm_asort() that includes a sorting function.
  * stat(), chmod(), bread(), bwrite().
+ * Should all string values use wchar, UTF-8...?
 
 The scripting language
 ----------------------
 
  * Find a name (mpsl?).
- * Will it be included here, or as a separated package? Here would prove
-   useful for the 'destroy', 'tie' and _asort() functions, and for many other
-   things. On the other hand, it could poison the mpdm concept as a 'low
-   level utility library'.
+ * Will it be included here, or as a separated package? it could poison
+   the mpdm concept as a 'low level utility library'.
 
 Using mpdm elsewhere
 --------------------
