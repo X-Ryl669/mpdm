@@ -60,18 +60,6 @@ fdm_v _fdm_new(int flags, void * data, int size)
 {
 	fdm_v v;
 
-	/* sanity checks */
-	if(flags & FDM_MULTIPLE)
-	{
-		/* multiple values are always copies and never strings */
-		flags |= FDM_COPY;
-		flags &= ~ (FDM_STRING | FDM_IVAL);
-	}
-
-	/* local copies will be freed */
-	if(flags & FDM_COPY)
-		flags |= FDM_FREE;
-
 	/* a size of -1 means 'calculate it' */
 	if(size == -1)
 	{
@@ -95,6 +83,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	else
 	if(flags & FDM_COPY)
 	{
+		v->flags |= FDM_FREE;
 		v->size=size;
 
 		/* alloc new space for data */
