@@ -44,60 +44,6 @@ mpdm_v _mpsl_local=NULL;
 	Code
 ********************/
 
-#define OP(o) { mpdm_v v = MPDM_MBS(#o + 8); v->ival=o; \
-		v->flags |= MPDM_IVAL ; mpdm_aset(_mpsl_ops, v, o); }
-
-mpdm_v _mpsl_op(mpsl_op opcode)
-/* returns an mpdm_v containing the opcode */
-{
-	if(_mpsl_ops == NULL)
-	{
-		_mpsl_ops=MPDM_A(0);
-
-		OP(MPSL_OP_MULTI);
-		OP(MPSL_OP_LITERAL);
-		OP(MPSL_OP_LIST);
-		OP(MPSL_OP_HASH);
-		OP(MPSL_OP_RANGE);
-		OP(MPSL_OP_SYMVAL);
-		OP(MPSL_OP_ASSIGN);
-		OP(MPSL_OP_EXEC);
-		OP(MPSL_OP_WHILE);
-		OP(MPSL_OP_IF);
-		OP(MPSL_OP_FOREACH);
-		OP(MPSL_OP_SUBFRAME);
-		OP(MPSL_OP_BLKFRAME);
-		OP(MPSL_OP_LOCAL);
-		OP(MPSL_OP_UMINUS);
-		OP(MPSL_OP_ADD);
-		OP(MPSL_OP_SUB);
-		OP(MPSL_OP_MUL);
-		OP(MPSL_OP_DIV);
-		OP(MPSL_OP_MOD);
-		OP(MPSL_OP_PINC);
-		OP(MPSL_OP_SINC);
-		OP(MPSL_OP_PDEC);
-		OP(MPSL_OP_SDEC);
-		OP(MPSL_OP_IADD);
-		OP(MPSL_OP_ISUB);
-		OP(MPSL_OP_IMUL);
-		OP(MPSL_OP_IDIV);
-		OP(MPSL_OP_NOT);
-		OP(MPSL_OP_AND);
-		OP(MPSL_OP_OR);
-		OP(MPSL_OP_NUMEQ);
-		OP(MPSL_OP_NUMLT);
-		OP(MPSL_OP_NUMLE);
-		OP(MPSL_OP_NUMGT);
-		OP(MPSL_OP_NUMGE);
-		OP(MPSL_OP_STRCAT);
-		OP(MPSL_OP_STREQ);
-	}
-
-	return(mpdm_aget(_mpsl_ops, opcode));
-}
-
-
 /**
  * mpsl_is_true - Tests if a value is true
  * @v: the value
@@ -416,6 +362,79 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
 }
 
 
+static struct __op_table
+{
+	wchar_t * name;
+	mpdm_v (* func)(mpdm_v, mpdm_v);
+} _op_table[]=
+{
+	{ L"NOP", NULL },
+	{ L"MULTI", _O_multi },
+	{ L"LITERAL", _O_literal },
+	{ L"LIST", _O_list },
+	{ L"HASH", _O_hash },
+	{ L"SYMVAL", _O_symval },
+	{ L"ASSIGN", _O_assign },
+	{ L"EXEC", _O_exec },
+	{ L"IF", _O_if },
+	{ L"WHILE", _O_while },
+	{ L"FOREACH", NULL },
+	{ L"RANGE", NULL },
+	{ L"SUBFRAME", _O_subframe },
+	{ L"BLKFRAME", _O_blkframe },
+	{ L"LOCAL", _O_local },
+	{ L"UMINUS", _O_uminus },
+	{ L"ADD", _O_add },
+	{ L"SUB", _O_sub },
+	{ L"MUL", _O_mul },
+	{ L"DIV", _O_div },
+	{ L"MOD", _O_mod },
+	{ L"SINC", _O_immsinc },
+	{ L"SDEC", _O_immsdec },
+	{ L"PINC", _O_immpinc },
+	{ L"PDEC", _O_immpdec },
+	{ L"IADD", _O_immadd },
+	{ L"ISUB", _O_immsub },
+	{ L"IMUL", _O_immmul },
+	{ L"IDIV", _O_immdiv },
+	{ L"NOT", _O_not },
+	{ L"AND", _O_and },
+	{ L"OR", _O_or },
+	{ L"NUMEQ", _O_numeq },
+	{ L"NUMLT", _O_numlt },
+	{ L"NUMLE", _O_numle },
+	{ L"NUMGT", _O_numgt },
+	{ L"NUMGE", _O_numge },
+	{ L"STRCAT", _O_strcat },
+	{ L"STREQ", _O_streq },
+	{ NULL, NULL }
+};
+
+
+mpdm_v _mpsl_op(wchar_t * opcode)
+{
+	if(_mpsl_ops == NULL)
+	{
+		int n;
+
+		/* first time; load opcodes */
+		_mpsl_ops=MPDM_H(0);
+
+		for(n=0;_op_table[n].name != NULL;n++)
+		{
+			mpdm_v v=MPDM_LS(_op_table[n].name);
+			v->ival=n;
+			v->flags |= MPDM_IVAL;
+
+			/* keys and values are the same */
+			mpdm_hset(_mpsl_ops, v, v);
+		}
+	}
+
+	return(mpdm_hget_s(_mpsl_ops, opcode));
+}
+
+
 /**
  * _mpsl_machine - The mpsl virtual machine
  * @c: Multiple value containing the bytecode
@@ -428,54 +447,25 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
  */
 mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
 {
-	mpsl_op op;
 	mpdm_v ret=NULL;
 
-	if(c == NULL)
-		return(NULL);
-
-	/* gets the opcode */
-	op=(mpsl_op) mpdm_ival(C0);
-
-	/* the very big switch */
-	switch(op)
+	if(c != NULL)
 	{
-	case MPSL_OP_MULTI: ret=_O_multi(c, a); break;
-	case MPSL_OP_LITERAL: ret=_O_literal(c, a); break;
-	case MPSL_OP_LIST: ret=_O_list(c, a); break;
-	case MPSL_OP_HASH: ret=_O_hash(c, a); break;
-	case MPSL_OP_SYMVAL: ret=_O_symval(c, a); break;
-	case MPSL_OP_ASSIGN: ret=_O_assign(c, a); break;
-	case MPSL_OP_EXEC: ret=_O_exec(c, a); break;
-	case MPSL_OP_IF: ret=_O_if(c, a); break;
-	case MPSL_OP_WHILE: ret=_O_while(c, a); break;
-	case MPSL_OP_SUBFRAME: ret=_O_subframe(c, a); break;
-	case MPSL_OP_BLKFRAME: ret=_O_blkframe(c, a); break;
-	case MPSL_OP_LOCAL: ret=_O_local(c, a); break;
-	case MPSL_OP_UMINUS: ret=_O_uminus(c, a); break;
-	case MPSL_OP_ADD: ret=_O_add(c, a); break;
-	case MPSL_OP_SUB: ret=_O_sub(c, a); break;
-	case MPSL_OP_MUL: ret=_O_mul(c, a); break;
-	case MPSL_OP_DIV: ret=_O_div(c, a); break;
-	case MPSL_OP_MOD: ret=_O_mod(c, a); break;
-	case MPSL_OP_SINC: ret=_O_immsinc(c, a); break;
-	case MPSL_OP_SDEC: ret=_O_immsdec(c, a); break;
-	case MPSL_OP_PINC: ret=_O_immpinc(c, a); break;
-	case MPSL_OP_PDEC: ret=_O_immpdec(c, a); break;
-	case MPSL_OP_IADD: ret=_O_immadd(c, a); break;
-	case MPSL_OP_ISUB: ret=_O_immsub(c, a); break;
-	case MPSL_OP_IMUL: ret=_O_immmul(c, a); break;
-	case MPSL_OP_IDIV: ret=_O_immdiv(c, a); break;
-	case MPSL_OP_NOT: ret=_O_not(c, a); break;
-	case MPSL_OP_AND: ret=_O_and(c, a); break;
-	case MPSL_OP_OR: ret=_O_or(c, a); break;
-	case MPSL_OP_NUMEQ: ret=_O_numeq(c, a); break;
-	case MPSL_OP_NUMLT: ret=_O_numlt(c, a); break;
-	case MPSL_OP_NUMLE: ret=_O_numle(c, a); break;
-	case MPSL_OP_NUMGT: ret=_O_numgt(c, a); break;
-	case MPSL_OP_NUMGE: ret=_O_numge(c, a); break;
-	case MPSL_OP_STRCAT: ret=_O_strcat(c, a); break;
-	case MPSL_OP_STREQ: ret=_O_streq(c, a); break;
+		int op;
+
+		/* gets the opcode */
+		op=mpdm_ival(C0);
+
+		/* if it's a valid opcode... */
+		if(op > 0 && op < sizeof(_op_table) / sizeof(struct __op_table))
+		{
+			/* get the function */
+			mpdm_v (* func)(mpdm_v, mpdm_v)=_op_table[op].func;
+
+			/* and call it if existent */
+			if(func != NULL)
+				ret=func(c, a);
+		}
 	}
 
 	return(ret);
