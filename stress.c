@@ -434,66 +434,66 @@ void test_regex(void)
 	mpdm_v v;
 	mpdm_v w;
 
-	v=mpdm_regex(MPDM_LS("[0-9]+"), MPDM_LS("123456"), 0, NULL);
+	v=mpdm_regex(MPDM_LS("/[0-9]+/"), MPDM_LS("123456"), 0);
 	_test("regex 0", v != NULL);
 
-	v=mpdm_regex(MPDM_LS("[0-9]+"), MPDM_I(65536), 0, NULL);
+	v=mpdm_regex(MPDM_LS("/[0-9]+/"), MPDM_I(65536), 0);
 	_test("regex 1", v != NULL);
 
-	v=mpdm_regex(MPDM_LS("^[0-9]+$"), MPDM_LS("12345678"), 0, NULL);
+	v=mpdm_regex(MPDM_LS("/^[0-9]+$/"), MPDM_LS("12345678"), 0);
 	_test("regex 2", v != NULL);
 
-	v=mpdm_regex(MPDM_LS("^[0-9]+$"), MPDM_I(1), 0, NULL);
+	v=mpdm_regex(MPDM_LS("/^[0-9]+$/"), MPDM_I(1), 0);
 	_test("regex 3", v != NULL);
 
-	v=mpdm_regex(MPDM_LS("^[0-9]+$"), MPDM_LS("A12345-678"), 0, NULL);
+	v=mpdm_regex(MPDM_LS("/^[0-9]+$/"), MPDM_LS("A12345-678"), 0);
 	_test("regex 4", v == NULL);
 
 	w=MPDM_LS("Hell street, 666");
-	v=mpdm_regex(MPDM_LS("[0-9]+"), w, 0, NULL);
+	v=mpdm_regex(MPDM_LS("/[0-9]+/"), w, 0);
 	_test("regex 5", v != NULL);
 
 	mpdm_dump(v);
 
-	v=mpdm_regex(MPDM_LS("regex"), MPDM_LS("CASE-INSENSITIVE REGEX"), 0, "i");
+	v=mpdm_regex(MPDM_LS("/regex/i"), MPDM_LS("CASE-INSENSITIVE REGEX"), 0);
 	_test("regex 6", v != NULL);
 
 	/* sregex */
 
-	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to A"),
-		MPDM_LS("E"),0,NULL);
+	v=mpdm_sregex(MPDM_LS("/A/"),MPDM_LS("change all A to A"),
+		MPDM_LS("E"),0);
 	_test("sregex 0", mpdm_cmp(v, MPDM_LS("change all E to A")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to A"),
-		MPDM_LS("E"),0,"g");
+	v=mpdm_sregex(MPDM_LS("/A/g"),MPDM_LS("change all A to A"),
+		MPDM_LS("E"),0);
 	_test("sregex 1", mpdm_cmp(v, MPDM_LS("change all E to E")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("A+"),MPDM_LS("change all AAAAAA to E"),
-		MPDM_LS("E"),0,"g");
+	v=mpdm_sregex(MPDM_LS("/A+/g"),MPDM_LS("change all AAAAAA to E"),
+		MPDM_LS("E"),0);
 	_test("sregex 2", mpdm_cmp(v, MPDM_LS("change all E to E")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("A+"),MPDM_LS("change all A A A A A A to E"),
-		MPDM_LS("E"),0,"g");
+	v=mpdm_sregex(MPDM_LS("/A+/g"),MPDM_LS("change all A A A A A A to E"),
+		MPDM_LS("E"),0);
 	_test("sregex 3", mpdm_cmp(v, MPDM_LS("change all E E E E E E to E")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("[0-9]+"),MPDM_LS("1, 20, 333, 40 all are numbers"),
-		MPDM_LS("numbers"),0,"g");
+	v=mpdm_sregex(MPDM_LS("/[0-9]+/g"),MPDM_LS("1, 20, 333, 40 all are numbers"),
+		MPDM_LS("numbers"),0);
 	_test("sregex 4", mpdm_cmp(v, MPDM_LS("numbers, numbers, numbers, numbers all are numbers")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("[a-zA-Z_]+"),MPDM_LS("regex, mpdm_regex, TexMex"),
-		MPDM_LS("sex"),0,"g");
+	v=mpdm_sregex(MPDM_LS("/[a-zA-Z_]+/g"),MPDM_LS("regex, mpdm_regex, TexMex"),
+		MPDM_LS("sex"),0);
 	_test("sregex 5", mpdm_cmp(v, MPDM_LS("sex, sex, sex")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("[a-zA-Z]+"),MPDM_LS("regex, mpdm_regex, TexMex"),
-		NULL,0,"g");
+	v=mpdm_sregex(MPDM_LS("/[a-zA-Z]+/g"),MPDM_LS("regex, mpdm_regex, TexMex"),
+		NULL,0);
 	_test("sregex 6", mpdm_cmp(v, MPDM_LS(", _, ")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("\\\\"),MPDM_LS("\\MSDOS\\style\\path"),
-		MPDM_LS("/"),0,"g");
+	v=mpdm_sregex(MPDM_LS("/\\\\/g"),MPDM_LS("\\MSDOS\\style\\path"),
+		MPDM_LS("/"),0);
 	_test("sregex 7", mpdm_cmp(v, MPDM_LS("/MSDOS/style/path")) == 0);
 
-	v=mpdm_sregex(MPDM_LS("regex"),MPDM_LS("regex, Regex, REGEX"),
-		MPDM_LS("sex"),0,"gi");
+	v=mpdm_sregex(MPDM_LS("/regex/gi"),MPDM_LS("regex, Regex, REGEX"),
+		MPDM_LS("sex"),0);
 	_test("sregex 8", mpdm_cmp(v, MPDM_LS("sex, sex, sex")) == 0);
 
 }
