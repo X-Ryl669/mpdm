@@ -829,6 +829,8 @@ void test_mpsl(void)
 	_test_mpsl("a.b.c ++;");
 	_test_mpsl("a.b.c --;");
 	_test_mpsl("a.b.c += 100;");
+
+	_test_mpsl("foreach (a, 1 .. 1000) { print(a); }");
 }
 
 
