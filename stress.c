@@ -385,9 +385,9 @@ void test_regex(void)
 {
 	mpdm_v v;
 
-	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to B"),
+	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to A"),
 		MPDM_LS("E"),0,NULL);
-	_test("sregex 0", mpdm_cmp(v, MPDM_LS("change all E to B")) == 0);
+	_test("sregex 0", mpdm_cmp(v, MPDM_LS("change all E to A")) == 0);
 
 	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to A"),
 		MPDM_LS("E"),0,"g");
@@ -416,6 +416,11 @@ void test_regex(void)
 	v=mpdm_sregex(MPDM_LS("\\\\"),MPDM_LS("\\MSDOS\\style\\path"),
 		MPDM_LS("/"),0,"g");
 	_test("sregex 7", mpdm_cmp(v, MPDM_LS("/MSDOS/style/path")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("regex"),MPDM_LS("regex, Regex, REGEX"),
+		MPDM_LS("sex"),0,"gi");
+	_test("sregex 8", mpdm_cmp(v, MPDM_LS("sex, sex, sex")) == 0);
+
 }
 
 
