@@ -822,7 +822,7 @@ void test_mpsl(void)
 	_test_mpsl("/* hash */ y={ \"enero\" => \"january\", \"febrero\" => \"february\" };");
 	_test_mpsl("/* array */ a=[\"this\", \"one\", \"is\", 666, \"cool\"];");
 
-	_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { t = m; m = n; n = t; } m = m - n; } n; }");
+	_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { local t = m; m = n; n = t; } m -= n; } n; }");
 
 	_test_mpsl("/* range assign */ a = 1 .. 1000;");
 
