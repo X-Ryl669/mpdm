@@ -218,7 +218,7 @@ void test_hash(void)
 		}
 	}
 
-	printf("h's ival: %d\n", mpdm_ival(h));
+	printf("h's size: %d\n", mpdm_hsize(h));
 
 	mpdm_dump(h);
 
