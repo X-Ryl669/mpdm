@@ -179,7 +179,8 @@ mpdm_v mpsl_local_find_symbol(mpdm_v s)
 	mpdm_v v = NULL;
 
 	/* if s is multiple, take just the first element */
-	if(s->flags & MPDM_MULTIPLE) s=mpdm_aget(s, 0);
+	if(s->flags & MPDM_MULTIPLE)
+		s=mpdm_aget(s, 0);
 
 	l=mpdm_aget(_mpsl_local, -1);
 
@@ -222,7 +223,12 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 	mpdm_v l;
 
 	if((l=mpsl_local_find_symbol(s)) != NULL)
+	{
+		if(s->flags & MPDM_MULTIPLE)
+			s=mpdm_aget(s, 0);
+
 		return(mpdm_hget(l, s));
+	}
 
 	return(mpdm_sget(NULL, s));
 }
@@ -330,6 +336,22 @@ static mpdm_v _mpsl_op_if(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_while(mpdm_v c, mpdm_v args)
+/* while structure */
+{
+	mpdm_v v;
+	mpdm_v b;
+
+	v=mpdm_aget(c, 1);
+	b=mpdm_aget(c, 2);
+
+	while(mpsl_is_true(_mpsl_machine(v, args)))
+		_mpsl_machine(b, args);
+
+	return(NULL);
+}
+
+
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 /* runs an instruction inside a subroutine frame */
 {
@@ -372,7 +394,7 @@ static mpdm_v _mpsl_op_blkframe(mpdm_v c, mpdm_v args)
 
 	ret=_mpsl_machine(mpdm_aget(c, 1), args);
 
-	mpsl_local_del_subframe();
+	mpsl_local_del_blkframe();
 
 	return(ret);
 }
@@ -624,6 +646,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_ASSIGN: ret=_mpsl_op_assign(c, args); break;
 	case MPSL_OP_EXEC: ret=_mpsl_op_exec(c, args); break;
 	case MPSL_OP_IF: ret=_mpsl_op_if(c, args); break;
+	case MPSL_OP_WHILE: ret=_mpsl_op_while(c, args); break;
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_BLKFRAME: ret=_mpsl_op_blkframe(c, args); break;
 	case MPSL_OP_LOCAL: ret=_mpsl_op_local(c, args); break;

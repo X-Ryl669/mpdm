@@ -1118,6 +1118,12 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("ifelse", mpdm_ival(v) == 2000);
 
+	v=_test_mpsl("local a; a = 0; while(a < 100) { a++; } a;");
+	v=mpdm_exec(v, NULL);
+	_test("ifelse", mpdm_ival(v) == 100);
+
+	v=_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { local t = m; m = n; n = t; } m -= n; } n; }");
+
 	mpdm_dump(mpdm_root());
 }
 
