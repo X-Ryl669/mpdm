@@ -1635,10 +1635,12 @@ regex_compile (pattern, size, syntax, bufp)
               if (syntax & RE_NO_BK_PARENS) goto normal_backslash;
 
               if (COMPILE_STACK_EMPTY)
+              {
                 if (syntax & RE_UNMATCHED_RIGHT_PAREN_ORD)
                   goto normal_backslash;
                 else
                   return REG_ERPAREN;
+              }
 
             handle_close:
               if (fixup_alt_jump)
@@ -1655,10 +1657,12 @@ regex_compile (pattern, size, syntax, bufp)
 
               /* See similar code for backslashed left paren above.  */
               if (COMPILE_STACK_EMPTY)
+              {
                 if (syntax & RE_UNMATCHED_RIGHT_PAREN_ORD)
                   goto normal_char;
                 else
                   return REG_ERPAREN;
+              }
 
               /* Since we just checked for an empty stack above, this
                  ``can't happen''.  */
@@ -2362,7 +2366,6 @@ typedef struct
 
 #define PUSH_FAILURE_POINT(pattern_place, string_place, failure_code)	\
   do {									\
-    char *destination;							\
     /* Must be int, so when we don't save any registers, the arithmetic	\
        of 0 + -1 isn't done as unsigned.  */				\
     int this_reg;							\
@@ -3843,7 +3846,7 @@ re_match_2 (bufp, string1, size1, string2, size2, pos, regs, stop)
 		/* Compare that many; failure if mismatch, else move
                    past them.  */
 		if (translate 
-                    ? bcmp_translate (d, d2, mcnt, translate) 
+                    ? bcmp_translate ((unsigned char*)d, (unsigned char*)d2, mcnt, translate) 
                     : bcmp (d, d2, mcnt))
 		  goto fail;
 		d += mcnt, d2 += mcnt;
