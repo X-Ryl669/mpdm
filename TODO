@@ -3,18 +3,9 @@ TODO
 
  * Create some versions of functions that avoid doing boundary checks
    when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).
- * Each value should have a 'destroy' pointer to a function or scripting code
-   that destroys v->data. For example, a call to regfree() in compiled
-   regular expressions. So, normal MPDM_FREE values could include a standard
-   function that do free(v->data), MPDM_MULTIPLE another that does the
-   mpdm_acollapse(), MPDM_FILE an fclose(), etc. The 'destroy' callback should
-   be the first one of the 'tie'... (follows)
- * Any value could include 'tie' code, for customized operations on standard
-   functions (so a hash could be mapped to a DBM on disk, etc.). The 'tie
-   also scriptable' dilemma is solved with mpdm_exec(), so any code (not
-   necessary a C function) could be used.
+ * All string management should be done in wchar_t.
+ * Should ties be in a special source file, mpdm_t.c ?
  * stat(), chmod(), bread(), bwrite().
- * Should all string values use wchar, UTF-8...?
 
 The scripting language
 ----------------------

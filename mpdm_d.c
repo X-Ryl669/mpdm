@@ -40,6 +40,7 @@ mpdm_v _mpdm_dump_cb=NULL;
 ********************/
 
 mpdm_v _mpdm_dump_def_cb(mpdm_v v)
+/* default dumping callback */
 {
 	mpdm_v w;
 	int n;
@@ -78,9 +79,7 @@ void _mpdm_dump(mpdm_v v, int l)
 		char tmp[32];
 
 		/* build flag information */
-		snprintf(tmp, sizeof(tmp), "%d,%c%c%c%c:", v->ref,
-		v->flags & MPDM_COPY	? 'C' :
-			(v->flags & MPDM_FREE ? 'F' : '-'),
+		snprintf(tmp, sizeof(tmp), "%d,%c%c%c:", v->ref,
 		v->flags & MPDM_FILE	? 'F' :
 			(v->flags & MPDM_STRING	? 'S' :
 				(v->flags & MPDM_EXEC ? 'X' : '-')),

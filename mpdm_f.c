@@ -33,7 +33,7 @@
 #include <unistd.h>
 #endif
 
-#if defined(CONFOPT_GLOB_H)
+#ifdef CONFOPT_GLOB_H
 #include <glob.h>
 #endif
 
@@ -47,6 +47,22 @@
 /*******************
 	Code
 ********************/
+
+static mpdm_v _tie_file(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(2));
+
+		/* mpdm_close() is used as the file destructor */
+		mpdm_aset(_tie, MPDM_X(mpdm_close), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
 
 /**
  * fmd_open - Opens a file.
@@ -66,7 +82,7 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 		return(NULL);
 
 	/* creates the file value */
-	fd=mpdm_new(MPDM_FILE, f, 0);
+	fd=mpdm_new(MPDM_FILE, f, 0, _tie_file());
 
 	return(fd);
 }
@@ -76,15 +92,16 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
  * mpdm_close - Closes a file descriptor.
  * @fd: the value containing the file descriptor
  *
- * Closes the file descriptor. If @fd hasn't the MPDM_FILE flag,
- * returns -1, or the return value from fclose() instead.
+ * Closes the file descriptor.
  */
-int mpdm_close(mpdm_v fd)
+mpdm_v mpdm_close(mpdm_v fd)
 {
-	if(! (fd->flags & MPDM_FILE))
-		return(-1);
+	if((fd->flags & MPDM_FILE) && fd->data != NULL)
+		fclose((FILE *)fd->data);
 
-	return(fclose((FILE *)fd->data));
+	fd->data=NULL;
+
+	return(NULL);
 }
 
 
@@ -101,7 +118,8 @@ mpdm_v mpdm_read(mpdm_v fd)
 	int i;
 	FILE * f;
 
-	f=(FILE *)fd->data;
+	if((f=(FILE *)fd->data) == NULL)
+		return(NULL);
 
 	while(fgets(line, sizeof(line) - 1, f) != NULL)
 	{

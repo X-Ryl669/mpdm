@@ -131,8 +131,7 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 
 		/* deleted space */
 		if(del > 0)
-			d=mpdm_new(MPDM_COPY | MPDM_STRING,
-				v->data + offset, del);
+			d=MPDM_NS(v->data + offset, del);
 
 		/* something to insert? */
 		ins=mpdm_size(i);
@@ -141,7 +140,7 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 		ns=os + ins - del;
 		r=offset + del;
 
-		if((n=mpdm_new(MPDM_COPY | MPDM_STRING, NULL, ns)) == NULL)
+		if((n=MPDM_NS(NULL, ns)) == NULL)
 			return(NULL);
 
 		/* copy the beginning */
@@ -232,10 +231,137 @@ mpdm_v _mpdm_inew(int ival)
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
 
-	v=mpdm_new(MPDM_COPY | MPDM_STRING | MPDM_IVAL, tmp, -1);
+	v=MPDM_S(tmp);
+	v->flags |= MPDM_IVAL;
 	v->ival=ival;
 
 	return(v);
 }
 
 
+/* ties */
+
+static mpdm_v _tie_cpy_c(mpdm_v v)
+{
+	void * ptr;
+
+	/* creates a copy of data */
+	if(v != NULL && v->size && (ptr=malloc(v->size)) != NULL)
+	{
+		if(v->data == NULL)
+			memset(ptr, '\0', v->size);
+		else
+			memcpy(ptr, v->data, v->size);
+
+		v->data=ptr;
+	}
+
+	return(v);
+}
+
+
+static mpdm_v _tie_cpy_d(mpdm_v v)
+{
+	/* destroys the copy of data */
+	if(v->data != NULL)
+	{
+		free(v->data);
+		v->data=NULL;
+	}
+
+	return(v);
+}
+
+
+static mpdm_v _tie_lstr_c(mpdm_v v)
+{
+	/* just tests if size has to be calculated */
+	if(v->size == -1 && v->data != NULL)
+		v->size=strlen((char *) v->data);
+
+	return(v);
+}
+
+
+static mpdm_v _tie_str_c(mpdm_v v)
+{
+	char * ptr;
+
+	/* tests if size has to be calculated */
+	if(v->size == -1 && v->data != NULL)
+		v->size=strlen((char *) v->data);
+
+	/* creates a copy */
+	if((ptr=malloc(v->size + 1)) != NULL)
+	{
+		if(v->data == NULL)
+			memset(ptr, '\0', v->size);
+		else
+		{
+			strncpy(ptr, v->data, v->size);
+			ptr[v->size]='\0';
+		}
+
+		v->data=ptr;
+	}
+
+	return(v);
+}
+
+
+mpdm_v _mpdm_tie_cpy(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(2));
+		mpdm_aset(_tie, MPDM_X(_tie_cpy_c), MPDM_TIE_CREATE);
+		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_str(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(2));
+		mpdm_aset(_tie, MPDM_X(_tie_str_c), MPDM_TIE_CREATE);
+		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_lstr(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(1));
+		mpdm_aset(_tie, MPDM_X(_tie_lstr_c), MPDM_TIE_CREATE);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_fre(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(2));
+		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
