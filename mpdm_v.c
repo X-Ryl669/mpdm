@@ -146,14 +146,14 @@ fdm_v _fdm_new(int flags, void * data, int size)
 
 fdm_v _fdm_cache(int tag, void * data, int size)
 {
-	static fdm_v * _cache=NULL;
+	static fdm_v _cache=NULL;
 	fdm_v v=NULL;
 
 	/* first time initialization */
 	if(_cache == NULL)
 	{
-		_cache=(fdm_v *)malloc(255 * sizeof(fdm_v));
-		memset(_cache, '\0', 255 * sizeof(fdm_v));
+		_cache=_fdm_new(FDM_MULTIPLE, NULL, 255);
+		fdm_ref(_cache);
 	}
 
 	/* try one-char cached values */
@@ -172,10 +172,11 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 
 		if(c != -1)
 		{
-			if(_cache[c] != NULL)
-				v=_cache[c];
-			else
-				_cache[c]=v=_fdm_new(tag, data, size);
+			if((v=fdm_aget(_cache, c)) == NULL)
+			{
+				v=_fdm_new(tag, data, size);
+				fdm_aset(_cache, v, c);
+			}
 		}
 	}
 
@@ -226,7 +227,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
 
-/*	if((v=_fdm_cache(tag, data, size)) == NULL) */
+	if((v=_fdm_cache(tag, data, size)) == NULL)
 		v=_fdm_new(tag, data, size);
 
 	return(v);
