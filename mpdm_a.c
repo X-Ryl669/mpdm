@@ -283,7 +283,7 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
  * as a positive number; otherwise, if the element is not found,
  * returns the offset where the element should be as a negative number.
  */
-int fdm_abseek(fdm_v a, fdm_v k, int step)
+int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
 {
 	int b, t, n, c;
 
@@ -308,7 +308,8 @@ int fdm_abseek(fdm_v a, fdm_v k, int step)
 			b=n + 1;
 	}
 
-	return(-(b * step));
+	if(pos != NULL) *pos=b * step;
+	return(-1);
 }
 
 

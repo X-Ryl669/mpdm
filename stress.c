@@ -72,15 +72,19 @@ void test_hash(void)
 
 	/* fills 100 values */
 	for(n=0;n < 100;n++)
-		fdm_hset(h, FDM_I(n), FDM_I(n));
+		fdm_hset(h, FDM_I(n), FDM_I(n * 10));
 
 	/* tests 100 values */
 	for(n=0;n < 100;n++)
 	{
 		v=fdm_hget(h, FDM_I(n));
-		i=fdm_ival(v);
+		_test("hash: hget", (v != NULL));
 
-		_test("hash: storage", (i == n));
+		if(v != NULL)
+		{
+			i=fdm_ival(v);
+			_test("hash: ival", (i == n * 10));
+		}
 	}
 
 	fdm_dump(h, 0);
