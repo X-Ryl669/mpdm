@@ -188,6 +188,13 @@ fdm_v fdm_adel(fdm_v a, int offset)
 }
 
 
+/**
+ * fdm_apush - Pushes a value into an array.
+ * @a: the array
+ * @e: the value
+ *
+ * Pushes a value into an array (i.e. inserts at the end).
+ */
 void fdm_apush(fdm_v a, fdm_v e)
 {
 	/* inserts at the end */
@@ -195,6 +202,13 @@ void fdm_apush(fdm_v a, fdm_v e)
 }
 
 
+/**
+ * fdm_apop - Pops a value from an array.
+ * @a: the array
+ *
+ * Pops a value from the array (i.e. deletes from the end
+ * and returns it).
+ */
 fdm_v fdm_apop(fdm_v a)
 {
 	/* deletes from the end */
@@ -202,6 +216,16 @@ fdm_v fdm_apop(fdm_v a)
 }
 
 
+/**
+ * fdm_aseek - Seeks a value in an array (sequential)
+ * @a: the array
+ * @k: the key
+ * @step: number of elements to step
+ *
+ * Seeks sequentially the value @k in the @a array in
+ * increments of @step. A complete search should use a step of 1.
+ * Returns the offset of the element if found, or -1 otherwise.
+ */
 int fdm_aseek(fdm_v a, fdm_v k, int step)
 {
 	int n;
@@ -218,6 +242,19 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
 }
 
 
+/**
+ * fdm_abseek - Seeks a value in an array (binary)
+ * @a: the ordered array
+ * @k: the key
+ * @step: number of elements to step
+ *
+ * Seeks the value @k in the @a array in increments of @step.
+ * The array should be sorted to work correctly. A complete search
+ * should use a step of 1.
+ * If the element is found, returns the offset of the element
+ * as a positive number; otherwise, if the element is not found,
+ * returns the offset where the element should be as a negative number.
+ */
 int fdm_abseek(fdm_v a, fdm_v k, int step)
 {
 	int b, t, n, c;
@@ -253,6 +290,14 @@ static int _fdm_asort_cmp(const void * s1, const void * s2)
 }
 
 
+/**
+ * fdm_asort - Sorts an array.
+ * @a: the array
+ * @step: increment step
+ *
+ * Sorts the array. @step is the number of elements to group
+ * together.
+ */
 void fdm_asort(fdm_v a, int step)
 {
 	qsort(a->data, a->size / step,
