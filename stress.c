@@ -1174,6 +1174,20 @@ void test_mpsl2(void)
 	v=_test_mpsl("if(size([2, 3, 4]) == 3) { dump(\"YES\"); } else { dump(\"NO\"); }");
 	mpdm_exec(v, NULL);
 
+	v=_test_mpsl("is_array(1);");
+	_test("is_array 1", mpdm_exec(v, NULL) == NULL);
+	v=_test_mpsl("is_array([]);");
+	_test("is_array 2", mpdm_exec(v, NULL) != NULL);
+	v=_test_mpsl("is_array({});");
+	_test("is_array 3", mpdm_exec(v, NULL) != NULL);
+
+	v=_test_mpsl("is_hash(1);");
+	_test("is_hash 1", mpdm_exec(v, NULL) == NULL);
+	v=_test_mpsl("is_hash([]);");
+	_test("is_hash 2", mpdm_exec(v, NULL) == NULL);
+	v=_test_mpsl("is_hash({});");
+	_test("is_hash 3", mpdm_exec(v, NULL) != NULL);
+
 	mpdm_dump(mpdm_root());
 }
 
