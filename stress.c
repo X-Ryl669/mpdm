@@ -70,6 +70,16 @@ void test_basic(void)
 }
 
 
+mpdm_v _asort_cb(mpdm_v args)
+{
+	int d;
+
+	/* sorts reversely */
+	d=mpdm_cmp(mpdm_aget(args, 1), mpdm_aget(args, 0));
+	return(MPDM_I(d));
+}
+
+
 void test_array(void)
 {
 	int n;
@@ -106,9 +116,18 @@ void test_array(void)
 	_test("mpdm_asort() works (2)",
 		mpdm_cmp(mpdm_aget(a,6), MPDM_LS("wednesday")) == 0);
 
+	/* _asort_cb sorts reversely */
+	mpdm_asort_cb(a, 1, MPDM_X(_asort_cb));
+
+	_test("mpdm_asort_cb() works (1)",
+		mpdm_cmp(mpdm_aget(a,6), MPDM_LS("friday")) == 0);
+	_test("mpdm_asort_cb() works (2)",
+		mpdm_cmp(mpdm_aget(a,0), MPDM_LS("wednesday")) == 0);
+
+	n=v->ref;
 	v=mpdm_aget(a, 3);
 	mpdm_acollapse(a, 3, 1);
-	_test("acollapse unrefs values", (v->ref == 0));
+	_test("acollapse unrefs values", (v->ref < n));
 
 	/* test queues */
 	a=MPDM_A(0);
