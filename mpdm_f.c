@@ -29,6 +29,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef CONFOPT_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "fdm.h"
 
 /*******************
@@ -44,12 +48,12 @@
  * fdm_v value will be returned containing the file descriptor, or NULL
  * otherwise.
  */
-fdm_v fdm_open(char * filename, char * mode)
+fdm_v fdm_open(fdm_v filename, fdm_v mode)
 {
 	FILE * f;
 	fdm_v fd;
 
-	if((f=fopen(filename, mode)) == NULL)
+	if((f=fopen((char *)filename->data, (char *)mode->data)) == NULL)
 		return(NULL);
 
 	/* creates the file value */
@@ -116,12 +120,24 @@ fdm_v fdm_read(fdm_v fd)
 /**
  * fdm_write - Writes a value into a file descriptor.
  * @fd: the value containing the file descriptor
+ * @v: the value to be written.
  *
- * Writes @v into @fd, and returns the return value from fputs().
+ * Writes @v into @fd. If @v is an array, each element will be written
+ * as separate lines (using \n as a separator).
  */
 int fdm_write(fdm_v fd, fdm_v v)
 {
-	return(fputs((char *)v->data, (FILE *)fd->data));
+	if(v->flags & FDM_MULTIPLE)
+	{
+		int n;
+
+		for(n=0;n < v->size;n++)
+			fdm_write(fd, fdm_aget(v, n));
+	}
+	else
+		fprintf((FILE *)fd->data, "%s\n", fdm_string(v));
+
+	return(0);
 }
 
 
@@ -135,3 +151,15 @@ int fdm_bwrite(fdm_vfd, fdm_v v, int size)
 {
 }
 */
+
+
+/**
+ * fdm_unlink - Deletes a file.
+ * @filename: file name to be deleted
+ *
+ * Deletes a file.
+ */
+int fdm_unlink(fdm_v filename)
+{
+	return(unlink((char *)filename->data));
+}

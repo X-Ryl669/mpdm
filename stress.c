@@ -300,6 +300,49 @@ void test_sym(void)
 }
 
 
+void test_file(void)
+{
+	fdm_v f;
+	fdm_v v;
+	fdm_v w;
+
+	f=fdm_open(FDM_LS("test.txt"), FDM_LS("w"));
+	_test("Create test.txt", f != NULL);
+
+	fdm_write(f, FDM_LS("0"));
+	fdm_write(f, FDM_LS("1"));
+
+	/* test an array */
+	v=FDM_A(4);
+	fdm_aset(v, FDM_LS("2.0"), 0);
+	fdm_aset(v, FDM_LS("2.1"), 1);
+	fdm_aset(v, FDM_LS("2.2"), 2);
+
+	w=FDM_A(2);
+	fdm_aset(w, FDM_LS("3.0.0"), 0);
+	fdm_aset(w, FDM_LS("3.0.1"), 1);
+	fdm_aset(v, w, 3);
+
+	fdm_write(f, v);
+	fdm_close(f);
+
+	f=fdm_open(FDM_LS("test.txt"), FDM_LS("r"));
+
+	_test("test written file 0", fdm_cmp(fdm_read(f), FDM_LS("0")) == 0);
+	_test("test written file 1", fdm_cmp(fdm_read(f), FDM_LS("1")) == 0);
+	_test("test written file 2.0", fdm_cmp(fdm_read(f), FDM_LS("2.0")) == 0);
+	_test("test written file 2.1", fdm_cmp(fdm_read(f), FDM_LS("2.1")) == 0);
+	_test("test written file 2.2", fdm_cmp(fdm_read(f), FDM_LS("2.2")) == 0);
+	_test("test written file 3.0.1", fdm_cmp(fdm_read(f), FDM_LS("3.0.0")) == 0);
+	_test("test written file 3.0.2", fdm_cmp(fdm_read(f), FDM_LS("3.0.1")) == 0);
+
+	fdm_close(f);
+
+	fdm_unlink(FDM_LS("test.txt"));
+	_test("unlink", fdm_open(FDM_LS("test.txt"), FDM_LS("r")) == NULL);
+}
+
+
 int main(void)
 {
 	test_basic();
@@ -309,6 +352,7 @@ int main(void)
 	test_asplit();
 	test_ajoin();
 	test_sym();
+	test_file();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");
