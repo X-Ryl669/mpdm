@@ -60,13 +60,13 @@ stmt:
 	| IF '(' expr ')' stmt ELSE stmt
 				{ $$ = _ins(MPDM_LS(L"IFELSE"), $3, $5, $7); }
 	| SUB compsym block
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $3); }
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $3, NULL); }
 	| SUB compsym '(' ')' block
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $5); }
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $5, NULL); }
 	| SUB compsym '(' sym_list ')' block
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, $6); }
-	| FOREACH compsym '(' list ')' stmt
-				{ $$ = _ins(MPDM_LS(L"FOREACH"), $2, $4, $6); }
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $6, $4); }
+	| FOREACH compsym expr stmt
+				{ $$ = _ins(MPDM_LS(L"FOREACH"), $2, $3, $4); }
 	| block			{ $$ = $1; }
 	;
 
