@@ -61,6 +61,12 @@ void test_basic(void)
 
 	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
 	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
+
+	/* partial copies of strings */
+	v=FDM_LS("this is not America");
+	v=fdm_new(FDM_STRING|FDM_COPY, (char *)v->data + 4, 4);
+
+	_test("Partial string values", fdm_cmp(v, FDM_LS(" is ")) == 0);
 }
 
 
