@@ -450,11 +450,11 @@ mpdm_v _mpsl_op(wchar_t * opcode)
  * _mpsl_exec_i - Executes one mpsl instruction
  * @c: Multiple value containing the bytecode
  * @args: Optional arguments for the bytecode
+ * @f: Pointer to the flow control status
  *
  * Executes one mpsl instruction in the mpsl virtual machine.
- * Usually not called directly, but from an
- * executable value returned by mpsl_compile() and executed by
- * mpdm_exec().
+ * Called from _mpsl_exec() (which holds the flow control
+ * status variable).
  */
 mpdm_v _mpsl_exec_i(_O_ARGS)
 {
