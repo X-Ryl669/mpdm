@@ -42,6 +42,10 @@
 #include <commctrl.h>
 #endif
 
+#ifdef CONFOPT_ICONV
+#include <iconv.h>
+#endif
+
 #include "mpdm.h"
 
 /* file encoder/decoder information */
@@ -49,11 +53,13 @@
 static mpdm_v _f_enc=NULL;
 static mpdm_v _f_dec=NULL;
 
+
 /*******************
 	Code
 ********************/
 
 static mpdm_v _tie_file(void)
+/* tie for files */
 {
 	static mpdm_v _tie=NULL;
 	mpdm_v t;
@@ -80,6 +86,46 @@ static mpdm_v _tie_file(void)
 
 	return(t);
 }
+
+
+#ifdef CONFOPT_ICONV
+
+static mpdm_v _tie_iconv_d(mpdm_v v)
+/* destroy tie for iconv objects */
+{
+	if(v->data != NULL)
+	{
+		/* closes the iconv data */
+		iconv_close((iconv_t *)v->data);
+
+		/* frees the struct itself */
+		free(v->data);
+		v->data=NULL;
+	}
+
+	return(NULL);
+}
+
+
+static mpdm_v _tie_iconv(void)
+/* tie for iconv objects */
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		/* creates a clone of the cpy tie */
+		_tie=mpdm_ref(mpdm_clone(_mpdm_tie_cpy()));
+
+		/* replaces the destructor with its own */
+		mpdm_aset(_tie, MPDM_X(_tie_iconv_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
+#endif /* CONFOPT_ICONV */
 
 
 void _mpdm_write_wcs(FILE * f, wchar_t * str)
@@ -223,6 +269,29 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
 {
 }
 */
+
+
+/**
+ * mpdm_encoding - Sets the current charset encoding for files.
+ * @charset: the charset name.
+ *
+ * Sets the current charset encoding for files. Future opened
+ * files will be assumed to be encoded with @charset, which can
+ * be any of the supported charset names (utf-8, iso-8859-1, etc.),
+ * and converted on each read / write. If charset is NULL, it
+ * is reverted to default charset conversion (i.e. the locale).
+ */
+int mpdm_encoding(mpdm_v charset)
+{
+	/* unref current co/decs */
+	mpdm_unref(_f_enc);
+	mpdm_unref(_f_dec);
+
+	if(charset == NULL)
+		_f_enc=_f_dec=NULL;
+
+	return(0);
+}
 
 
 /**
