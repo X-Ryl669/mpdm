@@ -1212,7 +1212,11 @@ void test_mpsl3(void)
 	v=mpdm_exec(v, NULL);
 	v=_test_mpsl("a=func();");
 	v=mpdm_exec(v, NULL);
-	_test("return", mpdm_ival(v) == 6);
+	_test("return 1", mpdm_ival(v) == 6);
+
+	v=_test_mpsl("a=func(); 500;");
+	v=mpdm_exec(v, NULL);
+	_test("return 2", mpdm_ival(v) == 500);
 
 	v=_test_mpsl("a=1; while(a < 10) { a++; } a;");
 	v=mpdm_exec(v, NULL);
