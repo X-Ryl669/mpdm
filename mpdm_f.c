@@ -287,8 +287,34 @@ int mpdm_encoding(mpdm_v charset)
 	mpdm_unref(_f_enc);
 	mpdm_unref(_f_dec);
 
-	if(charset == NULL)
-		_f_enc=_f_dec=NULL;
+	/* reset */
+	_f_enc=_f_dec=NULL;
+
+	if(charset != NULL)
+	{
+
+#ifdef CONFOPT_ICONV
+
+		mpdm_v e;
+		iconv_t ic;
+
+		e=MPDM_2MBS(charset->data);
+
+		/* creates the converters */
+
+		if((ic=iconv_open((char *)e->data, "WCHAR_T")) != NULL)
+			_f_enc=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+
+		if((ic=iconv_open("WCHAR_T", (char *)e->data)) != NULL)
+			_f_dec=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+
+#endif /* CONFOPT_ICONV */
+
+	}
+
+	/* ref new co/decs */
+	mpdm_ref(_f_enc);
+	mpdm_ref(_f_dec);
 
 	return(0);
 }
