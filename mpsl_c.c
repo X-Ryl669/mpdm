@@ -137,6 +137,13 @@ mpdm_v mpsl_true_or_false(int b)
 }
 
 
+mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
+{
+	mpdm_sset(NULL, s, v);
+	return(v);
+}
+
+
 /** opcodes **/
 
 static mpdm_v _mpsl_op_multi(mpdm_v c, mpdm_v args)
@@ -192,6 +199,14 @@ static mpdm_v _mpsl_op_hash(mpdm_v c, mpdm_v args)
 	}
 
 	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_assign(mpdm_v c, mpdm_v args)
+/* assigns value to a symbol */
+{
+	return(mpsl_set_symbol(_mpsl_machine(mpdm_aget(c, 1), args),
+		_mpsl_machine(mpdm_aget(c, 2), args)));
 }
 
 
@@ -368,6 +383,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_LITERAL: ret=_mpsl_op_literal(c); break;
 	case MPSL_OP_LIST: ret=_mpsl_op_list(c, args); break;
 	case MPSL_OP_HASH: ret=_mpsl_op_hash(c, args); break;
+	case MPSL_OP_ASSIGN: ret=_mpsl_op_assign(c, args); break;
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_ADD:
 	case MPSL_OP_SUB:
