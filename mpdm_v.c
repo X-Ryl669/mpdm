@@ -101,11 +101,6 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	mpdm_v v;
 	mpdm_v r=NULL;
 
-	/* if high_threshold is overpassed, auto-sweep */
-	/* CAUTION: auto-sweep is extremely unsafe by now */
-	if(_mpdm->high_threshold && _mpdm->count > _mpdm->high_threshold)
-		mpdm_sweep(_mpdm->count - _mpdm->high_threshold);
-
 	/* alloc new value */
 	if((v=_mpdm_alloc(flags)) == NULL)
 		return(NULL);
@@ -444,7 +439,6 @@ int mpdm_startup(void)
 
 		/* sets the defaults */
 		_mpdm->low_threshold=16;
-		_mpdm->high_threshold=0;
 
 		/* alloc the non-dyn pool */
 		_mpdm->nd_size=16;

@@ -12,9 +12,6 @@ Release Critical Bugs
 Open Bugs
 ---------
 
- * 1015: The auto-sweep introduced by _mpdm.high_threshold is
-   extremely unsafe. At least, internal parts of mpdm should be
-   autosweep-safe.
  * 1018: Support for optional features (like gdbm) should be stored
    in an mpdm array or hash to easily ask for capabilities.
 
@@ -115,5 +112,8 @@ Closed
    own structure) broke mpsl (SIGSEGV's on compiling from file). Last
    working version was "cvs update -D '2005/03/25 02:26'"
    (Bug is in mpsl; Fri, 25 Mar 2005 12:17:21 +0100).
+ * 1015: The auto-sweep introduced by _mpdm.high_threshold is
+   extremely unsafe. At least, internal parts of mpdm should be
+   autosweep-safe (high_threshold abandoned; Mon, 28 Mar 2005 16:40:38 +0200).
 
 Email bugs to angel@triptico.com
