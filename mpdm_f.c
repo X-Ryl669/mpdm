@@ -128,6 +128,54 @@ static mpdm_v _tie_iconv(void)
 #endif /* CONFOPT_ICONV */
 
 
+wchar_t * _mpdm_read_mbs(FILE * f, int * s)
+/* reads a multibyte string from a stream into a dynamic string */
+{
+	char tmp[MB_CUR_MAX + 1];
+	wchar_t * ptr=NULL;
+	wchar_t wc;
+	int c, n;
+
+	*s=0;
+
+	for(;;)
+	{
+		/* loop first until a complete char is completed
+		   or tmp is filled */
+		n=0;
+		while((c = fgetc(f)) != EOF && n < MB_CUR_MAX)
+		{
+			tmp[n++]=c;
+
+			/* already a valid char? */
+			if(mbtowc(NULL, tmp, n) >= 0)
+				break;
+		}
+
+		/* if no chars were read, it's EOF; finish */
+		if(n == 0)
+			break;
+
+		/* convert char or set to '?' on error */
+		if(mbtowc(&wc, tmp, n) == -1)
+			wc=L'?';
+
+		/* alloc space */
+		ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t));
+
+		/* store new char and null-terminate */
+		ptr[*s]=wc; ptr[*s + 1]=L'\0';
+		(*s)++;
+
+		/* if it's an end of line, finish */
+		if(wc == L'\n')
+			break;
+	}
+
+	return(ptr);
+}
+
+
 void _mpdm_write_wcs(FILE * f, wchar_t * str)
 /* writes a wide string to a stream, converting */
 {
@@ -205,32 +253,16 @@ mpdm_v mpdm_close(mpdm_v fd)
  */
 mpdm_v mpdm_read(mpdm_v fd)
 {
-	char line[128];
 	mpdm_v v=NULL;
-	int i;
 	FILE * f;
+	wchar_t * ptr;
+	int s;
 
 	if((f=(FILE *)fd->data) == NULL)
 		return(NULL);
 
-	while(fgets(line, sizeof(line) - 1, f) != NULL)
-	{
-		if((i=strlen(line)) == 0)
-			continue;
-
-		/* if line includes \n, it's complete */
-		if(line[i - 1] == '\n')
-		{
-			line[i]='\0';
-			i=0;
-		}
-
-		/* store */
-		v=mpdm_strcat(v, MPDM_MBS(line));
-
-		/* exit if the line is completely read */
-		if(i == 0) break;
-	}
+	if((ptr=_mpdm_read_mbs(f, &s)) != NULL)
+		v=mpdm_new(MPDM_STRING, ptr, s, _mpdm_tie_fre());
 
 	return(v);
 }
