@@ -25,6 +25,13 @@ Pending Enhancements
  * 1011: Will the scripting language be included here, or as a
    separated package? it could poison the mpdm concept as a 'low
    level utility library'.
+ * 1012: mpdm_startup() and mpdm_shutdown().
+ * 1013: Move the hardwired '16' number of minimum elements to an
+   struct _mpdm element, set from mpdm_startup().
+ * 1014: Create a new high threshold for values, to force calling
+   mpdm_sweep() from mpdm_new() if that threshold is overpassed (this
+   will allow a limit to be imposed to the number of unreferenced
+   values). But... is this safe?
 
 Closed
 ------
