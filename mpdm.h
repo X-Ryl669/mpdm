@@ -95,3 +95,8 @@ void fdm_dump(fdm_v v);
 
 fdm_v fdm_sget(fdm_v r, fdm_v k);
 fdm_v fdm_sset(fdm_v r, fdm_v k, fdm_v v);
+
+fdm_v fdm_open(char * filename, char * mode);
+int fdm_close(fdm_v fd);
+fdm_v fdm_read(fdm_v fd);
+int fdm_write(fdm_v fd, fdm_v v);
