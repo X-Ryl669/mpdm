@@ -139,11 +139,12 @@ mpdm_v _mpdm_tie_fre(void);
 mpdm_v _mpdm_tie_mbstowcs(void);
 mpdm_v _mpdm_tie_wcstombs(void);
 mpdm_v _mpdm_tie_nd_ls(void);
+mpdm_v _mpdm_tie_hash(void);
 
 /* value creation utility macros */
 
 #define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n,_mpdm_tie_mul())
-#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n,_mpdm_tie_mul())
+#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n,_mpdm_tie_hash())
 #define MPDM_LS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_lstr())
 #define MPDM_S(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_str())
 #define MPDM_NS(s,n)	_mpdm_new_wcs(s,n,_mpdm_tie_str())
