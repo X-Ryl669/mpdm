@@ -4,7 +4,7 @@ CFLAGS=-Wall -g
 LIB=fdm.a
 
 $(LIB): $(OBJS)
-	ar rv $(LIB) $(OBJS)
+	$(AR) rv $(LIB) $(OBJS)
 
 %.o: %.c
 	$(CC) $(DEFS) $(CFLAGS) -c $<
