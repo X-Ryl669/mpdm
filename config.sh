@@ -39,7 +39,6 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "Environment variables:"
 	echo "CC                    C Compiler."
 	echo "AR                    Library Archiver."
-	echo "LEX                   Lexer."
 	echo "YACC                  Parser."
 
 	exit 1
@@ -70,11 +69,6 @@ if [ "$AR" = "" ] ; then
 	AR=ar
 fi
 
-# set lexer
-if [ "$LEX" = "" ] ; then
-	LEX=lex
-fi
-
 # set parser
 if [ "$YACC" = "" ] ; then
 	YACC=yacc
@@ -82,7 +76,6 @@ fi
 
 echo "CC=$CC" >> makefile.opts
 echo "AR=$AR" >> makefile.opts
-echo "LEX=$LEX" >> makefile.opts
 echo "YACC=$YACC" >> makefile.opts
 
 # add version
