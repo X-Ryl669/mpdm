@@ -31,7 +31,6 @@ mpdm_v mpsl_boolean(int b);
 mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v);
 mpdm_v mpsl_get_symbol(mpdm_v s);
 
-mpdm_v _mpsl_exec_i(mpdm_v c, mpdm_v args, int * f);
 mpdm_v _mpsl_exec(mpdm_v c, mpdm_v args);
 
 mpdm_v mpsl_compile(mpdm_v code);

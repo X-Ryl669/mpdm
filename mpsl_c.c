@@ -252,6 +252,11 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 
 /** opcodes **/
 
+#define _O_TYPE static mpdm_v
+#define _O_ARGS mpdm_v c, mpdm_v a, int * f
+
+_O_TYPE _mpsl_exec_i(_O_ARGS);
+
 #define C(n) mpdm_aget(c, n)
 #define C0 C(0)
 #define C1 C(1)
@@ -272,9 +277,6 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 #define SET mpsl_set_symbol
 #define BOOL mpsl_boolean
 #define ISTRU mpsl_is_true
-
-#define _O_TYPE static mpdm_v
-#define _O_ARGS mpdm_v c, mpdm_v a, int * f
 
 _O_TYPE _O_multi(_O_ARGS) { mpdm_v v=M1; if(!*f) v=M2; return(v); }
 _O_TYPE _O_literal(_O_ARGS) { return(mpdm_clone(C1)); }
@@ -457,7 +459,7 @@ mpdm_v _mpsl_op(wchar_t * opcode)
  * Called from _mpsl_exec() (which holds the flow control
  * status variable).
  */
-mpdm_v _mpsl_exec_i(_O_ARGS)
+_O_TYPE _mpsl_exec_i(_O_ARGS)
 {
 	mpdm_v ret=NULL;
 
