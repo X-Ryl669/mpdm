@@ -314,6 +314,27 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 
 static mpdm_v _O_multi(mpdm_v c, mpdm_v a) { M1; return(M2); }
 static mpdm_v _O_literal(mpdm_v c, mpdm_v a) { return(mpdm_clone(C1)); }
+static mpdm_v _O_symval(mpdm_v c, mpdm_v a) { return(mpsl_get_symbol(M1)); }
+static mpdm_v _O_assign(mpdm_v c, mpdm_v a) { return(mpsl_set_symbol(M1, M2)); }
+static mpdm_v _O_exec(mpdm_v c, mpdm_v a) { return(mpdm_exec(M1, M2)); }
+static mpdm_v _O_if(mpdm_v c, mpdm_v a) { return(mpsl_is_true(M1) ? M2 : M3); }
+static mpdm_v _O_while(mpdm_v c, mpdm_v a) { while(mpsl_is_true(M1)) M2; return(NULL); }
+static mpdm_v _O_local(mpdm_v c, mpdm_v a) { mpsl_local_set_symbols(M1, NULL); return(NULL); }
+static mpdm_v _O_uminus(mpdm_v c, mpdm_v a) { return(MPDM_R(-mpdm_rval(M1))); }
+static mpdm_v _O_add(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) + mpdm_rval(M2))); }
+static mpdm_v _O_sub(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) - mpdm_rval(M2))); }
+static mpdm_v _O_mul(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) * mpdm_rval(M2))); }
+static mpdm_v _O_div(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) / mpdm_rval(M2))); }
+static mpdm_v _O_mod(mpdm_v c, mpdm_v a) { return(MPDM_I(mpdm_ival(M1) % mpdm_ival(M2))); }
+static mpdm_v _O_not(mpdm_v c, mpdm_v a) { return(mpsl_boolean(! mpsl_is_true(M1))); }
+static mpdm_v _O_and(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(mpsl_is_true(r) ? M2 : r); }
+static mpdm_v _O_or(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(mpsl_is_true(r) ? r : M2); }
+static mpdm_v _O_numlt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) < mpdm_rval(M2))); }
+static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) <= mpdm_rval(M2))); }
+static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) > mpdm_rval(M2))); }
+static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
+static mpdm_v _O_strcat(mpdm_v c, mpdm_v a) { return(mpdm_strcat(M1, M2)); }
+static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_cmp(M1, M2) == 0)); }
 
 static mpdm_v _O_list(mpdm_v c, mpdm_v a)
 /* build list from instructions */
@@ -339,12 +360,6 @@ static mpdm_v _O_hash(mpdm_v c, mpdm_v a)
 
 	return(ret);
 }
-
-static mpdm_v _O_symval(mpdm_v c, mpdm_v a) { return(mpsl_get_symbol(M1)); }
-static mpdm_v _O_assign(mpdm_v c, mpdm_v a) { return(mpsl_set_symbol(M1, M2)); }
-static mpdm_v _O_exec(mpdm_v c, mpdm_v a) { return(mpdm_exec(M1, M2)); }
-static mpdm_v _O_if(mpdm_v c, mpdm_v a) { return(mpsl_is_true(M1) ? M2 : M3); }
-static mpdm_v _O_while(mpdm_v c, mpdm_v a) { while(mpsl_is_true(M1)) M2; return(NULL); }
 
 static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
 /* runs an instruction inside a subroutine frame */
@@ -379,14 +394,6 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
 	return(ret);
 }
 
-static mpdm_v _O_local(mpdm_v c, mpdm_v a) { mpsl_local_set_symbols(M1, NULL); return(NULL); }
-
-static mpdm_v _O_uminus(mpdm_v c, mpdm_v a) { return(MPDM_R(-mpdm_rval(M1))); }
-static mpdm_v _O_add(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) + mpdm_rval(M2))); }
-static mpdm_v _O_sub(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) - mpdm_rval(M2))); }
-static mpdm_v _O_mul(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) * mpdm_rval(M2))); }
-static mpdm_v _O_div(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) / mpdm_rval(M2))); }
-static mpdm_v _O_mod(mpdm_v c, mpdm_v a) { return(MPDM_I(mpdm_ival(M1) % mpdm_ival(M2))); }
 
 static mpdm_v _O_immmath(mpdm_v c, mpdm_v a)
 /* immediate math operations */
@@ -433,14 +440,6 @@ static mpdm_v _O_immmath(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_not(mpdm_v c, mpdm_v a) { return(mpsl_boolean(! mpsl_is_true(M1))); }
-static mpdm_v _O_and(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(mpsl_is_true(r) ? M2 : r); }
-static mpdm_v _O_or(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(mpsl_is_true(r) ? r : M2); }
-
-static mpdm_v _O_numlt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) < mpdm_rval(M2))); }
-static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) <= mpdm_rval(M2))); }
-static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) > mpdm_rval(M2))); }
-static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
 
 static mpdm_v _O_numeq(mpdm_v c, mpdm_v a)
 /* numerical and NULL equality test */
@@ -452,10 +451,6 @@ static mpdm_v _O_numeq(mpdm_v c, mpdm_v a)
 	return(mpsl_boolean((v1 == NULL || v2 == NULL) ?
 		(v1 == v2) : (mpdm_rval(v1) == mpdm_rval(v2))));
 }
-
-
-static mpdm_v _O_strcat(mpdm_v c, mpdm_v a) { return(mpdm_strcat(M1, M2)); }
-static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_cmp(M1, M2) == 0)); }
 
 
 /**
