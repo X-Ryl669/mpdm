@@ -196,7 +196,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 	static fdm_v _fdm_0=NULL;
 	static fdm_v _fdm_1=NULL;
 	static fdm_v _fdm_empty=NULL;
-	fdm_v v;
+	fdm_v v=NULL;
 
 	/* first time init */
 	if(_fdm_0 == NULL)
@@ -206,21 +206,26 @@ fdm_v fdm_new(int tag, void * data, int size)
 		_fdm_empty=_fdm_new(FDM_STRING, "", 0);
 	}
 
-	if(tag & FDM_STRING)
+	/* try very common values of data */
+	if(data != NULL)
 	{
-		if(*((char *)data) == '0')
-			v=_fdm_empty;
+		if(tag & FDM_STRING)
+		{
+			if(*((char *)data) == '\0')
+				v=_fdm_empty;
+		}
+
+		if(tag & FDM_INTEGER)
+		{
+			if((int) data == 0)
+				v=_fdm_0;
+			else
+			if((int) data == 1)
+				v=_fdm_1;
+		}
 	}
-	else
-	if(tag & FDM_INTEGER)
-	{
-		if((int) data == 0)
-			v=_fdm_0;
-		else
-		if((int) data == 1)
-			v=_fdm_1;
-	}
-	else
+
+	if(v == NULL)
 		v=_fdm_new(tag, data, size);
 
 	return(v);
