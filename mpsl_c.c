@@ -149,6 +149,20 @@ mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
 
 mpdm_v mpsl_get_symbol(mpdm_v s)
 {
+	int n;
+	mpdm_v l;
+
+	l=mpdm_aget(_mpsl_local, -1);
+
+	/* travel the local symbol table trying to find it */
+	for(n=mpdm_size(l) - 1;n >=0;n--)
+	{
+		mpdm_v h = mpdm_aget(l, n);
+
+		if(mpdm_hexists(h, s))
+			return(mpdm_hget(h, s));
+	}
+
 	return(mpdm_sget(NULL, s));
 }
 
@@ -239,6 +253,7 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 
 
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
+/* runs an instruction under a subroutine frame */
 {
 	mpdm_v ret=NULL;
 	mpdm_v v;
