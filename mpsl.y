@@ -214,16 +214,42 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 }
 
 
+static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
+{
+	printf("Executing mpsl!!!\n");
+	mpdm_dump(c);
+
+	return(args);
+}
+
+
 mpdm_v mpsl_compile(mpdm_v code)
 {
+	mpdm_v x;
+
 	/* create a new holder for the bytecode */
 	_bytecode=MPDM_A(0);
-	mpdm_ref(_bytecode);
 	mpdm_apush(_bytecode, MPDM_LS(L"PROG"));
 
+	/* creates the new executable value */
+	x=MPDM_A(2);
+	x->flags |= MPDM_EXEC;
+
+	/* first argument is the interpreter, and second the bytecode */
+	mpdm_aset(x, MPDM_X(_mpsl_machine), 0);
+	mpdm_aset(x, _bytecode, 1);
+
+	/* stores the code to be compiled */
 	_mpsl_store_code(code);
 
+	mpdm_ref(x);
+	mpdm_ref(code);
+
+	/* compile! */
 	yyparse();
 
-	return(_bytecode);
+	mpdm_unref(code);
+	mpdm_unref(x);
+
+	return(x);
 }

@@ -782,7 +782,7 @@ void test_mpsl(void)
 	mpdm_v v;
 
 	v=mpsl_compile(MPDM_LS(L"a=1;"));
-	mpdm_dump(v);
+	mpdm_exec(v, NULL);
 }
 
 
