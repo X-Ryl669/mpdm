@@ -286,26 +286,8 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 #define M2 M(2)
 #define M3 M(3)
 
-static mpdm_v _O_multi(mpdm_v c, mpdm_v a)
-/* multi-instruction */
-{
-	int n;
-	mpdm_v ret=NULL;
-
-	/* executes all following instructions */
-	for(n=1;n < mpdm_size(c);n++)
-		ret=M(n);
-
-	return(ret);
-}
-
-
-static mpdm_v _O_literal(mpdm_v c)
-/* literal value */
-{
-	return(mpdm_clone(C1));
-}
-
+static mpdm_v _O_multi(mpdm_v c, mpdm_v a) { M1; return(M2); }
+static mpdm_v _O_literal(mpdm_v c, mpdm_v a) { return(mpdm_clone(C1)); }
 
 static mpdm_v _O_list(mpdm_v c, mpdm_v a)
 /* build list from instructions */
@@ -332,52 +314,11 @@ static mpdm_v _O_hash(mpdm_v c, mpdm_v a)
 	return(ret);
 }
 
-
-static mpdm_v _O_symval(mpdm_v c, mpdm_v a)
-/* returns the value stored in a symbol */
-{
-	return(mpsl_get_symbol(M1));
-}
-
-
-static mpdm_v _O_assign(mpdm_v c, mpdm_v a)
-/* assigns value to a symbol */
-{
-	return(mpsl_set_symbol(M1, M2));
-}
-
-
-static mpdm_v _O_exec(mpdm_v c, mpdm_v a)
-/* executes an executable value */
-{
-	return(mpdm_exec(M1, M2));
-}
-
-
-static mpdm_v _O_if(mpdm_v c, mpdm_v a)
-/* if/then/else structure */
-{
-	mpdm_v ret=NULL;
-
-	if(mpsl_is_true(M1))
-		ret=M2;
-	else
-	if(mpdm_size(c) > 3)
-		ret=M3;
-
-	return(ret);
-}
-
-
-static mpdm_v _O_while(mpdm_v c, mpdm_v a)
-/* while structure */
-{
-	while(mpsl_is_true(M1))
-		M2;
-
-	return(NULL);
-}
-
+static mpdm_v _O_symval(mpdm_v c, mpdm_v a) { return(mpsl_get_symbol(M1)); }
+static mpdm_v _O_assign(mpdm_v c, mpdm_v a) { return(mpsl_set_symbol(M1, M2)); }
+static mpdm_v _O_exec(mpdm_v c, mpdm_v a) { return(mpdm_exec(M1, M2)); }
+static mpdm_v _O_if(mpdm_v c, mpdm_v a) { return(mpsl_is_true(M1) ? M2 : M3); }
+static mpdm_v _O_while(mpdm_v c, mpdm_v a) { while(mpsl_is_true(M1)) M2; return(NULL); }
 
 static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
 /* runs an instruction inside a subroutine frame */
@@ -454,59 +395,12 @@ static mpdm_v _O_local(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_uminus(mpdm_v c, mpdm_v a)
-/* unary minus */
-{
-	return(MPDM_R(mpdm_rval(M1) * -1));
-}
-
-
-static mpdm_v _O_brmath(mpdm_v c, mpdm_v a)
-/* binary, real math operations */
-{
-	mpsl_op op;
-	double r, r1, r2;
-
-	/* gets the opcode */
-	op=(mpsl_op) mpdm_ival(C0);
-
-	r1=mpdm_rval(M1);
-	r2=mpdm_rval(M2);
-
-	switch(op)
-	{
-	case MPSL_OP_ADD: r = r1 + r2; break;
-	case MPSL_OP_SUB: r = r1 - r2; break;
-	case MPSL_OP_MUL: r = r1 * r2; break;
-	case MPSL_OP_DIV: r = r1 / r2; break;
-	default: r=0; break;
-	}
-
-	return(MPDM_R(r));
-}
-
-
-static mpdm_v _O_bimath(mpdm_v c, mpdm_v a)
-/* binary, integer math operations */
-{
-	mpsl_op op;
-	int i, i1, i2;
-
-	/* gets the opcode */
-	op=(mpsl_op) mpdm_ival(C0);
-
-	i1=mpdm_ival(M1);
-	i2=mpdm_ival(M2);
-
-	switch(op)
-	{
-	case MPSL_OP_MOD: i = i1 % i2; break;
-	default: i=0; break;
-	}
-
-	return(MPDM_I(i));
-}
-
+static mpdm_v _O_uminus(mpdm_v c, mpdm_v a) { return(MPDM_R(-mpdm_rval(M1))); }
+static mpdm_v _O_add(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) + mpdm_rval(M2))); }
+static mpdm_v _O_sub(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) - mpdm_rval(M2))); }
+static mpdm_v _O_mul(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) * mpdm_rval(M2))); }
+static mpdm_v _O_div(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) / mpdm_rval(M2))); }
+static mpdm_v _O_mod(mpdm_v c, mpdm_v a) { return(MPDM_I(mpdm_ival(M1) % mpdm_ival(M2))); }
 
 static mpdm_v _O_immmath(mpdm_v c, mpdm_v a)
 /* immediate math operations */
@@ -553,56 +447,14 @@ static mpdm_v _O_immmath(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_not(mpdm_v c, mpdm_v a)
-/* boolean 'not' */
-{
-	return(mpsl_boolean(! mpsl_is_true(M1)));
-}
+static mpdm_v _O_not(mpdm_v c, mpdm_v a) { return(mpsl_boolean(! mpsl_is_true(M1))); }
+static mpdm_v _O_and(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(mpsl_is_true(r) ? M2 : r); }
+static mpdm_v _O_or(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(mpsl_is_true(r) ? r : M2); }
 
-
-static mpdm_v _O_and(mpdm_v c, mpdm_v a)
-/* boolean 'and' */
-{
-	mpdm_v v;
-	mpdm_v w;
-	mpdm_v ret=NULL;
-
-	v=M1;
-
-	if(mpsl_is_true(v))
-	{
-		w=M2;
-
-		if(mpsl_is_true(w))
-			ret=w;
-	}
-
-	return(ret);
-}
-
-
-static mpdm_v _O_or(mpdm_v c, mpdm_v a)
-/* boolean 'or' */
-{
-	mpdm_v v;
-	mpdm_v w;
-	mpdm_v ret=NULL;
-
-	v=M1;
-
-	if(mpsl_is_true(v))
-		ret=v;
-	else
-	{
-		w=M2;
-
-		if(mpsl_is_true(w))
-			ret=w;
-	}
-
-	return(ret);
-}
-
+static mpdm_v _O_numlt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) < mpdm_rval(M2))); }
+static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) <= mpdm_rval(M2))); }
+static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) > mpdm_rval(M2))); }
+static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
 
 static mpdm_v _O_nbool(mpdm_v c, mpdm_v a)
 /* boolean numeric comparisons */
@@ -639,18 +491,8 @@ static mpdm_v _O_nbool(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_strcat(mpdm_v c, mpdm_v a)
-/* string concatenation */
-{
-	return(mpdm_strcat(M1, M2));
-}
-
-
-static mpdm_v _O_streq(mpdm_v c, mpdm_v a)
-/* string comparison */
-{
-	return(MPDM_I(mpdm_cmp(M1, M2)));
-}
+static mpdm_v _O_strcat(mpdm_v c, mpdm_v a) { return(mpdm_strcat(M1, M2)); }
+static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(MPDM_I(mpdm_cmp(M1, M2))); }
 
 
 /**
@@ -678,7 +520,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
 	switch(op)
 	{
 	case MPSL_OP_MULTI: ret=_O_multi(c, a); break;
-	case MPSL_OP_LITERAL: ret=_O_literal(c); break;
+	case MPSL_OP_LITERAL: ret=_O_literal(c, a); break;
 	case MPSL_OP_LIST: ret=_O_list(c, a); break;
 	case MPSL_OP_HASH: ret=_O_hash(c, a); break;
 	case MPSL_OP_SYMVAL: ret=_O_symval(c, a); break;
@@ -690,11 +532,11 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
 	case MPSL_OP_BLKFRAME: ret=_O_blkframe(c, a); break;
 	case MPSL_OP_LOCAL: ret=_O_local(c, a); break;
 	case MPSL_OP_UMINUS: ret=_O_uminus(c, a); break;
-	case MPSL_OP_ADD: /* falls */
-	case MPSL_OP_SUB: /* falls */
-	case MPSL_OP_MUL: /* falls */
-	case MPSL_OP_DIV: ret=_O_brmath(c, a); break;
-	case MPSL_OP_MOD: ret=_O_bimath(c, a); break;
+	case MPSL_OP_ADD: ret=_O_add(c, a); break;
+	case MPSL_OP_SUB: ret=_O_sub(c, a); break;
+	case MPSL_OP_MUL: ret=_O_mul(c, a); break;
+	case MPSL_OP_DIV: ret=_O_div(c, a); break;
+	case MPSL_OP_MOD: ret=_O_mod(c, a); break;
 	case MPSL_OP_PINC: /* falls */
 	case MPSL_OP_PDEC: /* falls */
 	case MPSL_OP_SINC: /* falls */
@@ -706,11 +548,11 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
 	case MPSL_OP_NOT: ret=_O_not(c, a); break;
 	case MPSL_OP_AND: ret=_O_and(c, a); break;
 	case MPSL_OP_OR: ret=_O_or(c, a); break;
-	case MPSL_OP_NUMEQ: /* falls */
-	case MPSL_OP_NUMLT: /* falls */
-	case MPSL_OP_NUMLE: /* falls */
-	case MPSL_OP_NUMGT: /* falls */
-	case MPSL_OP_NUMGE: ret=_O_nbool(c, a); break;
+	case MPSL_OP_NUMEQ: ret=_O_nbool(c, a); break;
+	case MPSL_OP_NUMLT: ret=_O_numlt(c, a); break;
+	case MPSL_OP_NUMLE: ret=_O_numle(c, a); break;
+	case MPSL_OP_NUMGT: ret=_O_numgt(c, a); break;
+	case MPSL_OP_NUMGE: ret=_O_numge(c, a); break;
 	case MPSL_OP_STRCAT: ret=_O_strcat(c, a); break;
 	case MPSL_OP_STREQ: ret=_O_streq(c, a); break;
 	}
