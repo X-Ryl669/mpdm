@@ -60,44 +60,15 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
 
 
 /**
- * fdm_new - Creates a new value.
+ * _fdm_new - Creates a new value, without caching.
  * @tag: flags and type
  * @data: pointer to real data
  * @size: size of data
  *
- * Creates a new value. @tag is an or-ed set of flags and an optional
- * user-defined type, @data is a pointer to the data the value will
- * store and @size the size of these data. The flags in @tag define
- * how the data will be stored and its behaviour:
- *
- * If the FDM_COPY flag is set, the value will store a copy of the data
- * using an allocated block of memory. Otherwise, the @data pointer is
- * stored inside the value as is.
- *
- * If FDM_STRING is set, it means @data can be treated as a string
- * (i.e., operations like strcmp() or strlen() can be done on it).
- * Otherwise, @data is treated as an opaque value. For FDM_STRING
- * values, @size can be -1 to force a calculation using strlen().
- * This flag is incompatible with FDM_MULTIPLE.
- *
- * If FDM_INTEGER is set, it means @data holds an integer instead of
- * a pointer to void. The integer value will be converted to string
- * and stored as the value's data and cached internally for future
- * use. FDM_INTEGER implies FDM_COPY and FDM_STRING, and is incompatible
- * with FDM_MULTIPLE.
- *
- * IF FDM_MULTIPLE is set, it means the value itself is an array
- * of values. @Size indicates the number of elements instead of
- * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
- * FDM_STRING. For FDM_MULTIPLE values, @data is usually NULL
- * (meaning to allocate a NULL-initialized array of @size values),
- * but can also be the @data pointer of another multiple value;
- * in this case, the values will be re-referenced.
- *
- * The user defined type optionally stored in @tag must range
- * from 0 to FDM_FLAGS_MASK-1.
+ * Creates a new value, without caching usual values. See fdm_new()
+ * for details.
  */
-fdm_v fdm_new(int tag, void * data, int size)
+fdm_v _fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
 	char tmp[32];
@@ -177,6 +148,80 @@ fdm_v fdm_new(int tag, void * data, int size)
 	if(_fdm.tail != NULL) _fdm.tail->next=v;
 	_fdm.tail=v;
 	_fdm.count ++;
+
+	return(v);
+}
+
+
+/**
+ * fdm_new - Creates a new value.
+ * @tag: flags and type
+ * @data: pointer to real data
+ * @size: size of data
+ *
+ * Creates a new value. @tag is an or-ed set of flags and an optional
+ * user-defined type, @data is a pointer to the data the value will
+ * store and @size the size of these data. The flags in @tag define
+ * how the data will be stored and its behaviour:
+ *
+ * If the FDM_COPY flag is set, the value will store a copy of the data
+ * using an allocated block of memory. Otherwise, the @data pointer is
+ * stored inside the value as is.
+ *
+ * If FDM_STRING is set, it means @data can be treated as a string
+ * (i.e., operations like strcmp() or strlen() can be done on it).
+ * Otherwise, @data is treated as an opaque value. For FDM_STRING
+ * values, @size can be -1 to force a calculation using strlen().
+ * This flag is incompatible with FDM_MULTIPLE.
+ *
+ * If FDM_INTEGER is set, it means @data holds an integer instead of
+ * a pointer to void. The integer value will be converted to string
+ * and stored as the value's data and cached internally for future
+ * use. FDM_INTEGER implies FDM_COPY and FDM_STRING, and is incompatible
+ * with FDM_MULTIPLE.
+ *
+ * IF FDM_MULTIPLE is set, it means the value itself is an array
+ * of values. @Size indicates the number of elements instead of
+ * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
+ * FDM_STRING. For FDM_MULTIPLE values, @data is usually NULL
+ * (meaning to allocate a NULL-initialized array of @size values),
+ * but can also be the @data pointer of another multiple value;
+ * in this case, the values will be re-referenced.
+ *
+ * The user defined type optionally stored in @tag must range
+ * from 0 to FDM_FLAGS_MASK-1.
+ */
+fdm_v fdm_new(int tag, void * data, int size)
+{
+	static fdm_v _fdm_0=NULL;
+	static fdm_v _fdm_1=NULL;
+	static fdm_v _fdm_empty=NULL;
+	fdm_v v;
+
+	/* first time init */
+	if(_fdm_0 == NULL)
+	{
+		_fdm_0=_fdm_new(FDM_INTEGER, (void *)0, -1);
+		_fdm_1=_fdm_new(FDM_INTEGER, (void *)1, -1);
+		_fdm_empty=_fdm_new(FDM_STRING, "", 0);
+	}
+
+	if(tag & FDM_STRING)
+	{
+		if(*((char *)data) == '0')
+			v=_fdm_empty;
+	}
+	else
+	if(tag & FDM_INTEGER)
+	{
+		if((int) data == 0)
+			v=_fdm_0;
+		else
+		if((int) data == 1)
+			v=_fdm_1;
+	}
+	else
+		v=_fdm_new(tag, data, size);
 
 	return(v);
 }
@@ -389,32 +434,4 @@ fdm_v fdm_root(void)
 	}
 
 	return(_fdm.root);
-}
-
-
-fdm_v fdm_c_new(int tag, void * data, int size)
-{
-	static fdm_v _fdm_0 = fdm_new(FDM_INTEGER, (void *)0, -1);
-	static fdm_v _fdm_1 = fdm_new(FDM_INTEGER, (void *)1, -1);
-	static fdm_v _fdm_empty = fdm_new(FDM_STRING, "", -1);
-	fdm_v v;
-
-	if(tag & FDM_STRING)
-	{
-		if(*((char *)data) == '0')
-			v=_fdm_empty;
-	}
-	else
-	if(tag & FDM_INTEGER)
-	{
-		if((int) data == 0)
-			v=_fdm_0;
-		else
-		if((int) data == 1)
-			v=_fdm_1;
-	}
-	else
-		v=fdm_new(tag, data, size);
-
-	return(v);
 }
