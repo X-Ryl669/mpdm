@@ -20,7 +20,7 @@ void yyerror(char * s);
 %token WHILE IF SUB DUMP
 %nonassoc ELSE
 
-%left STREQ NUMEQ STRNE NUMNE HASHKV '>''<'
+%left STREQ NUMEQ STRNE NUMNE HASHPAIR '>''<'
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -51,14 +51,15 @@ list:
 	;
 
 hash:
-	expr HASHKV expr	{ $$=FDM_H(0); fdm_hset($$, $1, $3); }
-	| hash ',' expr HASHKV expr { fdm_hset($1, $3, $5); }
+	expr HASHPAIR expr		{ $$=FDM_H(0); fdm_hset($$, $1, $3); }
+	| hash ',' expr HASHPAIR expr	{ fdm_hset($1, $3, $5); }
 
 expr:
 	INTEGER			{ $$ = $1; }
 	| STRING		{ $$ = $1; }
 	| SYMBOL		{ $$ = fdm_sget(NULL, $1); }
 	| SYMBOL '(' list ')'	{ printf("call!!!\n"); fdm_dump($3, 0); }
+
 	| expr '+' expr		{ $$ = FDM_I(fdm_ival($1) + fdm_ival($3)); }
 	| expr '-' expr		{ $$ = FDM_I(fdm_ival($1) - fdm_ival($3)); }
 	| expr '*' expr		{ $$ = FDM_I(fdm_ival($1) * fdm_ival($3)); }
@@ -71,8 +72,12 @@ expr:
 	| expr STRNE expr	{ $$ = FDM_I(fdm_cmp($1, $3) != 0); }
 	| expr '?' expr ':' expr { $$ = fdm_ival($1) ? $3 : $5; }
 	| '(' expr ')'		{ $$ = $2; }
+
+	| '[' ']'		{ $$ = FDM_A(0); }
 	| '[' list ']'		{ $$ = $2; }
-	| '[' hash ']'		{ $$ = $2; }
+
+	| '{' '}'		{ $$ = FDM_H(0); }
+	| '{' hash '}'		{ $$ = $2; }
 	;
 
 %%
