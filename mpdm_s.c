@@ -256,7 +256,7 @@ double mpdm_rval(mpdm_v v)
 		double r=0.0;
 
 		/* if it's a string, calculate it; other
-		   values will have an ival of 0 */
+		   values will have an rval of 0.0 */
 		if(v->flags & MPDM_STRING)
 			swscanf((wchar_t *)v->data, L"%lf", &r);
 
