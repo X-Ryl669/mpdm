@@ -87,7 +87,10 @@ static void _mpdm_free(mpdm_v v)
 
 		/* free data if needed */
 		if(v->data != NULL && v->flags & MPDM_FREE)
+		{
+			_mpdm->memory_usage -= v->size;
 			free(v->data);
+		}
 
 		free(v);
 	}
@@ -136,6 +139,10 @@ mpdm_v mpdm_new(int flags, void * data, int size)
 		_mpdm->cur=v;
 
 		_mpdm->count ++;
+
+		/* count memory if data is dynamic */
+		if(flags & MPDM_FREE)
+			_mpdm->memory_usage += size;
 	}
 
 	return(v);
