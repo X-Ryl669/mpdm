@@ -252,6 +252,41 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 }
 
 
+void mpsl_local_add_subframe(void)
+{
+	/* if local symbol table don't exist, create */
+	if(_mpsl_local == NULL)
+		_mpsl_local=mpdm_ref(MPDM_A(0));
+
+	/* creates a new array for holding the hashes */
+	mpdm_apush(_mpsl_local, MPDM_A(0));
+}
+
+
+void mpsl_local_del_subframe(void)
+{
+	/* simply pops the subframe */
+	mpdm_apop(_mpsl_local);
+}
+
+
+mpdm_v mpsl_local_add_blkframe(void)
+{
+	mpdm_v v = MPDM_H(0);
+
+	/* pushes a new hash onto the last subframe */
+	mpdm_apush(mpdm_aget(_mpsl_local, -1), v);
+	return(v);
+}
+
+
+void mpsl_local_del_blkframe(void)
+{
+	/* simply pops the blkframe */
+	mpdm_apop(mpdm_aget(_mpsl_local, -1));
+}
+
+
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 /* runs an instruction under a subroutine frame */
 {
@@ -260,15 +295,9 @@ static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 	mpdm_v l;
 	int n;
 
-	/* if local symbol table don't exist, create */
-	if(_mpsl_local == NULL)
-		_mpsl_local=mpdm_ref(MPDM_A(0));
-
-	/* creates a subroutine frame */
-	l=MPDM_H(0);
-	v=MPDM_A(1);
-	mpdm_aset(v, l, 0);
-	mpdm_apush(_mpsl_local, v);
+	/* creates subroutine and block frames */
+	mpsl_local_add_subframe();
+	l=mpsl_local_add_blkframe();
 
 	/* if the instruction has 3 elements, 3rd is the argument list */
 	if(mpdm_size(c) > 2)
@@ -284,8 +313,8 @@ static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 	/* execute instruction */
 	ret=_mpsl_machine(mpdm_aget(c, 1), args);
 
-	/* destroys the subroutine frame */
-	mpdm_apop(_mpsl_local);
+	/* destroys the frames */
+	mpsl_local_del_subframe();
 
 	return(ret);
 }
