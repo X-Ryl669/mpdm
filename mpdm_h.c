@@ -48,49 +48,37 @@ static int _mpdm_hash_func(wchar_t * string, int mod)
 }
 
 
-/**
- * mpdm_hsize - Returns the number of pairs of a hash
- * @h: the hash
- *
- * Returns the number of key-value pairs of a hash.
- */
-int mpdm_hsize(mpdm_v h)
+#define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
+
+
+/* tie functions */
+
+static mpdm_v _tie_hsize(mpdm_v a)
+/* tie function for hsize */
 {
-	int r;
-	mpdm_v t;
-
-	if((t=mpdm_get_tie(h, MPDM_TIE_HSIZE)) != NULL)
-		r=mpdm_ival(mpdm_exec(t, h));
-	else
-		r=h->ival;
-
-	return(r);
+	return(MPDM_I(a->ival));
 }
 
 
-#define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
-
-/**
- * mpdm_hget - Gets a value from a hash.
- * @h: the hash
- * @k: the key
- *
- * Gets the value from the hash @h having @k as key, or
- * NULL if the key does not exist.
- */
-mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
+static mpdm_v _tie_hget(mpdm_v a)
+/* tie function for hget */
 {
 	int n;
+	mpdm_v h;
+	mpdm_v k;
 	mpdm_v b;
 	mpdm_v v = NULL;
 
-	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
-		v=mpdm_exec_2(b, h, k);
-	else
+	/* gets hash and key */
+	h=mpdm_aget(a, 0);
+	k=mpdm_aget(a, 1);
+
 	if(mpdm_size(h))
 	{
+		/* if hash is not empty... */
 		if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
 		{
+			/* if bucket exists, binary-seek it */
 			if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
 				v=mpdm_aget(b, n + 1);
 		}
@@ -100,24 +88,20 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 }
 
 
-/**
- * mpdm_hset - Sets a value in a hash.
- * @h: the hash
- * @k: the key
- * @v: the value
- *
- * Sets the value @v to the key @k in the hash @h. Returns
- * the previous value of the key, or NULL if the key was
- * previously undefined.
- */
-mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
+static mpdm_v _tie_hset(mpdm_v a)
+/* tie function for hset */
 {
 	int n, pos;
+	mpdm_v h;
+	mpdm_v k;
+	mpdm_v v;
 	mpdm_v b;
 	mpdm_v p = NULL;
 
-	if((b=mpdm_get_tie(h, MPDM_TIE_HSET)) != NULL)
-		return(mpdm_exec_3(b, h, k, v));
+	/* take hash, key and value */
+	h=mpdm_aget(a, 0);
+	k=mpdm_aget(a, 1);
+	v=mpdm_aget(a, 2);
 
 	/* if hash is empty, create an optimal number of buckets */
 	if(mpdm_size(h) == 0)
@@ -127,6 +111,7 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 
 	if((b=mpdm_aget(h, n)) != NULL)
 	{
+		/* bucket exists; try to find the key there */
 		if((n=mpdm_abseek(b, k, 2, &pos)) < 0)
 		{
 			/* the pair does not exist: create it */
@@ -161,28 +146,24 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 }
 
 
-/**
- * mpdm_hdel - Deletes a key from a hash.
- * @h: the hash
- * @k: the key
- *
- * Deletes the key @k from the hash @h. Returns the previous
- * value, or NULL if the key was not defined.
- */
-mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
+static mpdm_v _tie_hdel(mpdm_v a)
+/* tie function for hdel */
 {
 	int n;
+	mpdm_v h;
+	mpdm_v k;
 	mpdm_v b;
 	mpdm_v v = NULL;
 
-	if((b=mpdm_get_tie(h, MPDM_TIE_HDEL)) != NULL)
-		v=mpdm_exec_2(b, h, k);
-	else
+	h=mpdm_aget(a, 0);
+	k=mpdm_aget(a, 1);
+
 	if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
 	{
+		/* bucket exists */
 		if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
 		{
-			/* the pair exists: set both to NULL */
+			/* the pair exists: set key and value to NULL */
 			mpdm_aset(b, NULL, n);
 			v=mpdm_aset(b, NULL, n + 1);
 
@@ -198,23 +179,17 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 }
 
 
-/**
- * mpdm_hkeys - Returns the keys of a hash.
- * @h: the hash
- *
- * Returns an array containing all the keys of the @h hash.
- */
-mpdm_v mpdm_hkeys(mpdm_v h)
+static mpdm_v _tie_hkeys(mpdm_v h)
+/* tie function for hkeys */
 {
 	int n,m,i;
-	mpdm_v a;
 	mpdm_v b;
+	mpdm_v a;
 
-	if((b=mpdm_get_tie(h, MPDM_TIE_HKEYS)) != NULL)
-		return(mpdm_exec(b, h));
-
+	/* create an array with the same number of elements */
 	a=MPDM_A(mpdm_hsize(h));
 
+	/* sequentially fill with keys */
 	for(n=i=0;n < mpdm_size(h);n++)
 	{
 		if((b=mpdm_aget(h, n)) != NULL)
@@ -225,6 +200,128 @@ mpdm_v mpdm_hkeys(mpdm_v h)
 	}
 
 	return(a);
+}
+
+
+mpdm_v _mpdm_tie_hash(void)
+/* tie for hashes */
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		/* clone the tie for arrays */
+		_tie=mpdm_ref(mpdm_clone(_mpdm_tie_mul()));
+
+		mpdm_aset(_tie, MPDM_X(_tie_hsize), MPDM_TIE_HSIZE);
+		mpdm_aset(_tie, MPDM_X(_tie_hget), MPDM_TIE_HGET);
+		mpdm_aset(_tie, MPDM_X(_tie_hset), MPDM_TIE_HSET);
+		mpdm_aset(_tie, MPDM_X(_tie_hdel), MPDM_TIE_HDEL);
+		mpdm_aset(_tie, MPDM_X(_tie_hkeys), MPDM_TIE_HKEYS);
+	}
+
+	return(_tie);
+}
+
+
+/* interface */
+
+
+/**
+ * mpdm_hsize - Returns the number of pairs of a hash
+ * @h: the hash
+ *
+ * Returns the number of key-value pairs of a hash.
+ */
+int mpdm_hsize(mpdm_v h)
+{
+	int r=0;
+	mpdm_v t;
+
+	if((t=mpdm_get_tie(h, MPDM_TIE_HSIZE)) != NULL)
+		r=mpdm_ival(mpdm_exec(t, h));
+
+	return(r);
+}
+
+
+/**
+ * mpdm_hget - Gets a value from a hash.
+ * @h: the hash
+ * @k: the key
+ *
+ * Gets the value from the hash @h having @k as key, or
+ * NULL if the key does not exist.
+ */
+mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
+{
+	mpdm_v b;
+	mpdm_v v = NULL;
+
+	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
+		v=mpdm_exec_2(b, h, k);
+
+	return(v);
+}
+
+
+/**
+ * mpdm_hset - Sets a value in a hash.
+ * @h: the hash
+ * @k: the key
+ * @v: the value
+ *
+ * Sets the value @v to the key @k in the hash @h. Returns
+ * the previous value of the key, or NULL if the key was
+ * previously undefined.
+ */
+mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
+{
+	mpdm_v b;
+	mpdm_v r = NULL;
+
+	if((b=mpdm_get_tie(h, MPDM_TIE_HSET)) != NULL)
+		r=mpdm_exec_3(b, h, k, v);
+
+	return(r);
+}
+
+
+/**
+ * mpdm_hdel - Deletes a key from a hash.
+ * @h: the hash
+ * @k: the key
+ *
+ * Deletes the key @k from the hash @h. Returns the previous
+ * value, or NULL if the key was not defined.
+ */
+mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
+{
+	mpdm_v b;
+	mpdm_v v = NULL;
+
+	if((b=mpdm_get_tie(h, MPDM_TIE_HDEL)) != NULL)
+		v=mpdm_exec_2(b, h, k);
+
+	return(v);
+}
+
+
+/**
+ * mpdm_hkeys - Returns the keys of a hash.
+ * @h: the hash
+ *
+ * Returns an array containing all the keys of the @h hash.
+ */
+mpdm_v mpdm_hkeys(mpdm_v h)
+{
+	mpdm_v b;
+	mpdm_v v = NULL;
+
+	if((b=mpdm_get_tie(h, MPDM_TIE_HKEYS)) != NULL)
+		v=mpdm_exec(b, h);
+
+	return(v);
 }
 
 
