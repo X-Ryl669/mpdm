@@ -140,33 +140,6 @@ mpdm_v mpsl_true_or_false(int b)
 }
 
 
-mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
-{
-	mpdm_sset(NULL, s, v);
-	return(v);
-}
-
-
-mpdm_v mpsl_get_symbol(mpdm_v s)
-{
-	int n;
-	mpdm_v l;
-
-	l=mpdm_aget(_mpsl_local, -1);
-
-	/* travel the local symbol table trying to find it */
-	for(n=mpdm_size(l) - 1;n >=0;n--)
-	{
-		mpdm_v h = mpdm_aget(l, n);
-
-		if(mpdm_hexists(h, s))
-			return(mpdm_hget(h, s));
-	}
-
-	return(mpdm_sget(NULL, s));
-}
-
-
 mpdm_v mpsl_local_add_subframe(void)
 {
 	/* if local symbol table don't exist, create */
@@ -196,6 +169,56 @@ void mpsl_local_del_blkframe(void)
 {
 	/* simply pops the blkframe */
 	mpdm_apop(mpdm_aget(_mpsl_local, -1));
+}
+
+
+mpdm_v mpsl_local_find_symbol(mpdm_v s)
+{
+	int n;
+	mpdm_v l;
+	mpdm_v v = NULL;
+
+	l=mpdm_aget(_mpsl_local, -1);
+
+	/* travel the local symbol table trying to find it */
+	for(n=mpdm_size(l) - 1;n >=0;n--)
+	{
+		mpdm_v h = mpdm_aget(l, n);
+
+		if(mpdm_hexists(h, s))
+		{
+			v=h;
+			break;
+		}
+	}
+
+	return(v);
+}
+
+
+mpdm_v mpsl_set_symbol(mpdm_v s, mpdm_v v)
+{
+	mpdm_v l;
+
+	if((l=mpsl_local_find_symbol(s)) != NULL)
+	{
+		mpdm_hset(l, s, v);
+		return(v);
+	}
+
+	mpdm_sset(NULL, s, v);
+	return(v);
+}
+
+
+mpdm_v mpsl_get_symbol(mpdm_v s)
+{
+	mpdm_v l;
+
+	if((l=mpsl_local_find_symbol(s)) != NULL)
+		return(mpdm_hget(l, s));
+
+	return(mpdm_sget(NULL, s));
 }
 
 
