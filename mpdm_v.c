@@ -48,18 +48,6 @@ static struct
 	Code
 ********************/
 
-static void * _fdm_malloc(size_t size)
-{
-	return(malloc(size));
-}
-
-
-static void _fdm_free(void * ptr)
-{
-	free(ptr);
-}
-
-
 static void _fdm_nref(fdm_v v[], int count, int iref)
 {
 	int n;
@@ -99,7 +87,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	}
 
 	/* alloc new value and init */
-	if((v=(fdm_v) _fdm_malloc(sizeof(struct _fdm_v))) == NULL)
+	if((v=(fdm_v) malloc(sizeof(struct _fdm_v))) == NULL)
 		return(NULL);
 
 	memset(v, '\0', sizeof(struct _fdm_v));
@@ -114,7 +102,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 		s=(flags & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
 
 		/* alloc new space for data */
-		if((v->data=_fdm_malloc(s + 1)) == NULL)
+		if((v->data=malloc(s + 1)) == NULL)
 			return(NULL);
 
 		/* zero or copy the block */
@@ -324,10 +312,10 @@ void fdm_sweep(int count)
 				_fdm_nref((fdm_v *)v->data, v->size, -1);
 
 			/* free data if needed */
-			if(v->flags & FDM_FREE) _fdm_free(v->data);
+			if(v->flags & FDM_FREE) free(v->data);
 
 			/* free the value itself */
-			_fdm_free(v);
+			free(v);
 
 			/* one value less */
 			_fdm.count --;
