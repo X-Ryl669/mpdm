@@ -65,7 +65,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	{
 		/* multiple values are always copies and never strings */
 		flags |= FDM_COPY;
-		flags &= ~ (FDM_STRING | FDM_INTEGER);
+		flags &= ~ (FDM_STRING | FDM_IVAL);
 	}
 
 	/* local copies will be freed */
@@ -220,7 +220,7 @@ fdm_v _fdm_inew(int ival)
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
 
-	v=fdm_new(FDM_COPY | FDM_STRING | FDM_INTEGER, tmp, -1);
+	v=fdm_new(FDM_COPY | FDM_STRING | FDM_IVAL, tmp, -1);
 	v->ival=ival;
 
 	return(v);

@@ -57,7 +57,7 @@ void test_basic(void)
 	i=fdm_ival(v);
 
 	_test("i == 65536", (i == 65536));
-	_test("v has FDM_INTEGER", (v->flags & FDM_INTEGER));
+	_test("v has FDM_IVAL", (v->flags & FDM_IVAL));
 
 	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
 	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
