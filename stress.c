@@ -1,9 +1,9 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
-    stress.c - Stress tests for fdm.
+    stress.c - Stress tests for mpdm.
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "fdm.h"
+#include "mpdm.h"
 
 /* total number of tests and oks */
 int tests=0;
@@ -51,307 +51,307 @@ void _test(char * str, int ok)
 void test_basic(void)
 {
 	int i;
-	fdm_v v;
+	mpdm_v v;
 
-	v=FDM_S("65536");
-	i=fdm_ival(v);
+	v=MPDM_S("65536");
+	i=mpdm_ival(v);
 
 	_test("i == 65536", (i == 65536));
-	_test("v has FDM_IVAL", (v->flags & FDM_IVAL));
+	_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
 
-	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
-	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
+	printf("mpdm_string: %s\n", mpdm_string(MPDM_H(0)));
+	printf("mpdm_string: %s\n", mpdm_string(MPDM_H(0)));
 
 	/* partial copies of strings */
-	v=FDM_LS("this is not America");
-	v=fdm_new(FDM_STRING|FDM_COPY, (char *)v->data + 4, 4);
+	v=MPDM_LS("this is not America");
+	v=mpdm_new(MPDM_STRING|MPDM_COPY, (char *)v->data + 4, 4);
 
-	_test("Partial string values", fdm_cmp(v, FDM_LS(" is ")) == 0);
+	_test("Partial string values", mpdm_cmp(v, MPDM_LS(" is ")) == 0);
 }
 
 
 void test_array(void)
 {
-	fdm_v a;
-	fdm_v v;
+	mpdm_v a;
+	mpdm_v v;
 
-	a=FDM_A(0);
+	a=MPDM_A(0);
 	_test("a->size == 0", (a->size == 0));
 
-	fdm_apush(a, FDM_LS("sunday"));
-	fdm_apush(a, FDM_LS("monday"));
-	fdm_apush(a, FDM_LS("tuesday"));
-	fdm_apush(a, FDM_LS("wednesday"));
-	fdm_apush(a, FDM_LS("thursday"));
-	fdm_apush(a, FDM_LS("friday"));
-	fdm_apush(a, FDM_LS("saturday"));
-	fdm_dump(a);
+	mpdm_apush(a, MPDM_LS("sunday"));
+	mpdm_apush(a, MPDM_LS("monday"));
+	mpdm_apush(a, MPDM_LS("tuesday"));
+	mpdm_apush(a, MPDM_LS("wednesday"));
+	mpdm_apush(a, MPDM_LS("thursday"));
+	mpdm_apush(a, MPDM_LS("friday"));
+	mpdm_apush(a, MPDM_LS("saturday"));
+	mpdm_dump(a);
 	_test("a->size == 7", (a->size == 7));
 
-	v=fdm_aset(a, NULL, 3);
+	v=mpdm_aset(a, NULL, 3);
 	_test("v->ref == 0", (v->ref == 0));
-	fdm_dump(a);
+	mpdm_dump(a);
 
-	fdm_asort(a, 1);
-	_test("NULLs are sorted on top", (fdm_aget(a, 0) == NULL));
+	mpdm_asort(a, 1);
+	_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
 
-	fdm_aset(a, v, 0);
-	v=fdm_aget(a, 3);
+	mpdm_aset(a, v, 0);
+	v=mpdm_aget(a, 3);
 	_test("v is referenced again", (v->ref > 0));
 
-	fdm_asort(a, 1);
-	_test("fdm_asort() works (1)",
-		fdm_cmp(fdm_aget(a,0), FDM_LS("friday")) == 0);
-	_test("fdm_asort() works (2)",
-		fdm_cmp(fdm_aget(a,6), FDM_LS("wednesday")) == 0);
+	mpdm_asort(a, 1);
+	_test("mpdm_asort() works (1)",
+		mpdm_cmp(mpdm_aget(a,0), MPDM_LS("friday")) == 0);
+	_test("mpdm_asort() works (2)",
+		mpdm_cmp(mpdm_aget(a,6), MPDM_LS("wednesday")) == 0);
 
-	v=fdm_aget(a, 3);
-	fdm_acollapse(a, 3, 1);
+	v=mpdm_aget(a, 3);
+	mpdm_acollapse(a, 3, 1);
 	_test("acollapse unrefs values", (v->ref == 0));
 }
 
 
 void test_hash(void)
 {
-	fdm_v h;
-	fdm_v v;
+	mpdm_v h;
+	mpdm_v v;
 	int i, n;
 
-	h=FDM_H(0);
+	h=MPDM_H(0);
 
-	fdm_hset(h, FDM_S("mp"), FDM_I(6));
-	v=fdm_hget(h, FDM_S("mp"));
+	mpdm_hset(h, MPDM_S("mp"), MPDM_I(6));
+	v=mpdm_hget(h, MPDM_S("mp"));
 
 	_test("hash: v != NULL", (v != NULL));
-	i=fdm_ival(v);
+	i=mpdm_ival(v);
 	_test("hash: v == 6", (i == 6));
 
-	fdm_hset(h, FDM_S("mp2"), FDM_I(66));
-	v=fdm_hget(h, FDM_S("mp2"));
+	mpdm_hset(h, MPDM_S("mp2"), MPDM_I(66));
+	v=mpdm_hget(h, MPDM_S("mp2"));
 
 	_test("hash: v != NULL", (v != NULL));
-	i=fdm_ival(v);
+	i=mpdm_ival(v);
 	_test("hash: v == 66", (i == 66));
 
 	/* fills 100 values */
 	for(n=0;n < 50;n++)
-		fdm_hset(h, FDM_I(n), FDM_I(n * 10));
+		mpdm_hset(h, MPDM_I(n), MPDM_I(n * 10));
 	for(n=100;n >= 50;n--)
-		fdm_hset(h, FDM_I(n), FDM_I(n * 10));
+		mpdm_hset(h, MPDM_I(n), MPDM_I(n * 10));
 
 	/* tests 100 values */
 	for(n=0;n < 100;n++)
 	{
-		v=fdm_hget(h, FDM_I(n));
+		v=mpdm_hget(h, MPDM_I(n));
 		_test("hash: hget", (v != NULL));
 
 		if(v != NULL)
 		{
-			i=fdm_ival(v);
+			i=mpdm_ival(v);
 			_test("hash: ival", (i == n * 10));
 		}
 	}
 
-	fdm_dump(h);
+	mpdm_dump(h);
 
 	/* use of non-strings as hashes */
-	h=FDM_H(0);
+	h=MPDM_H(0);
 
-	v=FDM_A(0);
-	fdm_hset(h, v, FDM_I(1234));
-	v=FDM_H(0);
-	fdm_hset(h, v, FDM_I(12345));
-	v=FDM_H(0);
-	fdm_hset(h, v, FDM_I(9876));
-	v=FDM_A(0);
-	fdm_hset(h, v, FDM_I(6543));
-	i=fdm_ival(fdm_hget(h, v));
+	v=MPDM_A(0);
+	mpdm_hset(h, v, MPDM_I(1234));
+	v=MPDM_H(0);
+	mpdm_hset(h, v, MPDM_I(12345));
+	v=MPDM_H(0);
+	mpdm_hset(h, v, MPDM_I(9876));
+	v=MPDM_A(0);
+	mpdm_hset(h, v, MPDM_I(6543));
+	i=mpdm_ival(mpdm_hget(h, v));
 
-	fdm_dump(h);
+	mpdm_dump(h);
 	_test("hash: using non-strings as hash keys", (i == 6543));
 }
 
 
 void test_splice(void)
 {
-	fdm_v w;
-	fdm_v v;
+	mpdm_v w;
+	mpdm_v v;
 
-	w=fdm_splice(FDM_LS("I'm agent Johnson"), FDM_LS("special "), 4, 0);
+	w=mpdm_splice(MPDM_LS("I'm agent Johnson"), MPDM_LS("special "), 4, 0);
 	_test("splice insertion", 
-		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm special agent Johnson")) == 0);
-	fdm_dump(w);
+		mpdm_cmp(mpdm_aget(w, 0), MPDM_LS("I'm special agent Johnson")) == 0);
+	mpdm_dump(w);
 
-	w=fdm_splice(FDM_LS("Life is a shit"), FDM_LS("cheat"), 10, 4);
+	w=mpdm_splice(MPDM_LS("Life is a shit"), MPDM_LS("cheat"), 10, 4);
 	_test("splice insertion and deletion (1)", 
-		fdm_cmp(fdm_aget(w, 0), FDM_LS("Life is a cheat")) == 0);
+		mpdm_cmp(mpdm_aget(w, 0), MPDM_LS("Life is a cheat")) == 0);
 	_test("splice insertion and deletion (2)", 
-		fdm_cmp(fdm_aget(w, 1), FDM_LS("shit")) == 0);
-	fdm_dump(w);
+		mpdm_cmp(mpdm_aget(w, 1), MPDM_LS("shit")) == 0);
+	mpdm_dump(w);
 
-	w=fdm_splice(FDM_LS("I'm with dumb"), NULL, 4, 4);
+	w=mpdm_splice(MPDM_LS("I'm with dumb"), NULL, 4, 4);
 	_test("splice deletion (1)", 
-		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm  dumb")) == 0);
+		mpdm_cmp(mpdm_aget(w, 0), MPDM_LS("I'm  dumb")) == 0);
 	_test("splice deletion (2)", 
-		fdm_cmp(fdm_aget(w, 1), FDM_LS("with")) == 0);
-	fdm_dump(w);
+		mpdm_cmp(mpdm_aget(w, 1), MPDM_LS("with")) == 0);
+	mpdm_dump(w);
 
-	v=FDM_LS("It doesn't matter");
-	w=fdm_splice(v, FDM_LS(" two"), v->size, 0);
+	v=MPDM_LS("It doesn't matter");
+	w=mpdm_splice(v, MPDM_LS(" two"), v->size, 0);
 	_test("splice insertion at the end", 
-		fdm_cmp(fdm_aget(w, 0), FDM_LS("It doesn't matter two")) == 0);
-	fdm_dump(w);
+		mpdm_cmp(mpdm_aget(w, 0), MPDM_LS("It doesn't matter two")) == 0);
+	mpdm_dump(w);
 
-	w=fdm_splice(NULL, NULL, 0, 0);
-	_test("splice with two NULLS", (fdm_aget(w, 0) == NULL));
+	w=mpdm_splice(NULL, NULL, 0, 0);
+	_test("splice with two NULLS", (mpdm_aget(w, 0) == NULL));
 
-	w=fdm_splice(NULL, FDM_LS("foo"), 0, 0);
+	w=mpdm_splice(NULL, MPDM_LS("foo"), 0, 0);
 	_test("splice with first value NULL",
-		(fdm_cmp(fdm_aget(w, 0), FDM_LS("foo")) == 0));
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS("foo")) == 0));
 
-	w=fdm_splice(FDM_LS("foo"), NULL, 0, 0);
+	w=mpdm_splice(MPDM_LS("foo"), NULL, 0, 0);
 	_test("splice with second value NULL",
-		(fdm_cmp(fdm_aget(w, 0), FDM_LS("foo")) == 0));
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS("foo")) == 0));
 }
 
 
 void test_asplit(void)
 {
-	fdm_v w;
+	mpdm_v w;
 
-	printf("fdm_asplit test\n\n");
+	printf("mpdm_asplit test\n\n");
 
-	w=fdm_asplit(FDM_S("."), FDM_S("four.elems.in.string"));
-	fdm_dump(w);
+	w=mpdm_asplit(MPDM_S("."), MPDM_S("four.elems.in.string"));
+	mpdm_dump(w);
 	_test("4 elems: ", (w->size == 4));
 
-	w=fdm_asplit(FDM_S("."), FDM_S("unseparated string"));
-	fdm_dump(w);
+	w=mpdm_asplit(MPDM_S("."), MPDM_S("unseparated string"));
+	mpdm_dump(w);
 	_test("1 elem: ", (w->size == 1));
 
-	w=fdm_asplit(FDM_S("."), FDM_S(".dot.at start"));
-	fdm_dump(w);
+	w=mpdm_asplit(MPDM_S("."), MPDM_S(".dot.at start"));
+	mpdm_dump(w);
 	_test("3 elems: ", (w->size == 3));
 
-	w=fdm_asplit(FDM_S("."), FDM_S("dot.at end."));
-	fdm_dump(w);
+	w=mpdm_asplit(MPDM_S("."), MPDM_S("dot.at end."));
+	mpdm_dump(w);
 	_test("3 elems: ", (w->size == 3));
 
-	w=fdm_asplit(FDM_S("."), FDM_S("three...dots (two empty elements)"));
-	fdm_dump(w);
+	w=mpdm_asplit(MPDM_S("."), MPDM_S("three...dots (two empty elements)"));
+	mpdm_dump(w);
 	_test("4 elems: ", (w->size == 4));
 
-	w=fdm_asplit(FDM_S("."), FDM_S("."));
-	fdm_dump(w);
+	w=mpdm_asplit(MPDM_S("."), MPDM_S("."));
+	mpdm_dump(w);
 	_test("2 elems: ", (w->size == 2));
 }
 
 
 void test_ajoin(void)
 {
-	fdm_v v;
-	fdm_v s;
-	fdm_v w;
+	mpdm_v v;
+	mpdm_v s;
+	mpdm_v w;
 
-	printf("fdm_ajoin test\n\n");
+	printf("mpdm_ajoin test\n\n");
 
 	/* separator */
-	s=FDM_LS("--");
+	s=MPDM_LS("--");
 
-	w=FDM_A(1);
-	fdm_aset(w, FDM_S("ce"), 0);
+	w=MPDM_A(1);
+	mpdm_aset(w, MPDM_S("ce"), 0);
 
-	v=fdm_ajoin(NULL, w);
-	_test("1 elem, no separator", (fdm_cmp(v, FDM_LS("ce")) == 0));
+	v=mpdm_ajoin(NULL, w);
+	_test("1 elem, no separator", (mpdm_cmp(v, MPDM_LS("ce")) == 0));
 
-	v=fdm_ajoin(s, w);
-	_test("1 elem, '--' separator", (fdm_cmp(v, FDM_LS("ce")) == 0));
+	v=mpdm_ajoin(s, w);
+	_test("1 elem, '--' separator", (mpdm_cmp(v, MPDM_LS("ce")) == 0));
 
-	fdm_apush(w, FDM_LS("n'est"));
-	v=fdm_ajoin(s, w);
-	_test("2 elems, '--' separator", (fdm_cmp(v, FDM_LS("ce--n'est")) == 0));
+	mpdm_apush(w, MPDM_LS("n'est"));
+	v=mpdm_ajoin(s, w);
+	_test("2 elems, '--' separator", (mpdm_cmp(v, MPDM_LS("ce--n'est")) == 0));
 
-	fdm_apush(w, FDM_LS("pas"));
-	v=fdm_ajoin(s, w);
-	_test("3 elems, '--' separator", (fdm_cmp(v, FDM_LS("ce--n'est--pas")) == 0));
+	mpdm_apush(w, MPDM_LS("pas"));
+	v=mpdm_ajoin(s, w);
+	_test("3 elems, '--' separator", (mpdm_cmp(v, MPDM_LS("ce--n'est--pas")) == 0));
 
-	v=fdm_ajoin(NULL, w);
-	_test("3 elems, no separator", (fdm_cmp(v, FDM_LS("cen'estpas")) == 0));
+	v=mpdm_ajoin(NULL, w);
+	_test("3 elems, no separator", (mpdm_cmp(v, MPDM_LS("cen'estpas")) == 0));
 }
 
 
 void test_sym(void)
 {
-	fdm_v v;
+	mpdm_v v;
 	int i;
 
-	printf("fdm_sset / fdm_sget tests\n\n");
+	printf("mpdm_sset / mpdm_sget tests\n\n");
 
-	fdm_sset(NULL, FDM_LS("mp"), FDM_H(7));
-	fdm_sset(NULL, FDM_LS("mp.config"), FDM_H(7));
-	fdm_sset(NULL, FDM_LS("mp.config.auto_indent"), FDM_I(16384));
-	fdm_sset(NULL, FDM_LS("mp.config.use_regex"), FDM_I(1357));
-	fdm_sset(NULL, FDM_LS("mp.config.gtk_font_face"), FDM_LS("profontwindows"));
-	fdm_sset(NULL, FDM_LS("mp.lines"), FDM_A(2));
-	fdm_sset(NULL, FDM_LS("mp.lines.0"), FDM_LS("First post!"));
-	fdm_sset(NULL, FDM_LS("mp.lines.1"), FDM_LS("Second post!"));
-	fdm_dump(fdm_root());
+	mpdm_sset(NULL, MPDM_LS("mp"), MPDM_H(7));
+	mpdm_sset(NULL, MPDM_LS("mp.config"), MPDM_H(7));
+	mpdm_sset(NULL, MPDM_LS("mp.config.auto_indent"), MPDM_I(16384));
+	mpdm_sset(NULL, MPDM_LS("mp.config.use_regex"), MPDM_I(1357));
+	mpdm_sset(NULL, MPDM_LS("mp.config.gtk_font_face"), MPDM_LS("profontwindows"));
+	mpdm_sset(NULL, MPDM_LS("mp.lines"), MPDM_A(2));
+	mpdm_sset(NULL, MPDM_LS("mp.lines.0"), MPDM_LS("First post!"));
+	mpdm_sset(NULL, MPDM_LS("mp.lines.1"), MPDM_LS("Second post!"));
+	mpdm_dump(mpdm_root());
 
-	v=fdm_sget(NULL, FDM_LS("mp.config.auto_indent"));
-	i=fdm_ival(v);
+	v=mpdm_sget(NULL, MPDM_LS("mp.config.auto_indent"));
+	i=mpdm_ival(v);
 
 	_test("auto_indent == 16384", (i == 16384));
 
-	fdm_sweep(-1);
+	mpdm_sweep(-1);
 }
 
 
 void test_file(void)
 {
-	fdm_v f;
-	fdm_v v;
-	fdm_v w;
+	mpdm_v f;
+	mpdm_v v;
+	mpdm_v w;
 
-	f=fdm_open(FDM_LS("test.txt"), FDM_LS("w"));
+	f=mpdm_open(MPDM_LS("test.txt"), MPDM_LS("w"));
 	_test("Create test.txt", f != NULL);
 
-	fdm_write(f, FDM_LS("0"));
-	fdm_write(f, FDM_LS("1"));
+	mpdm_write(f, MPDM_LS("0"));
+	mpdm_write(f, MPDM_LS("1"));
 
 	/* test an array */
-	v=FDM_A(4);
-	fdm_aset(v, FDM_LS("2.0"), 0);
-	fdm_aset(v, FDM_LS("2.1"), 1);
-	fdm_aset(v, FDM_LS("2.2"), 2);
+	v=MPDM_A(4);
+	mpdm_aset(v, MPDM_LS("2.0"), 0);
+	mpdm_aset(v, MPDM_LS("2.1"), 1);
+	mpdm_aset(v, MPDM_LS("2.2"), 2);
 
-	w=FDM_A(2);
-	fdm_aset(w, FDM_LS("3.0.0"), 0);
-	fdm_aset(w, FDM_LS("3.0.1"), 1);
-	fdm_aset(v, w, 3);
+	w=MPDM_A(2);
+	mpdm_aset(w, MPDM_LS("3.0.0"), 0);
+	mpdm_aset(w, MPDM_LS("3.0.1"), 1);
+	mpdm_aset(v, w, 3);
 
-	fdm_write(f, v);
+	mpdm_write(f, v);
 
 	/* write its own file pointer */
-	fdm_write(f, f);
+	mpdm_write(f, f);
 
-	fdm_close(f);
+	mpdm_close(f);
 
-	f=fdm_open(FDM_LS("test.txt"), FDM_LS("r"));
+	f=mpdm_open(MPDM_LS("test.txt"), MPDM_LS("r"));
 
-	_test("test written file 0", fdm_cmp(fdm_read(f), FDM_LS("0")) == 0);
-	_test("test written file 1", fdm_cmp(fdm_read(f), FDM_LS("1")) == 0);
-	_test("test written file 2.0", fdm_cmp(fdm_read(f), FDM_LS("2.0")) == 0);
-	_test("test written file 2.1", fdm_cmp(fdm_read(f), FDM_LS("2.1")) == 0);
-	_test("test written file 2.2", fdm_cmp(fdm_read(f), FDM_LS("2.2")) == 0);
-	_test("test written file 3.0.1", fdm_cmp(fdm_read(f), FDM_LS("3.0.0")) == 0);
-	_test("test written file 3.0.2", fdm_cmp(fdm_read(f), FDM_LS("3.0.1")) == 0);
-	v=fdm_read(f);
-	fdm_dump(v);
+	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS("0")) == 0);
+	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS("1")) == 0);
+	_test("test written file 2.0", mpdm_cmp(mpdm_read(f), MPDM_LS("2.0")) == 0);
+	_test("test written file 2.1", mpdm_cmp(mpdm_read(f), MPDM_LS("2.1")) == 0);
+	_test("test written file 2.2", mpdm_cmp(mpdm_read(f), MPDM_LS("2.2")) == 0);
+	_test("test written file 3.0.1", mpdm_cmp(mpdm_read(f), MPDM_LS("3.0.0")) == 0);
+	_test("test written file 3.0.2", mpdm_cmp(mpdm_read(f), MPDM_LS("3.0.1")) == 0);
+	v=mpdm_read(f);
+	mpdm_dump(v);
 
-	fdm_close(f);
+	mpdm_close(f);
 
-	fdm_unlink(FDM_LS("test.txt"));
-	_test("unlink", fdm_open(FDM_LS("test.txt"), FDM_LS("r")) == NULL);
+	mpdm_unlink(MPDM_LS("test.txt"));
+	_test("unlink", mpdm_open(MPDM_LS("test.txt"), MPDM_LS("r")) == NULL);
 }
 
 

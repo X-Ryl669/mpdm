@@ -1,8 +1,8 @@
-fdm_a.o: fdm_a.c config.h fdm.h
-fdm_d.o: fdm_d.c config.h fdm.h
-fdm_f.o: fdm_f.c config.h fdm.h
-fdm_h.o: fdm_h.c config.h fdm.h
-fdm_s.o: fdm_s.c config.h fdm.h
-fdm_v.o: fdm_v.c config.h fdm.h
-gnu_regex.o: gnu_regex.c config.h gnu_regex.h
-stress.o: stress.c fdm.h
+gnu_regex.o: gnu_regex.c config.h
+mpdm_a.o: mpdm_a.c config.h mpdm.h
+mpdm_d.o: mpdm_d.c config.h mpdm.h
+mpdm_f.o: mpdm_f.c config.h mpdm.h
+mpdm_h.o: mpdm_h.c config.h mpdm.h
+mpdm_s.o: mpdm_s.c config.h mpdm.h
+mpdm_v.o: mpdm_v.c config.h mpdm.h
+stress.o: stress.c mpdm.h

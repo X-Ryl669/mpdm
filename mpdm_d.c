@@ -1,9 +1,9 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
-    fdm_d.c - Debugging utilities
+    mpdm_d.c - Debugging utilities
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 
-#include "fdm.h"
+#include "mpdm.h"
 
 /*******************
 	Data
@@ -37,12 +37,12 @@
 	Code
 ********************/
 
-void _fdm_dump(fdm_v v, int l)
+void _mpdm_dump(mpdm_v v, int l)
 {
 	int n;
 	char * ptr;
 
-	ptr=fdm_string(v);
+	ptr=mpdm_string(v);
 
 	/* indent */
 	for(n=0;n < l * 2;n++)
@@ -55,24 +55,24 @@ void _fdm_dump(fdm_v v, int l)
 	}
 
 	printf("%d,%c%c%c%c:", v->ref,
-		v->flags & FDM_COPY	? 'C' : (v->flags & FDM_FREE ? 'F' : '-'),
-		v->flags & FDM_FILE	? 'F' : (v->flags & FDM_STRING	? 'S' : '-'),
-		v->flags & FDM_HASH	? 'H' : (v->flags & FDM_MULTIPLE ? 'M' : '-'),
-		v->flags & FDM_IVAL	? 'I' : '-');
+		v->flags & MPDM_COPY	? 'C' : (v->flags & MPDM_FREE ? 'F' : '-'),
+		v->flags & MPDM_FILE	? 'F' : (v->flags & MPDM_STRING	? 'S' : '-'),
+		v->flags & MPDM_HASH	? 'H' : (v->flags & MPDM_MULTIPLE ? 'M' : '-'),
+		v->flags & MPDM_IVAL	? 'I' : '-');
 
-	if(v->flags & FDM_MULTIPLE)
+	if(v->flags & MPDM_MULTIPLE)
 	{
 		printf("[%d]\n", v->size);
 
 		for(n=0;n < v->size;n++)
-			_fdm_dump(fdm_aget(v, n), l + 1);
+			_mpdm_dump(mpdm_aget(v, n), l + 1);
 	}
 	else
 		printf("%s\n", ptr);
 }
 
 
-void fdm_dump(fdm_v v)
+void mpdm_dump(mpdm_v v)
 {
-	_fdm_dump(v, 0);
+	_mpdm_dump(v, 0);
 }

@@ -1,6 +1,6 @@
 /*
 
-    fdm - Filp Data Manager
+    mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
     This program is free software; you can redistribute it and/or
@@ -22,82 +22,82 @@
 */
 
 /* structural flags */
-#define FDM_COPY	0x00000001	/* create a copy of data */
-#define FDM_STRING	0x00000002	/* data can be string-compared */
-#define FDM_MULTIPLE	0x00000004	/* data is multiple */
-#define FDM_FREE	0x00000008	/* data must be freed on destroy */
+#define MPDM_COPY	0x00000001	/* create a copy of data */
+#define MPDM_STRING	0x00000002	/* data can be string-compared */
+#define MPDM_MULTIPLE	0x00000004	/* data is multiple */
+#define MPDM_FREE	0x00000008	/* data must be freed on destroy */
 
-#define FDM_IVAL	0x00000010	/* integer value cached in .ival */
+#define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 
 /* 'informative' flags */
-#define FDM_HASH	0x00010000	/* data is a hash */
-#define FDM_FILE	0x00020000	/* data is a FILE * */
-#define FDM_BINCODE	0x00040000	/* data is executable binary code */
+#define MPDM_HASH	0x00010000	/* data is a hash */
+#define MPDM_FILE	0x00020000	/* data is a FILE * */
+#define MPDM_BINCODE	0x00040000	/* data is executable binary code */
 
-#define FDM_A(n)	fdm_new(FDM_MULTIPLE,NULL,n)
-#define FDM_H(n)	fdm_new(FDM_MULTIPLE|FDM_HASH,NULL,n)
-#define FDM_LS(s)	fdm_new(FDM_STRING,s,-1)
-#define FDM_S(s)	fdm_new(FDM_STRING|FDM_COPY,s,-1)
-#define FDM_I(i)	_fdm_inew((i))
+#define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n)
+#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH,NULL,n)
+#define MPDM_LS(s)	mpdm_new(MPDM_STRING,s,-1)
+#define MPDM_S(s)	mpdm_new(MPDM_STRING|MPDM_COPY,s,-1)
+#define MPDM_I(i)	_mpdm_inew((i))
 
-typedef struct _fdm_v * fdm_v;
+typedef struct _mpdm_v * mpdm_v;
 
-struct _fdm_v
+struct _mpdm_v
 {
 	int flags;	/* value flags */
 	int ref;	/* reference count */
 	int size;	/* data size */
 	void * data;	/* the real data */
 	int ival;	/* cached integer value */
-	fdm_v next;	/* next in chain */
+	mpdm_v next;	/* next in chain */
 };
 
-fdm_v fdm_new(int flags, void * data, int size);
-int fdm_ref(fdm_v v);
-int fdm_unref(fdm_v v);
-void fdm_sweep(int count);
+mpdm_v mpdm_new(int flags, void * data, int size);
+int mpdm_ref(mpdm_v v);
+int mpdm_unref(mpdm_v v);
+void mpdm_sweep(int count);
 
-fdm_v fdm_clone(fdm_v v);
-fdm_v fdm_root(void);
+mpdm_v mpdm_clone(mpdm_v v);
+mpdm_v mpdm_root(void);
 
-void fdm_aexpand(fdm_v a, int offset, int num);
-void fdm_acollapse(fdm_v a, int offset, int num);
-fdm_v fdm_aset(fdm_v a, fdm_v e, int offset);
-fdm_v fdm_aget(fdm_v a, int offset);
-void fdm_ains(fdm_v a, fdm_v e, int offset);
-fdm_v fdm_adel(fdm_v a, int offset);
-void fdm_apush(fdm_v a, fdm_v e);
-fdm_v fdm_apop(fdm_v a);
-fdm_v fdm_aqueue(fdm_v a, fdm_v e, int size);
-int fdm_aseek(fdm_v a, fdm_v k, int step);
-int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos);
-void fdm_asort(fdm_v a, int step);
+void mpdm_aexpand(mpdm_v a, int offset, int num);
+void mpdm_acollapse(mpdm_v a, int offset, int num);
+mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset);
+mpdm_v mpdm_aget(mpdm_v a, int offset);
+void mpdm_ains(mpdm_v a, mpdm_v e, int offset);
+mpdm_v mpdm_adel(mpdm_v a, int offset);
+void mpdm_apush(mpdm_v a, mpdm_v e);
+mpdm_v mpdm_apop(mpdm_v a);
+mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size);
+int mpdm_aseek(mpdm_v a, mpdm_v k, int step);
+int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos);
+void mpdm_asort(mpdm_v a, int step);
 
-fdm_v fdm_asplit(fdm_v s, fdm_v a);
-fdm_v fdm_ajoin(fdm_v s, fdm_v a);
+mpdm_v mpdm_asplit(mpdm_v s, mpdm_v a);
+mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a);
 
-char * fdm_string(fdm_v v);
-fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
-fdm_v fdm_strcat(fdm_v s1, fdm_v s2);
-int fdm_cmp(fdm_v v1, fdm_v v2);
-int fdm_ival(fdm_v v);
-fdm_v _fdm_inew(int ival);
+char * mpdm_string(mpdm_v v);
+mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del);
+mpdm_v mpdm_strcat(mpdm_v s1, mpdm_v s2);
+int mpdm_cmp(mpdm_v v1, mpdm_v v2);
+int mpdm_ival(mpdm_v v);
+mpdm_v _mpdm_inew(int ival);
 
-fdm_v fdm_hget(fdm_v h, fdm_v k);
-fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
-fdm_v fdm_hdel(fdm_v h, fdm_v k);
-fdm_v fdm_hkeys(fdm_v h);
+mpdm_v mpdm_hget(mpdm_v h, mpdm_v k);
+mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v);
+mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k);
+mpdm_v mpdm_hkeys(mpdm_v h);
 
-void fdm_dump(fdm_v v);
+void mpdm_dump(mpdm_v v);
 
-#define FDM_SGET(r, k) fdm_sget((r), FDM_LS((k)))
-#define FDM_SSET(r, k, v) fdm_sset((r), FDM_LS((k)), (v))
+#define MPDM_SGET(r, k) mpdm_sget((r), MPDM_LS((k)))
+#define MPDM_SSET(r, k, v) mpdm_sset((r), MPDM_LS((k)), (v))
 
-fdm_v fdm_sget(fdm_v r, fdm_v k);
-fdm_v fdm_sset(fdm_v r, fdm_v k, fdm_v v);
+mpdm_v mpdm_sget(mpdm_v r, mpdm_v k);
+mpdm_v mpdm_sset(mpdm_v r, mpdm_v k, mpdm_v v);
 
-fdm_v fdm_open(fdm_v filename, fdm_v mode);
-int fdm_close(fdm_v fd);
-fdm_v fdm_read(fdm_v fd);
-int fdm_write(fdm_v fd, fdm_v v);
-int fdm_unlink(fdm_v filename);
+mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode);
+int mpdm_close(mpdm_v fd);
+mpdm_v mpdm_read(mpdm_v fd);
+int mpdm_write(mpdm_v fd, mpdm_v v);
+int mpdm_unlink(mpdm_v filename);
