@@ -73,7 +73,7 @@ static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
 };
 
 %token <v> NULLV INTEGER REAL STRING SYMBOL LITERAL
-%token WHILE IF SUB FOREACH LOCAL
+%token WHILE IF SUB FOREACH LOCAL BREAK RETURN
 %nonassoc IFI
 %nonassoc ELSE
 
@@ -185,7 +185,14 @@ stmt:
 							INS1(L"LITERAL", $2),$4)
 						);
 				}
-
+	| BREAK ';'		{
+					/* break (exit from loop) */
+					$$ = INS0(L"BREAK");
+				}
+	| RETURN expr ';'	{
+					/* return from subroutine */
+					$$ = INS1(L"RETURN", $2);
+				}
 	;
 
 stmt_list:
