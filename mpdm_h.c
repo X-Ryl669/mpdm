@@ -82,12 +82,12 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 	int n;
 	mpdm_v b;
 	mpdm_v v = NULL;
+	static mpdm_v w = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
 	{
-		mpdm_v w;
+		if(w == NULL) w=mpdm_ref(MPDM_A(2));
 
-		w=MPDM_A(2);
 		mpdm_aset(w, h, 0);
 		mpdm_aset(w, k, 1);
 
@@ -122,12 +122,12 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 	int n, pos;
 	mpdm_v b;
 	mpdm_v p = NULL;
+	static mpdm_v w = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HSET)) != NULL)
 	{
-		mpdm_v w;
+		if(w == NULL) w=mpdm_ref(MPDM_A(3));
 
-		w=MPDM_A(3);
 		mpdm_aset(w, h, 0);
 		mpdm_aset(w, k, 1);
 		mpdm_aset(w, v, 2);
@@ -190,12 +190,12 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 	int n;
 	mpdm_v b;
 	mpdm_v v = NULL;
+	static mpdm_v w = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HDEL)) != NULL)
 	{
-		mpdm_v w;
+		if(w == NULL) w=mpdm_ref(MPDM_A(2));
 
-		w=MPDM_A(2);
 		mpdm_aset(w, h, 0);
 		mpdm_aset(w, k, 1);
 

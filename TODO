@@ -1,6 +1,17 @@
 TODO
 ====
 
+ * Beyond ties: suppress all flags (except some internal ones as IVAL
+   or EXEC). Everything should be done with ties; for example, there
+   should exist a _CMP tie function that whould be executed when two
+   values being compared have the same tie (or, better, the same _CMP
+   function). Specially, MPDM_STRING and MPDM_MULTIPLE should disappear.
+   A value will be assumed multiple when having a tie function _AEXPAND
+   (or _AGET, or so). Code will become incidentally clean (no more "if
+   flags & MPDM_" scattered through the code). Risky change!
+ * Rewrite regexes to be like those of php: instead of having two
+   arguments (regex and flags), be both the same, using / as first
+   character and as a separator from flags.
  * Create a tie function for mpdm_dump().
  * Create some versions of functions that avoid doing boundary checks
    when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).
