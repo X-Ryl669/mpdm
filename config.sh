@@ -43,7 +43,12 @@ echo "# automatically created by config.sh - do not modify" > makefile.opts
 if [ "$CC" = "" ] ; then
 	CC=cc
 	# if CC is unset, try if gcc is available
-	which gcc > /dev/null && CC=gcc
+	which gcc > /dev/null
+
+	if [ $? = 0 ] ; then
+		CC=gcc
+		echo "#define _GNU_SOURCE 1" >> config.h
+	fi
 fi
 
 # set archiver
