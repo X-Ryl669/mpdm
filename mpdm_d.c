@@ -48,7 +48,12 @@ void fdm_dump(fdm_v v, int l)
 	for(n=0;n < l * 2;n++)
 		printf(" ");
 
-	printf("[%d,%08X] ", v->ref, v->tag);
+	printf("%d,[%c%c%c%c],%d:", v->ref,
+		v->tag & FDM_COPY     ? 'C' : ' ',
+		v->tag & FDM_STRING   ? 'S' : ' ',
+		v->tag & FDM_MULTIPLE ? 'M' : ' ',
+		v->tag & FDM_INTEGER  ? 'I' : ' ',
+		FDM_TYPE(v->tag));
 
 	if(v->tag & FDM_MULTIPLE)
 	{
@@ -56,8 +61,6 @@ void fdm_dump(fdm_v v, int l)
 
 		for(n=0;n < v->size;n++)
 			fdm_dump(fdm_aget(v, n), l + 1);
-
-		printf(")");
 	}
 	else
 	if(v->tag & FDM_STRING)
