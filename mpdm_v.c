@@ -147,7 +147,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 	{
 		int s;
 
-		s=(tag & FDM_MULTIPLE) ? s * sizeof(fdm_v) : s;
+		s=(tag & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
 
 		/* alloc new space for data */
 		if((v->data=malloc(s)) == NULL)
