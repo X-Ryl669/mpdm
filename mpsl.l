@@ -25,20 +25,20 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {INTEGER}	{
 			/* integer */
-			yylval.v=MPDM_S(yytext);
+			yylval.v=MPDM_MBS(yytext);
 			return(INTEGER);
 		}
 
 {REAL}		{
 			/* real numbers */
-			yylval.v=MPDM_S(yytext);
+			yylval.v=MPDM_MBS(yytext);
 			return(REAL);
 		}
 
 \"[^"]*\"	{
 			/* string includes quotes; strip them */
 			yytext[yyleng - 1]='\0';
-			yylval.v=MPDM_S(yytext + 1);
+			yylval.v=MPDM_MBS(yytext + 1);
 			return(STRING);
 		}
 
@@ -59,7 +59,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {SYMBOL}	{
 			/* symbol name */
-			yylval.v=MPDM_S(yytext);
+			yylval.v=MPDM_MBS(yytext);
 			return(SYMBOL);
 		}
 
