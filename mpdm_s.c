@@ -298,14 +298,12 @@ double mpdm_rval(mpdm_v v)
 mpdm_v _mpdm_inew(int ival)
 {
 	mpdm_v v;
-	wchar_t wtmp[32];
 	char tmp[32];
 
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp), "%d", ival);
-	mbstowcs(wtmp, tmp, sizeof(wtmp));
 
-	v=MPDM_S(wtmp);
+	v=MPDM_MBS(tmp);
 	v->flags |= MPDM_IVAL;
 	v->ival=ival;
 
@@ -316,7 +314,6 @@ mpdm_v _mpdm_inew(int ival)
 mpdm_v _mpdm_rnew(double rval)
 {
 	mpdm_v v;
-	wchar_t wtmp[128];
 	char tmp[128];
 	char * ptr;
 
@@ -331,9 +328,7 @@ mpdm_v _mpdm_rnew(double rval)
 		*ptr='\0';
 	}
 
-	mbstowcs(wtmp, tmp, sizeof(wtmp));
-
-	v=MPDM_S(wtmp);
+	v=MPDM_MBS(tmp);
 	v->flags |= MPDM_RVAL;
 	v->rval=rval;
 
