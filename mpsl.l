@@ -100,6 +100,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "-="		return IMMSUB;
 "*="		return IMMMUL;
 "/="		return IMMDIV;
+"%"		return MODULO;
 
 {SYMBOL}	{
 			/* symbol name */
