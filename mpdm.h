@@ -33,7 +33,11 @@
 #define MPDM_FILE	0x00020000	/* data is a FILE * */
 #define MPDM_EXEC	0x00040000	/* data is 'executable' */
 
+/* dynamic (standard) values */
 typedef struct _mpdm_v * mpdm_v;
+
+/* non-dynamic values */
+typedef struct _mpdm_v mpdm_ndv;
 
 struct _mpdm_v
 {
@@ -145,6 +149,14 @@ mpdm_v _mpdm_tie_wcstombs(void);
 #define MPDM_MBS(s)	_mpdm_new_mbs(s,-1,_mpdm_tie_mbstowcs())
 #define MPDM_2MBS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_wcstombs())
 #define MPDM_F(f)	mpdm_new(MPDM_FILE|MPDM_DESTROY,f,0,_tie_file())
+
+#define MPDM_ND_LS(v,s) memset(&v, '\0', sizeof(v)); \
+			v.flags=MPDM_STRING; v.data=s; \
+			v.size=sizeof(s) / sizeof(wchar_t);
+
+#define MPDM_ND_A(v,a) memset(&v, '\0', sizeof(v)); \
+			v.flags=MPDM_MULTIPLE; v.data=&a; \
+			v.size=sizeof(a) / sizeof(mpdm_v);
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
