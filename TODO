@@ -9,8 +9,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1030: non-dyn array values are completely broken; the creation
-   should include the array of values and not take it from mpdm_alloc().
 
 Open Bugs
 ---------
@@ -85,5 +83,8 @@ Closed
    instance MPDM_ND_BEGIN() and MPDM_ND_END(), could save
    / restore a static index to that pool. Instead, the allocation
    from the pool would just wrap (Wed, 08 Dec 2004 16:52:21 +0100).
+ * 1030: non-dyn array values are completely broken; the creation
+   should include the array of values and not take it from mpdm_alloc().
+   (Wed, 08 Dec 2004 19:16:05 +0100).
 
 Email bugs to angel@triptico.com

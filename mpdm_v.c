@@ -44,55 +44,36 @@ struct _mpdm_ctl * _mpdm=NULL;
 	Code
 ********************/
 
-mpdm_v mpdm_alloc(int flags, int count)
+mpdm_v mpdm_alloc(int flags)
 {
 	mpdm_v v=NULL;
 
 	if(flags & MPDM_NONDYN)
 	{
-		if(count > 1)
-		{
-			/* if more than one value is queried,they must
-			   be contiguous, so resize the pool to satisfy
-			   it; as this should be used only with small
-			   arrays, the pool will never grow too much */
-			if(_mpdm->nd_index + count > _mpdm->nd_size)
-			{
-				_mpdm->nd_size = _mpdm->nd_index + count;
-				_mpdm->nd_pool=realloc(_mpdm->nd_pool,
-					sizeof(struct _mpdm_v) *
-					_mpdm->nd_size);
-			}
-		}
-
 		/* return next one */
-		v=&_mpdm->nd_pool[_mpdm->nd_index];
+		v=&_mpdm->nd_pool[_mpdm->nd_index++];
 
 		/* skip to next and wrap */
-		_mpdm->nd_index += count;
-		_mpdm->nd_index %= _mpdm->nd_size;
+		if(_mpdm->nd_index >= _mpdm->nd_size)
+			_mpdm->nd_index=0;
 	}
 	else
 	{
 		/* if it's dynamic, just alloc */
-		v=malloc(sizeof(struct _mpdm_v) * count);
+		v=malloc(sizeof(struct _mpdm_v));
 	}
-
-	/* reset */
-	if(v != NULL)
-		memset(v, '\0', sizeof(struct _mpdm_v) * count);
 
 	return(v);
 }
 
 
-void mpdm_free(mpdm_v v, int count)
+void mpdm_free(mpdm_v v)
 {
 	if(v->flags & MPDM_NONDYN)
 	{
 		/* count back */
-		_mpdm->nd_index -= count;
-		_mpdm->nd_index %= _mpdm->nd_size;
+		if(-- _mpdm->nd_index <= 0)
+			_mpdm->nd_index = _mpdm->nd_size - 1;
 	}
 	else
 		free(v);
@@ -126,8 +107,10 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 		mpdm_sweep(_mpdm->count - _mpdm->high_threshold);
 
 	/* alloc new value */
-	if((v=mpdm_alloc(flags, 1)) == NULL)
+	if((v=mpdm_alloc(flags)) == NULL)
 		return(NULL);
+
+	memset(v, '\0', sizeof(struct _mpdm_v));
 
 	v->flags=flags;
 	v->data=data;
@@ -136,16 +119,19 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	/* tie (can fail) */
 	if((r=mpdm_tie(v, tie)) != NULL)
 	{
-		/* add to the value chain and count */
-		if(_mpdm->head == NULL) _mpdm->head=v;
-		if(_mpdm->tail != NULL) _mpdm->tail->next=v;
-		_mpdm->tail=v;
-		_mpdm->count ++;
+		if(! (flags & MPDM_NONDYN))
+		{
+			/* add to the value chain and count */
+			if(_mpdm->head == NULL) _mpdm->head=v;
+			if(_mpdm->tail != NULL) _mpdm->tail->next=v;
+			_mpdm->tail=v;
+			_mpdm->count ++;
+		}
 	}
 	else
 	{
 		/* tie creation failed; free the new value */
-		mpdm_free(v, 1);
+		mpdm_free(v);
 	}
 
 	return(r);
@@ -221,7 +207,7 @@ void mpdm_sweep(int count)
 				mpdm_tie(v, NULL);
 
 				/* free the value itself */
-				mpdm_free(v, 1);
+				mpdm_free(v);
 
 				/* one value less */
 				_mpdm->count--;
@@ -343,16 +329,12 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 
 mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
 {
-	mpdm_v a;
+	mpdm_v av[2] = { a1, a2 };
 	mpdm_v r;
 
 	MPDM_ND_BEGIN();
 
-	a=MPDM_ND_A(2);
-	mpdm_aset(a, a1, 0);
-	mpdm_aset(a, a2, 1);
-
-	r=mpdm_exec(c, a);
+	r=mpdm_exec(c, MPDM_ND_A(2, av));
 
 	MPDM_ND_END();
 
@@ -362,17 +344,12 @@ mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
 
 mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 {
-	mpdm_v a;
+	mpdm_v av[3] = { a1, a2, a3 };
 	mpdm_v r;
 
 	MPDM_ND_BEGIN();
 
-	a=MPDM_ND_A(3);
-	mpdm_aset(a, a1, 0);
-	mpdm_aset(a, a2, 1);
-	mpdm_aset(a, a3, 2);
-
-	r=mpdm_exec(c, a);
+	r=mpdm_exec(c, MPDM_ND_A(3, av));
 
 	MPDM_ND_END();
 
@@ -444,7 +421,9 @@ int mpdm_startup(void)
 		_mpdm->high_threshold=0;
 
 		/* alloc the non-dyn pool */
-		mpdm_alloc(MPDM_NONDYN, 16);
+		_mpdm->nd_size=16;
+		_mpdm->nd_pool=malloc(sizeof(struct _mpdm_v) *
+			_mpdm->nd_size);
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
