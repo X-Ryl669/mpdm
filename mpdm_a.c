@@ -397,7 +397,16 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 }
 
 
-fdm_v fdm_asplit(fdm_v s, fdm_v a)
+/**
+ * fdm_asplit - Separates a string into an array of pieces
+ * @s: the separator
+ * @v: the value to be separated
+ *
+ * Separates the @v string value in an array of pieces, using @s
+ * as a separator. If the string does not contain the separator,
+ * an array holding the complete string is returned.
+ */
+fdm_v fdm_asplit(fdm_v s, fdm_v v)
 {
 	fdm_v w;
 	char * wrk;
@@ -407,8 +416,8 @@ fdm_v fdm_asplit(fdm_v s, fdm_v a)
 	w=FDM_A(0);
 
 	/* create a working copy */
-	wrk=malloc(a->size + 1);
-	memcpy(wrk, a->data, a->size + 1);
+	wrk=malloc(v->size + 1);
+	memcpy(wrk, v->data, v->size + 1);
 
 	/* break string into pieces */
 	for(ptr1=ptr2=wrk;*ptr2 != '\0' &&
