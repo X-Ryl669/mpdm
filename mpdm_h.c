@@ -65,7 +65,7 @@ fdm_v fdm_hget(fdm_v h, fdm_v k)
 	n=HASH_BUCKET(h, k);
 	if((b=fdm_aget(h, n)) != NULL)
 	{
-		if((n=fdm_abseek(b, k, 2)) >= 0)
+		if((n=fdm_abseek(b, k, 2, NULL)) >= 0)
 			v=fdm_aget(b, n + 1);
 	}
 
@@ -85,7 +85,7 @@ fdm_v fdm_hget(fdm_v h, fdm_v k)
  */
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v)
 {
-	int n;
+	int n, pos;
 	fdm_v b;
 	fdm_v p = NULL;
 
@@ -96,10 +96,10 @@ fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v)
 	n=HASH_BUCKET(h, k);
 	if((b=fdm_aget(h, n)) != NULL)
 	{
-		if((n=fdm_abseek(b, k, 2)) < 0)
+		if((n=fdm_abseek(b, k, 2, &pos)) < 0)
 		{
 			/* the pair does not exist: create it */
-			n *= -1;
+			n = pos;
 			fdm_aexpand(b, n, 2);
 			fdm_aset(b, k, n);
 		}
@@ -141,7 +141,7 @@ fdm_v fdm_hdel(fdm_v h, fdm_v k)
 	n=HASH_BUCKET(h, k);
 	if((b=fdm_aget(h, n)) != NULL)
 	{
-		if((n=fdm_abseek(b, k, 2)) > 0)
+		if((n=fdm_abseek(b, k, 2, NULL)) >= 0)
 		{
 			/* the pair exists: set both to NULL */
 			fdm_aset(b, NULL, n);
