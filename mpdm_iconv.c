@@ -174,13 +174,23 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 			o=i;
 		}
 		else
+		{
+			/* resize block to match exactly the processed bytes */
+			if(n)
+			{
+				o -= n;
+				op=realloc(op, o);
+			}
+
 			break;
+		}
 	}
 
 	if(from)
 	{
 		/* converting from enc to wchar_t: create a string value */
-		v=MPDM_NS((wchar_t *)op, o / sizeof(wchar_t));
+		v=mpdm_new(MPDM_STRING,
+			(wchar_t *)op, o / sizeof(wchar_t), _mpdm_tie_fre());
 	}
 	else
 	{
