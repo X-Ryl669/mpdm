@@ -829,13 +829,17 @@ void test_encoding(void)
 	_test("Locale encoding", mpdm_cmp(w, v) == 0);
 	mpdm_close(f);
 
-	mpdm_encoding(MPDM_LS(L"UTF-8"));
+	if(mpdm_encoding(MPDM_LS(L"UTF-8")) < 0)
+	{
+		printf("No multiple encoding support; no more tests possible.\n");
+		return;
+	}
 
 	/* new open file will use the specified encoding */
-/*	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
+	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 	mpdm_write(f, MPDM_LS(L"¡España!\n"));
 	mpdm_close(f);
-*/
+
 /*	mpdm_v v;
 
 	v=mpdm_iconv_from(MPDM_LS(L"ISO-8859-1"),
