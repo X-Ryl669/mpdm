@@ -225,6 +225,12 @@ mpdm_v mpsl_local_find_symbol(mpdm_v s)
 }
 
 
+mpdm_v mpsl_get_local_symbol_table(void)
+{
+	return(mpdm_aget(mpdm_aget(_mpsl_local, -1), -1));
+}
+
+
 /**
  * mpsl_set_symbol - Sets value to a symbol
  * @s: symbol name
@@ -374,7 +380,7 @@ static mpdm_v _O_local(mpdm_v c, mpdm_v a)
 	mpdm_v v;
 
 	/* gets current local symbol table */
-	l=mpdm_aget(mpdm_aget(_mpsl_local, -1), -1);
+	l=mpsl_get_local_symbol_table();
 
 	/* gets symbol(s) to be created */
 	v=M1;
@@ -456,14 +462,10 @@ static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) <
 static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) > mpdm_rval(M2))); }
 static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
 
-static mpdm_v _O_numeq(mpdm_v c, mpdm_v a)
-/* boolean numeric comparisons */
-{
-	mpdm_v v1, v2;
-
-	v1=M1; v2=M2;
-
-	return(mpsl_boolean((v1 == NULL || v2 == NULL) ? (v1 == v2) : (mpdm_rval(v1) == mpdm_rval(v2))));
+static mpdm_v _O_numeq(mpdm_v c, mpdm_v a) {
+	mpdm_v v1, v2; v1=M1; v2=M2;
+	return(mpsl_boolean((v1 == NULL || v2 == NULL) ?
+	(v1 == v2) : (mpdm_rval(v1) == mpdm_rval(v2))));
 }
 
 
