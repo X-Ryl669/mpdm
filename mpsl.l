@@ -38,7 +38,7 @@ void yyerror(char * s);
 "!="		return NUMNE;
 "eq"		return STREQ;
 "ne"		return STRNE;
-"=>"		return HASHKV;
+"=>"		return HASHPAIR;
 
 [A-Za-z_\.]+	{
 			/* symbol name */
