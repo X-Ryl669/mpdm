@@ -186,7 +186,7 @@ void mpdm_sweep(int count)
 	if(count == -1) count=_mpdm->count;
 
 	/* if count is zero, sweep 'some' values */
-	if(count == 0) count=16;
+	if(count == 0) count=_mpdm->default_sweep;
 
 	while(count > 0 && _mpdm->count > _mpdm->low_threshold)
 	{
@@ -380,6 +380,7 @@ int mpdm_startup(void)
 
 		/* sets the defaults */
 		_mpdm->low_threshold=16;
+		_mpdm->default_sweep=16;
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
