@@ -144,10 +144,15 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
  * @v: the value to be matched
  * @offset: offset from the start of v->data
  *
- * Matches a regular expression against a value.
+ * Matches a regular expression against a value. Valid flags are 'i',
+ * for case-insensitive matching, and 'c', to return the coordinates
+ * where the match has been found (offset and size) instead of the
+ * found substring.
  *
- * If the regex is matched, returns a two value array containing
- * the offset and size of the matched string, or NULL otherwise.
+ * If the regex is not matched, returns NULL. If it's matched, the
+ * matched string is returned unless the 'c' flag is used; in that
+ * case, a two element array is returned, with the offset as the
+ * first one and the size as the second.
  */
 mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 {
@@ -158,19 +163,34 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 	/* compile the regex */
 	if((cr=_mpdm_regcomp(r)) != NULL)
 	{
+		mpdm_v vmb;
+
 		/* convert to mbs */
-		v=MPDM_2MBS(v->data);
+		vmb=MPDM_2MBS(v->data);
 
 		/* match? */
 		if(regexec((regex_t *) cr->data,
-			(char *) v->data + offset, 1,
+			(char *) vmb->data + offset, 1,
 			&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 		{
-			/* found! */
-			w=MPDM_A(2);
+			wchar_t * ptr=_regex_flags(r);
 
-			mpdm_aset(w, MPDM_I(offset + rm.rm_so), 0);
-			mpdm_aset(w, MPDM_I(rm.rm_eo - rm.rm_so), 1);
+			/* found; test if coordinates wanted */
+			if(wcschr(ptr, 'c') != NULL)
+			{
+				w=MPDM_A(2);
+
+				mpdm_aset(w, MPDM_I(offset + rm.rm_so), 0);
+				mpdm_aset(w, MPDM_I(rm.rm_eo - rm.rm_so), 1);
+			}
+			else
+			{
+				/* just the found string wanted */
+				ptr=v->data;
+
+				w=MPDM_NS(ptr + offset + rm.rm_so,
+					rm.rm_eo - rm.rm_so);
+			}
 		}
 	}
 
