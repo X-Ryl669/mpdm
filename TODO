@@ -7,9 +7,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1039: SUB_PREFIX and SUB_POSTFIX should be only one instruction,
-   that create the prefix / execute things / destroy the prefix,
-   instead of two.
 
 Open Bugs
 ---------
@@ -103,5 +100,8 @@ Closed
    (Tue, 14 Dec 2004 13:06:53 +0100).
  * 1038: Implement the '&&' and '||' boolean operands
    (Wed, 15 Dec 2004 17:02:12 +0100).
+ * 1039: SUB_PREFIX and SUB_POSTFIX should be only one instruction,
+   that create the prefix / execute things / destroy the prefix,
+   instead of two (Thu, 16 Dec 2004 09:08:38 +0100).
 
 Email bugs to angel@triptico.com
