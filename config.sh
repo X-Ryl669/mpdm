@@ -153,6 +153,19 @@ if [ "$REGEX_YET" != 1 ] ; then
 	fi
 fi
 
+# unistd.h detection
+echo -n "Testing for unistd.h... "
+echo "#include <unistd.h>" > .tmp.c
+echo "int main(void) { return(0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_UNISTD_H 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
 
 #########################################################
 
