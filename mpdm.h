@@ -101,5 +101,6 @@ int mpdm_close(mpdm_v fd);
 mpdm_v mpdm_read(mpdm_v fd);
 int mpdm_write(mpdm_v fd, mpdm_v v);
 int mpdm_unlink(mpdm_v filename);
+mpdm_v mpdm_glob(mpdm_v spec);
 
 mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags);
