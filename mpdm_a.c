@@ -503,14 +503,6 @@ static mpdm_v _tie_mul_clo(mpdm_v v)
 }
 
 
-static mpdm_v _tie_nd_mul_c(mpdm_v v)
-/* create tie function for nondyn values */
-{
-	v->data=mpdm_alloc(v->flags, v->size);
-	return(v);
-}
-
-
 static mpdm_v _tie_nd_mul_clo(mpdm_v v)
 /* clone tie function for nondyn values */
 {
@@ -557,7 +549,6 @@ mpdm_v _mpdm_tie_nd_mul(void)
 	if(_tie == NULL)
 	{
 		_tie=mpdm_ref(MPDM_A(0));
-		mpdm_aset(_tie, MPDM_X(_tie_nd_mul_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_nd_mul_clo), MPDM_TIE_CLONE);
 	}
 
