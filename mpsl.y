@@ -49,10 +49,10 @@ extern wchar_t * _mpsl_next_char;
 #define INS2(o,a1,a2)		_ins(o, 2, a1, a2, NULL)
 #define INS3(o,a1,a2,a3)	_ins(o, 3, a1, a2, a3)
 
-static mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
+static mpdm_v _ins(wchar_t * opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 
 /* defined in mpsl_c.c */
-mpdm_v _mpsl_op(mpsl_op opcode);
+mpdm_v _mpsl_op(wchar_t * opcode);
 
 /*******************
 	Code
@@ -61,7 +61,7 @@ mpdm_v _mpsl_op(mpsl_op opcode);
 static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
 {
 	return(MPDM_X2(_mpsl_machine,
-		_ins(MPSL_OP_SUBFRAME, a2 == NULL ? 1 : 2, a1, a2, NULL)));
+		_ins(L"SUBFRAME", a2 == NULL ? 1 : 2, a1, a2, NULL)));
 }
 
 
@@ -103,7 +103,7 @@ function:
 stmt:
 	';'			{
 					/* null instruction */
-					$$ = INS0(MPSL_OP_MULTI);
+					$$ = INS0(L"MULTI");
 				}
 	| expr ';'		{
 					/* expression, as is */
@@ -111,31 +111,31 @@ stmt:
 				}
 	| compsym '=' expr ';'	{
 					/* simple assignation */
-					$$ = INS2(MPSL_OP_ASSIGN, $1, $3);
+					$$ = INS2(L"ASSIGN", $1, $3);
 				}
 
 	| WHILE '(' expr ')' stmt
 				{
 					/* while loop */
-					$$ = INS2(MPSL_OP_WHILE, $3, $5);
+					$$ = INS2(L"WHILE", $3, $5);
 				}
 	| IF '(' expr ')' stmt %prec IFI
 				{
 					/* if - then construction */
-					$$ = INS2(MPSL_OP_IF, $3, $5);
+					$$ = INS2(L"IF", $3, $5);
 				}
 	| IF '(' expr ')' stmt ELSE stmt
 				{
 					/* if - then - else construction */
-					$$ = INS3(MPSL_OP_IF, $3, $5, $7);
+					$$ = INS3(L"IF", $3, $5, $7);
 				}
 
 	| SUB compsym '{' stmt_list '}'
 				{
 					/* subroutine definition,
 					   without arguments */
-					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS1(MPSL_OP_LITERAL,
+					$$ = INS2(L"ASSIGN", $2,
+						INS1(L"LITERAL",
 							_mpsl_x($4, NULL)));
 				}
 
@@ -144,8 +144,8 @@ stmt:
 					/* subroutine definition,
 					   without arguments (second
 					   syntax, including parens) */
-					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS1(MPSL_OP_LITERAL,
+					$$ = INS2(L"ASSIGN", $2,
+						INS1(L"LITERAL",
 							_mpsl_x($6, NULL)));
 				}
 
@@ -153,36 +153,36 @@ stmt:
 				{
 					/* subroutine definition,
 					   with arguments */
-					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS1(MPSL_OP_LITERAL,
+					$$ = INS2(L"ASSIGN", $2,
+						INS1(L"LITERAL",
 							_mpsl_x($7, $4)));
 				}
 
 	| FOREACH '(' compsym ',' expr ')' stmt
 				{
 					/* foreach construction */
-					$$ = INS3(MPSL_OP_FOREACH, $3, $5, $7);
+					$$ = INS3(L"FOREACH", $3, $5, $7);
 				}
 
 	| '{' stmt_list '}'	{
 					/* block of instructions,
 					   with local symbol table */
-					$$ = INS1(MPSL_OP_BLKFRAME, $2);
+					$$ = INS1(L"BLKFRAME", $2);
 				}
 
 	| LOCAL sym_list ';'	{
 					/* local symbol creation */
-					$$ = INS1(MPSL_OP_LOCAL, $2);
+					$$ = INS1(L"LOCAL", $2);
 				}
 	| LOCAL SYMBOL '=' expr	';'
 				{
 					/* contraction; local symbol
 					   creation and assignation */
-					$$ = INS2(MPSL_OP_MULTI,
-						INS1(MPSL_OP_LOCAL,
-							INS1(MPSL_OP_LITERAL, $2)),
-						INS2(MPSL_OP_ASSIGN,
-							INS1(MPSL_OP_LITERAL, $2),$4)
+					$$ = INS2(L"MULTI",
+						INS1(L"LOCAL",
+							INS1(L"LITERAL", $2)),
+						INS2(L"ASSIGN",
+							INS1(L"LITERAL", $2),$4)
 						);
 				}
 
@@ -192,13 +192,13 @@ stmt_list:
 	stmt			{ $$ = $1; }
 	| stmt_list stmt	{
 					/* sequence of instructions */
-					$$ = INS2(MPSL_OP_MULTI, $1, $2);
+					$$ = INS2(L"MULTI", $1, $2);
 				}
 	;
 
 list:
 	expr			{
-					$$ = INS1(MPSL_OP_LIST, $1);
+					$$ = INS1(L"LIST", $1);
 				}
 	| list ',' expr		{
 					/* build list from list of
@@ -209,20 +209,20 @@ list:
 
 sym_list:
 	SYMBOL			{
-					$$ = INS1(MPSL_OP_LIST,
-						INS1(MPSL_OP_LITERAL, $1));
+					$$ = INS1(L"LIST",
+						INS1(L"LITERAL", $1));
 				}
 	| sym_list ',' SYMBOL	{
 					/* comma-separated list of symbols */
 					mpdm_apush($1,
-						INS1(MPSL_OP_LITERAL, $3));
+						INS1(L"LITERAL", $3));
 					$$ = $1;
 				}
 	;
 
 hash:
 	expr HASHPAIR expr	{
-					$$ = INS2(MPSL_OP_HASH, $1, $3);
+					$$ = INS2(L"HASH", $1, $3);
 				}
 	| hash ',' expr HASHPAIR expr
 				{
@@ -236,19 +236,19 @@ hash:
 
 compsym:
 	SYMBOL			{
-					$$ = INS1(MPSL_OP_LIST,
-						INS1(MPSL_OP_LITERAL, $1));
+					$$ = INS1(L"LIST",
+						INS1(L"LITERAL", $1));
 				}
 	| compsym '.' INTEGER	{
 					/* a.5 compound symbol */
 					mpdm_apush($1,
-				  		INS1(MPSL_OP_LITERAL, $3));
+				  		INS1(L"LITERAL", $3));
 				  	$$ = $1;
 				}
 	| compsym '.' SYMBOL	{
 					/* a.b compound symbol */
 					mpdm_apush($1,
-				  		INS1(MPSL_OP_LITERAL, $3));
+				  		INS1(L"LITERAL", $3));
 				  	$$ = $1;
 				}
 	| compsym '[' expr ']'	{
@@ -261,98 +261,98 @@ compsym:
 expr:
 	INTEGER			{
 					/* literal integer */
-					$$ = INS1(MPSL_OP_LITERAL, $1);
+					$$ = INS1(L"LITERAL", $1);
 				}
 	| STRING		{
 					/* literal string */
-					$$ = INS1(MPSL_OP_LITERAL, $1);
+					$$ = INS1(L"LITERAL", $1);
 				}
 	| REAL			{
 					/* literal real number */
-					$$ = INS1(MPSL_OP_LITERAL, $1);
+					$$ = INS1(L"LITERAL", $1);
 				}
 	| compsym		{
 					/* compound symbol */
-					$$ = INS1(MPSL_OP_SYMVAL, $1);
+					$$ = INS1(L"SYMVAL", $1);
 				}
 	| NULLV			{
 					/* NULL value */
-					$$ = INS1(MPSL_OP_LITERAL, NULL);
+					$$ = INS1(L"LITERAL", NULL);
 				}
 
 	| '-' expr %prec UMINUS	{
 					/* unary minus */
-					$$ = INS1(MPSL_OP_UMINUS, $2);
+					$$ = INS1(L"UMINUS", $2);
 				}
 
 				/* math operations */
-	| expr '+' expr		{ $$ = INS2(MPSL_OP_ADD, $1, $3); }
-	| expr '-' expr		{ $$ = INS2(MPSL_OP_SUB, $1, $3); }
-	| expr '*' expr		{ $$ = INS2(MPSL_OP_MUL, $1, $3); }
-	| expr '/' expr		{ $$ = INS2(MPSL_OP_DIV, $1, $3); }
-	| expr MODULO expr	{ $$ = INS2(MPSL_OP_MOD, $1, $3); }
+	| expr '+' expr		{ $$ = INS2(L"ADD", $1, $3); }
+	| expr '-' expr		{ $$ = INS2(L"SUB", $1, $3); }
+	| expr '*' expr		{ $$ = INS2(L"MUL", $1, $3); }
+	| expr '/' expr		{ $$ = INS2(L"DIV", $1, $3); }
+	| expr MODULO expr	{ $$ = INS2(L"MOD", $1, $3); }
 
 				/* immediate math operations */
-	| INC compsym		{ $$ = INS1(MPSL_OP_PINC, $2); }
-	| compsym INC		{ $$ = INS1(MPSL_OP_SINC, $1); }
-	| DEC compsym		{ $$ = INS1(MPSL_OP_PDEC, $2); }
-	| compsym DEC		{ $$ = INS1(MPSL_OP_SDEC, $1); }
-	| compsym IADD expr	{ $$ = INS2(MPSL_OP_IADD, $1, $3); }
-	| compsym ISUB expr	{ $$ = INS2(MPSL_OP_ISUB, $1, $3); }
-	| compsym IMUL expr	{ $$ = INS2(MPSL_OP_IMUL, $1, $3); }
-	| compsym IDIV expr	{ $$ = INS2(MPSL_OP_IDIV, $1, $3); }
+	| INC compsym		{ $$ = INS1(L"PINC", $2); }
+	| compsym INC		{ $$ = INS1(L"SINC", $1); }
+	| DEC compsym		{ $$ = INS1(L"PDEC", $2); }
+	| compsym DEC		{ $$ = INS1(L"SDEC", $1); }
+	| compsym IADD expr	{ $$ = INS2(L"IADD", $1, $3); }
+	| compsym ISUB expr	{ $$ = INS2(L"ISUB", $1, $3); }
+	| compsym IMUL expr	{ $$ = INS2(L"IMUL", $1, $3); }
+	| compsym IDIV expr	{ $$ = INS2(L"IDIV", $1, $3); }
 
 	| '!' expr		{
 					/* boolean not */
-					$$ = INS1(MPSL_OP_NOT, $2);
+					$$ = INS1(L"NOT", $2);
 				}
 	| expr '<' expr		{
 					/* bool less than */
-					$$ = INS2(MPSL_OP_NUMLT, $1, $3);
+					$$ = INS2(L"NUMLT", $1, $3);
 				}
 	| expr '>' expr		{
 					/* bool greater than */
-					$$ = INS2(MPSL_OP_NUMGT, $1, $3);
+					$$ = INS2(L"NUMGT", $1, $3);
 				}
 	| expr NUMLE expr	{
 					/* bool less or equal than */
-					$$ = INS2(MPSL_OP_NUMLE, $1, $3);
+					$$ = INS2(L"NUMLE", $1, $3);
 				}
 	| expr NUMGE expr	{
 					/* bool greater or equal than */
-					$$ = INS2(MPSL_OP_NUMGE, $1, $3);
+					$$ = INS2(L"NUMGE", $1, $3);
 				}
 	| expr NUMEQ expr       {
 					/* bool numeric equal */
-					$$ = INS2(MPSL_OP_NUMEQ, $1, $3);
+					$$ = INS2(L"NUMEQ", $1, $3);
 				}
 	| expr NUMNE expr	{
 					/* bool numeric non-equal */
-					$$ = INS1(MPSL_OP_NOT,
-						INS2(MPSL_OP_NUMEQ, $1, $3));
+					$$ = INS1(L"NOT",
+						INS2(L"NUMEQ", $1, $3));
 				}
 
 	| expr STRCAT expr	{
 					/* string concatenation */
-					$$ = INS2(MPSL_OP_STRCAT, $1, $3);
+					$$ = INS2(L"STRCAT", $1, $3);
 				}
 	| expr STREQ expr       {
 					/* bool string equal */
-					$$ = INS2(MPSL_OP_STREQ, $1, $3);
+					$$ = INS2(L"STREQ", $1, $3);
 				}
 	| expr STRNE expr	{
 					/* bool string non-equal */
-					$$ = INS1(MPSL_OP_NOT,
-						INS2(MPSL_OP_STREQ, $1, $3));
+					$$ = INS1(L"NOT",
+						INS2(L"STREQ", $1, $3));
 				}
 
 	| expr BOOLAND expr	{
 					/* boolean and */
-					$$ = INS2(MPSL_OP_AND, $1, $3);
+					$$ = INS2(L"AND", $1, $3);
 				}
 	| expr BOOLOR expr	{
 					/* boolean or */
-					$$ = INS2(MPSL_OP_OR, $1, $3);
+					$$ = INS2(L"OR", $1, $3);
 				}
  
 	| '(' expr ')'		{
@@ -362,7 +362,7 @@ expr:
 
 	| '[' ']'		{
 					/* empty list */
-					$$ = INS0(MPSL_OP_LIST);
+					$$ = INS0(L"LIST");
 				}
 	| '[' list ']'		{
 					/* non-empty list */
@@ -370,12 +370,12 @@ expr:
 				}
 	| expr RANGE expr	{
 					/* build range from expressions */
-					$$ = INS2(MPSL_OP_RANGE, $1, $3);
+					$$ = INS2(L"RANGE", $1, $3);
 				}
 
 	| '{' '}'		{
 					/* empty hash */
-					$$ = INS0(MPSL_OP_HASH);
+					$$ = INS0(L"HASH");
 				}
 	| '{' hash '}'		{
 					/* non-empty hash */
@@ -384,13 +384,13 @@ expr:
 
 	| compsym '(' ')'	{
 					/* function call (without args) */
-					$$ = INS1(MPSL_OP_EXEC,
-						INS1(MPSL_OP_SYMVAL, $1));
+					$$ = INS1(L"EXEC",
+						INS1(L"SYMVAL", $1));
 				}
 	| compsym '(' list ')'	{
 					/* function call (with args) */
-					$$ = INS2(MPSL_OP_EXEC,
-						INS1(MPSL_OP_SYMVAL, $1), $3);
+					$$ = INS2(L"EXEC",
+						INS1(L"SYMVAL", $1), $3);
 				}
 
 	;
@@ -403,7 +403,7 @@ void yyerror(char * s)
 }
 
 
-static mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
+static mpdm_v _ins(wchar_t * opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 /* adds an instruction */
 {
 	mpdm_v v;
