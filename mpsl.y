@@ -190,7 +190,7 @@ hash:
 	;
 
 compsym:
-	SYMBOL			{ $$ = INS1(MPDM_LS(L"SYMBOL"),
+	SYMBOL			{ $$ = INS1(MPDM_LS(L"LIST"),
 					INS1(MPDM_LS(L"LITERAL"), $1)); }
 	| compsym '.' INTEGER	{ mpdm_apush($1,
 				  INS1(MPDM_LS(L"LITERAL"), $3));
