@@ -371,7 +371,7 @@ _O_TYPE _O_return(_O_ARGS)
 }
 
 
-static struct __op_table
+static struct _op
 {
 	wchar_t * name;
 	mpdm_v (* func)(_O_ARGS);
@@ -468,14 +468,13 @@ mpdm_v _mpsl_exec_i(_O_ARGS)
 		op=mpdm_ival(C0);
 
 		/* if it's a valid opcode... */
-		if(op >= 0 && op < sizeof(_op_table) / sizeof(struct __op_table))
+		if(op >= 0 && op < sizeof(_op_table) / sizeof(struct _op))
 		{
-			/* get the function */
-			mpdm_v (* func)(mpdm_v, mpdm_v, int *)=_op_table[op].func;
+			struct _op * o=&_op_table[op];
 
 			/* and call it if existent */
-			if(func != NULL)
-				ret=func(c, a, f);
+			if(o->func != NULL)
+				ret=o->func(c, a, f);
 		}
 	}
 
