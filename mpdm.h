@@ -161,7 +161,8 @@ mpdm_v _mpdm_tie_wcstombs(void);
 
 #define MPDM_ND_A(v,a) v.ref=0 ; v.tie=v.next=NULL; \
 			v.flags=MPDM_MULTIPLE|MPDM_NONDYN; v.data=&a; \
-			v.size=sizeof(a) / sizeof(mpdm_v);
+			v.size=sizeof(a) / sizeof(mpdm_v); \
+			v.tie=_mpdm_tie_nd_mul();
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
