@@ -27,8 +27,9 @@
 #define FDM_STRING	0x00020000	/* data can be compared */
 #define FDM_MULTIPLE	0x00040000	/* data is multiple */
 
-#define FDM_FLAGS(t)	((t)&0xffff0000)
-#define FDM_TYPE(t)	((t)&0x0000ffff)
+#define FDM_FLAGS_MASK  0xffff0000
+#define FDM_FLAGS(t)	((t) & FDM_FLAGS_MASK)
+#define FDM_TYPE(t)	((t) & ~ FDM_FLAGS_MASK)
 
 typedef struct _fdm_v * fdm_v;
 
