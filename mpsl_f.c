@@ -44,9 +44,9 @@
 mpdm_v _mpsl_size(mpdm_v args) { return(MPDM_I(mpdm_size(A(0)))); }
 mpdm_v _mpsl_clone(mpdm_v args) { return(mpdm_clone(A(0))); }
 
-mpdm_v _mpsl_is_array(mpdm_v args) { return(mpsl_true_or_false((A(0))->flags & MPDM_MULTIPLE)); }
-mpdm_v _mpsl_is_hash(mpdm_v args) { return(mpsl_true_or_false((A(0))->flags & MPDM_HASH)); }
-mpdm_v _mpsl_is_exec(mpdm_v args) { return(mpsl_true_or_false((A(0))->flags & MPDM_EXEC)); }
+mpdm_v _mpsl_is_array(mpdm_v args) { return(mpsl_boolean((A(0))->flags & MPDM_MULTIPLE)); }
+mpdm_v _mpsl_is_hash(mpdm_v args) { return(mpsl_boolean((A(0))->flags & MPDM_HASH)); }
+mpdm_v _mpsl_is_exec(mpdm_v args) { return(mpsl_boolean((A(0))->flags & MPDM_EXEC)); }
 
 mpdm_v _mpsl_dump(mpdm_v args) { mpdm_dump(A(0)); return(NULL); }
 mpdm_v _mpsl_splice(mpdm_v args) { return(mpdm_splice(A(0),A(1),IA(2),IA(3))); }
@@ -63,15 +63,15 @@ mpdm_v _mpsl_asplit(mpdm_v args) { return(mpdm_asplit(A(0),A(1))); }
 mpdm_v _mpsl_ajoin(mpdm_v args) { return(mpdm_ajoin(A(0),A(1))); }
 
 mpdm_v _mpsl_hsize(mpdm_v args) { return(MPDM_I(mpdm_hsize(A(0)))); }
-mpdm_v _mpsl_hexists(mpdm_v args) { return(mpsl_true_or_false(mpdm_hexists(A(0), A(1)))); }
+mpdm_v _mpsl_hexists(mpdm_v args) { return(mpsl_boolean(mpdm_hexists(A(0), A(1)))); }
 mpdm_v _mpsl_hdel(mpdm_v args) { return(mpdm_hdel(A(0), A(1))); }
 mpdm_v _mpsl_hkeys(mpdm_v args) { return(mpdm_hkeys(A(0))); }
 
 mpdm_v _mpsl_open(mpdm_v args) { return(mpdm_open(A(0), A(1))); }
 mpdm_v _mpsl_close(mpdm_v args) { return(mpdm_close(A(0))); }
 mpdm_v _mpsl_read(mpdm_v args) { return(mpdm_read(A(0))); }
-mpdm_v _mpsl_write(mpdm_v args) { return(mpsl_true_or_false(mpdm_write(A(0),A(1),A(2)))); }
-mpdm_v _mpsl_unlink(mpdm_v args) { return(mpsl_true_or_false(mpdm_unlink(A(0)))); }
+mpdm_v _mpsl_write(mpdm_v args) { return(mpsl_boolean(mpdm_write(A(0),A(1),A(2)))); }
+mpdm_v _mpsl_unlink(mpdm_v args) { return(mpsl_boolean(mpdm_unlink(A(0)))); }
 mpdm_v _mpsl_glob(mpdm_v args) { return(mpdm_glob(A(0))); }
 
 mpdm_v _mpsl_regex(mpdm_v args) { return(mpdm_regex(A(0),A(1),IA(2))); }
@@ -90,7 +90,7 @@ void _mpsl_lib(void)
 
 	/* creates all the symbols */
 
-	mpdm_hset_s(r, L"MPSL_LIB", mpsl_true_or_false(1));
+	mpdm_hset_s(r, L"MPSL_LIB", mpsl_boolean(1));
 
 	mpdm_hset_s(r, L"size", MPDM_X(_mpsl_size));
 	mpdm_hset_s(r, L"clone", MPDM_X(_mpsl_clone));
