@@ -328,14 +328,14 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	/* deleted space */
 	if(del > 0)
 	{
-		d=fdm_new(FDM_COPY | FDM_STRING, NULL, del + 1);
+		d=fdm_new(FDM_COPY | FDM_STRING, NULL, del);
 
 		memcpy(d->data, v->data + offset, del);
 		((char *)(d->data))[del]='\0';
 	}
 
 	/* new size and remainder */
-	ns=v->size + i->size - del + 1;
+	ns=v->size + i->size - del;
 	r=offset + del;
 
 	if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
@@ -350,7 +350,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	if(v->size - r > 0)
 		memcpy(n->data + offset + i->size, v->data + r, v->size - r);
 
-	((char *)(n->data))[ns - 1]='\0';
+	((char *)(n->data))[ns]='\0';
 
 	/* creates the output array */
 	w=FDM_A(2);
