@@ -40,13 +40,15 @@ void yyerror(char * s);
 "ne"		return STRNE;
 "=>"		return HASHKV;
 
-[A-Za-z_]+	{
+[A-Za-z_\.]+	{
 			/* symbol name */
 			yylval.v=FDM_S(yytext);
 			return(SYMBOL);
 		}
 
-[ \t\n]+	;
+#.*\n		;	/* ignore comments */
+
+[ \t\n]+	;	/* ignore spaces */
 
 .		yyerror("LEX Unknown character");
 
