@@ -434,6 +434,53 @@ static mpdm_v _mpsl_op_bimath(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_simath(mpdm_v c, mpdm_v args)
+/* immediate, suffix math operations */
+{
+	return(NULL);
+}
+
+
+static mpdm_v _mpsl_op_pimath(mpdm_v c, mpdm_v args)
+/* immediate, prefix math operations */
+{
+	mpsl_op op;
+	mpdm_v s;
+	mpdm_v v;
+	double r, r2;
+
+	/* gets the opcode */
+	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
+
+	/* gets the symbol */
+	s=_mpsl_machine(mpdm_aget(c, 1), args);
+
+	/* gets the symbol value */
+	r=mpdm_rval(mpsl_get_symbol(s));
+
+	/* gets the (optional) second value */
+	r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+
+	switch(op)
+	{
+	case MPSL_OP_PINC: r ++; break;
+	case MPSL_OP_PDEC: r --; break;
+	case MPSL_OP_IMMADD: r += r2; break;
+	case MPSL_OP_IMMSUB: r -= r2; break;
+	case MPSL_OP_IMMMUL: r *= r2; break;
+	case MPSL_OP_IMMDIV: r /= r2; break;
+	default: r=0; break;
+	}
+
+	v=MPDM_R(r);
+
+	/* sets the value */
+	mpsl_set_symbol(s, v);
+
+	return(v);
+}
+
+
 static mpdm_v _mpsl_op_not(mpdm_v c, mpdm_v args)
 /* boolean 'not' */
 {
