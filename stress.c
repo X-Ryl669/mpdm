@@ -163,21 +163,21 @@ void test_array(void)
 	_test("v->ref == 0", (v->ref == 0));
 	mpdm_dump(a);
 
-	mpdm_asort(a, 1);
+	a=mpdm_asort(a, 1);
 	_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
 
 	mpdm_aset(a, v, 0);
 	v=mpdm_aget(a, 3);
-	_test("v is referenced again", (v->ref > 0));
+	_test("v is referenced again", (v != NULL && v->ref > 0));
 
-	mpdm_asort(a, 1);
+	a=mpdm_asort(a, 1);
 	_test("mpdm_asort() works (1)",
 		mpdm_cmp(mpdm_aget(a,0), MPDM_LS(L"friday")) == 0);
 	_test("mpdm_asort() works (2)",
 		mpdm_cmp(mpdm_aget(a,6), MPDM_LS(L"wednesday")) == 0);
 
 	/* _asort_cb sorts reversely */
-	mpdm_asort_cb(a, 1, MPDM_X(_asort_cb));
+	a=mpdm_asort_cb(a, 1, MPDM_X(_asort_cb));
 
 	_test("mpdm_asort_cb() works (1)",
 		mpdm_cmp(mpdm_aget(a,6), MPDM_LS(L"friday")) == 0);

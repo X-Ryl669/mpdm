@@ -111,8 +111,8 @@ mpdm_v mpdm_apop(mpdm_v a);
 mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size);
 int mpdm_aseek(mpdm_v a, mpdm_v k, int step);
 int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos);
-void mpdm_asort(mpdm_v a, int step);
-void mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb);
+mpdm_v mpdm_asort(mpdm_v a, int step);
+mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb);
 
 mpdm_v mpdm_asplit(mpdm_v s, mpdm_v a);
 mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a);
