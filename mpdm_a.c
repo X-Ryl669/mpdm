@@ -43,11 +43,9 @@ static mpdm_v _mpdm_asort_cb=NULL;
 	Code
 ********************/
 
-int _mpdm_wrap_offset(mpdm_v a, int offset)
+static int _wrap_offset(mpdm_v a, int offset)
 {
-	/* negative offset means expand from the end */
-	if(offset < 0)
-		offset=mpdm_size(a) + 1 - offset;
+	if(offset < 0) offset=mpdm_size(a) + offset;
 
 	return(offset);
 }
@@ -140,6 +138,8 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 	mpdm_v v;
 	mpdm_v * p;
 
+	offset=_wrap_offset(a, offset);
+
 	/* boundary checks */
 	if(offset < 0)
 		return(NULL);
@@ -168,6 +168,8 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 mpdm_v mpdm_aget(mpdm_v a, int offset)
 {
 	mpdm_v * p;
+
+	offset=_wrap_offset(a, offset);
 
 	/* boundary checks */
 	if(offset < 0 || offset >= mpdm_size(a))
@@ -245,7 +247,7 @@ void mpdm_apush(mpdm_v a, mpdm_v e)
 mpdm_v mpdm_apop(mpdm_v a)
 {
 	/* deletes from the end */
-	return(mpdm_adel(a, mpdm_size(a) - 1));
+	return(mpdm_adel(a, -1));
 }
 
 

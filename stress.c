@@ -188,6 +188,17 @@ void test_array(void)
 
 	_test("array should have been automatically expanded",
 		mpdm_size(a) == 6001);
+
+	v=mpdm_aget(a, -1);
+	_test("negative offsets in arrays 1", mpdm_ival(v) == 666);
+
+	mpdm_aset(a, MPDM_I(777), -2);
+	v=mpdm_aget(a, 5999);
+	_test("negative offsets in arrays 2", mpdm_ival(v) == 777);
+
+	mpdm_apush(a, MPDM_I(888));
+	v=mpdm_aget(a, -1);
+	_test("negative offsets in arrays 3", mpdm_ival(v) == 888);
 }
 
 
