@@ -146,15 +146,32 @@ static mpdm_v _mpdm_tie_gdbm_hdel(mpdm_v a)
 }
 
 
-static mpdm_v _mpdm_tie_gdbm_hkeys(mpdm_v v)
+static mpdm_v _mpdm_tie_gdbm_hkeys(mpdm_v h)
 {
-	return(NULL);
+	mpdm_v a;
+	mpdm_v v;
+	datum key;
+
+	a=MPDM_A(0);
+
+	key=gdbm_firstkey((GDBM_FILE) h->data);
+
+	while(key.dptr)
+	{
+		v=mpdm_new(MPDM_STRING,key.dptr,key.dsize,_mpdm_tie_fre());
+		mpdm_apush(a, v);
+
+		key=gdbm_nextkey((GDBM_FILE) h->data, key);
+	}
+
+	return(a);
 }
 
 
 static mpdm_v _mpdm_tie_gdbm_hsize(mpdm_v v)
 {
-	return(MPDM_I(0));
+	v=_mpdm_tie_gdbm_hkeys(v);
+	return(MPDM_I(mpdm_size(v)));
 }
 
 

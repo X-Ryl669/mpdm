@@ -657,6 +657,11 @@ void test_ph(void)
 	mpdm_dump(v2);
 
 	_test("Persistent hash 1", mpdm_ival(v) == mpdm_ival(v2));
+
+	mpdm_hset(h, MPDM_LS(L"monday"), MPDM_LS(L"lunes"));
+	mpdm_hset(h, MPDM_LS(L"tuesday"), MPDM_LS(L"martes"));
+
+	_test("Persistent hash size", mpdm_hsize(h) == 3);
 }
 
 
