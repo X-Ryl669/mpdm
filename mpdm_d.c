@@ -26,6 +26,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <wchar.h>
 
 #include "mpdm.h"
 
@@ -48,7 +50,7 @@ mpdm_v _mpdm_dump_def_cb(mpdm_v v)
 	for(n=0;n < mpdm_size(v);n++)
 	{
 		if((w=mpdm_aget(v, n)) != NULL)
-			printf("%s", (char *)w->data);
+			printf("%ls", (wchar_t *)w->data);
 	}
 	printf("\n");
 
@@ -70,16 +72,17 @@ void _mpdm_dump(mpdm_v v, int l)
 
 	/* indent */
 	for(n=0;n < l;n++)
-		t=mpdm_strcat(t, MPDM_LS("  "));
+		t=mpdm_strcat(t, MPDM_LS(L"  "));
 
 	mpdm_apush(w, t);
 
 	if(v != NULL)
 	{
-		char tmp[32];
+		wchar_t tmp[32];
 
 		/* build flag information */
-		snprintf(tmp, sizeof(tmp), "%d,%c%c%c:", v->ref,
+		swprintf(tmp, sizeof(tmp) / sizeof(wchar_t),
+		L"%d,%c%c%c:", v->ref,
 		v->flags & MPDM_FILE	? 'F' :
 			(v->flags & MPDM_STRING	? 'S' :
 				(v->flags & MPDM_EXEC ? 'X' : '-')),
@@ -93,7 +96,8 @@ void _mpdm_dump(mpdm_v v, int l)
 		   of elements */
 		if(v->flags & MPDM_MULTIPLE)
 		{
-			snprintf(tmp, sizeof(tmp), "[%d] ", mpdm_size(v));
+			swprintf(tmp, sizeof(tmp) / sizeof(wchar_t),
+				L"[%d] ", mpdm_size(v));
 			mpdm_apush(w, MPDM_S(tmp));
 		}
 	}

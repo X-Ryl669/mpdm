@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
+#include <wchar.h>
 
 #include "mpdm.h"
 
@@ -44,20 +46,20 @@
  * is returned instead. This value should be used immediately, as it
  * can be a pointer to a static buffer.
  */
-char * mpdm_string(mpdm_v v)
+wchar_t * mpdm_string(mpdm_v v)
 {
-	static char tmp[32];
+	static wchar_t tmp[32];
 
 	/* if it's NULL, return a constant */
 	if(v == NULL)
-		return("[NULL]");
+		return(L"[NULL]");
 
 	/* if it's a string, return it */
 	if(v->flags & MPDM_STRING)
-		return((char *)v->data);
+		return((wchar_t *)v->data);
 
 	/* otherwise, return a visual representation */
-	snprintf(tmp, sizeof(tmp), "%p", v->data);
+	swprintf(tmp, sizeof(tmp) / sizeof(wchar_t), L"%p", v->data);
 
 	return(tmp);
 }
@@ -82,7 +84,7 @@ int mpdm_cmp(mpdm_v v1, mpdm_v v2)
 
 	/* if both values are strings, compare as such */
 	if((v1->flags & MPDM_STRING) && (v2->flags & MPDM_STRING))
-		return(strcmp((char *)v1->data, (char *)v2->data));
+		return(wcscmp((wchar_t *)v1->data, (wchar_t *)v2->data));
 
 	/* in any other case, compare just pointers */
 	return(v1->data - v2->data);
@@ -115,6 +117,7 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 	mpdm_v d=NULL;
 	int os, ns, r;
 	int ins=0;
+	wchar_t * ptr;
 
 	if(v != NULL)
 	{
@@ -131,7 +134,7 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 
 		/* deleted space */
 		if(del > 0)
-			d=MPDM_NS(v->data + offset, del);
+			d=MPDM_NS(((wchar_t *) v->data) + offset, del);
 
 		/* something to insert? */
 		ins=mpdm_size(i);
@@ -143,21 +146,31 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 		if((n=MPDM_NS(NULL, ns)) == NULL)
 			return(NULL);
 
+		ptr=n->data;
+
 		/* copy the beginning */
 		if(offset > 0)
-			memcpy(n->data, v->data, offset);
+		{
+			wmemcpy(ptr, v->data, offset);
+			ptr += offset;
+		}
 
 		/* copy the text to be inserted */
 		if(ins > 0)
-			memcpy(n->data + offset, i->data, ins);
+		{
+			wmemcpy(ptr, i->data, ins);
+			ptr += ins;
+		}
 
 		/* copy the remaining */
 		if(os - r > 0)
-			memcpy(n->data + offset + ins,
-				v->data + r, os - r);
+		{
+			wmemcpy(ptr, ((wchar_t *) v->data) + r, os - r);
+			ptr += (os - r);
+		}
 
 		/* null terminate */
-		((char *)(n->data))[ns]='\0';
+		*ptr=L'\0';
 	}
 	else
 		n=i;
@@ -213,7 +226,7 @@ int mpdm_ival(mpdm_v v)
 		/* if it's a string, calculate it; other
 		   values will have an ival of 0 */
 		if(v->flags & MPDM_STRING)
-			sscanf((char *)v->data, "%i", &i);
+			swscanf((wchar_t *)v->data, L"%i", &i);
 
 		v->ival=i;
 		v->flags |= MPDM_IVAL;
@@ -226,10 +239,10 @@ int mpdm_ival(mpdm_v v)
 mpdm_v _mpdm_inew(int ival)
 {
 	mpdm_v v;
-	char tmp[32];
+	wchar_t tmp[32];
 
 	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
+	swprintf(tmp, (sizeof(tmp) / sizeof(wchar_t)), L"%d", ival);
 
 	v=MPDM_S(tmp);
 	v->flags |= MPDM_IVAL;
@@ -239,15 +252,32 @@ mpdm_v _mpdm_inew(int ival)
 }
 
 
-/* ties */
+mpdm_v _mpdm_new_wcs(wchar_t * s, int n, mpdm_v tie)
+/* wrapper function to ensure wchar_t * type testing by the compiler */
+{
+	return(mpdm_new(0, s, n, tie));
+}
+
+
+mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie)
+/* wrapper function to ensure char * type testing by the compiler */
+{
+	return(mpdm_new(0, s, n, tie));
+}
+
+
+/* tie functions */
 
 static mpdm_v _tie_cpy_c(mpdm_v v)
 {
 	void * ptr;
 
 	/* creates a copy of data */
-	if(v != NULL && v->size && (ptr=malloc(v->size)) != NULL)
+	if(v != NULL && v->size)
 	{
+		if((ptr=malloc(v->size)) == NULL)
+			return(NULL);
+
 		if(v->data == NULL)
 			memset(ptr, '\0', v->size);
 		else
@@ -255,6 +285,9 @@ static mpdm_v _tie_cpy_c(mpdm_v v)
 
 		v->data=ptr;
 	}
+
+	/* unset the string flag; memory blocks are not strings */
+	v->flags &= ~ MPDM_STRING;
 
 	return(v);
 }
@@ -277,7 +310,10 @@ static mpdm_v _tie_lstr_c(mpdm_v v)
 {
 	/* just tests if size has to be calculated */
 	if(v->size == -1 && v->data != NULL)
-		v->size=strlen((char *) v->data);
+		v->size=wcslen((wchar_t *) v->data);
+
+	/* it's a string */
+	v->flags |= MPDM_STRING;
 
 	return(v);
 }
@@ -285,29 +321,86 @@ static mpdm_v _tie_lstr_c(mpdm_v v)
 
 static mpdm_v _tie_str_c(mpdm_v v)
 {
-	char * ptr;
+	wchar_t * ptr;
 
 	/* tests if size has to be calculated */
 	if(v->size == -1 && v->data != NULL)
-		v->size=strlen((char *) v->data);
+		v->size=wcslen((wchar_t *) v->data);
 
 	/* creates a copy */
-	if((ptr=malloc(v->size + 1)) != NULL)
-	{
-		if(v->data == NULL)
-			memset(ptr, '\0', v->size);
-		else
-		{
-			strncpy(ptr, v->data, v->size);
-			ptr[v->size]='\0';
-		}
+	if((ptr=malloc((v->size + 1) * sizeof(wchar_t))) == NULL)
+		return(NULL);
 
-		v->data=ptr;
+	if(v->data == NULL)
+		wmemset(ptr, L'\0', v->size);
+	else
+	{
+		wcsncpy(ptr, v->data, v->size);
+		ptr[v->size]=L'\0';
 	}
+
+	v->data=ptr;
+
+	/* it's a string */
+	v->flags |= MPDM_STRING;
 
 	return(v);
 }
 
+
+static mpdm_v _tie_mbstowcs_c(mpdm_v v)
+{
+	wchar_t * ptr;
+
+	/* v->data contains a multibyte string (char *) */
+
+	/* always calculate needed space; v->size is currently ignored */
+	v->size=mbstowcs(NULL, v->data, 0);
+
+	/* this can occur in case of invalid encodings */
+	if(v->size < 0)
+		return(NULL);
+
+	if((ptr=malloc((v->size + 1) * sizeof(wchar_t))) == NULL)
+		return(NULL);
+
+	mbstowcs(ptr, v->data, v->size);
+	ptr[v->size]=L'\0';
+
+	v->data=ptr;
+
+	/* it's a string */
+	v->flags |= MPDM_STRING;
+
+	return(v);
+}
+
+
+static mpdm_v _tie_wcstombs_c(mpdm_v v)
+{
+	char * ptr;
+
+	/* v->data contains a wide char string (wchar_t *) */
+
+	/* always calculate needed space; v->size is currently ignored */
+	v->size=wcstombs(NULL, v->data, 0);
+
+	if((ptr=malloc(v->size + 1)) == NULL)
+		return(NULL);
+
+	wcstombs(ptr, v->data, v->size);
+	ptr[v->size]='\0';
+
+	v->data=ptr;
+
+	/* unset the string flag; mbs,s are not 'strings' */
+	v->flags &= ~ MPDM_STRING;
+
+	return(v);
+}
+
+
+/* ties */
 
 mpdm_v _mpdm_tie_cpy(void)
 {
@@ -360,6 +453,40 @@ mpdm_v _mpdm_tie_fre(void)
 	if(_tie == NULL)
 	{
 		_tie=mpdm_ref(MPDM_A(2));
+		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_mbstowcs(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		setlocale(LC_ALL, "");
+
+		_tie=mpdm_ref(MPDM_A(2));
+		mpdm_aset(_tie, MPDM_X(_tie_mbstowcs_c), MPDM_TIE_CREATE);
+		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_wcstombs(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		setlocale(LC_ALL, "");
+
+		_tie=mpdm_ref(MPDM_A(2));
+		mpdm_aset(_tie, MPDM_X(_tie_wcstombs_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
 	}
 

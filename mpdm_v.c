@@ -92,7 +92,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	_mpdm.count ++;
 
 	/* tie */
-	mpdm_tie(v, tie);
+	v=mpdm_tie(v, tie);
 
 	return(v);
 }
@@ -331,7 +331,7 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 
 		/* execute creator */
 		if((t=mpdm_get_tie(v, MPDM_TIE_CREATE)) != NULL)
-			mpdm_exec(t, v);
+			v=mpdm_exec(t, v);
 	}
 
 	return(v);

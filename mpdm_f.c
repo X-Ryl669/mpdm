@@ -78,6 +78,10 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 	FILE * f;
 	mpdm_v fd;
 
+	/* convert to mbs,s */
+	filename=MPDM_2MBS(filename->data);
+	mode=MPDM_2MBS(mode->data);
+
 	if((f=fopen((char *)filename->data, (char *)mode->data)) == NULL)
 		return(NULL);
 
@@ -134,7 +138,7 @@ mpdm_v mpdm_read(mpdm_v fd)
 		}
 
 		/* store */
-		v=mpdm_strcat(v, MPDM_S(line));
+		v=mpdm_strcat(v, MPDM_MBS(line));
 
 		/* exit if the line is completely read */
 		if(i == 0) break;
@@ -162,7 +166,7 @@ int mpdm_write(mpdm_v fd, mpdm_v v)
 			mpdm_write(fd, mpdm_aget(v, n));
 	}
 	else
-		fprintf((FILE *)fd->data, "%s\n", mpdm_string(v));
+		fprintf((FILE *)fd->data, "%ls\n", mpdm_string(v));
 
 	return(0);
 }
@@ -188,6 +192,9 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
  */
 int mpdm_unlink(mpdm_v filename)
 {
+	/* convert to mbs */
+	filename=MPDM_2MBS(filename->data);
+
 	return(unlink((char *)filename->data));
 }
 
@@ -217,8 +224,10 @@ mpdm_v mpdm_glob(mpdm_v spec)
 	mpdm_v w;
 	mpdm_v s=NULL;
 
-	/* duplicate and convert MSDOS dir separators into Unix ones */
-	spec=MPDM_S(spec->data);
+	/* convert to mbs */
+	spec=MPDM_2MBS(spec->data);
+
+	/* convert MSDOS dir separators into Unix ones */
 	for(ptr=(char *)spec->data;*ptr != '\0';ptr++)
 	{
 		if(*ptr == '\\')
@@ -244,11 +253,11 @@ mpdm_v mpdm_glob(mpdm_v spec)
 				continue;
 
 			/* concat base directory and file names */
-			w=mpdm_strcat(s, MPDM_S(f.cFileName));
+			w=mpdm_strcat(s, MPDM_MBS(f.cFileName));
 
 			/* if it's a directory, add a / */
 			if(f.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-				w=mpdm_strcat(w, MPDM_LS("/"));
+				w=mpdm_strcat(w, MPDM_LS(L"/"));
 
 			mpdm_apush(v, w);
 		}
@@ -266,6 +275,9 @@ mpdm_v mpdm_glob(mpdm_v spec)
 	glob_t globbuf;
 	char * ptr;
 
+	/* convert to mbs */
+	spec=MPDM_2MBS(spec->data);
+
 	ptr=spec->data;
 	if(ptr == NULL || *ptr == '\0')
 		ptr="*";
@@ -276,7 +288,7 @@ mpdm_v mpdm_glob(mpdm_v spec)
 	if(glob(ptr, GLOB_MARK, NULL, &globbuf) == 0)
 	{
 		for(n=0;globbuf.gl_pathv[n]!=NULL;n++)
-			mpdm_apush(v, MPDM_S(globbuf.gl_pathv[n]));
+			mpdm_apush(v, MPDM_MBS(globbuf.gl_pathv[n]));
 	}
 
 	globfree(&globbuf);
