@@ -252,14 +252,14 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 }
 
 
-void mpsl_local_add_subframe(void)
+mpdm_v mpsl_local_add_subframe(void)
 {
 	/* if local symbol table don't exist, create */
 	if(_mpsl_local == NULL)
 		_mpsl_local=mpdm_ref(MPDM_A(0));
 
 	/* creates a new array for holding the hashes */
-	mpdm_apush(_mpsl_local, MPDM_A(0));
+	return(mpdm_apush(_mpsl_local, MPDM_A(0)));
 }
 
 
@@ -272,11 +272,8 @@ void mpsl_local_del_subframe(void)
 
 mpdm_v mpsl_local_add_blkframe(void)
 {
-	mpdm_v v = MPDM_H(0);
-
 	/* pushes a new hash onto the last subframe */
-	mpdm_apush(mpdm_aget(_mpsl_local, -1), v);
-	return(v);
+	return(mpdm_apush(mpdm_aget(_mpsl_local, -1), MPDM_H(0)));
 }
 
 
