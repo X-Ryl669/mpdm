@@ -8,6 +8,9 @@ Release Critical Bugs
    should be associated to file descriptors, which are the only
    place where iconv will really be used.
  * 1017: Add optional gettext support.
+ * 1056: Document internals.
+ * 1008: bread().
+ * 1009: bwrite().
 
 Open Bugs
 ---------
@@ -21,11 +24,8 @@ Open Bugs
 Pending Enhancements
 --------------------
 
- * 1004: Create a tie function for mpdm_dump().
  * 1006: stat().
  * 1007: chmod().
- * 1008: bread().
- * 1009: bwrite().
  * 1027: Store all static _tie... values in ties in the main
    control structure.
  * 1028: With the closing of bugs #1026, #1027 and #1029, it should be
@@ -106,5 +106,7 @@ Closed
    (Not applicable; Fri, 18 Mar 2005 06:46:06 +0100).
  * 1032: Nondyn arrays must be protected in mpdm_aexpand(),
    mpdm_acollapse(), etc (Fri, 18 Mar 2005 08:00:28 +0100).
+ * 1004: Create a tie function for mpdm_dump()
+   (No; Fri, 18 Mar 2005 08:04:19 +0100).
 
 Email bugs to angel@triptico.com
