@@ -217,7 +217,7 @@ fdm_v fdm_apop(fdm_v a)
 
 
 /**
- * fdm_aseek - Seeks a value in an array (sequential)
+ * fdm_aseek - Seeks a value in an array (sequential).
  * @a: the array
  * @k: the key
  * @step: number of elements to step
@@ -243,7 +243,7 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
 
 
 /**
- * fdm_abseek - Seeks a value in an array (binary)
+ * fdm_abseek - Seeks a value in an array (binary).
  * @a: the ordered array
  * @k: the key
  * @step: number of elements to step
