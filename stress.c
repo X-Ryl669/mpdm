@@ -52,9 +52,22 @@ void test_fdm_asplit(void)
 {
 	fdm_v w;
 
-	w=fdm_asplit(FDM_S("."), FDM_S("this.separated.string"));
+	printf("fdm_asplit test\n\n");
 
-	_test("fdm_asplit: number of elements", (w->size == 3));
+	w=fdm_asplit(FDM_S("."), FDM_S("four.elems.in.string"));
+	fdm_dump(w, 0);
+
+	w=fdm_asplit(FDM_S("."), FDM_S("unseparated string"));
+	fdm_dump(w, 0);
+
+	w=fdm_asplit(FDM_S("."), FDM_S(".dot.at start"));
+	fdm_dump(w, 0);
+
+	w=fdm_asplit(FDM_S("."), FDM_S("dot.at end."));
+	fdm_dump(w, 0);
+
+	w=fdm_asplit(FDM_S("."), FDM_S("three...dots (two empty elements)"));
+	fdm_dump(w, 0);
 }
 
 
@@ -62,7 +75,7 @@ int main(void)
 {
 	test_fdm_asplit();
 
-	printf("Total tests / errors: %d/%d\n", tests, errors);
+	printf("\n*** Total tests / errors: %d/%d\n", tests, errors);
 
 	return(0);
 }

@@ -20,3 +20,4 @@ clean:
 
 stress: stress.c $(LIB)
 	$(CC) $< -L. -lfdm -o $@
+	./stress
