@@ -73,6 +73,10 @@ void test_fdm_asplit(void)
 	w=fdm_asplit(FDM_S("."), FDM_S("three...dots (two empty elements)"));
 	fdm_dump(w, 0);
 	_test("4 elems: ", (w->size == 4));
+
+	w=fdm_asplit(FDM_S("."), FDM_S("."));
+	fdm_dump(w, 0);
+	_test("2 elems: ", (w->size == 2));
 }
 
 
