@@ -39,7 +39,7 @@ void _fdm_dump(fdm_v v, int l)
 	int n;
 	char * ptr;
 
-	ptr=fdm_asstr(v);
+	ptr=fdm_string(v);
 
 	/* indent */
 	for(n=0;n < l * 2;n++)
