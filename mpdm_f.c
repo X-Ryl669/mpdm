@@ -142,20 +142,11 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 
 	while((c = fgetc(f)) != EOF)
 	{
-		size_t r;
-		char cc;
-		wchar_t wc;
+		char cc=c;
+		wchar_t wc=L'?';
 
 		/* convert char */
-		cc=c;
-		r=mbrtowc(&wc, &cc, 1, &ps);
-
-		/* bad char? store as '?' */
-		if(r == -1)
-			wc=L'?';
-		else
-		/* incomplete? read another */
-		if(r == -2)
+		if(mbrtowc(&wc, &cc, 1, &ps) == -2)
 			continue;
 
 		/* alloc space */
