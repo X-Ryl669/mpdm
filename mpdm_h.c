@@ -44,26 +44,7 @@ static int _fdm_hash_func(unsigned char * string, int mod)
 }
 
 
-static int _fdm_hash_bucket(fdm_v h, fdm_v k)
-/* returns the hash bucket of h for the value k */
-{
-	char tmp[10];
-	unsigned char * ptr;
-
-	if(k->flags & FDM_STRING)
-		ptr=(unsigned char *)k->data;
-	else
-	{
-		/* not a string; convert data to 'printable' */
-		snprintf(tmp, sizeof(tmp), "%08X", (int)k->data);
-		ptr=(unsigned char *)tmp;
-	}
-
-	return(_fdm_hash_func(ptr, h->size));
-}
-
-
-#define HASH_BUCKET(h, k) (_fdm_hash_bucket(h, k))
+#define HASH_BUCKET(h, k) (_fdm_hash_func(fdm_printable(k), h->size))
 
 /**
  * fdm_hget - Gets an value from a hash.
