@@ -148,6 +148,14 @@ void test_basic(void)
 	v=MPDM_R(388888.0);
 	mpdm_dump(v);
 	_test("_mpdm_rnew 5", mpdm_cmp(v, MPDM_LS(L"388888")) == 0);
+
+	v=MPDM_R(0.050000);
+	mpdm_dump(v);
+	_test("_mpdm_rnew 6", mpdm_cmp(v, MPDM_LS(L"0.05")) == 0);
+
+	v=MPDM_R(0.000);
+	mpdm_dump(v);
+	_test("_mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
 }
 
 mpdm_v _asort_cb(mpdm_v args)
