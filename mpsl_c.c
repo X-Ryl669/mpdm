@@ -253,7 +253,7 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 #define C0 C(0)
 #define C1 C(1)
 
-#define M(n) _mpsl_machine(C(n), a)
+#define M(n) _mpsl_exec_i(C(n), a, f)
 #define M1 M(1)
 #define M2 M(2)
 #define M3 M(3)
@@ -271,7 +271,7 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 #define ISTRU mpsl_is_true
 
 #define _O_TYPE static mpdm_v
-#define _O_ARGS mpdm_v c, mpdm_v a
+#define _O_ARGS mpdm_v c, mpdm_v a, int * f
 
 _O_TYPE _O_multi(_O_ARGS) { M1; return(M2); }
 _O_TYPE _O_literal(_O_ARGS) { return(mpdm_clone(C1)); }
@@ -447,16 +447,16 @@ mpdm_v _mpsl_op(wchar_t * opcode)
 
 
 /**
- * _mpsl_machine - The mpsl virtual machine
+ * _mpsl_exec_i - Executes one mpsl instruction
  * @c: Multiple value containing the bytecode
  * @args: Optional arguments for the bytecode
  *
- * Executes an instruction (or group of instructions) in the
- * mpsl virtual machine. Usually not called directly, but from an
+ * Executes one mpsl instruction in the mpsl virtual machine.
+ * Usually not called directly, but from an
  * executable value returned by mpsl_compile() and executed by
  * mpdm_exec().
  */
-mpdm_v _mpsl_machine(_O_ARGS)
+mpdm_v _mpsl_exec_i(_O_ARGS)
 {
 	mpdm_v ret=NULL;
 
@@ -471,13 +471,21 @@ mpdm_v _mpsl_machine(_O_ARGS)
 		if(op >= 0 && op < sizeof(_op_table) / sizeof(struct __op_table))
 		{
 			/* get the function */
-			mpdm_v (* func)(mpdm_v, mpdm_v)=_op_table[op].func;
+			mpdm_v (* func)(mpdm_v, mpdm_v, int *)=_op_table[op].func;
 
 			/* and call it if existent */
 			if(func != NULL)
-				ret=func(c, a);
+				ret=func(c, a, f);
 		}
 	}
 
 	return(ret);
+}
+
+
+mpdm_v _mpsl_exec(mpdm_v c, mpdm_v a)
+{
+	int f=0;
+
+	return(_mpsl_exec_i(c, a, &f));
 }
