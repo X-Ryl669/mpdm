@@ -7,10 +7,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1042: The local t = v instruction is very buggy; it should be
-   implemented as a ';' instruction with the local and the assignation
-   part and the arguments to LOCAL and to '=' should be instructions and
-   not values.
 
 Open Bugs
 ---------
@@ -119,5 +115,9 @@ Closed
    a MPSL_OP_LIST. Also, it should have only one argument
    with the list of symbols, and not an undefined number or arguments.
    (Fri, 24 Dec 2004 18:26:26 +0100).
+ * 1042: The local t = v instruction is very buggy; it should be
+   implemented as a ';' instruction with the local and the assignation
+   part and the arguments to LOCAL and to '=' should be instructions and
+   not values (Fri, 24 Dec 2004 18:49:29 +0100).
 
 Email bugs to angel@triptico.com
