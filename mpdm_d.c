@@ -34,9 +34,30 @@
 	Code
 ********************/
 
+char * fdm_printable(fdm_v v)
+{
+	static char tmp[10];
+
+	/* if it's NULL, return a constant */
+	if(v == NULL)
+		return("[NULL]");
+
+	/* if it's a string, return it */
+	if(v->flags & FDM_STRING)
+		return((char *)v->data);
+
+	/* otherwise, convert to printable */
+	snprintf(tmp, sizeof(tmp), "%p", v->data);
+	return(tmp);
+}
+
+
 void fdm_dump(fdm_v v, int l)
 {
 	int n;
+	char * ptr;
+
+	ptr=fdm_printable(v);
 
 	/* indent */
 	for(n=0;n < l * 2;n++)
@@ -44,7 +65,7 @@ void fdm_dump(fdm_v v, int l)
 
 	if(v == NULL)
 	{
-		printf("[NULL]\n");
+		printf("%s\n", ptr);
 		return;
 	}
 
@@ -62,12 +83,5 @@ void fdm_dump(fdm_v v, int l)
 			fdm_dump(fdm_aget(v, n), l + 1);
 	}
 	else
-	if(v->flags & FDM_STRING)
-	{
-		char * ptr=(char *)v->data;
-
 		printf("%s\n", ptr);
-	}
-	else
-		printf("%p\n", v->data);
 }
