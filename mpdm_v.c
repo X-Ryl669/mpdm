@@ -36,10 +36,11 @@
 
 static struct
 {
+	fdm_v root;		/* the root hash */
 	fdm_v head;		/* head of values */
 	fdm_v tail;		/* tail of values */
 	int count;		/* total count */
-	fdm_v root;		/* the root hash */
+	int lcount;		/* last count */
 } _fdm;
 
 
@@ -282,7 +283,6 @@ int fdm_unref(fdm_v v)
  */
 void fdm_sweep(int count)
 {
-	static int lcount=0;
 	int n;
 
 	/* if it's worthless, don't do it */
@@ -290,7 +290,7 @@ void fdm_sweep(int count)
 	{
 		/* store current count, to avoid a sweeping
 		   rush when the threshold is crossed */
-		lcount=_fdm.count;
+		_fdm.lcount=_fdm.count;
 		return;
 	}
 
@@ -298,7 +298,7 @@ void fdm_sweep(int count)
 	if(count == -1) count=_fdm.count * 2;
 
 	/* if count is zero, sweep 'some' values */
-	if(count == 0) count=_fdm.count - lcount + 2;
+	if(count == 0) count=_fdm.count - _fdm.lcount + 2;
 
 	for(n=0;n < count;n++)
 	{
@@ -334,7 +334,7 @@ void fdm_sweep(int count)
 		}
 	}
 
-	lcount=_fdm.count;
+	_fdm.lcount=_fdm.count;
 }
 
 

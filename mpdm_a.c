@@ -351,7 +351,7 @@ void fdm_asort(fdm_v a, int step)
  * @offset: offset where the substring is to be inserted
  * @del: number of characters to delete
  *
- * Creates a new string value from @v, deleting @size chars
+ * Creates a new string value from @v, deleting @del chars
  * at @offset and substituting them by @i. Returns a
  * two element array, with the new string in the first
  * element and the deleted string in the second.
