@@ -231,6 +231,24 @@ mpdm_v mpsl_get_local_symbol_table(void)
 }
 
 
+void mpsl_local_set_symbols(mpdm_v s, mpdm_v v)
+{
+	mpdm_v l;
+
+	l=mpsl_get_local_symbol_table();
+
+	if(s->flags & MPDM_MULTIPLE)
+	{
+		int n;
+
+		for(n=0;n < mpdm_size(s);n++)
+			mpdm_hset(l, mpdm_aget(s, n), mpdm_aget(v, n));
+	}
+	else
+		mpdm_hset(l, s, v);
+}
+
+
 /**
  * mpsl_set_symbol - Sets value to a symbol
  * @s: symbol name
