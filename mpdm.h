@@ -50,7 +50,6 @@ struct _fdm_v
 };
 
 fdm_v fdm_new(int tag, void * data, int size);
-fdm_v _fdm_new(int tag, void * data, int size);
 int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
