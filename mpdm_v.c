@@ -96,7 +96,10 @@ fdm_v _fdm_new(int flags, void * data, int size)
 		else
 		{
 			if(flags & FDM_STRING)
-				strcpy(v->data, data);
+			{
+				strncpy(v->data, data, size);
+				((char *)v->data)[size]='\0';
+			}
 			else
 				memcpy(v->data, data, size);
 		}
