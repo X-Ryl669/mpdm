@@ -57,7 +57,7 @@ int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
 
-fdm_v fdm_copy(fdm_v v);
+fdm_v fdm_clone(fdm_v v);
 fdm_v fdm_root(void);
 
 void fdm_aexpand(fdm_v a, int offset, int num);
