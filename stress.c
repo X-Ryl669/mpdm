@@ -820,6 +820,7 @@ void test_mpsl(void)
 	_test_mpsl("a=1;");
 	_test_mpsl("a.b.c=1;");
 	_test_mpsl("a.b.c=d;");
+	_test_mpsl("a.b.c=d.e.f;");
 	_test_mpsl("a[\"b\"]=1;");
 	_test_mpsl("a[\"b\"].c=1;");
 	_test_mpsl("a[\"b\"][\"c\"]=1;");
@@ -1173,6 +1174,11 @@ void test_mpsl3(void)
 {
 	mpdm_v v;
 
+	v=_test_mpsl("v=[10,20]; w=v[0]; w;");
+	mpdm_dump(v);
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+
 	/* library functions tests */
 	v=_test_mpsl("dump( [1, 2, 3, 4, 5] );");
 	mpdm_exec(v, NULL);
@@ -1195,10 +1201,12 @@ void test_mpsl3(void)
 	_test("is_hash 3", mpdm_exec(v, NULL) != NULL);
 
 	v=_test_mpsl("v=splice(\"inventions of life\", NULL, 0, 10); v[1];");
-	mpdm_dump(v);
 	v=mpdm_exec(v, NULL);
-	mpdm_dump(v);
 	_test("splice 1", mpdm_cmp(v, MPDM_LS(L"inventions")) == 0);
+
+	v=_test_mpsl("v[0];");
+	v=mpdm_exec(v, NULL);
+	_test("splice 2", mpdm_cmp(v, MPDM_LS(L" of life")) == 0);
 
 /*	mpdm_dump(mpdm_root());*/
 }
