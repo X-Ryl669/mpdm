@@ -39,7 +39,6 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "Environment variables:"
 	echo "CC                    C Compiler."
 	echo "AR                    Library Archiver."
-	echo "YACC                  Parser."
 
 	exit 1
 fi
@@ -81,13 +80,6 @@ if [ "$AR" = "" ] ; then
 fi
 
 echo "AR=$AR" >> makefile.opts
-
-# set parser
-if [ "$YACC" = "" ] ; then
-	YACC=yacc
-fi
-
-echo "YACC=$YACC" >> makefile.opts
 
 # add version
 cat VERSION >> config.h
