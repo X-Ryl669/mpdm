@@ -816,6 +816,8 @@ void test_mpsl(void)
 	_test_mpsl("1 + ((3 - 5) * 8);");
 	_test_mpsl("1.5 + ((3.1 - 5.8) * 8.0);");
 	_test_mpsl("a=1 + ((3 - 5) * 8);");
+	_test_mpsl("2 + 3 * 4;");
+	_test_mpsl("2 * 3 + 4;");
 
 	_test_mpsl("/* hash */ y={ \"enero\" => \"january\", \"febrero\" => \"february\" };");
 	_test_mpsl("/* array */ a=[\"this\", \"one\", \"is\", 666, \"cool\"];");
