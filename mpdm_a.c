@@ -217,6 +217,31 @@ fdm_v fdm_apop(fdm_v a)
 
 
 /**
+ * fdm_afifo - Implements a fifo in an array.
+ * @a: the array
+ * @e: the element to be pushed
+ * @size: maximum size of array
+ *
+ * Pushes the @e element into the @a array. If the array already has
+ * @size elements, the first (oldest) element is deleted from the
+ * queue and returned.
+ *
+ * Returns the deleted element, or NULL if the array doesn't have
+ * @size elements yet.
+ */
+fdm_v fdm_afifo(fdm_v a, fdm_v e, int size)
+{
+	fdm_v v=NULL;
+
+	if(a->size > size)
+		v=fdm_adel(a, 0);
+
+	fdm_apush(a, e);
+	return(v);
+}
+
+
+/**
  * fdm_aseek - Seeks a value in an array (sequential).
  * @a: the array
  * @k: the key

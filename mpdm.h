@@ -70,6 +70,7 @@ void fdm_ains(fdm_v a, fdm_v e, int offset);
 fdm_v fdm_adel(fdm_v a, int offset);
 void fdm_apush(fdm_v a, fdm_v e);
 fdm_v fdm_apop(fdm_v a);
+fdm_v fdm_afifo(fdm_v a, fdm_v e, int size);
 int fdm_aseek(fdm_v a, fdm_v k, int step);
 int fdm_abseek(fdm_v a, fdm_v k, int step);
 void fdm_asort(fdm_v a, int step);
