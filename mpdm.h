@@ -21,19 +21,19 @@
 
 */
 
-/* tag flags */
+/* structural flags */
+#define FDM_COPY	0x00000001	/* data is a private copy */
+#define FDM_STRING	0x00000002	/* data can be string-compared */
+#define FDM_MULTIPLE	0x00000004	/* data is multiple */
+#define FDM_INTEGER	0x00000008	/* integer value cached in .ival */
 
-#define FDM_COPY	0x00010000	/* data is a private copy */
-#define FDM_STRING	0x00020000	/* data can be compared */
-#define FDM_MULTIPLE	0x00040000	/* data is multiple */
-#define FDM_INTEGER	0x00080000	/* integer value cached in .ival */
-
-#define FDM_FLAGS_MASK  0xffff0000
-#define FDM_FLAGS(t)	((t) & FDM_FLAGS_MASK)
-#define FDM_TYPE(t)	((t) & ~ FDM_FLAGS_MASK)
+/* 'informative' flags */
+#define FDM_HASH	0x00010000	/* data is a hash */
+#define FDM_FILE	0x00020000	/* data is a FILE * */
+#define FDM_BINCODE	0x00040000	/* data is executable binary code */
 
 #define FDM_A(n)	fdm_new(FDM_MULTIPLE,NULL,n)
-#define FDM_H(n)	fdm_new(FDM_MULTIPLE,NULL,n)
+#define FDM_H(n)	fdm_new(FDM_MULTIPLE|FDM_HASH,NULL,n)
 #define FDM_LS(s)	fdm_new(FDM_STRING,s,-1)
 #define FDM_S(s)	fdm_new(FDM_STRING|FDM_COPY,s,-1)
 #define FDM_I(i)	fdm_new(FDM_INTEGER,(void *)i,-1)
@@ -42,7 +42,7 @@ typedef struct _fdm_v * fdm_v;
 
 struct _fdm_v
 {
-	int tag;	/* value flags and type */
+	int flags;	/* value flags */
 	int ref;	/* reference count */
 	int size;	/* data size */
 	void * data;	/* the real data */
@@ -50,14 +50,12 @@ struct _fdm_v
 	fdm_v next;	/* next in chain */
 };
 
-fdm_v fdm_new(int tag, void * data, int size);
+fdm_v fdm_new(int flags, void * data, int size);
 int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
 int fdm_cmp(fdm_v v1, fdm_v v2);
 int fdm_ival(fdm_v v);
-
-void fdm_poke(fdm_v v, char c, int offset);
 
 fdm_v fdm_copy(fdm_v v);
 fdm_v fdm_root(void);
