@@ -90,9 +90,6 @@ fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 	fdm_v v;
 	fdm_v * p;
 
-/*	if(offset >= a->size)
-		return(NULL); */
-
 	p=(fdm_v *)a->data;
 	v=p[offset];
 	p[offset]=e;
@@ -106,13 +103,10 @@ fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 
 fdm_v fdm_aget(fdm_v a, int offset)
 {
-	fdm_v * va;
+	fdm_v * p;
 
-/*	if(offset >= a->size)
-		return(NULL); */
-
-	va=(fdm_v *)a->data;
-	return(va[offset]);
+	p=(fdm_v *)a->data;
+	return(p[offset]);
 }
 
 
