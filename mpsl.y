@@ -159,10 +159,17 @@ stmt:
 
 	| LOCAL sym_list ';'	{ $$ = INS1(MPDM_LS(L"LOCAL"), $2); }
 	| LOCAL SYMBOL '=' expr	';'
-				{ mpdm_v w=MPDM_A(2);
+/*				{ mpdm_v w=MPDM_A(2);
 				mpdm_aset(w, INS1(MPDM_LS(L"LOCAL"), $2), 0);
 				mpdm_aset(w, INS2(MPDM_LS(L"="), $2, $4), 1);
-				$$ = w; }
+				$$ = w; }*/
+				{ $$ = INS2(MPDM_LS(L";"),
+					INS1(MPDM_LS(L"LOCAL"),
+						INS1(MPDM_LS(L"LITERAL"), $2)),
+					INS2(MPDM_LS(L"="),
+						INS1(MPDM_LS(L"LITERAL"), $2),$4)
+					);
+				}
 
 	;
 
