@@ -215,6 +215,71 @@ else
 	echo "No"
 fi
 
+# gettext support
+echo -n "Testing for gettext... "
+
+if [ "$WITHOUT_GETTEXT" = "1" ] ; then
+	echo "Disabled by user"
+else
+	echo "#include <libintl.h>" > .tmp.c
+	echo "#include <locale.h>" >> .tmp.c
+	echo "int main(void) { setlocale(LC_ALL, \"\"); gettext(\"hi\"); return 0; }" >> .tmp.c
+
+	# try first to compile without -lintl
+	$CC .tmp.c -o .tmp.o 2>> .config.log
+
+	if [ $? = 0 ] ; then
+		echo "OK"
+		echo "#define CONFOPT_GETTEXT 1" >> config.h
+	else
+		# try now with -lintl
+		TMP_LDFLAGS="-lintl"
+
+		$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+		if [ $? = 0 ] ; then
+			echo "OK (libintl needed)"
+			echo "#define CONFOPT_GETTEXT 1" >> config.h
+			echo "$TMP_LDFLAGS" >> config.ldflags
+		else
+			echo "No"
+		fi
+	fi
+fi
+
+
+# iconv support
+echo -n "Testing for iconv... "
+
+if [ "$WITHOUT_ICONV" = "1" ] ; then
+	echo "Disabled by user"
+else
+	echo "#include <iconv.h>" > .tmp.c
+	echo "#include <locale.h>" >> .tmp.c
+	echo "int main(void) { setlocale(LC_ALL, \"\"); iconv_open(\"WCHAR_T\", \"ISO-8859-1\"); return 0; }" >> .tmp.c
+
+	# try first to compile without -liconv
+	$CC .tmp.c -o .tmp.o 2>> .config.log
+
+	if [ $? = 0 ] ; then
+		echo "OK"
+		echo "#define CONFOPT_ICONV 1" >> config.h
+	else
+		# try now with -liconv
+		TMP_LDFLAGS="-liconv"
+
+		$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+		if [ $? = 0 ] ; then
+			echo "OK (libiconv needed)"
+			echo "#define CONFOPT_ICONV 1" >> config.h
+			echo "$TMP_LDFLAGS" >> config.ldflags
+		else
+			echo "No"
+		fi
+	fi
+fi
+
 #########################################################
 
 # final setup
