@@ -150,11 +150,11 @@ mpdm_v _mpdm_tie_wcstombs(void);
 #define MPDM_2MBS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_wcstombs())
 #define MPDM_F(f)	mpdm_new(MPDM_FILE|MPDM_DESTROY,f,0,_tie_file())
 
-#define MPDM_ND_LS(v,s) memset(&v, '\0', sizeof(v)); \
+#define MPDM_ND_LS(v,s) v.ref=0 ; v.tie=v.next=NULL; \
 			v.flags=MPDM_STRING; v.data=s; \
 			v.size=(sizeof(s) - 1) / sizeof(wchar_t);
 
-#define MPDM_ND_A(v,a) memset(&v, '\0', sizeof(v)); \
+#define MPDM_ND_A(v,a) v.ref=0 ; v.tie=v.next=NULL; \
 			v.flags=MPDM_MULTIPLE; v.data=&a; \
 			v.size=sizeof(a) / sizeof(mpdm_v);
 
