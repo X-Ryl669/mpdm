@@ -33,7 +33,7 @@ fdm_v _ins(fdm_v opcode, fdm_v a1, fdm_v a2, fdm_v a3);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <ins> stmt expr stmt_list list hash
+%type <ins> stmt expr stmt_list list hash compsym
 
 %%
 
@@ -49,9 +49,7 @@ function:
 stmt:
 	';'			{ $$ = _ins(FDM_LS(";"), NULL, NULL, NULL); }
 	| expr ';'		{ $$ = $1; }
-	| SYMBOL '=' expr ';'	{ $$ = _ins(FDM_LS("="),
-					_ins(FDM_LS("SYMBOL"), $1, NULL, NULL),
-					$3, NULL); }
+	| compsym '=' expr ';'	{ $$ = _ins(FDM_LS("="), $1, $3, NULL); }
 	| DUMP expr ';'		{ $$ = _ins(FDM_LS("DUMP"), $2, NULL, NULL); }
 	| WHILE '(' expr ')' stmt
 				{ $$ = _ins(FDM_LS("WHILE"), $3, $5, NULL); }
@@ -59,10 +57,8 @@ stmt:
 				{ $$ = _ins(FDM_LS("IF"), $3, $5, NULL); }
 	| IF '(' expr ')' stmt ELSE stmt
 				{ $$ = _ins(FDM_LS("IFELSE"), $3, $5, $7); }
-	| SUB SYMBOL '{' stmt_list '}'
-				{ $$ = _ins(FDM_LS("SUB"),
-					_ins(FDM_LS("SYMBOL"), $2, NULL, NULL),
-					$4, NULL); }
+	| SUB compsym '{' stmt_list '}'
+				{ $$ = _ins(FDM_LS("SUB"), $2, $4, NULL); }
 	| '{' stmt_list '}'	{ $$ = $2; }
 	;
 
@@ -82,23 +78,48 @@ hash:
 				{ fdm_apush($1, $3); fdm_apush($1, $5); $$ = $1; }
 	;
 
+compsym:
+	SYMBOL			{ $$ = _ins(FDM_LS("SYMBOL"),
+					_ins(FDM_LS("LITERAL"), $1, NULL, NULL),
+					NULL, NULL); }
+	| compsym '.' INTEGER	{ fdm_apush($1,
+				  _ins(FDM_LS("LITERAL"), $3, NULL, NULL));
+				  $$ = $1; }
+	| compsym '.' SYMBOL	{ fdm_apush($1,
+				  _ins(FDM_LS("LITERAL"), $3, NULL, NULL));
+				  $$ = $1; }
+	| compsym '[' expr ']'	{ fdm_apush($1, $3); $$ = $1; }
+	;
+
 expr:
 	INTEGER			{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
 	| STRING		{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
-	| SYMBOL		{ $$ = _ins(FDM_LS("SYMBOL"), $1, NULL, NULL); }
+	| compsym		{ $$ = $1; }
+
+	| '-' expr %prec UMINUS	{ $$ = _ins(FDM_LS("UMINUS"), $2, NULL, NULL); }
 
 	| expr '+' expr		{ $$ = _ins(FDM_LS("+"), $1, $3, NULL); }
+	| expr '-' expr		{ $$ = _ins(FDM_LS("-"), $1, $3, NULL); }
 	| expr '*' expr		{ $$ = _ins(FDM_LS("*"), $1, $3, NULL); }
+	| expr '/' expr		{ $$ = _ins(FDM_LS("/"), $1, $3, NULL); }
+
+	| expr '<' expr		{ $$ = _ins(FDM_LS("<"), $1, $3, NULL); }
+	| expr '>' expr		{ $$ = _ins(FDM_LS(">"), $1, $3, NULL); }
+	| expr NUMEQ expr       { $$ = _ins(FDM_LS("NUMEQ"), $1, $3, NULL); }
+	| expr NUMNE expr       { $$ = _ins(FDM_LS("NUMNE"), $1, $3, NULL); }
+	| expr STREQ expr       { $$ = _ins(FDM_LS("STREQ"), $1, $3, NULL); }
+	| expr STRNE expr       { $$ = _ins(FDM_LS("STRNE"), $1, $3, NULL); }
+ 
 	| '(' expr ')'		{ $$ = $2; }
+
+	| '[' ']'		{ $$ = _ins(FDM_LS("LIST"), NULL, NULL, NULL); }
 	| '[' list ']'		{ $$ = $2; }
+
+	| '{' '}'		{ $$ = _ins(FDM_LS("HASH"), NULL, NULL, NULL); }
 	| '{' hash '}'		{ $$ = $2; }
 
-	| SYMBOL '(' ')'	{ $$ = _ins(FDM_LS("CALL"),
-					_ins(FDM_LS("SYMBOL"), $1, NULL, NULL),
-					NULL, NULL); }
-	| SYMBOL '(' list ')'	{ $$ = _ins(FDM_LS("CALL"),
-					_ins(FDM_LS("SYMBOL"), $1, NULL, NULL),
-					$3, NULL); }
+	| compsym '(' ')'	{ $$ = _ins(FDM_LS("CALL"), $1, NULL, NULL); }
+	| compsym '(' list ')'	{ $$ = _ins(FDM_LS("CALL"), $1, $3, NULL); }
 
 	;
 
