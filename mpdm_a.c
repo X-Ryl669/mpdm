@@ -307,12 +307,14 @@ void fdm_asort(fdm_v a, int step)
 /**
  * fdm_splice - Creates a new string value from another.
  * @v: the original value
+ * @i: the value to be inserted
  * @offset: offset where the substring is to be inserted
- * @size: number of characters to substitute
- * @new: the new string to be inserted
+ * @del: number of characters to delete
  *
  * Creates a new string value from @v, deleting @size chars
- * at @offset and substituting them by @new.
+ * at @offset and substituting them by @new. Returns a
+ * two element array, with the new string in the first
+ * element and the deleted string in the second.
  */
 fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 {
@@ -358,5 +360,49 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	fdm_aset(w, n, 0);
 	fdm_aset(w, d, 1);
 
+	return(w);
+}
+
+
+/**
+ * fdm_ajoin - Joins all elements of an array into one
+ * @s: joiner string
+ * @a: array to be joined
+ *
+ * Joins all elements from @a into one string, using @s as a glue.
+ */
+fdm_v fdm_ajoin(fdm_v s, fdm_v a)
+{
+	fdm_v v;
+	fdm_v w;
+	int n, t;
+
+	/* first counts the total size */
+	v=fdm_aget(a, 0);
+	for(t=v->size,n=1;n < a->size;n++)
+	{
+		v=fdm_aget(a, n);
+		t+=s->size;
+		t+=v->size;
+	}
+
+	/* create the value */
+	w=fdm_new(FDM_STRING | FDM_COPY, NULL, t);
+
+	/* copy now */
+	v=fdm_aget(a, 0);
+	memcpy(w->data, v->data, v->size);
+	for(t=v->size,n=1;n < a->size;n++)
+	{
+		v=fdm_aget(a, n);
+
+		memcpy(w->data + t, s->data, s->size);
+		t+=s->size;
+
+		memcpy(w->data + t, v->data, v->size);
+		t+=v->size;
+	}
+
+	*((char *)(w->data + t))='\0';
 	return(w);
 }
