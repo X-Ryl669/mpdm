@@ -410,12 +410,20 @@ static mpdm_v _mpsl_op_local(mpdm_v c, mpdm_v args)
 	/* gets current local symbol table */
 	l=mpdm_aget(mpdm_aget(_mpsl_local, -1), -1);
 
-	/* gets symbols to be created */
+	/* gets symbol(s) to be created */
 	v=_mpsl_machine(mpdm_aget(c, 1), args);
 
-	/* creates all of them as NULL values */
-	for(n=0;n < mpdm_size(v);n++)
-		mpdm_hset(l, mpdm_aget(v, n), NULL);
+	if(v->flags & MPDM_MULTIPLE)
+	{
+		/* creates all of them as NULL values */
+		for(n=0;n < mpdm_size(v);n++)
+			mpdm_hset(l, mpdm_aget(v, n), NULL);
+	}
+	else
+	{
+		/* only one; create it as NULL */
+		mpdm_hset(l, v, NULL);
+	}
 
 	return(NULL);
 }

@@ -1122,7 +1122,43 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("ifelse", mpdm_ival(v) == 100);
 
+	v=_test_mpsl("a=mysum(100, 50); a;");
+	v=mpdm_exec(v, NULL);
+	_test("mysum 1", mpdm_ival(v) == 150);
+
+	v=_test_mpsl("a=mysum(2000, 500); a;");
+	v=mpdm_exec(v, NULL);
+	_test("mysum 2", mpdm_ival(v) == 2500);
+
+	w=MPDM_A(2);
+	mpdm_aset(w, MPDM_I(100), 0);
+	mpdm_aset(w, MPDM_I(50), 1);
+
+	/* asks for the value of the mysum symbol (the code) */
+	v=_test_mpsl("mysum;");
+	/* executes, so mysum() itself is being returned */
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+	_test("mysum 3", mpdm_ival(mpdm_exec(v, w)) == 150);
+
+	mpdm_aset(w, MPDM_I(75), 1);
+	_test("mysum 4", mpdm_ival(mpdm_exec(v, w)) == 175);
+
+	/* compiles (and executes) the definition of gcd() */
 	v=_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { local t = m; m = n; n = t; } m -= n; } n; }");
+	mpdm_exec(v, NULL);
+
+	/* gets a pointer to gcd() */
+	v=mpdm_exec(_test_mpsl("gcd;"), NULL);
+	mpdm_dump(v);
+
+	/* executes gcd(100, 50); */
+	mpdm_aset(w, MPDM_I(50), 1);
+	_test("gcd() 1", mpdm_ival(mpdm_exec(v, w)) == 50);
+
+	/* executes gcd(100, 75); */
+	mpdm_aset(w, MPDM_I(75), 1);
+	_test("gcd() 2", mpdm_ival(mpdm_exec(v, w)) == 25);
 
 	mpdm_dump(mpdm_root());
 }
