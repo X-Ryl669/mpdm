@@ -294,6 +294,18 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 }
 
 
+mpdm_v mpdm_hget_s(mpdm_v h, wchar_t * k)
+{
+	mpdm_v v;
+
+	MPDM_ND_BEGIN();
+	v=mpdm_hget(h, MPDM_ND_LS(k));
+	MPDM_ND_END();
+
+	return(v);
+}
+
+
 /**
  * mpdm_hexists - Tests if a key exists
  * @h: the hash
@@ -332,6 +344,16 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 		r=mpdm_exec_3(b, h, k, v);
 
 	return(r);
+}
+
+
+mpdm_v mpdm_hset_s(mpdm_v h, wchar_t * k, mpdm_v v)
+{
+	MPDM_ND_BEGIN();
+	v=mpdm_hset(h, MPDM_ND_LS(k), v);
+	MPDM_ND_END();
+
+	return(v);
 }
 
 
