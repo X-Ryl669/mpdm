@@ -223,6 +223,9 @@ void test_sym(void)
 	fdm_sset(NULL, FDM_LS("mp.config.auto_indent"), FDM_I(16384));
 	fdm_sset(NULL, FDM_LS("mp.config.use_regex"), FDM_I(1357));
 	fdm_sset(NULL, FDM_LS("mp.config.gtk_font_face"), FDM_LS("profontwindows"));
+	fdm_sset(NULL, FDM_LS("mp.lines"), FDM_A(2));
+	fdm_sset(NULL, FDM_LS("mp.lines.0"), FDM_LS("First post!"));
+	fdm_sset(NULL, FDM_LS("mp.lines.1"), FDM_LS("Second post!"));
 	fdm_dump(fdm_root(), 0);
 
 	v=fdm_sget(NULL, FDM_LS("mp.config.auto_indent"));
