@@ -86,7 +86,7 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 		return(NULL);
 
 	/* creates the file value */
-	fd=mpdm_new(MPDM_FILE|MPDM_DESTROY, f, 0, _tie_file());
+	fd=MPDM_F(f);
 
 	return(fd);
 }
