@@ -180,9 +180,6 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 		}
 	}
 
-	if(v == NULL)
-		v=_fdm_new(tag, data, size);
-
 	return(v);
 }
 
