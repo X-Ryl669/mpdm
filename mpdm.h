@@ -28,6 +28,7 @@
 #define MPDM_NONDYN	0x00000008	/* value is non-dynamic */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
+#define MPDM_RVAL	0x00000020	/* real value cached in .rval */
 
 /* 'informative' flags */
 #define MPDM_HASH	0x00010000	/* data is a hash */
@@ -45,6 +46,7 @@ struct _mpdm_v
 	int size;	/* data size */
 	void * data;	/* the real data */
 	int ival;	/* cached integer value */
+	double rval;	/* cache real value */
 	mpdm_v tie;	/* array of commands */
 	mpdm_v next;	/* next in chain */
 };
@@ -120,8 +122,10 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del);
 mpdm_v mpdm_strcat(mpdm_v s1, mpdm_v s2);
 int mpdm_cmp(mpdm_v v1, mpdm_v v2);
 int mpdm_ival(mpdm_v v);
+double mpdm_rval(mpdm_v v);
 
 mpdm_v _mpdm_inew(int ival);
+mpdm_v _mpdm_rnew(double rval);
 mpdm_v _mpdm_new_wcs(int f, wchar_t * s, int n, mpdm_v tie);
 mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie);
 
@@ -172,6 +176,7 @@ mpdm_v _mpdm_tie_hash(void);
 #define MPDM_NS(s,n)	_mpdm_new_wcs(0,s,n,_mpdm_tie_str())
 
 #define MPDM_I(i)	_mpdm_inew((i))
+#define MPDM_R(r)	_mpdm_rnew((r))
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0,NULL)
 #define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
 #define MPDM_M(m,s)	mpdm_new(0,m,s,_mpdm_tie_cpy())

@@ -235,6 +235,29 @@ int mpdm_ival(mpdm_v v)
 }
 
 
+double mpdm_rval(mpdm_v v)
+{
+	if(v == NULL)
+		return(0);
+
+	/* if there is no cached double, calculate it */
+	if(!(v->flags & MPDM_RVAL))
+	{
+		double r=0.0;
+
+		/* if it's a string, calculate it; other
+		   values will have an ival of 0 */
+		if(v->flags & MPDM_STRING)
+			swscanf((wchar_t *)v->data, L"%lf", &r);
+
+		v->rval=r;
+		v->flags |= MPDM_RVAL;
+	}
+
+	return(v->rval);
+}
+
+
 mpdm_v _mpdm_inew(int ival)
 {
 	mpdm_v v;
@@ -246,6 +269,22 @@ mpdm_v _mpdm_inew(int ival)
 	v=MPDM_S(tmp);
 	v->flags |= MPDM_IVAL;
 	v->ival=ival;
+
+	return(v);
+}
+
+
+mpdm_v _mpdm_rnew(double rval)
+{
+	mpdm_v v;
+	wchar_t tmp[128];
+
+	/* creates the visual representation */
+	SWPRINTF(tmp, (sizeof(tmp) / sizeof(wchar_t)), L"%lf", rval);
+
+	v=MPDM_S(tmp);
+	v->flags |= MPDM_RVAL;
+	v->rval=rval;
 
 	return(v);
 }

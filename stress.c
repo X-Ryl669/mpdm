@@ -61,6 +61,7 @@ void _test(char * str, int ok)
 void test_basic(void)
 {
 	int i;
+	double r;
 	mpdm_v v;
 	mpdm_v w;
 
@@ -70,6 +71,10 @@ void test_basic(void)
 
 	_test("i == 65536", (i == 65536));
 	_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
+
+	r=mpdm_rval(v);
+	_test("r == 65536", (r == 65536.0));
+	_test("v has MPDM_RVAL", (v->flags & MPDM_RVAL));
 
 	printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
 	printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
@@ -117,6 +122,10 @@ void test_basic(void)
 	v=MPDM_LS(L"A capital greek omega between brackets [\x03a9]");
 	mpdm_dump(v);
 	printf("(Previous value will only show on an Unicode terminal)\n");
+
+	v=MPDM_R(3.1416);
+	_test("rval 1", mpdm_rval(v) == 3.1416);
+	_test("ival 1", mpdm_ival(v) == 3);
 }
 
 mpdm_v _asort_cb(mpdm_v args)
