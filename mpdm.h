@@ -24,6 +24,7 @@
 /* structural flags */
 #define MPDM_STRING	0x00000001	/* data can be string-compared */
 #define MPDM_MULTIPLE	0x00000002	/* data is multiple */
+#define MPDM_DESTROY	0x0000004	/* force destroy at exit() */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 
