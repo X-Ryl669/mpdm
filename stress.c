@@ -779,6 +779,7 @@ void _test_mpsl(char * code)
 	mpdm_v v=mpsl_compile(MPDM_MBS(code));
 
 	_test(code, v != NULL);
+	mpdm_exec(v, NULL);
 }
 
 
@@ -795,6 +796,7 @@ void test_mpsl(void)
 
 	_test_mpsl("a=1;");
 	_test_mpsl("a.b.c=1;");
+	_test_mpsl("a.b.c=d;");
 	_test_mpsl("a[\"b\"]=1;");
 	_test_mpsl("a[\"b\"].c=1;");
 	_test_mpsl("a[\"b\"][\"c\"]=1;");
