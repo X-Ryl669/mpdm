@@ -58,3 +58,7 @@ fdm_v fdm_apop(fdm_v a);
 int fdm_aseek(fdm_v a, fdm_v k, int step);
 int fdm_abseek(fdm_v a, fdm_v k, int step);
 void fdm_asort(fdm_v a, int step);
+
+fdm_v fdm_hget(fdm_v h, fdm_v k);
+fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
+fdm_v fdm_hdel(fdm_v h, fdm_v k);
