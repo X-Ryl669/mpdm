@@ -1,3 +1,4 @@
+
 /*
 
     fdm - Filp Data Manager
@@ -420,6 +421,24 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 
 
 /**
+ * fdm_strcat - Concatenates two strings
+ * @s1: the first string
+ * @s2: the second string
+ *
+ * Returns a new string formed by the concatenation of @s1 and @s2.
+ */
+fdm_v fdm_strcat(fdm_v s1, fdm_v s2)
+{
+	fdm_v v;
+
+	v=fdm_splice(s1, s2, -1, 0);
+	v=fdm_aget(v, 0);
+
+	return(v);
+}
+
+
+/**
  * fdm_asplit - Separates a string into an array of pieces
  * @s: the separator
  * @v: the value to be separated
@@ -520,16 +539,12 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 
 	for(n=1;n < a->size;n++)
 	{
+		/* add separator */
 		if(s != NULL)
-		{
-			/* add separator */
-			v=fdm_splice(v, s, -1, 0);
-			v=fdm_aget(v, 0);
-		}
+			v=fdm_strcat(v, s);
 
 		/* add element */
-		v=fdm_splice(v, fdm_aget(a, n), -1, 0);
-		v=fdm_aget(v, 0);
+		v=fdm_strcat(v, fdm_aget(a, n));
 	}
 
 	return(v);
