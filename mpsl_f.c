@@ -81,6 +81,13 @@ mpdm_v _mpsl_hexists(mpdm_v args) { return(mpsl_true_or_false(mpdm_hexists(A(0),
 mpdm_v _mpsl_hdel(mpdm_v args) { return(mpdm_hdel(A(0), A(1))); }
 mpdm_v _mpsl_hkeys(mpdm_v args) { return(mpdm_hkeys(A(0))); }
 
+mpdm_v _mpsl_open(mpdm_v args) { return(mpdm_open(A(0), A(1))); }
+mpdm_v _mpsl_close(mpdm_v args) { return(mpdm_close(A(0))); }
+mpdm_v _mpsl_read(mpdm_v args) { return(mpdm_read(A(0))); }
+mpdm_v _mpsl_write(mpdm_v args) { return(mpsl_true_or_false(mpdm_write(A(0),A(1),A(2)))); }
+mpdm_v _mpsl_unlink(mpdm_v args) { return(mpsl_true_or_false(mpdm_unlink(A(0)))); }
+mpdm_v _mpsl_glob(mpdm_v args) { return(mpdm_glob(A(0))); }
+
 void _mpsl_lib(void)
 /* inits the mpsl library */
 {
@@ -120,6 +127,13 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"hexists", MPDM_X(_mpsl_hexists));
 	mpdm_hset_s(r, L"hdel", MPDM_X(_mpsl_hdel));
 	mpdm_hset_s(r, L"hkeys", MPDM_X(_mpsl_hkeys));
+
+	mpdm_hset_s(r, L"open", MPDM_X(_mpsl_open));
+	mpdm_hset_s(r, L"close", MPDM_X(_mpsl_close));
+	mpdm_hset_s(r, L"read", MPDM_X(_mpsl_read));
+	mpdm_hset_s(r, L"write", MPDM_X(_mpsl_write));
+	mpdm_hset_s(r, L"unlink", MPDM_X(_mpsl_unlink));
+	mpdm_hset_s(r, L"glob", MPDM_X(_mpsl_glob));
 
 	mpdm_hset_s(r, L"dump", MPDM_X(_mpsl_dump));
 }
