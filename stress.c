@@ -495,9 +495,8 @@ void test_file(void)
 	mpdm_write(f, MPDM_LS(L"1"));
 	mpdm_write(f, eol);
 
-	/* write its own file pointer */
-	mpdm_write(f, f);
-	mpdm_write(f, eol);
+	/* write WITHOUT eol */
+	mpdm_write(f, MPDM_LS(L"2"));
 
 	mpdm_close(f);
 
@@ -505,8 +504,8 @@ void test_file(void)
 
 	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0\n")) == 0);
 	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1\n")) == 0);
-	v=mpdm_read(f);
-	mpdm_dump(v);
+	_test("test written file 2", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2")) == 0);
+	_test("test written file 3", mpdm_read(f) == NULL);
 
 	mpdm_close(f);
 
