@@ -1,6 +1,7 @@
 TODO
 ====
 
+ * Create a tie function for mpdm_dump().
  * Create some versions of functions that avoid doing boundary checks
    when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).
  * All string management should be done in wchar_t.
