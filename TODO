@@ -16,8 +16,6 @@ Release Critical Bugs
    not values.
  * 1044: mpdm_write() should include a 3rd argument, a separator
    for the end of line.
- * 1045: mpdm_dump() should not use printf() for mpdm_string(), but
-   convert by hand using wcstombs().
 
 Open Bugs
 ---------
@@ -118,5 +116,7 @@ Closed
    be a MPSL_OP_LIST (Fri, 17 Dec 2004 07:49:10 +0100).
  * 1043: Change mpdm_write() so that it doesn't use printf(), but
    wcstombs() and an small local buffer (Mon, 20 Dec 2004 08:41:20 -0800).
+ * 1045: mpdm_dump() should not use printf() for mpdm_string(), but
+   convert by hand using wcstombs() (Mon, 20 Dec 2004 08:44:52 -0800).
 
 Email bugs to angel@triptico.com
