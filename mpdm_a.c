@@ -365,6 +365,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	int ins=0;
 
 	/* adjustments */
+	if(offset < 0) offset=v->size + 1 - offset;
 	if(offset > v->size) offset=v->size;
 	if(offset + del > v->size) del=v->size - offset;
 
