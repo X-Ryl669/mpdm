@@ -926,9 +926,8 @@ void benchmark(void)
 	printf("OK\n");
 
 	bench_hash(i, l, 0);
-	bench_hash(i, l, 7);
-	bench_hash(i, l, 13);
-	bench_hash(i, l, 63);
+	bench_hash(i, l, 61);
+	bench_hash(i, l, 89);
 	bench_hash(i, l, 127);
 
 	mpdm_unref(l);
