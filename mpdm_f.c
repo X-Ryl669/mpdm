@@ -280,6 +280,8 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
  * be any of the supported charset names (utf-8, iso-8859-1, etc.),
  * and converted on each read / write. If charset is NULL, it
  * is reverted to default charset conversion (i.e. the locale).
+ * If @charset is a supported one, zero is returned, or nonzero
+ * if it's an unsupported encoding.
  */
 int mpdm_encoding(mpdm_v charset)
 {
@@ -302,11 +304,17 @@ int mpdm_encoding(mpdm_v charset)
 
 		/* creates the converters */
 
-		if((ic=iconv_open((char *)e->data, "WCHAR_T")) != NULL)
-			_f_enc=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+		if((ic=iconv_open((char *)e->data, "WCHAR_T")) == NULL)
+			return(-1);
 
-		if((ic=iconv_open("WCHAR_T", (char *)e->data)) != NULL)
-			_f_dec=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+		/* encoder */
+		_f_enc=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+
+		if((ic=iconv_open("WCHAR_T", (char *)e->data)) == NULL)
+			return(-2);
+
+		/* decoder */
+		_f_dec=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
 
 #endif /* CONFOPT_ICONV */
 
