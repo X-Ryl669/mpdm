@@ -390,3 +390,31 @@ fdm_v fdm_root(void)
 
 	return(_fdm.root);
 }
+
+
+fdm_v fdm_c_new(int tag, void * data, int size)
+{
+	static fdm_v _fdm_0 = fdm_new(FDM_INTEGER, (void *)0, -1);
+	static fdm_v _fdm_1 = fdm_new(FDM_INTEGER, (void *)1, -1);
+	static fdm_v _fdm_empty = fdm_new(FDM_STRING, "", -1);
+	fdm_v v;
+
+	if(tag & FDM_STRING)
+	{
+		if(*((char *)data) == '0')
+			v=_fdm_empty;
+	}
+	else
+	if(tag & FDM_INTEGER)
+	{
+		if((int) data == 0)
+			v=_fdm_0;
+		else
+		if((int) data == 1)
+			v=_fdm_1;
+	}
+	else
+		v=fdm_new(tag, data, size);
+
+	return(v);
+}
