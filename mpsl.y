@@ -375,9 +375,10 @@ expr:
 					/* non-empty list */
 					$$ = $2;
 				}
-	| expr RANGE expr	{
+	| '[' expr RANGE expr ']'
+				{
 					/* build range from expressions */
-					$$ = INS2(L"RANGE", $1, $3);
+					$$ = INS2(L"RANGE", $2, $4);
 				}
 
 	| '{' '}'		{
