@@ -50,10 +50,8 @@ typedef enum
 	MPSL_OP_WHILE,		/* while */
 	MPSL_OP_IF,		/* if (or ifelse) */
 	MPSL_OP_FOREACH,	/* foreach */
-	MPSL_OP_SUBPRE,		/* subroutine prefix */
-	MPSL_OP_SUBPOST,	/* subroutine postfix */
-	MPSL_OP_BLKPRE,		/* block prefix */
-	MPSL_OP_BLKPOST,	/* block postfix */
+	MPSL_OP_SUBFRAME,	/* subroutine frame */
+	MPSL_OP_BLKFRAME,	/* block frame */
 	MPSL_OP_ARGS,		/* argument list */
 	MPSL_OP_LOCAL,		/* create local variables */
 
@@ -69,6 +67,8 @@ typedef enum
 	MPSL_OP_STREQ,		/* string equal */
 	MPSL_OP_NUMLT,		/* numerical less than */
 	MPSL_OP_NUMGE,		/* numerical greater or equal than */
+	MPSL_OP_AND,		/* boolean and */
+	MPSL_OP_OR,		/* boolean or */
 
 	MPSL_OP_LASTOP		/* last opcode */
 } mpsl_op;
