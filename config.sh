@@ -5,19 +5,31 @@
 # gets program version
 VERSION=`cut -f2 -d\" VERSION`
 
+# default installation prefix
+PREFIX=/usr/local
+
 # parse arguments
-for a in $* ; do
-	[ "$a" = "--without-win32" ] && WITHOUT_WIN32=1
-	[ "$a" = "--without-unix-glob" ] && WITHOUT_UNIX_GLOB=1
-	[ "$a" = "--without-regex" ] && WITHOUT_REGEX=1
-	[ "$a" = "--with-included-regex" ] && WITH_INCLUDED_REGEX=1
-	[ "$a" = "--with-pcre" ] && WITH_PCRE=1
-	[ "$a" = "--help" ] && CONFIG_HELP=1
+while [ $# -gt 0 ] ; do
+
+	case $1 in
+	--without-win32)	WITHOUT_WIN32=1 ;;
+	--without-unix-glob)	WITHOUT_UNIX_GLOB=1 ;;
+	--without-regex)	WITHOUT_REGEX=1 ;;
+	--with-included-regex)	WITH_INCLUDED_REGEX=1 ;;
+	--with-pcre)		WITH_PCRE=1 ;;
+	--help)			CONFIG_HELP=1 ;;
+
+	--prefix)		PREFIX=$2 ; shift ;;
+	--prefix=*)		PREFIX=`echo $1 | sed -e 's/--prefix=//'` ;;
+	esac
+
+	shift
 done
 
 if [ "$CONFIG_HELP" = "1" ] ; then
 
 	echo "Available options:"
+	echo "--prefix=PREFIX       Installation prefix ($PREFIX)."
 	echo "--without-win32       Disable win32 interface detection."
 	echo "--without-unix-glob   Disable glob.h usage (use workaround)."
 	echo "--with-included-regex Use included regex code (gnu_regex.c)."
@@ -61,6 +73,9 @@ echo "AR=$AR" >> makefile.opts
 
 # add version
 cat VERSION >> config.h
+
+# add installation prefix
+echo "#define CONFOPT_PREFIX \"$PREFIX\"" >> config.h
 
 #########################################################
 
@@ -201,6 +216,8 @@ echo "#endif" >> config.h
 # final setup
 
 echo "VERSION=$VERSION" >> makefile.opts
+echo "PREFIX=$PREFIX" >> makefile.opts
+echo >> makefile.opts
 
 cat makefile.opts makefile.in makefile.depend > Makefile
 
