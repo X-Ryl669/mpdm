@@ -125,28 +125,31 @@ void test_fdm_asplit(void)
 
 void test_fdm_sym(void)
 {
+	fdm_v v;
+	int i;
+
 	printf("fdm_sset / fdm_sget tests\n\n");
 
-	fdm_sset(NULL, FDM_LS("mp"), FDM_H(0));
+	fdm_sset(NULL, FDM_LS("mp"), FDM_H(7));
+	fdm_sset(NULL, FDM_LS("mp.config"), FDM_H(7));
+	fdm_sset(NULL, FDM_LS("mp.config.auto_indent"), FDM_I(16384));
+	fdm_sset(NULL, FDM_LS("mp.config.use_regex"), FDM_I(1357));
+	fdm_sset(NULL, FDM_LS("mp.config.gtk_font_face"), FDM_LS("profontwindows"));
 	fdm_dump(fdm_root(), 0);
-	printf("---\n");
 
-	fdm_sset(NULL, FDM_LS("mp.config"), FDM_H(0));
-	fdm_dump(fdm_root(), 0);
-	printf("---\n");
+	v=fdm_sget(NULL, FDM_LS("mp.config.auto_indent"));
+	i=fdm_ival(v);
 
-	fdm_sset(NULL, FDM_LS("mp.config.auto_indent"), FDM_I(1));
-	fdm_dump(fdm_root(), 0);
-	printf("---\n");
+	_test("auto_indent == 16384", (i == 16384));
 }
 
 
 int main(void)
 {
 	test_hash();
-/*	test_fdm_asplit();
+	test_fdm_asplit();
 	test_fdm_sym();
-*/
+
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 
 	return(0);

@@ -16,7 +16,7 @@ dep:
 	gcc $(DEFS) -MM *.c > makefile.depend
 
 clean:
-	rm -f *.o *.a tags
+	rm -f *.o *.a tags stress
 
 stress: stress.c $(LIB)
 	$(CC) $(CFLAGS) $< -L. -lfdm -o $@
