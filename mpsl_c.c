@@ -335,6 +335,12 @@ static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >
 static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
 static mpdm_v _O_strcat(mpdm_v c, mpdm_v a) { return(mpdm_strcat(M1, M2)); }
 static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_cmp(M1, M2) == 0)); }
+static mpdm_v _O_immpinc(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(mpsl_set_symbol(s, MPDM_R(mpdm_rval(mpsl_get_symbol(s)) + 1))); }
+static mpdm_v _O_immpdec(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(mpsl_set_symbol(s, MPDM_R(mpdm_rval(mpsl_get_symbol(s)) - 1))); }
+static mpdm_v _O_immadd(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(mpsl_set_symbol(s, MPDM_R(mpdm_rval(mpsl_get_symbol(s)) + mpdm_rval(M2)))); }
+static mpdm_v _O_immsub(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(mpsl_set_symbol(s, MPDM_R(mpdm_rval(mpsl_get_symbol(s)) - mpdm_rval(M2)))); }
+static mpdm_v _O_immmul(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(mpsl_set_symbol(s, MPDM_R(mpdm_rval(mpsl_get_symbol(s)) * mpdm_rval(M2)))); }
+static mpdm_v _O_immdiv(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(mpsl_set_symbol(s, MPDM_R(mpdm_rval(mpsl_get_symbol(s)) / mpdm_rval(M2)))); }
 
 static mpdm_v _O_list(mpdm_v c, mpdm_v a)
 /* build list from instructions */
@@ -393,7 +399,6 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
 
 	return(ret);
 }
-
 
 static mpdm_v _O_immmath(mpdm_v c, mpdm_v a)
 /* immediate math operations */
@@ -495,14 +500,14 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
 	case MPSL_OP_MUL: ret=_O_mul(c, a); break;
 	case MPSL_OP_DIV: ret=_O_div(c, a); break;
 	case MPSL_OP_MOD: ret=_O_mod(c, a); break;
-	case MPSL_OP_PINC: /* falls */
-	case MPSL_OP_PDEC: /* falls */
 	case MPSL_OP_SINC: /* falls */
-	case MPSL_OP_SDEC: /* falls */
-	case MPSL_OP_IADD: /* falls */
-	case MPSL_OP_ISUB: /* falls */
-	case MPSL_OP_IMUL: /* falls */
-	case MPSL_OP_IDIV: ret=_O_immmath(c, a); break;
+	case MPSL_OP_SDEC: ret=_O_immmath(c, a); break;
+	case MPSL_OP_PINC: ret=_O_immpinc(c, a); break;
+	case MPSL_OP_PDEC: ret=_O_immpdec(c, a); break;
+	case MPSL_OP_IADD: ret=_O_immadd(c, a); break;
+	case MPSL_OP_ISUB: ret=_O_immsub(c, a); break;
+	case MPSL_OP_IMUL: ret=_O_immmul(c, a); break;
+	case MPSL_OP_IDIV: ret=_O_immdiv(c, a); break;
 	case MPSL_OP_NOT: ret=_O_not(c, a); break;
 	case MPSL_OP_AND: ret=_O_and(c, a); break;
 	case MPSL_OP_OR: ret=_O_or(c, a); break;
