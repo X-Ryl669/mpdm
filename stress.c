@@ -699,6 +699,7 @@ void test_nondyn(void)
 {
 	mpdm_ndv v;
 	mpdm_v av[2]={ NULL, NULL };
+	mpdm_v w;
 
 	printf("Non-dynamic values\n");
 
@@ -709,6 +710,13 @@ void test_nondyn(void)
 
 	MPDM_ND_A(v,av);
 	mpdm_dump(&v);
+
+	/* when referencing a nondyn value, it should be cloned */
+	w=mpdm_ref(&v);
+
+	_test("Referenced nondyn value should be different", &v != w);
+	_test("Referenced nondyn value should no longer be nondyn",
+		(w->flags & MPDM_NONDYN) == 0);
 }
 
 
