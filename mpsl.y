@@ -32,6 +32,7 @@ static mpdm_v _bytecode=NULL;
 
 int yylex(void);
 void yyerror(char * s);
+void _mpsl_store_code(mpdm_v code);
 
 /* shortcut macros to insert instructions */
 
@@ -219,6 +220,8 @@ mpdm_v mpsl_compile(mpdm_v code)
 	_bytecode=MPDM_A(0);
 	mpdm_ref(_bytecode);
 	mpdm_apush(_bytecode, MPDM_LS(L"PROG"));
+
+	_mpsl_store_code(code);
 
 	yyparse();
 
