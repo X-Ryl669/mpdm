@@ -1067,6 +1067,14 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("exec 3", mpdm_rval(v) == 120.0);
 
+	v=_test_mpsl("a = NULL;");
+	v=mpdm_exec(v, NULL);
+	_test("NULL 1", v == NULL);
+
+	v=_test_mpsl("a == NULL;");
+	v=mpdm_exec(v, NULL);
+	_test("NULL 2", mpdm_ival(v) == 1);
+
 	mpdm_dump(mpdm_root());
 }
 
