@@ -44,24 +44,29 @@ struct _mpdm_ctl * _mpdm=NULL;
 	Code
 ********************/
 
-#define _mpdm_alloc() (mpdm_v)malloc(sizeof(struct _mpdm_v))
-#define _mpdm_free(v) free(v)
-
-
 mpdm_v mpdm_alloc(int flags, int count)
 {
 	mpdm_v v=NULL;
 
 	if(flags & MPDM_NONDYN)
 	{
-		if(count == 1)
+		if(count > 1)
 		{
-			/* just one value; return next free one */
-			v=_mpdm->nd_pool[_mpdm->nd_index];
+			/* if more than one value is queried,they must
+			   be contiguous, so resize the pool to satisfy
+			   it; as this should be used only with small
+			   arrays, the pool will never grow too much */
+			if(_mpdm->nd_index + count > _mpdm->nd_size)
+			{
+				_mpdm->nd_size = _mpdm->nd_index + count;
+				_mpdm->nd_pool=realloc(_mpdm->nd_pool,
+					sizeof(struct _mpdm_v) *
+					_mpdm->nd_size);
+			}
 		}
-		else
-		{
-		}
+
+		/* return next one */
+		v=&_mpdm->nd_pool[_mpdm->nd_index];
 
 		/* skip to next and wrap */
 		_mpdm->nd_index += count;
@@ -81,6 +86,9 @@ void mpdm_free(mpdm_v v, int count)
 {
 	if(v->flags & MPDM_NONDYN)
 	{
+		/* count back */
+		_mpdm->nd_index -= count;
+		_mpdm->nd_index %= _mpdm->nd_size;
 	}
 	else
 		free(v);
@@ -113,10 +121,11 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	if(_mpdm->high_threshold && _mpdm->count > _mpdm->high_threshold)
 		mpdm_sweep(_mpdm->count - _mpdm->high_threshold);
 
-	/* alloc new value and init */
-	if((v=_mpdm_alloc()) == NULL)
+	/* alloc new value */
+	if((v=mpdm_alloc(flags, 1)) == NULL)
 		return(NULL);
 
+	/* init */
 	memset(v, '\0', sizeof(struct _mpdm_v));
 
 	v->flags=flags;
@@ -135,7 +144,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	else
 	{
 		/* tie creation failed; free the new value */
-		_mpdm_free(v);
+		mpdm_free(v, 1);
 	}
 
 	return(r);
@@ -211,7 +220,7 @@ void mpdm_sweep(int count)
 				mpdm_tie(v, NULL);
 
 				/* free the value itself */
-				_mpdm_free(v);
+				mpdm_free(v, 1);
 
 				/* one value less */
 				_mpdm->count--;
@@ -417,6 +426,9 @@ int mpdm_startup(void)
 		/* sets the defaults */
 		_mpdm->low_threshold=16;
 		_mpdm->high_threshold=0;
+
+		/* alloc the non-dyn pool */
+		mpdm_alloc(MPDM_NONDYN, 16);
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
