@@ -13,7 +13,6 @@ TODO
    functions (so a hash could be mapped to a DBM on disk, etc.). The 'tie
    also scriptable' dilemma is solved with mpdm_exec(), so any code (not
    necessary a C function) could be used.
- * A new version of mpdm_asort() that includes a sorting function.
  * stat(), chmod(), bread(), bwrite().
  * Should all string values use wchar, UTF-8...?
 

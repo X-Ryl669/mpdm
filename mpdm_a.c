@@ -352,8 +352,8 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
 
 		/* creates a two element array for the arguments */
 		a=MPDM_A(2);
-		mpdm_aset(a, MPDM_P(s1), 0);
-		mpdm_aset(a, MPDM_P(s2), 1);
+		mpdm_aset(a, (mpdm_v) * ((mpdm_v *)s1), 0);
+		mpdm_aset(a, (mpdm_v) * ((mpdm_v *)s2), 1);
 
 		/* executes the callback and converts to integer */
 		ret=mpdm_ival(mpdm_exec(_mpdm_asort_cb, a));
