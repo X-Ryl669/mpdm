@@ -361,20 +361,22 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
 /* qsort help function */
 {
 	int ret=0;
-	static mpdm_v a = NULL;
 
 	/* if callback is NULL, use basic value comparisons */
 	if(_mpdm_asort_cb == NULL)
 		ret=mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2);
 	else
 	{
-		if(a == NULL) a=mpdm_ref(MPDM_A(2));
+		mpdm_ndv a;
+		mpdm_v av[2];
 
-		mpdm_aset(a, (mpdm_v) * ((mpdm_v *)s1), 0);
-		mpdm_aset(a, (mpdm_v) * ((mpdm_v *)s2), 1);
+		MPDM_ND_A(a,av);
+
+		av[0]=(mpdm_v) * ((mpdm_v *)s1);
+		av[1]=(mpdm_v) * ((mpdm_v *)s2);
 
 		/* executes the callback and converts to integer */
-		ret=mpdm_ival(mpdm_exec(_mpdm_asort_cb, a));
+		ret=mpdm_ival(mpdm_exec(_mpdm_asort_cb, &a));
 	}
 
 	return(ret);

@@ -705,6 +705,8 @@ void test_nondyn(void)
 	MPDM_ND_LS(v,L"This is a non-dynamic value");
 	mpdm_dump(&v);
 
+	_test("Non-dynamic literal value size", mpdm_size(&v) == 27);
+
 	MPDM_ND_A(v,av);
 	mpdm_dump(&v);
 }
