@@ -9,6 +9,8 @@ Release Critical Bugs
  * 1050: Document the virtual machine.
  * 1051: Document the scripting language.
  * 1052: Implement the 'return' directive in mpsl.
+ * 1053: Implement the 'RANGE' opcode.
+ * 1054: Add a main() function, similar to the filp one.
 
 Open Bugs
 ---------
