@@ -123,7 +123,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 		snprintf(tmp, sizeof(tmp) - 1,"%d", v->ival);
 		data=tmp;
 
-		/* force copy and calculation */
+		/* force copy, string and calculation */
 		tag |= (FDM_COPY | FDM_STRING);
 		size=-1;
 	}
@@ -151,15 +151,18 @@ fdm_v fdm_new(int tag, void * data, int size)
 		s=(tag & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
 
 		/* alloc new space for data */
-		if((v->data=malloc(s)) == NULL)
+		if((v->data=malloc(s + 1)) == NULL)
 			return(NULL);
 
-		/* zero or copy data */
+		/* zero or copy the block */
 		if(data == NULL)
 			memset(v->data, '\0', s);
 		else
 		{
-			memcpy(v->data, data, s);
+			if(tag & FDM_STRING)
+				strcpy(v->data, data);
+			else
+				memcpy(v->data, data, s);
 
 			/* if data is multiple, re-reference its elements */
 			if(tag & FDM_MULTIPLE)
