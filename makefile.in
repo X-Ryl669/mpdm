@@ -23,7 +23,7 @@ ChangeLog:
 .c.o:
 	$(CC) $(CFLAGS) `cat config.cflags` -c $<
 
-y.tab.h:
+y.tab.h: mpsl.y
 	$(YACC) -d mpsl.y
 
 y.tab.c: mpsl.y
