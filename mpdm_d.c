@@ -33,38 +33,72 @@
 	Data
 ********************/
 
+mpdm_v _mpdm_dump_cb=NULL;
+
 /*******************
 	Code
 ********************/
 
+mpdm_v _mpdm_dump_def_cb(mpdm_v v)
+{
+	mpdm_v w;
+	int n;
+
+	for(n=0;n < mpdm_size(v);n++)
+	{
+		if((w=mpdm_aget(v, n)) != NULL)
+			printf("%s", (char *)w->data);
+	}
+	printf("\n");
+
+	return(NULL);
+}
+
+
 void _mpdm_dump(mpdm_v v, int l)
 {
+	mpdm_v w;
+	mpdm_v t=NULL;
 	int n;
-	char * ptr;
 
-	ptr=mpdm_string(v);
+	/* create the dumping callback */
+	if(_mpdm_dump_cb == NULL)
+		_mpdm_dump_cb=MPDM_X(_mpdm_dump_def_cb);
+
+	w=MPDM_A(0);
 
 	/* indent */
-	for(n=0;n < l * 2;n++)
-		printf(" ");
+	for(n=0;n < l;n++)
+		t=mpdm_strcat(t, MPDM_LS("  "));
 
-	if(v == NULL)
+	mpdm_apush(w, t);
+
+	if(v != NULL)
 	{
-		printf("%s\n", ptr);
-		return;
-	}
+		char tmp[32];
 
-	printf("%d,%c%c%c%c:", v->ref,
-		v->flags & MPDM_COPY	? 'C' : (v->flags & MPDM_FREE ? 'F' : '-'),
+		/* build flag information */
+		snprintf(tmp, sizeof(tmp), "%d,%c%c%c%c:", v->ref,
+		v->flags & MPDM_COPY	? 'C' :
+			(v->flags & MPDM_FREE ? 'F' : '-'),
 		v->flags & MPDM_FILE	? 'F' :
 			(v->flags & MPDM_STRING	? 'S' :
 				(v->flags & MPDM_EXEC ? 'X' : '-')),
-		v->flags & MPDM_HASH	? 'H' : (v->flags & MPDM_MULTIPLE ? 'M' : '-'),
+		v->flags & MPDM_HASH	? 'H' :
+			(v->flags & MPDM_MULTIPLE ? 'M' : '-'),
 		v->flags & MPDM_IVAL	? 'I' : '-');
 
-	printf("%s\n", ptr);
+		mpdm_apush(w, MPDM_S(tmp));
+	}
 
-	if(v->flags & MPDM_MULTIPLE)
+	/* add the visual representation of the value */
+	mpdm_apush(w, MPDM_S(mpdm_string(v)));
+
+	/* dump */
+	mpdm_exec(_mpdm_dump_cb, w);
+
+	/* if value is multiple, repeat recursively for each value */
+	if(v!= NULL && v->flags & MPDM_MULTIPLE)
 	{
 		for(n=0;n < mpdm_size(v);n++)
 			_mpdm_dump(mpdm_aget(v, n), l + 1);
