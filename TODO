@@ -34,6 +34,8 @@ Pending Enhancements
    instance MPDM_NONDYN_BEGIN() and MPDM_NONDYN_END(), could save
    / restore a static index to that pool. Instead, the allocation
    from the pool would just wrap.
+ * 1027: Store all static _tie... values in ties in the main
+   control structure.
 
 Closed
 ------
@@ -71,5 +73,7 @@ Closed
    level utility library' (Yes; Wed, 08 Dec 2004 09:51:55 +0100).
  * 1010: Find a name for the scripting language (Mpsl should be
    fine; Wed, 08 Dec 2004 09:52:32 +0100).
+ * 1026: Make the _mpdm control structure public
+   (Wed, 08 Dec 2004 11:34:54 +0100).
 
 Email bugs to angel@triptico.com
