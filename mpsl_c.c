@@ -310,6 +310,8 @@ _O_TYPE _O_immdiv(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) / RM2))
 _O_TYPE _O_immsinc(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) + 1)); return(v); }
 _O_TYPE _O_immsdec(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) - 1)); return(v); }
 _O_TYPE _O_numeq(_O_ARGS) { mpdm_v v1=M1; mpdm_v v2=M2; return(BOOL((v1 == NULL || v2 == NULL) ? (v1 == v2) : (R(v1) == R(v2)))); }
+_O_TYPE _O_break(_O_ARGS) { *f=1; return(NULL); }
+_O_TYPE _O_return(_O_ARGS) { mpdm_v v=M1; *f=-1; return(v); }
 
 _O_TYPE _O_foreach(_O_ARGS)
 /* foreach loop */
@@ -406,10 +408,6 @@ _O_TYPE _O_blkframe(_O_ARGS)
 
 	return(ret);
 }
-
-
-_O_TYPE _O_break(_O_ARGS) { *f=1; return(NULL); }
-_O_TYPE _O_return(_O_ARGS) { mpdm_v v=M1; *f=2; return(v); }
 
 
 static struct _op
