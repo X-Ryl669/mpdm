@@ -381,6 +381,44 @@ void test_file(void)
 }
 
 
+void test_regex(void)
+{
+	mpdm_v v;
+
+	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to B"),
+		MPDM_LS("E"),0,NULL);
+	_test("sregex 0", mpdm_cmp(v, MPDM_LS("change all E to B")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to A"),
+		MPDM_LS("E"),0,"g");
+	_test("sregex 1", mpdm_cmp(v, MPDM_LS("change all E to E")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("A+"),MPDM_LS("change all AAAAAA to E"),
+		MPDM_LS("E"),0,"g");
+	_test("sregex 2", mpdm_cmp(v, MPDM_LS("change all E to E")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("A+"),MPDM_LS("change all A A A A A A to E"),
+		MPDM_LS("E"),0,"g");
+	_test("sregex 3", mpdm_cmp(v, MPDM_LS("change all E E E E E E to E")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("[0-9]+"),MPDM_LS("1, 20, 333, 40 all are numbers"),
+		MPDM_LS("numbers"),0,"g");
+	_test("sregex 4", mpdm_cmp(v, MPDM_LS("numbers, numbers, numbers, numbers all are numbers")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("[a-zA-Z_]+"),MPDM_LS("regex, mpdm_regex, TexMex"),
+		MPDM_LS("sex"),0,"g");
+	_test("sregex 5", mpdm_cmp(v, MPDM_LS("sex, sex, sex")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("[a-zA-Z]+"),MPDM_LS("regex, mpdm_regex, TexMex"),
+		NULL,0,"g");
+	_test("sregex 6", mpdm_cmp(v, MPDM_LS(", _, ")) == 0);
+
+	v=mpdm_sregex(MPDM_LS("\\\\"),MPDM_LS("\\MSDOS\\style\\path"),
+		MPDM_LS("/"),0,"g");
+	_test("sregex 7", mpdm_cmp(v, MPDM_LS("/MSDOS/style/path")) == 0);
+}
+
+
 int main(void)
 {
 	test_basic();
@@ -391,6 +429,7 @@ int main(void)
 	test_ajoin();
 	test_sym();
 	test_file();
+	test_regex();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");

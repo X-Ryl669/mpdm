@@ -65,7 +65,7 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags)
 		i=g=0;
 
 	/* compile the regex or fail */
-	if(regcomp(&rm, (char *) r->data, REG_EXTENDED | i))
+	if(regcomp(&re, (char *) r->data, REG_EXTENDED | i))
 		return(NULL);
 
 	do
@@ -73,7 +73,7 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags)
 		ptr=(char *) v->data + offset;
 
 		/* try match */
-		f=!regexec(&rm, ptr, 1, &rm, offset > 0 ? REG_NOTBOL : 0);
+		f=!regexec(&re, ptr, 1, &rm, offset > 0 ? REG_NOTBOL : 0);
 
 		if(f)
 		{
@@ -91,7 +91,7 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags)
 
 	} while(f && g);
 
-	regfree(&rm);
+	regfree(&re);
 
 	return(v);
 }
