@@ -35,7 +35,7 @@ mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <ins> stmt expr stmt_list list hash compsym
+%type <ins> stmt expr sym_list stmt_list list hash compsym
 
 %%
 
@@ -60,7 +60,11 @@ stmt:
 	| IF '(' expr ')' stmt ELSE stmt
 				{ $$ = _ins(MPDM_LS(L"IFELSE"), $3, $5, $7); }
 	| SUB compsym '{' stmt_list '}'
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, NULL); }
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $4); }
+	| SUB compsym '(' ')' '{' stmt_list '}'
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $6); }
+	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, $7); }
 	| '{' stmt_list '}'	{ $$ = $2; }
 	;
 
@@ -72,6 +76,11 @@ stmt_list:
 list:
 	expr			{ $$ = _ins(MPDM_LS(L"LIST"), $1, NULL, NULL); }
 	| list ',' expr		{ mpdm_apush($1, $3); $$ = $1; }
+	;
+
+sym_list:
+	SYMBOL			{ $$ = _ins(MPDM_LS(L"SYMLIST"), $1, NULL, NULL); }
+	| sym_list ',' SYMBOL	{ mpdm_apush($1, $3); $$ = $1; }
 	;
 
 hash:
