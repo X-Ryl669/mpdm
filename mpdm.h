@@ -57,7 +57,8 @@ struct _mpdm_ctl
 	mpdm_v root;		/* the root hash */
 	mpdm_v cur;		/* current value (circular list) */
 	int count;		/* total count of values */
-	int low_threshold;	/* minimum number of values to sweep */
+	int low_threshold;	/* minimum number of values to start sweeping */
+	int default_sweep;	/* default swept values on mpdm_sweep(0) */
 	int nd_index;		/* index to next non-dyn value */
 	int nd_size;		/* size of nd_pool */
 	mpdm_v nd_pool;		/* pool of non-dyn values */
