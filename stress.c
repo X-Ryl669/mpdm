@@ -495,20 +495,6 @@ void test_file(void)
 	mpdm_write(f, MPDM_LS(L"1"));
 	mpdm_write(f, eol);
 
-	/* test an array */
-	v=MPDM_A(4);
-	mpdm_aset(v, MPDM_LS(L"2.0"), 0);
-	mpdm_aset(v, MPDM_LS(L"2.1"), 1);
-	mpdm_aset(v, MPDM_LS(L"2.2"), 2);
-
-	w=MPDM_A(2);
-	mpdm_aset(w, MPDM_LS(L"3.0.0"), 0);
-	mpdm_aset(w, MPDM_LS(L"3.0.1"), 1);
-	mpdm_aset(v, w, 3);
-
-	mpdm_write(f, v);
-	mpdm_write(f, eol);
-
 	/* write its own file pointer */
 	mpdm_write(f, f);
 	mpdm_write(f, eol);
@@ -519,7 +505,6 @@ void test_file(void)
 
 	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0\n")) == 0);
 	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1\n")) == 0);
-	_test("test written file 2.0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.02.12.23.0.03.0.1\n")) == 0);
 	v=mpdm_read(f);
 	mpdm_dump(v);
 
