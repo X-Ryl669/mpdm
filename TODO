@@ -5,6 +5,9 @@ Release Critical Bugs
 ---------------------
 
  * 1054: Add a main() function, similar to the filp one.
+ * 1055: Iconv support works, but is nearly useless; iconverters
+   should be associated to file descriptors, which are the only
+   place where iconv will really be used.
 
 Open Bugs
 ---------
@@ -25,7 +28,6 @@ Pending Enhancements
  * 1007: chmod().
  * 1008: bread().
  * 1009: bwrite().
- * 1016: Add optional iconv support.
  * 1017: Add optional gettext support.
  * 1027: Store all static _tie... values in ties in the main
    control structure.
@@ -101,5 +103,7 @@ Closed
    arrays or hashes in the way. Also, it does not make much sense to
    be in plain mpdm; it should be part of mpsl (Discarded;
    Sat, 08 Jan 2005 21:30:55 +0100).
+ * 1016: Add optional iconv support
+   (Closed by #1055; Thu, 10 Mar 2005 13:26:54 +0100).
 
 Email bugs to angel@triptico.com
