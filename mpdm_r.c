@@ -55,39 +55,6 @@ static regmatch_t rm;
 	Code
 ********************/
 
-static mpdm_v _tie_d(mpdm_v v)
-{
-	if(v->data != NULL)
-	{
-		/* frees the regex data */
-		regfree((regex_t *)v->data);
-
-		/* frees the struct itself */
-		free(v->data);
-		v->data=NULL;
-	}
-
-	return(NULL);
-}
-
-
-static mpdm_v _tie_regex(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		/* creates a clone of the cpy tie */
-		_tie=mpdm_ref(mpdm_clone(_mpdm_tie_cpy()));
-
-		/* replaces the destructor with its own */
-		mpdm_aset(_tie, MPDM_X(_tie_d), MPDM_TIE_DESTROY);
-	}
-
-	return(_tie);
-}
-
-
 static wchar_t * _regex_flags(mpdm_v r)
 {
 	return(wcsrchr((wchar_t *)r->data, *(wchar_t *)r->data));
@@ -96,15 +63,14 @@ static wchar_t * _regex_flags(mpdm_v r)
 
 mpdm_v _mpdm_regcomp(mpdm_v r)
 {
-	static mpdm_v _regex=NULL;
-	mpdm_v c;
+	mpdm_v c=NULL;
 
 	/* if cache does not exist, create it */
-	if(_regex == NULL)
-		_regex=mpdm_ref(MPDM_H(0));
+	if(_mpdm->regex == NULL)
+		_mpdm->regex=mpdm_ref(MPDM_H(0));
 
 	/* search the regex in the cache */
-	if((c=mpdm_hget(_regex, r)) == NULL)
+	if((c=mpdm_hget(_mpdm->regex, r)) == NULL)
 	{
 		mpdm_v rmb;
 		regex_t re;
@@ -129,11 +95,19 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
 
 		if(!regcomp(&re, regex, f))
 		{
-			/* correctly compiled; create value */
-			c=mpdm_new(0, &re, sizeof(regex_t), _tie_regex());
+			void * ptr;
 
-			/* stores */
-			mpdm_hset(_regex, r, c);
+			if((ptr=malloc(sizeof(regex_t))) != NULL)
+			{
+				/* copies */
+				memcpy(ptr, &re, sizeof(regex_t));
+
+				/* create value */
+				c=mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
+
+				/* stores */
+				mpdm_hset(_mpdm->regex, r, c);
+			}
 		}
 	}
 

@@ -76,7 +76,17 @@ static void _mpdm_free(mpdm_v v)
 			_mpdm->nd_index = _mpdm->nd_size - 1;
 	}
 	else
+	{
+		/* collapse multiple values */
+		if(v->flags & MPDM_MULTIPLE)
+			mpdm_acollapse(v, 0, v->size);
+
+		/* free data if needed */
+		if(v->data != NULL && v->flags & MPDM_FREE)
+			free(v->data);
+
 		free(v);
+	}
 }
 
 
@@ -85,21 +95,18 @@ static void _mpdm_free(mpdm_v v)
  * @flags: flags
  * @data: pointer to real data
  * @size: size of data
- * @tie: array of functions
  *
  * Creates a new value. @flags is an or-ed set of flags, @data is a
- * pointer to the data the value will store, @size the size of these
+ * pointer to the data the value will store and @size the size of these
  * data (if value is to be a multiple one, @size is a number of elements,
- * or a number of bytes otherwise) and @tie an optional multiple
- * value with an array of functions (see tie documentation).
+ * or a number of bytes otherwise).
  *
  * This function is normally not directly used; use any of the type
  * creation macros instead.
  */
-mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
+mpdm_v mpdm_new(int flags, void * data, int size)
 {
 	mpdm_v v;
-	mpdm_v r=NULL;
 
 	/* alloc new value */
 	if((v=_mpdm_alloc(flags)) == NULL)
@@ -111,32 +118,23 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	v->data=data;
 	v->size=size;
 
-	/* tie (can fail) */
-	if((r=mpdm_tie(v, tie)) != NULL)
+	if(! (flags & MPDM_NONDYN))
 	{
-		if(! (flags & MPDM_NONDYN))
+		/* add to the circular list and count */
+		if(_mpdm->cur == NULL)
+			v->next=v;
+		else
 		{
-			/* add to the circular list and count */
-			if(_mpdm->cur == NULL)
-				v->next=v;
-			else
-			{
-				v->next=_mpdm->cur->next;
-				_mpdm->cur->next=v;
-			}
-
-			_mpdm->cur=v;
-
-			_mpdm->count ++;
+			v->next=_mpdm->cur->next;
+			_mpdm->cur->next=v;
 		}
-	}
-	else
-	{
-		/* tie creation failed; free the new value */
-		_mpdm_free(v);
+
+		_mpdm->cur=v;
+
+		_mpdm->count ++;
 	}
 
-	return(r);
+	return(v);
 }
 
 
@@ -197,17 +195,11 @@ void mpdm_sweep(int count)
 			/* dequeue */
 			_mpdm->cur->next=v->next;
 
-			/* untie and destroy */
-			mpdm_tie(v, NULL);
-
 			/* free the value itself */
 			_mpdm_free(v);
 
 			/* one value less */
 			_mpdm->count--;
-
-			/* freed values count as two */
-			count --;
 		}
 
 		/* move to next */
@@ -242,11 +234,14 @@ int mpdm_size(mpdm_v v)
  */
 mpdm_v mpdm_clone(mpdm_v v)
 {
-	mpdm_v t;
-
-	/* if a clone tie exists, run it; otherwise, return same value */
-	if((t=mpdm_get_tie(v, MPDM_TIE_CLONE)) != NULL)
-		v=mpdm_exec(t, v);
+	if(v != NULL)
+	{
+		if(v->flags & MPDM_MULTIPLE)
+			v=_mpdm_aclone(v);
+		else
+		if(v->flags & MPDM_NONDYN)
+			v=MPDM_S(v->data);
+	}
 
 	return(v);
 }
@@ -286,8 +281,6 @@ mpdm_v mpdm_root(void)
 mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 {
 	mpdm_v r=NULL;
-	mpdm_v (* func1)(mpdm_v);
-	mpdm_v (* func2)(mpdm_v, mpdm_v);
 
 	if(c != NULL && (c->flags & MPDM_EXEC))
 	{
@@ -297,22 +290,25 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 		if(c->flags & MPDM_MULTIPLE)
 		{
 			mpdm_v x;
+			mpdm_v (* func)(mpdm_v, mpdm_v);
 
 			/* value is multiple; first element is the
 			   2 argument version of the executable function,
 			   next its optional additional information and
 			   finally the arguments */
 			x=mpdm_aget(c, 0);
-			func2=(mpdm_v (*)(mpdm_v, mpdm_v))(x->data);
 
-			if(func2) r=func2(mpdm_aget(c, 1), args);
+			if((func=(mpdm_v (*)(mpdm_v, mpdm_v))(x->data)) != NULL)
+				r=func(mpdm_aget(c, 1), args);
 		}
 		else
 		{
+			mpdm_v (* func)(mpdm_v);
+
 			/* value is scalar; c is the 1 argument
 			   version of the executable function */
-			func1=(mpdm_v (*)(mpdm_v))(c->data);
-			if(func1) r=func1(args);
+			if((func=(mpdm_v (*)(mpdm_v))(c->data)) != NULL)
+				r=func(args);
 		}
 
 		mpdm_unref(args);
@@ -350,60 +346,6 @@ mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 	MPDM_ND_END();
 
 	return(r);
-}
-
-
-/**
- * mpdm_get_tie - Gets a tied function from a value
- * @v: the value
- * @tie_func: the wanted function number
- *
- * Returns the tie function number @tie_func from the value @v.
- */
-mpdm_v mpdm_get_tie(mpdm_v v, _mpdm_tie_func tie_func)
-{
-	mpdm_v t=NULL;
-
-	if(v != NULL && v->tie != NULL)
-		t=mpdm_aget(v->tie, tie_func);
-
-	return(t);
-}
-
-
-/**
- * mpdm_tie - Ties an array of functions to a value
- * @v: the value
- * @tie: the array of function ties
- *
- * Ties the array of functions @tie to the value @v. Each of the
- * elements of @tie must be executable.
- */
-mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
-{
-	mpdm_v t;
-
-	if(v != NULL)
-	{
-		/* references the new tie */
-		mpdm_ref(tie);
-
-		/* execute current destroyer */
-		if((t=mpdm_get_tie(v, MPDM_TIE_DESTROY)) != NULL)
-			mpdm_exec(t, v);
-
-		/* unreferences old tie */
-		mpdm_unref(v->tie);
-
-		/* store tie */
-		v->tie=tie;
-
-		/* execute new creator */
-		if((t=mpdm_get_tie(v, MPDM_TIE_CREATE)) != NULL)
-			v=mpdm_exec(t, v);
-	}
-
-	return(v);
 }
 
 
@@ -452,14 +394,4 @@ int mpdm_startup(void)
 
 void mpdm_shutdown(void)
 {
-	int n;
-	mpdm_v v;
-
-	/* travels the complete list of values */
-	for(v=_mpdm->cur,n=_mpdm->count;n > 0;n--,v=v->next)
-	{
-		/* destroys all values that need to be destroyed */
-		if(v->flags & MPDM_DESTROY)
-			mpdm_tie(v, NULL);
-	}
 }

@@ -20,9 +20,6 @@ Hashes
 The 'garbage collector'
 -----------------------
 
-Ties
-----
-
 Executable values
 -----------------
 
