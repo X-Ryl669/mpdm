@@ -44,7 +44,7 @@ static int _fdm_hash_func(unsigned char * string, int mod)
 }
 
 
-#define HASH_BUCKET(h, k) (_fdm_hash_func(fdm_printable(k), h->size))
+#define HASH_BUCKET(h, k) (_fdm_hash_func(fdm_asstr(k), h->size))
 
 /**
  * fdm_hget - Gets an value from a hash.
