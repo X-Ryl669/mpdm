@@ -30,7 +30,7 @@ y.tab.c: mpsl.y
 	$(YACC) -d mpsl.y
 
 lex.yy.c: mpsl.l
-	$(LEX) mpsl.l
+	flex mpsl.l
 
 mpsl_l.o: lex.yy.c y.tab.h
 	$(CC) $(CFLAGS) -c lex.yy.c -o mpsl_l.o
