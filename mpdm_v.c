@@ -48,19 +48,8 @@ static struct
 	Code
 ********************/
 
-static void _fdm_nref(fdm_v v[], int count, int iref)
-{
-	int n;
-
-	for(n=0;n < count;n++)
-	{
-		if(v[n] != NULL)
-			v[n]->ref += iref;
-	}
-}
-
-
 fdm_v _fdm_new(int flags, void * data, int size)
+/* Creates a new value (overriding cache) */
 {
 	fdm_v v;
 
@@ -93,35 +82,34 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	memset(v, '\0', sizeof(struct _fdm_v));
 
 	v->flags=flags;
-	v->size=size;
 
-	if((flags & FDM_COPY))
+	if(flags & FDM_MULTIPLE)
+		fdm_aexpand(v, 0, size);
+	else
+	if(flags & FDM_COPY)
 	{
-		int s;
-
-		s=(flags & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
+		v->size=size;
 
 		/* alloc new space for data */
-		if((v->data=malloc(s + 1)) == NULL)
+		if((v->data=malloc(size + 1)) == NULL)
 			return(NULL);
 
 		/* zero or copy the block */
 		if(data == NULL)
-			memset(v->data, '\0', s);
+			memset(v->data, '\0', size);
 		else
 		{
 			if(flags & FDM_STRING)
 				strcpy(v->data, data);
 			else
-				memcpy(v->data, data, s);
-
-			/* if data is multiple, re-reference its elements */
-			if(flags & FDM_MULTIPLE)
-				_fdm_nref((fdm_v *)v->data, size, 1);
+				memcpy(v->data, data, size);
 		}
 	}
 	else
+	{
 		v->data=data;
+		v->size=size;
+	}
 
 	/* add to the value chain and count */
 	if(_fdm.head == NULL) _fdm.head=v;
@@ -141,7 +129,7 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 	/* first time initialization */
 	if(_cache == NULL)
 	{
-		_cache=_fdm_new(FDM_MULTIPLE, NULL, 255);
+		_cache=_fdm_new(FDM_MULTIPLE, NULL, 256);
 		fdm_ref(_cache);
 	}
 
@@ -197,10 +185,7 @@ fdm_v _fdm_cache(int tag, void * data, int size)
  * IF FDM_MULTIPLE is set, it means the value itself is an array
  * of values. @Size indicates the number of elements instead of
  * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
- * FDM_STRING. For FDM_MULTIPLE values, @data is usually NULL
- * (meaning to allocate a NULL-initialized array of @size values),
- * but can also be the @data pointer of another multiple value;
- * in this case, the values will be re-referenced.
+ * FDM_STRING, and @data is ignored.
  *
  * If FDM_FREE is set, memory in @data will be released using free()
  * when the value is destroyed.
@@ -228,7 +213,7 @@ fdm_v fdm_inew(int ival)
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
 
-	v=fdm_new(FDM_COPY | FDM_STRING | FDM_INTEGER, tmp, - 1);
+	v=fdm_new(FDM_COPY | FDM_STRING | FDM_INTEGER, tmp, -1);
 	v->ival=ival;
 
 	return(v);
@@ -309,7 +294,12 @@ void fdm_sweep(int count)
 
 			/* unref all elements if multiple */
 			if(v->flags & FDM_MULTIPLE)
-				_fdm_nref((fdm_v *)v->data, v->size, -1);
+			{
+				int i;
+
+				for(i=0;i < v->size;i++)
+					fdm_aset(v, NULL, i);
+			}
 
 			/* free data if needed */
 			if(v->flags & FDM_FREE) free(v->data);
