@@ -178,11 +178,14 @@ void mpdm_sweep(int count)
 {
 	if(_mpdm->count > _mpdm->low_threshold)
 	{
+		int rf=0;
+		int uf=0;
+
 		/* if count is -1, sweep all */
-		if(count == -1) count=_mpdm->count * 2;
+		if(count == -1) count=_mpdm->count;
 
 		/* if count is zero, sweep 'some' values */
-		if(count == 0) count=_mpdm->count - _mpdm->lcount + 2;
+		if(count == 0) count=16;
 
 		while(count > 0)
 		{
@@ -194,6 +197,9 @@ void mpdm_sweep(int count)
 				_mpdm->head=_mpdm->head->next;
 				_mpdm->tail=_mpdm->tail->next;
 				_mpdm->tail->next=NULL;
+
+				rf++;
+				count--;
 			}
 			else
 			{
@@ -211,13 +217,14 @@ void mpdm_sweep(int count)
 
 				/* one value less */
 				_mpdm->count--;
+
+				uf++;
+				count -= 2;
 			}
-
-			count--;
 		}
-	}
 
-	_mpdm->lcount=_mpdm->count;
+		/* printf("#### SWEEP %d, %d, %d\n", rf, uf, _mpdm->count); */
+	}
 }
 
 
