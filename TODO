@@ -10,7 +10,6 @@ Release Critical Bugs
  * 1047: Change _mpdm_sym() to force the creation of all intermediate
    arrays or hashes in the way. Also, it does not make much sense to
    be in plain mpdm; it should be part of mpsl.
- * 1048: mpdm_rval() breaks locales.
  * 1049: Multiple instructions are buggy; they should always have
    two arguments.
 
@@ -127,5 +126,6 @@ Closed
    not values (Fri, 24 Dec 2004 18:49:29 +0100).
  * 1046: Subroutine definitions are using MPSL_OP_SUB that is
    really the substract opcode (Sun, 26 Dec 2004 19:26:32 +0100).
+ * 1048: mpdm_rval() breaks locales (Wed, 05 Jan 2005 16:05:52 +0100).
 
 Email bugs to angel@triptico.com

@@ -274,13 +274,13 @@ double mpdm_rval(mpdm_v v)
 
 			/* set locale to C for non locale-dependent
 			   floating point conversion */
-			prev_locale=setlocale(LC_ALL, "C");
+			prev_locale=setlocale(LC_NUMERIC, "C");
 
 			/* read */
 			sscanf(tmp, "%lf", &r);
 
 			/* set previous locale */
-			setlocale(LC_ALL, prev_locale);
+			setlocale(LC_NUMERIC, prev_locale);
 		}
 
 		v->rval=r;
