@@ -148,6 +148,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 	/* add to the value chain and count */
 	if(_fdm.head == NULL) _fdm.head=v;
 	if(_fdm.tail != NULL) _fdm.tail->next=v;
+	_fdm.tail=v;
 	_fdm.count ++;
 
 	return(v);
