@@ -498,6 +498,12 @@ void test_regex(void)
 	v=mpdm_regex(MPDM_LS(L"/regex/i"), MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
 	_test("regex 6", v != NULL);
 
+	v=mpdm_regex(MPDM_LS(L"/^\\s*/"), MPDM_LS(L"123456"), 0);
+	_test("regex 7", v != NULL);
+
+	v=mpdm_regex(MPDM_LS(L"/^\\s+/"), MPDM_LS(L"123456"), 0);
+	_test("regex 8", v == NULL);
+
 	/* sregex */
 
 	v=mpdm_sregex(MPDM_LS(L"/A/"),MPDM_LS(L"change all A to A"),
