@@ -325,7 +325,10 @@ mpdm_v _mpdm_rnew(double rval)
 		char * ptr;
 
 		for(ptr=tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
-		ptr++;
+
+		/* if it's over the ., strip it also */
+		if(*ptr != '.') ptr++;
+
 		*ptr='\0';
 	}
 
