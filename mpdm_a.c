@@ -1,8 +1,7 @@
-
 /*
 
     fdm - Filp Data Manager
-    Copyright (C) 2003 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
     fdm_a.c - Array management
 
@@ -342,99 +341,6 @@ void fdm_asort(fdm_v a, int step)
 {
 	qsort(a->data, a->size / step,
 		sizeof(fdm_v) * step, _fdm_asort_cmp);
-}
-
-
-/**
- * fdm_splice - Creates a new string value from another.
- * @v: the original value
- * @i: the value to be inserted
- * @offset: offset where the substring is to be inserted
- * @del: number of characters to delete
- *
- * Creates a new string value from @v, deleting @del chars
- * at @offset and substituting them by @i.
- *
- * Returns a two element array, with the new string in the first
- * element and the deleted string in the second.
- */
-fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
-{
-	fdm_v w;
-	fdm_v n=NULL;
-	fdm_v d=NULL;
-	int ns, r;
-	int ins=0;
-
-	/* negative offsets start from the end */
-	if(offset < 0) offset=v->size + 1 - offset;
-
-	/* never add further the end */
-	if(offset > v->size) offset=v->size;
-
-	/* never delete further the end */
-	if(offset + del > v->size) del=v->size - offset;
-
-	/* deleted space */
-	if(del > 0)
-	{
-		d=fdm_new(FDM_COPY | FDM_STRING, NULL, del);
-
-		memcpy(d->data, v->data + offset, del);
-		((char *)(d->data))[del]='\0';
-	}
-
-	/* something to insert? */
-	if(i != NULL)
-		ins=i->size;
-
-	/* new size and remainder */
-	ns=v->size + ins - del;
-	r=offset + del;
-
-	if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
-		return(NULL);
-
-	/* copy the beginning */
-	if(offset > 0)
-		memcpy(n->data, v->data, offset);
-
-	/* copy the text to be inserted */
-	if(ins > 0)
-		memcpy(n->data + offset, i->data, ins);
-
-	/* copy the remaining */
-	if(v->size - r > 0)
-		memcpy(n->data + offset + ins, v->data + r, v->size - r);
-
-	/* null terminate */
-	((char *)(n->data))[ns]='\0';
-
-	/* creates the output array */
-	w=FDM_A(2);
-
-	fdm_aset(w, n, 0);
-	fdm_aset(w, d, 1);
-
-	return(w);
-}
-
-
-/**
- * fdm_strcat - Concatenates two strings
- * @s1: the first string
- * @s2: the second string
- *
- * Returns a new string formed by the concatenation of @s1 and @s2.
- */
-fdm_v fdm_strcat(fdm_v s1, fdm_v s2)
-{
-	fdm_v v;
-
-	v=fdm_splice(s1, s2, -1, 0);
-	v=fdm_aget(v, 0);
-
-	return(v);
 }
 
 

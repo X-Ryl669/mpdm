@@ -1,7 +1,7 @@
 /*
 
     fdm - Filp Data Manager
-    Copyright (C) 2003 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -75,10 +75,11 @@ int fdm_aseek(fdm_v a, fdm_v k, int step);
 int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos);
 void fdm_asort(fdm_v a, int step);
 
-fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
-fdm_v fdm_strcat(fdm_v s1, fdm_v s2);
 fdm_v fdm_asplit(fdm_v s, fdm_v a);
 fdm_v fdm_ajoin(fdm_v s, fdm_v a);
+
+fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
+fdm_v fdm_strcat(fdm_v s1, fdm_v s2);
 
 fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
