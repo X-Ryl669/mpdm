@@ -59,7 +59,7 @@ int fdm_ival(fdm_v v);
 
 void fdm_poke(fdm_v v, char c, int offset);
 
-fdm_v fdm_dup(fdm_v v);
+fdm_v fdm_copy(fdm_v v);
 fdm_v fdm_root(void);
 
 void fdm_aexpand(fdm_v a, int offset, int num);

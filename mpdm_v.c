@@ -388,14 +388,14 @@ int fdm_ival(fdm_v v)
 
 
 /**
- * fdm_dup - Duplicates a value
+ * fdm_copy - Creates a copy of a value
  * @v: the value
  *
- * Duplicates a value. If the value is multiple, a new value will
+ * Creates a copy of a value. If the value is multiple, a new value will
  * be created containing duplicates of all its elements; otherwise,
  * the same unchanged value is returned.
  */
-fdm_v fdm_dup(fdm_v v)
+fdm_v fdm_copy(fdm_v v)
 {
 	fdm_v w;
 	int n;
@@ -409,7 +409,7 @@ fdm_v fdm_dup(fdm_v v)
 
 	/* fills each element with duplicates of the original */
 	for(n=0;n < v->size;n++)
-		fdm_aset(w, fdm_dup(fdm_aget(v, n)), n);
+		fdm_aset(w, fdm_copy(fdm_aget(v, n)), n);
 
 	return(w);
 }
