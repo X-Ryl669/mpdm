@@ -324,7 +324,7 @@ static mpdm_v _mpsl_op_bimath(mpdm_v c, mpdm_v args)
 
 
 static mpdm_v _mpsl_op_not(mpdm_v c, mpdm_v args)
-/* boolean not */
+/* boolean 'not' */
 {
 	mpdm_v v;
 
@@ -381,14 +381,22 @@ static mpdm_v _mpsl_op_nbool(mpdm_v c, mpdm_v args)
 /* boolean numeric comparisons */
 {
 	int i;
+	mpdm_v v1, v2;
 	double r1, r2;
 	mpsl_op op;
 
 	/* gets the opcode */
 	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
 
-	r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
-	r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+	v1=_mpsl_machine(mpdm_aget(c, 1), args);
+	v2=_mpsl_machine(mpdm_aget(c, 2), args);
+
+	/* special case: NULL equality test */
+	if(op == MPSL_OP_NUMEQ && v1 == NULL && v2 == NULL)
+		return(mpsl_true_or_false(1));
+
+	r1=mpdm_rval(v1);
+	r2=mpdm_rval(v2);
 
 	switch(op)
 	{
