@@ -454,6 +454,59 @@ void test_regex(void)
 }
 
 
+static mpdm_v _dumper(mpdm_v args)
+/* executable value */
+{
+	mpdm_dump(args);
+	return(NULL);
+}
+
+
+static mpdm_v _sum(mpdm_v args)
+/* executable value: sum all args */
+{
+	int n,t=0;
+
+	if(args != NULL)
+	{
+		for(n=t=0;n < args->size;n++)
+			t+=mpdm_ival(mpdm_aget(args, n));
+	}
+
+	return(MPDM_I(t));
+}
+
+
+void test_exec(void)
+{
+	mpdm_v x;
+	mpdm_v w;
+	mpdm_v v;
+
+	x=MPDM_X(_dumper);
+
+	/* a simple value */
+	mpdm_exec(x, NULL);
+	mpdm_exec(x, x);
+
+	x=MPDM_X(_sum);
+	w=MPDM_A(3);
+	mpdm_aset(w, MPDM_I(100), 0);
+	mpdm_aset(w, MPDM_I(220), 1);
+	mpdm_aset(w, MPDM_I(333), 2);
+
+	_test("exec 0", mpdm_ival(mpdm_exec(x, w)) == 653);
+
+	/* multiple executable value */
+	v=MPDM_A(2);
+	v->flags |= MPDM_EXEC;
+	mpdm_aset(v, x, 0);
+	mpdm_aset(v, w, 1);
+
+	_test("exec 1", mpdm_ival(mpdm_exec(v, NULL)) == 653);
+}
+
+
 int main(void)
 {
 	test_basic();
@@ -465,6 +518,7 @@ int main(void)
 	test_sym();
 	test_file();
 	test_regex();
+	test_exec();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");

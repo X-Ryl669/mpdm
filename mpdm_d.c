@@ -56,7 +56,9 @@ void _mpdm_dump(mpdm_v v, int l)
 
 	printf("%d,%c%c%c%c:", v->ref,
 		v->flags & MPDM_COPY	? 'C' : (v->flags & MPDM_FREE ? 'F' : '-'),
-		v->flags & MPDM_FILE	? 'F' : (v->flags & MPDM_STRING	? 'S' : '-'),
+		v->flags & MPDM_FILE	? 'F' :
+			(v->flags & MPDM_STRING	? 'S' :
+				(v->flags & MPDM_EXEC ? 'X' : '-')),
 		v->flags & MPDM_HASH	? 'H' : (v->flags & MPDM_MULTIPLE ? 'M' : '-'),
 		v->flags & MPDM_IVAL	? 'I' : '-');
 
