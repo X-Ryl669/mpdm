@@ -308,7 +308,7 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 
 
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
-/* runs an instruction under a subroutine frame */
+/* runs an instruction inside a subroutine frame */
 {
 	mpdm_v ret=NULL;
 	mpdm_v v;
@@ -334,6 +334,21 @@ static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 	ret=_mpsl_machine(mpdm_aget(c, 1), args);
 
 	/* destroys the frames */
+	mpsl_local_del_subframe();
+
+	return(ret);
+}
+
+
+static mpdm_v _mpsl_op_blkframe(mpdm_v c, mpdm_v args)
+/* runs an instruction under a block frame */
+{
+	mpdm_v ret;
+
+	mpsl_local_add_blkframe();
+
+	ret=_mpsl_machine(mpdm_aget(c, 1), args);
+
 	mpsl_local_del_subframe();
 
 	return(ret);
@@ -505,18 +520,19 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_ASSIGN: ret=_mpsl_op_assign(c, args); break;
 	case MPSL_OP_EXEC: ret=_mpsl_op_exec(c, args); break;
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
-	case MPSL_OP_ADD:
-	case MPSL_OP_SUB:
-	case MPSL_OP_MUL:
+	case MPSL_OP_BLKFRAME: ret=_mpsl_op_blkframe(c, args); break;
+	case MPSL_OP_ADD: /* falls */
+	case MPSL_OP_SUB: /* falls */
+	case MPSL_OP_MUL: /* falls */
 	case MPSL_OP_DIV: ret=_mpsl_op_brmath(c, args); break;
 	case MPSL_OP_MOD: ret=_mpsl_op_bimath(c, args); break;
 	case MPSL_OP_NOT: ret=_mpsl_op_not(c, args); break;
 	case MPSL_OP_AND: ret=_mpsl_op_and(c, args); break;
 	case MPSL_OP_OR: ret=_mpsl_op_or(c, args); break;
-	case MPSL_OP_NUMEQ:
-	case MPSL_OP_NUMLT:
-	case MPSL_OP_NUMLE:
-	case MPSL_OP_NUMGT:
+	case MPSL_OP_NUMEQ: /* falls */
+	case MPSL_OP_NUMLT: /* falls */
+	case MPSL_OP_NUMLE: /* falls */
+	case MPSL_OP_NUMGT: /* falls */
 	case MPSL_OP_NUMGE: ret=_mpsl_op_nbool(c, args); break;
 	}
 
