@@ -121,6 +121,10 @@ fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 	fdm_v v;
 	fdm_v * p;
 
+	/* boundary checks */
+	if(offset < 0 || offset >= a->size)
+		return(NULL);
+
 	p=(fdm_v *)a->data;
 	v=p[offset];
 	p[offset]=e;
@@ -142,6 +146,10 @@ fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 fdm_v fdm_aget(fdm_v a, int offset)
 {
 	fdm_v * p;
+
+	/* boundary checks */
+	if(offset < 0 || offset >= a->size)
+		return(NULL);
 
 	p=(fdm_v *)a->data;
 	return(p[offset]);

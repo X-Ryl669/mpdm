@@ -196,7 +196,19 @@ static fdm_v _fdm_sym(fdm_v r, fdm_v k, fdm_v v, int s)
 
 	for(n=0;n < p->size - s;n++)
 	{
-		if((r=fdm_hget(r, fdm_aget(p, n))) == NULL)
+		/* try each component as a hash, then as array */
+		if(r->flags & FDM_HASH)
+			r=fdm_hget(r, fdm_aget(p, n));
+		else
+		if(r->flags & FDM_MULTIPLE)
+		{
+			int i=fdm_ival(fdm_aget(p, n));
+			r=fdm_aget(r, i);
+		}
+		else
+			r=NULL;
+
+		if(r == NULL)
 			break;
 	}
 
