@@ -259,7 +259,7 @@ int fdm_abseek(fdm_v a, fdm_v k, int step)
 {
 	int b, t, n, c;
 
-	b=n=0; t=(a->size - 1) / step;
+	b=1; t=a->size / step;
 
 	while(t >= b)
 	{
