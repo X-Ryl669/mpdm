@@ -58,7 +58,7 @@ static void _gdbm_key_to_datum(mpdm_v k, datum * dat)
 
 /* gdbm ties */
 
-static mpdm_v _mpdm_tie_gdbm_d(mpdm_v v)
+static mpdm_v _tie_gdbm_d(mpdm_v v)
 {
 	if(v->data != NULL)
 	{
@@ -70,7 +70,7 @@ static mpdm_v _mpdm_tie_gdbm_d(mpdm_v v)
 }
 
 
-static mpdm_v _mpdm_tie_gdbm_hget(mpdm_v a)
+static mpdm_v _tie_gdbm_hget(mpdm_v a)
 {
 	mpdm_v h;
 	mpdm_v k;
@@ -95,7 +95,7 @@ static mpdm_v _mpdm_tie_gdbm_hget(mpdm_v a)
 }
 
 
-static mpdm_v _mpdm_tie_gdbm_hset(mpdm_v a)
+static mpdm_v _tie_gdbm_hset(mpdm_v a)
 {
 	mpdm_v h;
 	mpdm_v k;
@@ -104,7 +104,7 @@ static mpdm_v _mpdm_tie_gdbm_hset(mpdm_v a)
 	datum key, val;
 
 	/* fetch old value */
-	ov=_mpdm_tie_gdbm_hget(a);
+	ov=_tie_gdbm_hget(a);
 
 	/* get hash, key and value */
 	h=mpdm_aget(a, 0);
@@ -123,7 +123,7 @@ static mpdm_v _mpdm_tie_gdbm_hset(mpdm_v a)
 }
 
 
-static mpdm_v _mpdm_tie_gdbm_hdel(mpdm_v a)
+static mpdm_v _tie_gdbm_hdel(mpdm_v a)
 {
 	mpdm_v h;
 	mpdm_v k;
@@ -131,7 +131,7 @@ static mpdm_v _mpdm_tie_gdbm_hdel(mpdm_v a)
 	datum key;
 
 	/* fetch old value */
-	ov=_mpdm_tie_gdbm_hget(a);
+	ov=_tie_gdbm_hget(a);
 
 	/* get hash and key */
 	h=mpdm_aget(a, 0);
@@ -146,7 +146,7 @@ static mpdm_v _mpdm_tie_gdbm_hdel(mpdm_v a)
 }
 
 
-static mpdm_v _mpdm_tie_gdbm_hkeys(mpdm_v h)
+static mpdm_v _tie_gdbm_hkeys(mpdm_v h)
 {
 	mpdm_v a;
 	mpdm_v v;
@@ -168,30 +168,12 @@ static mpdm_v _mpdm_tie_gdbm_hkeys(mpdm_v h)
 }
 
 
-static mpdm_v _mpdm_tie_gdbm_hsize(mpdm_v v)
+static mpdm_v _tie_gdbm_hsize(mpdm_v v)
 {
-	v=_mpdm_tie_gdbm_hkeys(v);
+	v=_tie_gdbm_hkeys(v);
 	return(MPDM_I(mpdm_size(v)));
 }
 
-
-mpdm_v _mpdm_tie_ph_gdbm(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(0));
-		mpdm_aset(_tie, MPDM_X(_mpdm_tie_gdbm_d), MPDM_TIE_DESTROY);
-		mpdm_aset(_tie, MPDM_X(_mpdm_tie_gdbm_hget), MPDM_TIE_HGET);
-		mpdm_aset(_tie, MPDM_X(_mpdm_tie_gdbm_hset), MPDM_TIE_HSET);
-		mpdm_aset(_tie, MPDM_X(_mpdm_tie_gdbm_hdel), MPDM_TIE_HDEL);
-		mpdm_aset(_tie, MPDM_X(_mpdm_tie_gdbm_hkeys), MPDM_TIE_HKEYS);
-		mpdm_aset(_tie, MPDM_X(_mpdm_tie_gdbm_hsize), MPDM_TIE_HSIZE);
-	}
-
-	return(_tie);
-}
 
 #endif /* CONFOPT_GDBM */
 
@@ -202,19 +184,110 @@ mpdm_v mpdm_ph_gdbm(mpdm_v filename)
 
 #ifdef CONFOPT_GDBM
 
+	static mpdm_v _tie=NULL;
 	GDBM_FILE dbf;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(MPDM_A(0));
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_d), MPDM_TIE_DESTROY);
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hget), MPDM_TIE_HGET);
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hset), MPDM_TIE_HSET);
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hdel), MPDM_TIE_HDEL);
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hkeys), MPDM_TIE_HKEYS);
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hsize), MPDM_TIE_HSIZE);
+	}
 
 	/* convert to mbs,s */
 	filename=MPDM_2MBS(filename->data);
 
 	if((dbf = gdbm_open(filename->data, 512,
 		GDBM_WRCREAT, 0666, NULL)) != NULL)
-			v=mpdm_new(MPDM_HASH|MPDM_DESTROY, dbf,
-			0, _mpdm_tie_ph_gdbm());
+			v=mpdm_new(MPDM_HASH|MPDM_DESTROY, dbf, 0, _tie);
 
 #endif /* CONFOPT_GDBM */
 
 	return(v);
+}
+
+
+/* plain text file persistent hashes */
+
+static mpdm_v _ph_plain_filename=NULL;
+
+static mpdm_v _tie_plain_d(mpdm_v h)
+{
+	mpdm_v f;
+
+	/* gets the filename from the cache */
+	if((f=mpdm_hget(_ph_plain_filename, h)) != NULL)
+	{
+		/* opens for writing and dumps the hash */
+		if((f=mpdm_open(f, MPDM_LS(L"w"))) != NULL)
+		{
+			int n;
+			mpdm_v a;
+			mpdm_v k;
+			mpdm_v v;
+
+			for(a=mpdm_hkeys(h),n=0;n < mpdm_size(a);n++)
+			{
+				k=mpdm_aget(a, n);
+				v=mpdm_hget(h, k);
+
+				mpdm_write(f, k);
+				mpdm_write(f, v);
+			}
+
+			mpdm_close(f);
+		}
+	}
+
+	return(NULL);
+}
+
+
+mpdm_v mpdm_ph_plain(mpdm_v filename)
+{
+	mpdm_v h=NULL;
+	static mpdm_v _tie=NULL;
+	mpdm_v f;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(mpdm_clone(_mpdm_tie_mul()));
+		mpdm_aset(_tie, MPDM_X(_tie_plain_d), MPDM_TIE_DESTROY);
+
+		/* creates the filename hash */
+		_ph_plain_filename=mpdm_ref(MPDM_H(0));
+	}
+
+	h=mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL|MPDM_DESTROY,NULL,0,_tie);
+
+	if((f=mpdm_open(filename, MPDM_LS(L"r"))) != NULL)
+	{
+		mpdm_v k;
+		mpdm_v v;
+
+		/* reads from disk */
+		for(;;)
+		{
+			k=mpdm_read(f);
+			v=mpdm_read(f);
+
+			if(k == NULL || v == NULL)
+				break;
+
+			mpdm_hset(h, k, v);
+		}
+
+		mpdm_close(f);
+	}
+
+	/* store the filename for destroy use */
+	mpdm_hset(_ph_plain_filename, h, filename);
+
+	return(h);
 }
 
 
@@ -224,6 +297,9 @@ mpdm_v mpdm_ph(mpdm_v filename)
 
 	if(v == NULL)
 		v=mpdm_ph_gdbm(filename);
+
+	if(v == NULL)
+		v=mpdm_ph_plain(filename);
 
 	return(v);
 }
