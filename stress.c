@@ -1167,7 +1167,11 @@ void test_mpsl2(void)
 	v=_test_mpsl("\"big\" ~ \" \" ~ \"lebowski\";");
 	_test("~ (strcat 2)", mpdm_cmp(mpdm_exec(v, NULL), MPDM_LS(L"big lebowski")) == 0);
 
+	/* library functions tests */
 	v=_test_mpsl("dump( [1, 2, 3, 4, 5] );");
+	mpdm_exec(v, NULL);
+
+	v=_test_mpsl("if(size([2, 3, 4]) == 3) { dump(\"YES\"); } else { dump(\"NO\"); }");
 	mpdm_exec(v, NULL);
 
 	mpdm_dump(mpdm_root());
