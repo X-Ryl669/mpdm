@@ -9,9 +9,8 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1030: mpdm_alloc() behaviour regarding multiple values is
-   completely broken; multiple values are allocated as arrays of
-   struct _mpdm instead of arrays of pointers.
+ * 1030: non-dyn array values are completely broken; the creation
+   should include the array of values and not take it from mpdm_alloc().
 
 Open Bugs
 ---------
