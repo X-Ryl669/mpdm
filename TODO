@@ -30,7 +30,8 @@ Pending Enhancements
    autosweep-safe.
  * 1016: Add optional iconv support.
  * 1017: Add optional gettext support.
- * 1018: Options like gdbm should be stored in an mpdm array or hash.
+ * 1018: Support for optional features (like gdbm) should be stored
+   in an mpdm array or hash to easily ask for capabilities.
 
 Closed
 ------
