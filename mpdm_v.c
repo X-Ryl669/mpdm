@@ -395,9 +395,15 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 
 	if(v != NULL)
 	{
+		/* references the new tie */
+		mpdm_ref(tie);
+
 		/* execute current destroyer */
 		if((t=mpdm_get_tie(v, MPDM_TIE_DESTROY)) != NULL)
 			mpdm_exec(t, v);
+
+		/* unreferences old tie */
+		mpdm_unref(v->tie);
 
 		/* store tie */
 		v->tie=tie;
