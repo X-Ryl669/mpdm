@@ -90,8 +90,8 @@ void fdm_acollapse(fdm_v a, int offset, int num)
 	fdm_v * p;
 
 	/* don't try to delete beyond the limit */
-/*	if(offset + num > a->size)
-		num=a->size - offset; */
+	if(offset + num > a->size)
+		num=a->size - offset;
 
 	/* cleans the about-to-be-deleted space */
 	for(n=offset;n < offset + num;n++)
