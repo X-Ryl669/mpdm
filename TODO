@@ -1,3 +1,20 @@
+TODO
+====
+
+fdm_dump() should store its output in a _v or _a.
+
+fdm_acollapse() should unreference the deleted values.
+
+New functions to: split a string in two (from an offset), split a
+string into an array (using separators), join an array into a string
+(using separators).
+
+filp should be a different project. It's config.sh should decide to use
+./fdm or ../fdm in -I and -L.
+
+Examples
+========
+
 Filp startup
 ------------
 
