@@ -47,7 +47,7 @@ static int _mpdm_hash_func(unsigned char * string, int mod)
 }
 
 
-#define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), h->size))
+#define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
 
 /**
  * mpdm_hget - Gets an value from a hash.
@@ -64,7 +64,7 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 	mpdm_v v = NULL;
 
 	/* if hash is empty, nothing can be found */
-	if(h->size == 0)
+	if(mpdm_size(h) == 0)
 		return(v);
 
 	n=HASH_BUCKET(h, k);
@@ -95,7 +95,7 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 	mpdm_v p = NULL;
 
 	/* if hash is empty, create an optimal number of buckets */
-	if(h->size == 0)
+	if(mpdm_size(h) == 0)
 		mpdm_aexpand(h, 0, 31);
 
 	n=HASH_BUCKET(h, k);
@@ -175,11 +175,11 @@ mpdm_v mpdm_hkeys(mpdm_v h)
 
 	a=MPDM_A(0);
 
-	for(n=0;n < h->size;n++)
+	for(n=0;n < mpdm_size(h);n++)
 	{
 		if((b=mpdm_aget(h, n)) != NULL)
 		{
-			for(m=0;m < b->size;m+=2)
+			for(m=0;m < mpdm_size(b);m+=2)
 				mpdm_apush(a, mpdm_aget(b, m));
 		}
 	}
@@ -202,7 +202,7 @@ static mpdm_v _mpdm_sym(mpdm_v r, mpdm_v k, mpdm_v v, int s)
 	else
 		p=mpdm_asplit(MPDM_LS("."), k);
 
-	for(n=0;n < p->size - s;n++)
+	for(n=0;n < mpdm_size(p) - s;n++)
 	{
 		/* try each component as a hash, then as array */
 		if(r->flags & MPDM_HASH)
