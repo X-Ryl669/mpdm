@@ -71,7 +71,11 @@ stmt:
 	;
 
 block:
-	'{' stmt_list '}'	{ $$ = $2; }
+	'{' stmt_list '}'	{ mpdm_v w=MPDM_A(3);
+				mpdm_aset(w, _ins(MPDM_LS(L"PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, $2, 1);
+				mpdm_aset(w, _ins(MPDM_LS(L"POSTFIX"), NULL, NULL, NULL), 2);
+				$$ = w; }
 
 stmt_list:
 	stmt			{ $$ = $1; }
