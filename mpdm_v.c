@@ -88,19 +88,27 @@ static void _fdm_nref(fdm_v v[], int count, int ref)
  * @data: pointer to real data
  * @size: size of data
  *
- * Creates a new value. @tag is the OR operation of the following
- * possible bits: FDM_COPY, if a copy of the data is to be stored
- * (so it uses allocated memory); FDM_STRING, if the value is a string
- * (so usual string operations as strlen or strcmp can be done over it);
- * and FDM_MULTIPLE, if the value is going to contain an array of other
- * values. @tag can also include it its lower 16 bits a user-defined
- * 'type' value that will be stored but ignored. @data is a pointer to
- * a string (if FDM_STRING is used), a block of pointers to other values
- * (if FDM_MULTIPLE is set), or any other kind of data; a NULL value
- * is also valid. @size contains the size of @data; if FDM_MULTIPLE is
- * set, the size is expressed in number of values pointed to, or
- * otherwise in bytes. A special value of -1 can be sent if FDM_STRING
- * is set to force the automatic calculation of the size (via strlen()).
+ * Creates a new value. @tag is an or-ed set of flags and an optional
+ * user-defined type, @data is a pointer to the data the value will
+ * store and @size the size of these data. The flags in @tag define
+ * how the data inside the value will be stored and its behaviour:
+ *
+ * If the FDM_COPY flag is set, the value will store a copy of the data
+ * using an allocated block of memory. Otherwise, the @data pointer is
+ * stored inside the value as is.
+ *
+ * If FDM_STRING is set, it means @data can be treated as a string
+ * (i.e., operations like strcmp() or strlen() can be done on it).
+ * Otherwise, @data is treated as an opaque value. For FDM_STRING
+ * values, @size can be -1 to force a calculation using strlen().
+ *
+ * IF FDM_MULTIPLE is set, it means the value is itself an array
+ * of values. @Size indicates the size in number of elements and not
+ * as a quantity of bytes. FDM_MULTIPLE implies FDM_COPY and not
+ * FDM_STRING. For FDM_MULTIPLE values, @data is usually NULL
+ * (meaning to allocate a zero-initialized array of @size values),
+ * but can also be the @data pointer of another multiple value;
+ * in this case, the values will be re-referenced.
  */
 fdm_v fdm_new(int tag, void * data, int size)
 {
