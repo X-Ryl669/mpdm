@@ -1,14 +1,12 @@
 TODO
 ====
 
-fdm_sset()/fdm_sget() should accept integers as components in case that
-a branch is an array and not a hash.
+Should fdm_aset() allow setting a value at offset == a->size, making it
+the same as fdm_apush()? Or should fdm_sget()/fdm_sset() allow a special
+'@' (or so) for array components meaning 'apush'?
 
-	"mp.txt.lines.0"
-
-gets the first element of lines.
-
-Also, it should include 'interpolation' strings, recursively resolved, i.e.:
+fdm_sset()/fdm_sget() should include 'interpolation' strings,
+recursively resolved, i.e.:
 
 	"mp.txt.lines.{mp.txt.y}"
 
