@@ -40,7 +40,7 @@ void yyerror(char * s);
 "ne"		return STRNE;
 "=>"		return HASHPAIR;
 
-[A-Za-z_\.]+	{
+[A-Za-z_]+	{
 			/* symbol name */
 			yylval.v=FDM_S(yytext);
 			return(SYMBOL);

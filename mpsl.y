@@ -25,7 +25,7 @@ void yyerror(char * s);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <v> stmt expr list hash
+%type <v> stmt expr list hash compound
 
 %%
 
@@ -41,7 +41,7 @@ function:
 stmt:
 	';'			{ printf (";\n"); }
 	| expr ';'		{ $$ = $1; }
-	| SYMBOL '=' expr ';'	{ fdm_sset(NULL, $1, $3); }
+	| compound '=' expr ';'	{ fdm_sset(NULL, $1, $3); }
 	| DUMP expr ';'		{ fdm_dump($2, 0); }
 	;
 
@@ -54,11 +54,17 @@ hash:
 	expr HASHPAIR expr		{ $$=FDM_H(0); fdm_hset($$, $1, $3); }
 	| hash ',' expr HASHPAIR expr	{ fdm_hset($1, $3, $5); }
 
+compound:
+	SYMBOL			{ $$=FDM_A(1); fdm_aset($$, $1, 0); }
+	| compound '.' INTEGER	{ fdm_apush($1, $3); $$ = $1; }
+	| compound '.' SYMBOL	{ fdm_apush($1, $3); $$ = $1; }
+	| compound '[' expr ']' { fdm_apush($1, $3); $$ = $1; }
+
 expr:
 	INTEGER			{ $$ = $1; }
 	| STRING		{ $$ = $1; }
-	| SYMBOL		{ $$ = fdm_sget(NULL, $1); }
-	| SYMBOL '(' list ')'	{ printf("call!!!\n"); fdm_dump($3, 0); }
+	| compound		{ $$ = fdm_sget(NULL, $1); }
+	| compound '(' list ')'	{ printf("call!!!\n"); fdm_dump($3, 0); }
 
 	| expr '+' expr		{ $$ = FDM_I(fdm_ival($1) + fdm_ival($3)); }
 	| expr '-' expr		{ $$ = FDM_I(fdm_ival($1) - fdm_ival($3)); }
