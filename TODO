@@ -1,12 +1,60 @@
 Minimum Profit Data Manager (mpdm) TODO / Bug List
 ==================================================
 
+Release Critical Bugs
+---------------------
+
+ * 1021: Merge mpsl (the scripting language) lex and yacc files from
+   CVS project filp2.
+ * 1022: Implement return values for mpsl functions.
+ * 1023: Implement the 'break' directive in mpsl.
+ * 1024: Implement the 'continue' directive in mpsl.
+
 Open Bugs
 ---------
+
+ * 1015: The auto-sweep introduced by _mpdm.high_threshold is
+   extremely unsafe. At least, internal parts of mpdm should be
+   autosweep-safe.
+ * 1018: Support for optional features (like gdbm) should be stored
+   in an mpdm array or hash to easily ask for capabilities.
 
 Pending Enhancements
 --------------------
 
+ * 1004: Create a tie function for mpdm_dump().
+ * 1006: stat().
+ * 1007: chmod().
+ * 1008: bread().
+ * 1009: bwrite().
+ * 1016: Add optional iconv support.
+ * 1017: Add optional gettext support.
+ * 1025: Change non-dyn values. They should be stored in a pool of
+   values, and 'allocated' from within mpdm_new(). Two macros, for
+   instance MPDM_NONDYN_BEGIN() and MPDM_NONDYN_END(), could save
+   / restore a static index to that pool. Instead, the allocation
+   from the pool would just wrap.
+
+Closed
+------
+
+ * 1000: All string operations should use wchar_t instead of char
+   (Closed by: #1001; Sat, 3 Jul 2004 11:14:00 +0200).
+ * 1001: Merge mpdm-branch-wchar
+   (Closes: #1000; Sun, 4 Jul 2004 11:06:00 +0200).
+ * 1002: mpdm_aget() and mpdm_aset() should accept negative offsets
+   (Mon, 12 Jul 2004 17:44:00 +0200).
+ * 1012: mpdm_startup() and mpdm_shutdown() (Thu, 26 Aug 2004 20:10:02 +0200)
+ * 1013: Move the hardwired '16' number of minimum elements to an
+   struct _mpdm element, set from mpdm_startup()
+   (Thu, 26 Aug 2004 20:10:18 +0200).
+ * 1014: Create a new high threshold for values, to force calling
+   mpdm_sweep() from mpdm_new() if that threshold is overpassed (this
+   will allow a limit to be imposed to the number of unreferenced
+   values) (Thu, 26 Aug 2004 20:26:21 +0200).
+ * 1019: Rework mpdm_dump() to avoid using dynamic values
+   (Wed, 08 Sep 2004 21:52:39 +0200).
+ * 1020: Set errno on errors (Discarded; Thu, 07 Oct 2004 17:11:52 +0200).
  * 1003: Beyond ties; suppress all flags (except some internal ones as IVAL
    or EXEC). Everything should be done with ties; for example, there
    should exist a _CMP tie function that would be executed when two
@@ -15,43 +63,13 @@ Pending Enhancements
    A value will be assumed multiple when having a tie function _AEXPAND
    (or _AGET, or so). Code will become incidentally clean (no more "if
    flags & MPDM_" scattered through the code). Risky change!
- * 1004: Create a tie function for mpdm_dump().
+   (Discarded; Wed, 08 Dec 2004 09:48:27 +0100).
  * 1005: Should ties be in a special source file, mpdm_t.c ?
- * 1006: stat()
- * 1007: chmod()
- * 1008: bread()
- * 1009: bwrite()
- * 1010: Find a name for the scripting language (mpsl?).
+   (Discarded; Wed, 08 Dec 2004 09:49:06 +0100).
  * 1011: Will the scripting language be included here, or as a
    separated package? it could poison the mpdm concept as a 'low
-   level utility library'.
- * 1015: The auto-sweep introduced by _mpdm.high_threshold is
-   extremely unsafe. At least, internal parts of mpdm should be
-   autosweep-safe.
- * 1016: Add optional iconv support.
- * 1017: Add optional gettext support.
- * 1018: Support for optional features (like gdbm) should be stored
-   in an mpdm array or hash to easily ask for capabilities.
-
-Closed
-------
-
- * 1000: All string operations should use wchar_t instead of char
-   (closed by: #1001) (Sat, 3 Jul 2004 11:14:00 +0200).
- * 1001: Merge mpdm-branch-wchar (Closes: #1000)
-   (Sun, 4 Jul 2004 11:06:00 +0200).
- * 1002: mpdm_aget() and mpdm_aset() should accept negative offsets
-   (Mon, 12 Jul 2004 17:44:00 +0200).
- * 1012: mpdm_startup() and mpdm_shutdown() (Thu, 26 Aug 2004 20:10:02 +0200)
- * 1013: Move the hardwired '16' number of minimum elements to an
-   struct _mpdm element, set from mpdm_startup()
-   (Thu, 26 Aug 2004 20:10:18 +0200)
- * 1014: Create a new high threshold for values, to force calling
-   mpdm_sweep() from mpdm_new() if that threshold is overpassed (this
-   will allow a limit to be imposed to the number of unreferenced
-   values) (Thu, 26 Aug 2004 20:26:21 +0200).
- * 1019: Rework mpdm_dump() to avoid using dynamic values
-   (Wed, 08 Sep 2004 21:52:39 +0200).
- * 1020: Set errno on errors (not done) (Thu, 07 Oct 2004 17:11:52 +0200).
+   level utility library' (Yes; Wed, 08 Dec 2004 09:51:55 +0100).
+ * 1010: Find a name for the scripting language (Mpsl should be
+   fine; Wed, 08 Dec 2004 09:52:32 +0100).
 
 Email bugs to angel@triptico.com
