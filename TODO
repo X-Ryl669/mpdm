@@ -32,6 +32,7 @@ Pending Enhancements
  * 1017: Add optional gettext support.
  * 1018: Support for optional features (like gdbm) should be stored
    in an mpdm array or hash to easily ask for capabilities.
+ * 1019: Rework mpdm_dump() to avoid using dynamic values.
 
 Closed
 ------
