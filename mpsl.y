@@ -193,6 +193,10 @@ stmt:
 					/* return from subroutine */
 					$$ = INS1(L"RETURN", $2);
 				}
+	| RETURN ';'		{
+					/* return from subroutine (void) */
+					$$ = INS0(L"RETURN");
+				}
 	;
 
 stmt_list:
