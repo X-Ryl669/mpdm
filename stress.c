@@ -695,6 +695,21 @@ void test_dh(void)
 }
 
 
+void test_nondyn(void)
+{
+	mpdm_ndv v;
+	mpdm_v av[2]={ NULL, NULL };
+
+	printf("Non-dynamic values\n");
+
+	MPDM_ND_LS(v,L"This is a non-dynamic value");
+	mpdm_dump(&v);
+
+	MPDM_ND_A(v,av);
+	mpdm_dump(&v);
+}
+
+
 int main(void)
 {
 	mpdm_startup();
@@ -710,6 +725,7 @@ int main(void)
 	test_regex();
 	test_exec();
 	test_dh();
+	test_nondyn();
 
 	mpdm_shutdown();
 
