@@ -125,7 +125,7 @@ fdm_v fdm_strcat(fdm_v s1, fdm_v s2)
 }
 
 
-char * fdm_asstr(fdm_v v)
+char * fdm_string(fdm_v v)
 {
 	static char tmp[32];
 

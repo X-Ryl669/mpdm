@@ -80,7 +80,7 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a);
 
 fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
 fdm_v fdm_strcat(fdm_v s1, fdm_v s2);
-char * fdm_asstr(fdm_v v);
+char * fdm_string(fdm_v v);
 
 fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
