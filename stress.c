@@ -850,8 +850,9 @@ void test_mpsl(void)
 	_test_mpsl("a > b - 1 && a < c + 1;");
 
 	_test_mpsl("a = NULL;");
-	_test_mpsl("sub test {a = 100; b = 200;c = 300;}");
 	_test_mpsl("a = 100; b = 200;c = 300;");
+	_test_mpsl("sub test {a = 100; b = 200;c = 300;}");
+	_test_mpsl("sub test (d, e) {a = 100; b = 200;c = 300;}");
 }
 
 
