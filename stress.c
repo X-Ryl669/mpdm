@@ -865,6 +865,7 @@ void test_mpsl(void)
 void test_mpsl2(void)
 {
 	mpdm_v v;
+	mpdm_v w;
 
 	/* execution tests */
 	v=_test_mpsl("666;");
@@ -890,10 +891,21 @@ void test_mpsl2(void)
 	_test("mpsl calculator 3",
 		mpdm_rval(v) < -20.0 && mpdm_rval(v) > -21.0);
 
-/*	_test_mpsl("1.5 + ((3.1 - 5.8) * 8.0);");
-	_test_mpsl("a=1 + ((3 - 5) * 8);");
-	_test_mpsl("2 + 3 * 4;");
-	_test_mpsl("2 * 3 + 4;");*/
+	v=_test_mpsl("2 + 3 * 4;");
+	v=mpdm_exec(v, NULL);
+	_test("mpsl calculator 4", mpdm_rval(v) == 14.0);
+
+	v=_test_mpsl("2 * 3 + 4;");
+	v=mpdm_exec(v, NULL);
+	_test("mpsl calculator 5", mpdm_rval(v) == 10.0);
+
+	v=mpdm_exec(_test_mpsl("2 + 3 * 4;"), NULL);
+	w=mpdm_exec(_test_mpsl("2 + (3 * 4);"), NULL);
+	_test("mpsl calculator 6 (operator precedence)", mpdm_rval(v) == mpdm_rval(w));
+
+	v=mpdm_exec(_test_mpsl("2 + 3 * 4;"), NULL);
+	w=mpdm_exec(_test_mpsl("(2 + 3) * 4;"), NULL);
+	_test("mpsl calculator 7 (operator precedence)", mpdm_rval(v) != mpdm_rval(w));
 }
 
 
