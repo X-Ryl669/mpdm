@@ -225,31 +225,30 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 
 mpdm_v mpsl_compile(mpdm_v code)
 {
-	mpdm_v x;
+	mpdm_v x=NULL;
 
 	/* create a new holder for the bytecode */
 	_bytecode=MPDM_A(0);
-	mpdm_apush(_bytecode, MPDM_LS(L"PROG"));
-
-	/* creates the new executable value */
-	x=MPDM_A(2);
-	x->flags |= MPDM_EXEC;
-
-	/* first argument is the interpreter, and second the bytecode */
-	mpdm_aset(x, MPDM_X(_mpsl_machine), 0);
-	mpdm_aset(x, _bytecode, 1);
 
 	/* stores the code to be compiled */
 	_mpsl_store_code(code);
 
-	mpdm_ref(x);
 	mpdm_ref(code);
 
 	/* compile! */
-	yyparse();
+	if(yyparse() == 0)
+	{
+		/* compilation went OK; create the new executable value */
+		x=MPDM_A(2);
+		x->flags |= MPDM_EXEC;
+
+		/* first argument is the interpreter, and second the bytecode */
+		mpdm_aset(x, MPDM_X(_mpsl_machine), 0);
+		mpdm_aset(x, _bytecode, 1);
+	}
 
 	mpdm_unref(code);
-	mpdm_unref(x);
+	_bytecode=NULL;
 
 	return(x);
 }
