@@ -9,6 +9,7 @@ Release Critical Bugs
  * 1051: Document the scripting language.
  * 1052: Implement the 'return' directive in mpsl.
  * 1054: Add a main() function, similar to the filp one.
+ * 1056: Add c-style strings (\n, \t, etc).
 
 Open Bugs
 ---------
