@@ -10,8 +10,6 @@ TODO
    (or _AGET, or so). Code will become incidentally clean (no more "if
    flags & MPDM_" scattered through the code). Risky change!
  * Create a tie function for mpdm_dump().
- * Create some versions of functions that avoid doing boundary checks
-   when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).
  * Should ties be in a special source file, mpdm_t.c ?
  * stat(), chmod(), bread(), bwrite().
 

@@ -32,6 +32,7 @@
 
 #include "mpdm.h"
 
+
 /*******************
 	Data
 ********************/
@@ -39,11 +40,13 @@
 /* sorting callback code */
 static mpdm_v _mpdm_asort_cb=NULL;
 
+
 /*******************
 	Code
 ********************/
 
 static int _wrap_offset(mpdm_v a, int offset)
+/* manages negative offsets */
 {
 	if(offset < 0) offset=mpdm_size(a) + offset;
 
