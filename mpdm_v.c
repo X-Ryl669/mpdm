@@ -158,10 +158,10 @@ mpdm_v mpdm_new(int flags, void * data, int size)
  *
  * Increments the reference count of a value.
  */
-void mpdm_ref(mpdm_v v)
+mpdm_v mpdm_ref(mpdm_v v)
 {
-	if(v != NULL)
-		v->ref++;
+	if(v != NULL) v->ref++;
+	return(v);
 }
 
 
@@ -171,10 +171,10 @@ void mpdm_ref(mpdm_v v)
  *
  * Decrements the reference count of a value.
  */
-void mpdm_unref(mpdm_v v)
+mpdm_v mpdm_unref(mpdm_v v)
 {
-	if(v != NULL)
-		v->ref--;
+	if(v != NULL) v->ref--;
+	return(v);
 }
 
 

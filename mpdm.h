@@ -54,8 +54,8 @@ struct _mpdm_v
 };
 
 mpdm_v mpdm_new(int flags, void * data, int size);
-void mpdm_ref(mpdm_v v);
-void mpdm_unref(mpdm_v v);
+mpdm_v mpdm_ref(mpdm_v v);
+mpdm_v mpdm_unref(mpdm_v v);
 void mpdm_sweep(int count);
 
 mpdm_v mpdm_clone(mpdm_v v);
