@@ -1208,6 +1208,13 @@ void test_mpsl3(void)
 	v=mpdm_exec(v, NULL);
 	_test("splice 2", mpdm_cmp(v, MPDM_LS(L" of life")) == 0);
 
+	v=_test_mpsl("sub func() { if(1 == 1) { return(6); 24; } 12; }");
+	mpdm_dump(v);
+	v=mpdm_exec(v, NULL);
+	v=_test_mpsl("a=func();");
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+
 /*	mpdm_dump(mpdm_root());*/
 }
 
