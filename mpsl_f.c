@@ -91,6 +91,60 @@ mpdm_v _mpsl_splice(mpdm_v args)
 }
 
 
+mpdm_v _mpsl_aexpand(mpdm_v args)
+{
+	mpdm_v a;
+	int offset;
+	int num;
+
+	a=mpdm_aget(args, 0);
+	offset=mpdm_ival(mpdm_aget(args, 1));
+	num=mpdm_ival(mpdm_aget(args, 2));
+
+	return(mpdm_aexpand(a, offset, num));
+}
+
+
+mpdm_v _mpsl_acollapse(mpdm_v args)
+{
+	mpdm_v a;
+	int offset;
+	int num;
+
+	a=mpdm_aget(args, 0);
+	offset=mpdm_ival(mpdm_aget(args, 1));
+	num=mpdm_ival(mpdm_aget(args, 2));
+
+	return(mpdm_acollapse(a, offset, num));
+}
+
+
+mpdm_v _mpsl_ains(mpdm_v args)
+{
+	mpdm_v a;
+	mpdm_v e;
+	int offset;
+
+	a=mpdm_aget(args, 0);
+	e=mpdm_aget(args, 1);
+	offset=mpdm_ival(mpdm_aget(args, 2));
+
+	return(mpdm_ains(a, e, offset));
+}
+
+
+mpdm_v _mpsl_adel(mpdm_v args)
+{
+	mpdm_v a;
+	int offset;
+
+	a=mpdm_aget(args, 0);
+	offset=mpdm_ival(mpdm_aget(args, 1));
+
+	return(mpdm_adel(a, offset));
+}
+
+
 void _mpsl_lib(void)
 /* inits the mpsl library */
 {
@@ -112,6 +166,11 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"is_hash", MPDM_X(_mpsl_is_hash));
 
 	mpdm_hset_s(r, L"splice", MPDM_X(_mpsl_splice));
+
+	mpdm_hset_s(r, L"aexpand", MPDM_X(_mpsl_aexpand));
+	mpdm_hset_s(r, L"acollapse", MPDM_X(_mpsl_acollapse));
+	mpdm_hset_s(r, L"ains", MPDM_X(_mpsl_ains));
+	mpdm_hset_s(r, L"adel", MPDM_X(_mpsl_adel));
 
 	mpdm_hset_s(r, L"dump", MPDM_X(_mpsl_dump));
 }
