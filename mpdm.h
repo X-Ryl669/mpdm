@@ -120,6 +120,9 @@ mpdm_v mpdm_glob(mpdm_v spec);
 mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset);
 mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset);
 
+mpdm_v mpdm_ph_gdbm(mpdm_v filename);
+mpdm_v mpdm_ph(mpdm_v filename);
+
 mpdm_v _mpdm_tie_mul(void);
 mpdm_v _mpdm_tie_cpy(void);
 mpdm_v _mpdm_tie_str(void);

@@ -634,6 +634,32 @@ void test_exec(void)
 }
 
 
+void test_ph(void)
+{
+	mpdm_v h;
+	mpdm_v k;
+	mpdm_v v;
+	mpdm_v v2;
+
+	h=mpdm_ph(MPDM_LS(L"test.ph"));
+	mpdm_dump(h);
+
+	k=MPDM_LS(L"lastval");
+
+	v=mpdm_hget(h, k);
+	mpdm_dump(v);
+
+	v=MPDM_I(mpdm_ival(v) + 1);
+	mpdm_dump(v);
+	mpdm_hset(h, k, v);
+
+	v2=mpdm_hget(h, k);
+	mpdm_dump(v2);
+
+	_test("Persistent hash 1", mpdm_ival(v) == mpdm_ival(v2));
+}
+
+
 int main(void)
 {
 	test_basic();
@@ -646,6 +672,7 @@ int main(void)
 	test_file();
 	test_regex();
 	test_exec();
+	test_ph();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");
