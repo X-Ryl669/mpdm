@@ -36,8 +36,8 @@
 
 static struct
 {
-	fdm_v * head;		/* head of values */
-	fdm_v * tail;		/* tail of values */
+	fdm_v head;		/* head of values */
+	fdm_v tail;		/* tail of values */
 	int count;		/* total count */
 } _fdm;
 
@@ -45,16 +45,148 @@ static struct
 	Code
 ********************/
 
+int fdm_ref(fdm_v v)
+{
+	return(v->ref++);
+}
+
+
+int fdm_unref(fdm_v v)
+{
+	return(v->ref--);
+}
+
+
 fdm_v fdm_new(int tag, void * data, int size)
 {
+	fdm_v v;
+
+	/* sanity checks */
+	if(tag & FDM_MULTIPLE)
+	{
+		/* multiple values are always copies and never strings */
+		tag |= FDM_COPY;
+		tag &= ~ FDM_STRING;
+	}
+
+	/* a size of -1 means 'calculate it' */
+	if(size == -1)
+	{
+		/* only size of string values can be calculated */
+		if(data == NULL || !(tag & FDM_STRING))
+			return(NULL);
+
+		size=strlen((char *) data);
+	}
+
+	/* alloc new value */
+	if((v=(fdm_v) malloc(sizeof(struct _fdm_v))) == NULL)
+		return(NULL);
+
+	memset(v, '\0', sizeof(struct _fdm_v));
+	v->tag=tag;
+	v->size=size;
+
+	if((tag & FDM_COPY) && size)
+	{
+		int s;
+
+		s=(tag & FDM_MULTIPLE) ? s * sizeof(struct _fdm_v) : s;
+
+		/* alloc new space for data */
+		if((v->data=malloc(s)) == NULL)
+			return(NULL);
+
+		/* zero or copy data */
+		if(data == NULL)
+			memset(v->data, '\0', s);
+		else
+		{
+			memcpy(v->data, data, s);
+
+			/* if data is multiple, re-reference its elements */
+			if(tag & FDM_MULTIPLE)
+			{
+				int n;
+				fdm_v * va=v->data;
+
+				for(n=0;n < size;n++)
+				{
+					if(va[n] != NULL)
+						fdm_ref(va[n]);
+				}
+			}
+		}
+	}
+	else
+		v->data=data;
+
+	/* add to the value chain and count */
+	if(_fdm.head == NULL) _fdm.head=v;
+	if(_fdm.tail != NULL) _fdm.tail->next=v;
+	_fdm.count ++;
+
+	return(v);
 }
 
 
 void fdm_sweep(int count)
 {
+	static int lcount=0;
+	int n;
+
+	/* if it's worthless, don't do it */
+	if(_fdm.count < 16)
+		return;
+
+	/* if count is -1, sweep all */
+	if(count == -1) count=_fdm.count;
+
+	/* if count is zero, sweep 'some' values */
+	if(count == 0) count=_fdm.count - lcount + 2;
+
+	for(n=0;n < count;n++)
+	{
+		/* is the value referenced? */
+		if(_fdm.head->ref)
+		{
+			/* yes; rotate to next */
+			_fdm.tail->next=_fdm.head;
+			_fdm.head=_fdm.head->next;
+			_fdm.tail=_fdm.tail->next;
+			_fdm.tail->next=NULL;
+		}
+		else
+		{
+			fdm_v v;
+
+			/* value is to be destroyed */
+			v=_fdm.head;
+			_fdm.head=_fdm.head->next;
+
+			if(tag & FDM_MULTIPLE)
+			{
+				/* unref elements... */
+			}
+
+			if(tag & FDM_COPY) free(v->data);
+			free(v);
+
+			/* one value less */
+			_fdm.count --;
+		}
+	}
+
+	lcount=_fdm.count;
 }
 
 
 int fdm_cmp(fdm_v v1, fdm_v v2)
 {
+	/* if both values are strings, compare as such */
+	if((v1->tag & FDM_STRING) && (v2->tag & FDM_STRING))
+		return(strcmp((char *)v1->data, (char *)v2->data));
+
+	/* in any other case, compare just pointers */
+	return(v1->data - v2->data);
 }
