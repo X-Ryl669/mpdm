@@ -856,6 +856,8 @@ void test_mpsl(void)
 	_test_mpsl("a();");
 	_test_mpsl("! 1 > 2;");
 	_test_mpsl("! (1 > 2);");
+	_test_mpsl("1 != 2;");
+	_test_mpsl("\"hello\" ne \"goodbye\";");
 }
 
 
