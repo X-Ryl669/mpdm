@@ -52,7 +52,7 @@ char * fdm_printable(fdm_v v)
 }
 
 
-void fdm_dump(fdm_v v, int l)
+void _fdm_dump(fdm_v v, int l)
 {
 	int n;
 	char * ptr;
@@ -80,8 +80,14 @@ void fdm_dump(fdm_v v, int l)
 		printf("[%d]\n", v->size);
 
 		for(n=0;n < v->size;n++)
-			fdm_dump(fdm_aget(v, n), l + 1);
+			_fdm_dump(fdm_aget(v, n), l + 1);
 	}
 	else
 		printf("%s\n", ptr);
+}
+
+
+void fdm_dump(fdm_v v)
+{
+	_fdm_dump(v, 0);
 }

@@ -76,12 +76,12 @@ void test_array(void)
 	fdm_apush(a, FDM_LS("thursday"));
 	fdm_apush(a, FDM_LS("friday"));
 	fdm_apush(a, FDM_LS("saturday"));
-	fdm_dump(a, 0);
+	fdm_dump(a);
 	_test("a->size == 7", (a->size == 7));
 
 	v=fdm_aset(a, NULL, 3);
 	_test("v->ref == 0", (v->ref == 0));
-	fdm_dump(a, 0);
+	fdm_dump(a);
 
 	fdm_asort(a, 1);
 	_test("NULLs are sorted on top", (fdm_aget(a, 0) == NULL));
@@ -143,7 +143,7 @@ void test_hash(void)
 		}
 	}
 
-	fdm_dump(h, 0);
+	fdm_dump(h);
 
 	/* use of non-strings as hashes */
 	h=FDM_H(0);
@@ -158,7 +158,7 @@ void test_hash(void)
 	fdm_hset(h, v, FDM_I(6543));
 	i=fdm_ival(fdm_hget(h, v));
 
-	fdm_dump(h, 0);
+	fdm_dump(h);
 	_test("hash: using non-strings as hash keys", (i == 6543));
 }
 
@@ -171,27 +171,27 @@ void test_splice(void)
 	w=fdm_splice(FDM_LS("I'm agent Johnson"), FDM_LS("special "), 4, 0);
 	_test("splice insertion", 
 		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm special agent Johnson")) == 0);
-	fdm_dump(w, 0);
+	fdm_dump(w);
 
 	w=fdm_splice(FDM_LS("Life is a shit"), FDM_LS("cheat"), 10, 4);
 	_test("splice insertion and deletion (1)", 
 		fdm_cmp(fdm_aget(w, 0), FDM_LS("Life is a cheat")) == 0);
 	_test("splice insertion and deletion (2)", 
 		fdm_cmp(fdm_aget(w, 1), FDM_LS("shit")) == 0);
-	fdm_dump(w, 0);
+	fdm_dump(w);
 
 	w=fdm_splice(FDM_LS("I'm with dumb"), NULL, 4, 4);
 	_test("splice deletion (1)", 
 		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm  dumb")) == 0);
 	_test("splice deletion (2)", 
 		fdm_cmp(fdm_aget(w, 1), FDM_LS("with")) == 0);
-	fdm_dump(w, 0);
+	fdm_dump(w);
 
 	v=FDM_LS("It doesn't matter");
 	w=fdm_splice(v, FDM_LS(" two"), v->size, 0);
 	_test("splice insertion at the end", 
 		fdm_cmp(fdm_aget(w, 0), FDM_LS("It doesn't matter two")) == 0);
-	fdm_dump(w, 0);
+	fdm_dump(w);
 }
 
 
@@ -202,27 +202,27 @@ void test_asplit(void)
 	printf("fdm_asplit test\n\n");
 
 	w=fdm_asplit(FDM_S("."), FDM_S("four.elems.in.string"));
-	fdm_dump(w, 0);
+	fdm_dump(w);
 	_test("4 elems: ", (w->size == 4));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("unseparated string"));
-	fdm_dump(w, 0);
+	fdm_dump(w);
 	_test("1 elem: ", (w->size == 1));
 
 	w=fdm_asplit(FDM_S("."), FDM_S(".dot.at start"));
-	fdm_dump(w, 0);
+	fdm_dump(w);
 	_test("3 elems: ", (w->size == 3));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("dot.at end."));
-	fdm_dump(w, 0);
+	fdm_dump(w);
 	_test("3 elems: ", (w->size == 3));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("three...dots (two empty elements)"));
-	fdm_dump(w, 0);
+	fdm_dump(w);
 	_test("4 elems: ", (w->size == 4));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("."));
-	fdm_dump(w, 0);
+	fdm_dump(w);
 	_test("2 elems: ", (w->size == 2));
 }
 
@@ -275,7 +275,7 @@ void test_sym(void)
 	fdm_sset(NULL, FDM_LS("mp.lines"), FDM_A(2));
 	fdm_sset(NULL, FDM_LS("mp.lines.0"), FDM_LS("First post!"));
 	fdm_sset(NULL, FDM_LS("mp.lines.1"), FDM_LS("Second post!"));
-	fdm_dump(fdm_root(), 0);
+	fdm_dump(fdm_root());
 
 	v=fdm_sget(NULL, FDM_LS("mp.config.auto_indent"));
 	i=fdm_ival(v);
