@@ -307,12 +307,11 @@ mpdm_v mpdm_root(void)
  *
  * Executes an executable value. If @c is a scalar value, it's data
  * should be a pointer to a directly executable C function with a
- * prototype of mpdm_v func(mpdm_v args); if it's a  multiple one,
- * the first value should be the function and the second
- * the arguments (so, in this case, @args will be ignored). Virtual
- * machines and compilers should use the second variant, with a pointer
- * to the executor as the first argument and an array of executable
- * code as the second.
+ * prototype of mpdm_v func(mpdm_v args); if it's a multiple one,
+ * the first value should be a pointer to a directly executable C
+ * function with a prototype of mpdm_v func(mpdm_v c, mpdm_v args).
+ * The rest of the elements of @c can be any data, and is used to
+ * store bytecode or so when implementing virtual machines or compilers.
  *
  * Returns the return value of the code. If @c is NULL or not executable,
  * returns NULL.
@@ -320,26 +319,37 @@ mpdm_v mpdm_root(void)
 mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 {
 	mpdm_v r=NULL;
-	mpdm_v (* func)(mpdm_v);
+	mpdm_v (* func1)(mpdm_v);
+	mpdm_v (* func2)(mpdm_v, mpdm_v);
 
 	if(c != NULL && (c->flags & MPDM_EXEC))
 	{
+		mpdm_ref(c);
+		mpdm_ref(args);
+
 		if(c->flags & MPDM_MULTIPLE)
 		{
-			/* if it's multiple, first arg should
-			   be the function and second the args */
-			r=mpdm_exec(mpdm_aget(c, 0), mpdm_aget(c, 1));
+			mpdm_v x;
+
+			/* value is multiple; first element is the
+			   2 argument version of the executable function,
+			   next its optional additional information and
+			   finally the arguments */
+			x=mpdm_aget(c, 0);
+			func2=(mpdm_v (*)(mpdm_v, mpdm_v))(x->data);
+
+			if(func2) r=func2(c, args);
 		}
 		else
 		{
-			mpdm_ref(args);
-
-			/* value is a pointer to function */
-			func=(mpdm_v (*)(mpdm_v))(c->data);
-			if(func) r=func(args);
-
-			mpdm_unref(args);
+			/* value is scalar; c is the 1 argument
+			   version of the executable function */
+			func1=(mpdm_v (*)(mpdm_v))(c->data);
+			if(func1) r=func1(args);
 		}
+
+		mpdm_unref(args);
+		mpdm_unref(c);
 	}
 
 	return(r);
