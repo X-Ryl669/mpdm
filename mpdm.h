@@ -74,6 +74,7 @@ int fdm_abseek(fdm_v a, fdm_v k, int step);
 void fdm_asort(fdm_v a, int step);
 
 fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
+fdm_v fdm_ajoin(fdm_v s, fdm_v a);
 
 fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
