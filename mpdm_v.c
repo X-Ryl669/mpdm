@@ -56,6 +56,7 @@ static struct
 
 
 static void _mpdm_atexit(void)
+/* atexit callback */
 {
 	mpdm_v v;
 
