@@ -270,40 +270,43 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 #define BOOL mpsl_boolean
 #define ISTRU mpsl_is_true
 
-static mpdm_v _O_multi(mpdm_v c, mpdm_v a) { M1; return(M2); }
-static mpdm_v _O_literal(mpdm_v c, mpdm_v a) { return(mpdm_clone(C1)); }
-static mpdm_v _O_symval(mpdm_v c, mpdm_v a) { return(GET(M1)); }
-static mpdm_v _O_assign(mpdm_v c, mpdm_v a) { return(SET(M1, M2)); }
-static mpdm_v _O_exec(mpdm_v c, mpdm_v a) { return(mpdm_exec(M1, M2)); }
-static mpdm_v _O_if(mpdm_v c, mpdm_v a) { return(ISTRU(M1) ? M2 : M3); }
-static mpdm_v _O_while(mpdm_v c, mpdm_v a) { while(ISTRU(M1)) M2; return(NULL); }
-static mpdm_v _O_local(mpdm_v c, mpdm_v a) { mpsl_local_set_symbols(M1, NULL); return(NULL); }
-static mpdm_v _O_uminus(mpdm_v c, mpdm_v a) { return(MPDM_R(-RM1)); }
-static mpdm_v _O_add(mpdm_v c, mpdm_v a) { return(MPDM_R(RM1 + RM2)); }
-static mpdm_v _O_sub(mpdm_v c, mpdm_v a) { return(MPDM_R(RM1 - RM2)); }
-static mpdm_v _O_mul(mpdm_v c, mpdm_v a) { return(MPDM_R(RM1 * RM2)); }
-static mpdm_v _O_div(mpdm_v c, mpdm_v a) { return(MPDM_R(RM1 / RM2)); }
-static mpdm_v _O_mod(mpdm_v c, mpdm_v a) { return(MPDM_I(IM1 % IM2)); }
-static mpdm_v _O_not(mpdm_v c, mpdm_v a) { return(BOOL(! ISTRU(M1))); }
-static mpdm_v _O_and(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(ISTRU(r) ? M2 : r); }
-static mpdm_v _O_or(mpdm_v c, mpdm_v a) { mpdm_v r=M1; return(ISTRU(r) ? r : M2); }
-static mpdm_v _O_numlt(mpdm_v c, mpdm_v a) { return(BOOL(RM1 < RM2)); }
-static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(BOOL(RM1 <= RM2)); }
-static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(BOOL(RM1 > RM2)); }
-static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(BOOL(RM1 >= RM2)); }
-static mpdm_v _O_strcat(mpdm_v c, mpdm_v a) { return(mpdm_strcat(M1, M2)); }
-static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(BOOL(mpdm_cmp(M1, M2) == 0)); }
-static mpdm_v _O_immpinc(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) + 1))); }
-static mpdm_v _O_immpdec(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) - 1))); }
-static mpdm_v _O_immadd(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) + RM2))); }
-static mpdm_v _O_immsub(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) - RM2))); }
-static mpdm_v _O_immmul(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) * RM2))); }
-static mpdm_v _O_immdiv(mpdm_v c, mpdm_v a) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) / RM2))); }
-static mpdm_v _O_immsinc(mpdm_v c, mpdm_v a) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) + 1)); return(v); }
-static mpdm_v _O_immsdec(mpdm_v c, mpdm_v a) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) - 1)); return(v); }
-static mpdm_v _O_numeq(mpdm_v c, mpdm_v a) { mpdm_v v1=M1; mpdm_v v2=M2; return(BOOL((v1 == NULL || v2 == NULL) ? (v1 == v2) : (R(v1) == R(v2)))); }
+#define _O_TYPE static mpdm_v
+#define _O_ARGS mpdm_v c, mpdm_v a
 
-static mpdm_v _O_list(mpdm_v c, mpdm_v a)
+_O_TYPE _O_multi(_O_ARGS) { M1; return(M2); }
+_O_TYPE _O_literal(_O_ARGS) { return(mpdm_clone(C1)); }
+_O_TYPE _O_symval(_O_ARGS) { return(GET(M1)); }
+_O_TYPE _O_assign(_O_ARGS) { return(SET(M1, M2)); }
+_O_TYPE _O_exec(_O_ARGS) { return(mpdm_exec(M1, M2)); }
+_O_TYPE _O_if(_O_ARGS) { return(ISTRU(M1) ? M2 : M3); }
+_O_TYPE _O_while(_O_ARGS) { while(ISTRU(M1)) M2; return(NULL); }
+_O_TYPE _O_local(_O_ARGS) { mpsl_local_set_symbols(M1, NULL); return(NULL); }
+_O_TYPE _O_uminus(_O_ARGS) { return(MPDM_R(-RM1)); }
+_O_TYPE _O_add(_O_ARGS) { return(MPDM_R(RM1 + RM2)); }
+_O_TYPE _O_sub(_O_ARGS) { return(MPDM_R(RM1 - RM2)); }
+_O_TYPE _O_mul(_O_ARGS) { return(MPDM_R(RM1 * RM2)); }
+_O_TYPE _O_div(_O_ARGS) { return(MPDM_R(RM1 / RM2)); }
+_O_TYPE _O_mod(_O_ARGS) { return(MPDM_I(IM1 % IM2)); }
+_O_TYPE _O_not(_O_ARGS) { return(BOOL(! ISTRU(M1))); }
+_O_TYPE _O_and(_O_ARGS) { mpdm_v r=M1; return(ISTRU(r) ? M2 : r); }
+_O_TYPE _O_or(_O_ARGS) { mpdm_v r=M1; return(ISTRU(r) ? r : M2); }
+_O_TYPE _O_numlt(_O_ARGS) { return(BOOL(RM1 < RM2)); }
+_O_TYPE _O_numle(_O_ARGS) { return(BOOL(RM1 <= RM2)); }
+_O_TYPE _O_numgt(_O_ARGS) { return(BOOL(RM1 > RM2)); }
+_O_TYPE _O_numge(_O_ARGS) { return(BOOL(RM1 >= RM2)); }
+_O_TYPE _O_strcat(_O_ARGS) { return(mpdm_strcat(M1, M2)); }
+_O_TYPE _O_streq(_O_ARGS) { return(BOOL(mpdm_cmp(M1, M2) == 0)); }
+_O_TYPE _O_immpinc(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) + 1))); }
+_O_TYPE _O_immpdec(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) - 1))); }
+_O_TYPE _O_immadd(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) + RM2))); }
+_O_TYPE _O_immsub(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) - RM2))); }
+_O_TYPE _O_immmul(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) * RM2))); }
+_O_TYPE _O_immdiv(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) / RM2))); }
+_O_TYPE _O_immsinc(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) + 1)); return(v); }
+_O_TYPE _O_immsdec(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) - 1)); return(v); }
+_O_TYPE _O_numeq(_O_ARGS) { mpdm_v v1=M1; mpdm_v v2=M2; return(BOOL((v1 == NULL || v2 == NULL) ? (v1 == v2) : (R(v1) == R(v2)))); }
+
+_O_TYPE _O_list(_O_ARGS)
 /* build list from instructions */
 {
 	int n;
@@ -316,7 +319,7 @@ static mpdm_v _O_list(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_hash(mpdm_v c, mpdm_v a)
+_O_TYPE _O_hash(_O_ARGS)
 /* build hash from instructions */
 {
 	int n;
@@ -328,7 +331,7 @@ static mpdm_v _O_hash(mpdm_v c, mpdm_v a)
 	return(ret);
 }
 
-static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
+_O_TYPE _O_subframe(_O_ARGS)
 /* runs an instruction inside a subroutine frame */
 {
 	mpdm_v ret;
@@ -349,7 +352,7 @@ static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
+_O_TYPE _O_blkframe(_O_ARGS)
 /* runs an instruction under a block frame */
 {
 	mpdm_v ret;
@@ -362,7 +365,7 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
 }
 
 
-static mpdm_v _O_return(mpdm_v c, mpdm_v a)
+_O_TYPE _O_return(_O_ARGS)
 {
 	return(M1);
 }
@@ -371,7 +374,7 @@ static mpdm_v _O_return(mpdm_v c, mpdm_v a)
 static struct __op_table
 {
 	wchar_t * name;
-	mpdm_v (* func)(mpdm_v, mpdm_v);
+	mpdm_v (* func)(_O_ARGS);
 } _op_table[]=
 {
 	{ L"NOP",	NULL },
@@ -453,7 +456,7 @@ mpdm_v _mpsl_op(wchar_t * opcode)
  * executable value returned by mpsl_compile() and executed by
  * mpdm_exec().
  */
-mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
+mpdm_v _mpsl_machine(_O_ARGS)
 {
 	mpdm_v ret=NULL;
 
