@@ -835,6 +835,9 @@ void test_mpsl(void)
 	_test_mpsl("local a;");
 	_test_mpsl("local a, b, c;");
 	_test_mpsl("local a = 666;");
+
+	_test_mpsl("a > b - 1;");
+	_test_mpsl("a > b - 1 && a < c + 1;");
 }
 
 

@@ -108,6 +108,7 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %nonassoc IFI
 %nonassoc ELSE
 
+%left BOOLAND BOOLOR
 %left INC DEC IMMADD IMMSUB IMMMUL IMMDIV
 %left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
@@ -240,6 +241,8 @@ expr:
 	| expr NUMNE expr       { $$ = INS2(MPDM_LS(L"NUMNE"), $1, $3); }
 	| expr STREQ expr       { $$ = INS2(MPDM_LS(L"STREQ"), $1, $3); }
 	| expr STRNE expr       { $$ = INS2(MPDM_LS(L"STRNE"), $1, $3); }
+	| expr BOOLAND expr	{ $$ = INS2(MPDM_LS(L"AND"), $1, $3); }
+	| expr BOOLOR expr	{ $$ = INS2(MPDM_LS(L"OR"), $1, $3); }
  
 	| '(' expr ')'		{ $$ = $2; }
 
