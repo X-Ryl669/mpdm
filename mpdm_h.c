@@ -87,7 +87,7 @@ fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v)
 
 	/* if hash is empty, create an optimal number of buckets */
 	if(h->size == 0)
-		fdm_aexpand(h, 31, 0);
+		fdm_aexpand(h, 0, 31);
 
 	n=HASH_BUCKET(h, k);
 	if((b=fdm_aget(h, n)) != NULL)
