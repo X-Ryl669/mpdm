@@ -7,8 +7,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1046: Subroutine definitions are using MPSL_OP_SUB that is
-   really the substract opcode.
 
 Open Bugs
 ---------
@@ -121,5 +119,7 @@ Closed
    implemented as a ';' instruction with the local and the assignation
    part and the arguments to LOCAL and to '=' should be instructions and
    not values (Fri, 24 Dec 2004 18:49:29 +0100).
+ * 1046: Subroutine definitions are using MPSL_OP_SUB that is
+   really the substract opcode (Sun, 26 Dec 2004 19:26:32 +0100).
 
 Email bugs to angel@triptico.com
