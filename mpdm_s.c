@@ -251,10 +251,10 @@ mpdm_v _mpdm_inew(int ival)
 }
 
 
-mpdm_v _mpdm_new_wcs(wchar_t * s, int n, mpdm_v tie)
+mpdm_v _mpdm_new_wcs(int f, wchar_t * s, int n, mpdm_v tie)
 /* wrapper function to ensure wchar_t * type testing by the compiler */
 {
-	return(mpdm_new(0, s, n, tie));
+	return(mpdm_new(f, s, n, tie));
 }
 
 
