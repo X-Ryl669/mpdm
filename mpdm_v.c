@@ -55,8 +55,40 @@ static struct
 #define _mpdm_free(v) free(v)
 
 
-mpdm_v _mpdm_new(int flags, void * data, int size)
-/* Creates a new value (overriding cache) */
+/**
+ * mpdm_new - Creates a new value.
+ * @flags: flags
+ * @data: pointer to real data
+ * @size: size of data
+ *
+ * Creates a new value. @flags is an or-ed set of flags,
+ * @data is a pointer to the data the value will
+ * store and @size the size of these data. The flags in @tag define
+ * how the data will be stored and its behaviour:
+ *
+ * If the MPDM_COPY flag is set, the value will store a copy of the data
+ * using an allocated block of memory. Otherwise, the @data pointer is
+ * stored inside the value as is. MPDM_COPY implies MPDM_FREE.
+ *
+ * If MPDM_STRING is set, it means @data can be treated as a string
+ * (i.e., operations like strcmp() or strlen() can be done on it).
+ * Otherwise, @data is treated as an opaque value. For MPDM_STRING
+ * values, @size can be -1 to force a calculation using strlen().
+ * This flag is incompatible with MPDM_MULTIPLE.
+ *
+ * IF MPDM_MULTIPLE is set, it means the value itself is an array
+ * of values. @Size indicates the number of elements instead of
+ * a quantity in bytes. MPDM_MULTIPLE implies MPDM_COPY and not
+ * MPDM_STRING, and @data is ignored.
+ *
+ * If MPDM_FREE is set, memory in @data will be released using free()
+ * when the value is destroyed.
+ *
+ * There are other informative flags that do nothing but describe
+ * the information stored in the value: they are MPDM_HASH, MPDM_FILE
+ * and MPDM_BINCODE.
+ */
+mpdm_v mpdm_new(int flags, void * data, int size)
 {
 	mpdm_v v;
 
@@ -115,90 +147,6 @@ mpdm_v _mpdm_new(int flags, void * data, int size)
 	if(_mpdm.tail != NULL) _mpdm.tail->next=v;
 	_mpdm.tail=v;
 	_mpdm.count ++;
-
-	return(v);
-}
-
-
-mpdm_v _mpdm_cache(int tag, void * data, int size)
-{
-	static mpdm_v _cache=NULL;
-	mpdm_v v=NULL;
-
-	/* first time initialization */
-	if(_cache == NULL)
-	{
-		_cache=_mpdm_new(MPDM_MULTIPLE, NULL, 256);
-		mpdm_ref(_cache);
-	}
-
-	/* try one-char cached values */
-	if(data != NULL && (tag & MPDM_STRING) && ! (tag & MPDM_FREE))
-	{
-		int c=-1;
-		unsigned char * ptr;
-
-		ptr=data;
-
-		if(*ptr == '\0')
-			c=0;
-		else
-		if(*(ptr + 1) == '\0')
-			c=*ptr;
-
-		if(c != -1)
-		{
-			if((v=mpdm_aget(_cache, c)) == NULL)
-			{
-				v=_mpdm_new(tag, data, size);
-				mpdm_aset(_cache, v, c);
-			}
-		}
-	}
-
-	return(v);
-}
-
-
-/**
- * mpdm_new - Creates a new value.
- * @flags: flags
- * @data: pointer to real data
- * @size: size of data
- *
- * Creates a new value. @flags is an or-ed set of flags,
- * @data is a pointer to the data the value will
- * store and @size the size of these data. The flags in @tag define
- * how the data will be stored and its behaviour:
- *
- * If the MPDM_COPY flag is set, the value will store a copy of the data
- * using an allocated block of memory. Otherwise, the @data pointer is
- * stored inside the value as is. MPDM_COPY implies MPDM_FREE.
- *
- * If MPDM_STRING is set, it means @data can be treated as a string
- * (i.e., operations like strcmp() or strlen() can be done on it).
- * Otherwise, @data is treated as an opaque value. For MPDM_STRING
- * values, @size can be -1 to force a calculation using strlen().
- * This flag is incompatible with MPDM_MULTIPLE.
- *
- * IF MPDM_MULTIPLE is set, it means the value itself is an array
- * of values. @Size indicates the number of elements instead of
- * a quantity in bytes. MPDM_MULTIPLE implies MPDM_COPY and not
- * MPDM_STRING, and @data is ignored.
- *
- * If MPDM_FREE is set, memory in @data will be released using free()
- * when the value is destroyed.
- *
- * There are other informative flags that do nothing but describe
- * the information stored in the value: they are MPDM_HASH, MPDM_FILE
- * and MPDM_BINCODE.
- */
-mpdm_v mpdm_new(int tag, void * data, int size)
-{
-	mpdm_v v;
-
-	if((v=_mpdm_cache(tag, data, size)) == NULL)
-		v=_mpdm_new(tag, data, size);
 
 	return(v);
 }
