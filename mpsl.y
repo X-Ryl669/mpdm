@@ -11,7 +11,14 @@ static mpdm_v _pcode=NULL;
 int yylex(void);
 void yyerror(char * s);
 
-mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3);
+/* shortcut macros to insert instructions */
+
+#define INS0(o)			_ins(o, 0, NULL, NULL, NULL)
+#define INS1(o,a1)		_ins(o, 1, a1, NULL, NULL)
+#define INS2(o,a1,a2)		_ins(o, 2, a1, a2, NULL)
+#define INS3(o,a1,a2,a3)	_ins(o, 3, a1, a2, a3)
+
+mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 
 %}
 
@@ -49,115 +56,114 @@ function:
 	;
 
 stmt:
-	';'			{ $$ = _ins(MPDM_LS(L";"), NULL, NULL, NULL); }
+	';'			{ $$ = INS0(MPDM_LS(L";")); }
 	| expr ';'		{ $$ = $1; }
-	| compsym '=' expr ';'	{ $$ = _ins(MPDM_LS(L"="), $1, $3, NULL); }
-	| DUMP expr ';'		{ $$ = _ins(MPDM_LS(L"DUMP"), $2, NULL, NULL); }
+	| compsym '=' expr ';'	{ $$ = INS2(MPDM_LS(L"="), $1, $3); }
+	| DUMP expr ';'		{ $$ = INS1(MPDM_LS(L"DUMP"), $2); }
 	| WHILE '(' expr ')' stmt
-				{ $$ = _ins(MPDM_LS(L"WHILE"), $3, $5, NULL); }
+				{ $$ = INS2(MPDM_LS(L"WHILE"), $3, $5); }
 	| IF '(' expr ')' stmt %prec IFI
-				{ $$ = _ins(MPDM_LS(L"IF"), $3, $5, NULL); }
+				{ $$ = INS2(MPDM_LS(L"IF"), $3, $5); }
 	| IF '(' expr ')' stmt ELSE stmt
-				{ $$ = _ins(MPDM_LS(L"IFELSE"), $3, $5, $7); }
+				{ $$ = INS3(MPDM_LS(L"IFELSE"), $3, $5, $7); }
 
 	| SUB compsym '{' stmt_list '}'
 				{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, _ins(MPDM_LS(L"SUB_PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
 				mpdm_aset(w, $4, 1);
-				mpdm_aset(w, _ins(MPDM_LS(L"SUB_POSTFIX"), NULL, NULL, NULL), 2);
-				$$ = _ins(MPDM_LS(L"SUB"), $2, w, NULL); }
+				mpdm_aset(w, INS0(MPDM_LS(L"SUB_POSTFIX")), 2);
+				$$ = INS2(MPDM_LS(L"SUB"), $2, w); }
 
 	| SUB compsym '(' ')' '{' stmt_list '}'
 				{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, _ins(MPDM_LS(L"SUB_PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
 				mpdm_aset(w, $6, 1);
-				mpdm_aset(w, _ins(MPDM_LS(L"SUB_POSTFIX"), NULL, NULL, NULL), 2);
-				$$ = _ins(MPDM_LS(L"SUB"), $2, w, NULL); }
+				mpdm_aset(w, INS0(MPDM_LS(L"SUB_POSTFIX")), 2);
+				$$ = INS2(MPDM_LS(L"SUB"), $2, w); }
 
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
 				{ mpdm_v w=MPDM_A(4);
-				mpdm_aset(w, _ins(MPDM_LS(L"SUB_PREFIX"), NULL, NULL, NULL), 0);
-				mpdm_aset(w, _ins(MPDM_LS(L"ARGS"), $4, NULL, NULL), 1);
+				mpdm_aset(w, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
+				mpdm_aset(w, INS1(MPDM_LS(L"ARGS"), $4), 1);
 				mpdm_aset(w, $7, 2);
-				mpdm_aset(w, _ins(MPDM_LS(L"SUB_POSTFIX"), NULL, NULL, NULL), 3);
-				$$ = _ins(MPDM_LS(L"SUB"), $2, w, NULL); }
+				mpdm_aset(w, INS0(MPDM_LS(L"SUB_POSTFIX")), 3);
+				$$ = INS2(MPDM_LS(L"SUB"), $2, w); }
 
 	| FOREACH compsym expr stmt
-				{ $$ = _ins(MPDM_LS(L"FOREACH"), $2, $3, $4); }
+				{ $$ = INS3(MPDM_LS(L"FOREACH"), $2, $3, $4); }
+
 	| '{' stmt_list '}'	{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, _ins(MPDM_LS(L"BLK_PREFIX"), NULL, NULL, NULL), 0);
+				mpdm_aset(w, INS0(MPDM_LS(L"BLK_PREFIX")), 0);
 				mpdm_aset(w, $2, 1);
-				mpdm_aset(w, _ins(MPDM_LS(L"BLK_POSTFIX"), NULL, NULL, NULL), 2);
+				mpdm_aset(w, INS0(MPDM_LS(L"BLK_POSTFIX")), 2);
 				$$ = w; }
 	;
 
 stmt_list:
 	stmt			{ $$ = $1; }
-	| stmt_list stmt	{ $$ = _ins(MPDM_LS(L";"), $1, $2, NULL); }
+	| stmt_list stmt	{ $$ = INS2(MPDM_LS(L";"), $1, $2); }
 	;
 
 list:
-	expr			{ $$ = _ins(MPDM_LS(L"LIST"), $1, NULL, NULL); }
+	expr			{ $$ = INS1(MPDM_LS(L"LIST"), $1); }
 	| list ',' expr		{ mpdm_apush($1, $3); $$ = $1; }
 	;
 
 sym_list:
-	SYMBOL			{ $$ = _ins(MPDM_LS(L"SYMLIST"), $1, NULL, NULL); }
+	SYMBOL			{ $$ = INS1(MPDM_LS(L"SYMLIST"), $1); }
 	| sym_list ',' SYMBOL	{ mpdm_apush($1, $3); $$ = $1; }
 	;
 
 hash:
-	expr HASHPAIR expr	{ $$ = _ins(MPDM_LS(L"HASH"), $1, $3, NULL); }
+	expr HASHPAIR expr	{ $$ = INS2(MPDM_LS(L"HASH"), $1, $3); }
 	| hash ',' expr HASHPAIR expr
 				{ mpdm_apush($1, $3); mpdm_apush($1, $5); $$ = $1; }
 	;
 
 compsym:
-	SYMBOL			{ $$ = _ins(MPDM_LS(L"SYMBOL"),
-					_ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL),
-					NULL, NULL); }
+	SYMBOL			{ $$ = INS1(MPDM_LS(L"SYMBOL"),
+					INS1(MPDM_LS(L"LITERAL"), $1)); }
 	| compsym '.' INTEGER	{ mpdm_apush($1,
-				  _ins(MPDM_LS(L"LITERAL"), $3, NULL, NULL));
+				  INS1(MPDM_LS(L"LITERAL"), $3));
 				  $$ = $1; }
 	| compsym '.' SYMBOL	{ mpdm_apush($1,
-				  _ins(MPDM_LS(L"LITERAL"), $3, NULL, NULL));
+				  INS1(MPDM_LS(L"LITERAL"), $3));
 				  $$ = $1; }
 	| compsym '[' expr ']'	{ mpdm_apush($1, $3); $$ = $1; }
 	;
 
 expr:
-	INTEGER			{ $$ = _ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL); }
-	| STRING		{ $$ = _ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL); }
-	| REAL			{ $$ = _ins(MPDM_LS(L"LITERAL"), $1, NULL, NULL); }
-/*	| compsym		{ $$ = _ins(MPDM_LS("SYMVAL"), $1, NULL, NULL); } */
+	INTEGER			{ $$ = INS1(MPDM_LS(L"LITERAL"), $1); }
+	| STRING		{ $$ = INS1(MPDM_LS(L"LITERAL"), $1); }
+	| REAL			{ $$ = INS1(MPDM_LS(L"LITERAL"), $1); }
 	| compsym		{ mpdm_aset($1, MPDM_LS(L"SYMVAL"), 0); $$ = $1; }
-	| NULLV			{ $$ = _ins(MPDM_LS(L"NULL"), NULL, NULL, NULL); }
+	| NULLV			{ $$ = INS0(MPDM_LS(L"NULL")); }
 
-	| '-' expr %prec UMINUS	{ $$ = _ins(MPDM_LS(L"UMINUS"), $2, NULL, NULL); }
+	| '-' expr %prec UMINUS	{ $$ = INS1(MPDM_LS(L"UMINUS"), $2); }
 
-	| expr '+' expr		{ $$ = _ins(MPDM_LS(L"+"), $1, $3, NULL); }
-	| expr '-' expr		{ $$ = _ins(MPDM_LS(L"-"), $1, $3, NULL); }
-	| expr '*' expr		{ $$ = _ins(MPDM_LS(L"*"), $1, $3, NULL); }
-	| expr '/' expr		{ $$ = _ins(MPDM_LS(L"/"), $1, $3, NULL); }
+	| expr '+' expr		{ $$ = INS2(MPDM_LS(L"+"), $1, $3); }
+	| expr '-' expr		{ $$ = INS2(MPDM_LS(L"-"), $1, $3); }
+	| expr '*' expr		{ $$ = INS2(MPDM_LS(L"*"), $1, $3); }
+	| expr '/' expr		{ $$ = INS2(MPDM_LS(L"/"), $1, $3); }
 
-	| expr '<' expr		{ $$ = _ins(MPDM_LS(L"<"), $1, $3, NULL); }
-	| expr '>' expr		{ $$ = _ins(MPDM_LS(L">"), $1, $3, NULL); }
-	| expr NUMEQ expr       { $$ = _ins(MPDM_LS(L"NUMEQ"), $1, $3, NULL); }
-	| expr NUMNE expr       { $$ = _ins(MPDM_LS(L"NUMNE"), $1, $3, NULL); }
-	| expr STREQ expr       { $$ = _ins(MPDM_LS(L"STREQ"), $1, $3, NULL); }
-	| expr STRNE expr       { $$ = _ins(MPDM_LS(L"STRNE"), $1, $3, NULL); }
+	| expr '<' expr		{ $$ = INS2(MPDM_LS(L"<"), $1, $3); }
+	| expr '>' expr		{ $$ = INS2(MPDM_LS(L">"), $1, $3); }
+	| expr NUMEQ expr       { $$ = INS2(MPDM_LS(L"NUMEQ"), $1, $3); }
+	| expr NUMNE expr       { $$ = INS2(MPDM_LS(L"NUMNE"), $1, $3); }
+	| expr STREQ expr       { $$ = INS2(MPDM_LS(L"STREQ"), $1, $3); }
+	| expr STRNE expr       { $$ = INS2(MPDM_LS(L"STRNE"), $1, $3); }
  
 	| '(' expr ')'		{ $$ = $2; }
 
-	| '[' ']'		{ $$ = _ins(MPDM_LS(L"LIST"), NULL, NULL, NULL); }
+	| '[' ']'		{ $$ = INS0(MPDM_LS(L"LIST")); }
 	| '[' list ']'		{ $$ = $2; }
-	| '[' expr RANGE expr ']' { $$ = _ins(MPDM_LS(L"RANGE"), $2, $4, NULL); }
+	| '[' expr RANGE expr ']' { $$ = INS2(MPDM_LS(L"RANGE"), $2, $4); }
 
-	| '{' '}'		{ $$ = _ins(MPDM_LS(L"HASH"), NULL, NULL, NULL); }
+	| '{' '}'		{ $$ = INS0(MPDM_LS(L"HASH")); }
 	| '{' hash '}'		{ $$ = $2; }
 
-	| compsym '(' ')'	{ $$ = _ins(MPDM_LS(L"CALL"), $1, NULL, NULL); }
-	| compsym '(' list ')'	{ $$ = _ins(MPDM_LS(L"CALL"), $1, $3, NULL); }
+	| compsym '(' ')'	{ $$ = INS1(MPDM_LS(L"CALL"), $1); }
+	| compsym '(' list ')'	{ $$ = INS2(MPDM_LS(L"CALL"), $1, $3); }
 
 	;
 
@@ -169,17 +175,17 @@ void yyerror(char * s)
 }
 
 
-mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3)
+mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 {
 	mpdm_v v;
 
-	v=MPDM_A(1);
+	v=MPDM_A(args + 1);
 
 	/* inserts the opcode */
 	mpdm_aset(v, opcode, 0);
-	if(a1 != NULL) mpdm_apush(v, a1);
-	if(a2 != NULL) mpdm_apush(v, a2);
-	if(a3 != NULL) mpdm_apush(v, a3);
+	if(args > 0) mpdm_aset(v, a1, 1);
+	if(args > 1) mpdm_aset(v, a2, 2);
+	if(args > 2) mpdm_aset(v, a3, 3);
 
 	return(v);
 }
