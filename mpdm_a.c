@@ -397,6 +397,37 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 }
 
 
+fdm_v fdm_asplit(fdm_v s, fdm_v a)
+{
+	fdm_v w;
+	char * wrk;
+	char * ptr1;
+	char * ptr2;
+
+	w=FDM_A(0);
+
+	/* create a working copy */
+	wrk=malloc(a->size + 1);
+	memcpy(wrk, a->data, a->size + 1);
+
+	/* break string into pieces */
+	for(ptr1=ptr2=wrk;*ptr2 != '\0' &&
+		(ptr1=strstr(ptr2, s->data)) != NULL;
+		ptr2=ptr1 + s->size)
+	{
+		*ptr1='\0';
+		fdm_apush(w, FDM_S(ptr2));
+	}
+
+	/* add last part */
+	fdm_apush(w, FDM_S(ptr2));
+
+	free(wrk);
+
+	return(w);
+}
+
+
 /**
  * fdm_ajoin - Joins all elements of an array into one
  * @s: joiner string
