@@ -63,7 +63,9 @@ typedef enum
 	MPDM_TIE_HSET,
 	MPDM_TIE_HDEL,
 	MPDM_TIE_HKEYS,
-	MPDM_TIE_HSIZE
+	MPDM_TIE_HSIZE,
+	MPDM_TIE_FENC,
+	MPDM_TIE_FDEC
 } _mpdm_tie_func;
 
 

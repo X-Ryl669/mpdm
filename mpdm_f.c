@@ -44,6 +44,11 @@
 
 #include "mpdm.h"
 
+/* file encoder/decoder information */
+
+static mpdm_v _f_enc=NULL;
+static mpdm_v _f_dec=NULL;
+
 /*******************
 	Code
 ********************/
@@ -51,6 +56,7 @@
 static mpdm_v _tie_file(void)
 {
 	static mpdm_v _tie=NULL;
+	mpdm_v t;
 
 	if(_tie == NULL)
 	{
@@ -60,7 +66,19 @@ static mpdm_v _tie_file(void)
 		mpdm_aset(_tie, MPDM_X(mpdm_close), MPDM_TIE_DESTROY);
 	}
 
-	return(_tie);
+	if(_f_enc != NULL || _f_dec != NULL)
+	{
+		/* if file co/decs are defined, clone the tie and
+		   store them inside it */
+		t=mpdm_clone(_tie);
+
+		mpdm_aset(t, _f_enc, MPDM_TIE_FENC);
+		mpdm_aset(t, _f_dec, MPDM_TIE_FDEC);
+	}
+	else
+		t=_tie;
+
+	return(t);
 }
 
 
