@@ -825,6 +825,10 @@ void test_mpsl(void)
 	_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { t = m; m = n; n = t; } m = m - n; } n; }");
 
 	_test_mpsl("/* range assign */ a = 1 .. 1000;");
+
+	_test_mpsl("a.b.c ++;");
+	_test_mpsl("a.b.c --;");
+	_test_mpsl("a.b.c += 100;");
 }
 
 

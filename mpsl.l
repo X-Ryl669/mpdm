@@ -91,6 +91,13 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "=>"		return HASHPAIR;
 ".."		return RANGE;
 
+"++"		return INC;
+"--"		return DEC;
+"+="		return IMMADD;
+"-="		return IMMSUB;
+"*="		return IMMMUL;
+"/="		return IMMDIV;
+
 {SYMBOL}	{
 			/* symbol name */
 			yylval.v=MPDM_MBS(yytext);
