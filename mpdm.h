@@ -35,7 +35,7 @@
 #define MPDM_EXEC	0x00040000	/* data is 'executable' */
 
 #define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n)
-#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH,NULL,n)
+#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n)
 #define MPDM_LS(s)	mpdm_new(MPDM_STRING,s,-1)
 #define MPDM_S(s)	mpdm_new(MPDM_STRING|MPDM_COPY,s,-1)
 #define MPDM_I(i)	_mpdm_inew((i))

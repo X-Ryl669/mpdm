@@ -178,7 +178,12 @@ void test_hash(void)
 		}
 	}
 
+	printf("h's ival: %d\n", mpdm_ival(h));
+
 	mpdm_dump(h);
+
+	v=mpdm_hkeys(h);
+	mpdm_dump(v);
 
 	/* use of non-strings as hashes */
 	h=MPDM_H(0);

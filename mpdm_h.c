@@ -107,6 +107,9 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 			n = pos;
 			mpdm_aexpand(b, n, 2);
 			mpdm_aset(b, k, n);
+
+			/* increment number of pairs */
+			h->ival ++;
 		}
 
 		/* sets the value for the key */
@@ -123,6 +126,9 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 
 		/* put the bucket into the hash */
 		mpdm_aset(h, b, n);
+
+		/* increment number of pairs */
+		h->ival ++;
 	}
 
 	return(p);
@@ -154,6 +160,9 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 
 			/* collapse the bucket */
 			mpdm_acollapse(b, n, 2);
+
+			/* decrement number of pairs */
+			h->ival --;
 		}
 	}
 
