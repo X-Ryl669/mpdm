@@ -854,6 +854,8 @@ void test_mpsl(void)
 	_test_mpsl("sub test {a = 100; b = 200;c = 300;}");
 	_test_mpsl("sub test (d, e) {a = 100; b = 200;c = b;}");
 	_test_mpsl("a();");
+	_test_mpsl("! 1 > 2;");
+	_test_mpsl("! (1 > 2);");
 }
 
 

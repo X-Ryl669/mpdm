@@ -108,6 +108,7 @@ mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 
 %left BOOLAND BOOLOR
 %left INC DEC IMMADD IMMSUB IMMMUL IMMDIV
+%left '!'
 %left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
 %left '*' '/'
@@ -340,6 +341,10 @@ expr:
 	| compsym IMMMUL expr	{ $$ = INS2(MPDM_LS(L"*="), $1, $3); }
 	| compsym IMMDIV expr	{ $$ = INS2(MPDM_LS(L"/="), $1, $3); }*/
 
+	| '!' expr		{
+					/* boolean not */
+					$$ = INS1(MPSL_OP_NOT, $2);
+				}
 	| expr '<' expr		{
 					/* bool less than */
 					$$ = INS2(MPSL_OP_NUMLT, $1, $3);
