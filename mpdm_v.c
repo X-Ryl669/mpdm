@@ -185,7 +185,7 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 			v=_fdm_1;
 	}
 	else
-	if(data != NULL && tag & FDM_STRING)
+	if(data != NULL && (tag & FDM_STRING))
 	{
 		if(*((char *)data) == '\0')
 			v=_fdm_empty;
