@@ -8,9 +8,6 @@ Release Critical Bugs
  * 1056: Document internals.
  * 1008: bread().
  * 1009: bwrite().
- * 1058: Changeset on "2005-03-25 02:26 CET" (file descriptors in their's
-   own structure) broke mpsl (SIGSEGV's on compiling from file). Last
-   working version was "cvs update -D '2005/03/25 02:26'".
 
 Open Bugs
 ---------
@@ -114,5 +111,9 @@ Closed
  * 1055: Iconv support works, but is nearly useless; iconverters
    should be associated to file descriptors, which are the only
    place where iconv will really be used (Fri, 25 Mar 2005 03:04:26 +0100).
+ * 1058: Changeset on "2005-03-25 02:26 CET" (file descriptors in their's
+   own structure) broke mpsl (SIGSEGV's on compiling from file). Last
+   working version was "cvs update -D '2005/03/25 02:26'"
+   (Bug is in mpsl; Fri, 25 Mar 2005 12:17:21 +0100).
 
 Email bugs to angel@triptico.com
