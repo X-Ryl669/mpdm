@@ -1106,6 +1106,18 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("iadd", mpdm_ival(v) == 18);
 
+	v=_test_mpsl("local a, b, c; a=1; b=2; c=3; if(a == b) c=1000; c;");
+	v=mpdm_exec(v, NULL);
+	_test("if 1", mpdm_ival(v) == 3);
+
+	v=_test_mpsl("local a, b, c; a=1; b=2; c=3; if(a <= b) c=1000; c;");
+	v=mpdm_exec(v, NULL);
+	_test("if 2", mpdm_ival(v) == 1000);
+
+	v=_test_mpsl("local a, b, c; a=1; b=2; if(a == b) c=1000; else c=2000; c;");
+	v=mpdm_exec(v, NULL);
+	_test("ifelse", mpdm_ival(v) == 2000);
+
 	mpdm_dump(mpdm_root());
 }
 
