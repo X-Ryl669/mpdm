@@ -42,6 +42,15 @@ int _fdm_wrap_offset(fdm_v a, int offset)
 }
 
 
+/**
+ * fdm_aexpand - Expands an array.
+ * @a: the array
+ * @offset: insertion offset
+ * @num: number of elements to insert
+ *
+ * Expands an array value, inserting @num elements (initialized
+ * to NULL) at the specified @offset.
+ */
 void fdm_aexpand(fdm_v a, int offset, int num)
 {
 	int n;
@@ -63,6 +72,16 @@ void fdm_aexpand(fdm_v a, int offset, int num)
 }
 
 
+/**
+ * fdm_acollapse - Collapses an array.
+ * @a: the array
+ * @offset: deletion offset
+ * @num: number of elements to collapse
+ *
+ * Collapses an array value, deleting @num elements at
+ * the specified @offset. The elements should be
+ * unreferenced beforehand.
+ */
 void fdm_acollapse(fdm_v a, int offset, int num)
 {
 	int n;
@@ -85,6 +104,15 @@ void fdm_acollapse(fdm_v a, int offset, int num)
 }
 
 
+/**
+ * fdm_aset - Sets the value of an array's element.
+ * @a: the array
+ * @e: the element to be assigned
+ * @offset: the subscript of the element
+ *
+ * Sets the element of the array @a at @offset to be the @e value.
+ * Returns the previous element.
+ */
 fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 {
 	fdm_v v;
@@ -101,6 +129,13 @@ fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 }
 
 
+/**
+ * fdm_aget - Gets an element of an array.
+ * @a: the array
+ * @offset: the subscript of the element
+ *
+ * Returns the element at @offset of the array @a.
+ */
 fdm_v fdm_aget(fdm_v a, int offset)
 {
 	fdm_v * p;
@@ -110,6 +145,16 @@ fdm_v fdm_aget(fdm_v a, int offset)
 }
 
 
+/**
+ * fdm_ains - Insert an element in an array.
+ * @a: the array
+ * @e: the element to be inserted
+ * @offset: subscript where the element is going to be inserted
+ *
+ * Inserts the @e value in the @a array at @offset.
+ * Further elements are pushed up, so the array increases its size
+ * by one.
+ */
 void fdm_ains(fdm_v a, fdm_v e, int offset)
 {
 	/* open room */
@@ -120,6 +165,15 @@ void fdm_ains(fdm_v a, fdm_v e, int offset)
 }
 
 
+/**
+ * fdm_adel - Deletes an element of an array.
+ * @a: the array
+ * @offset: subscript of the element to be deleted
+ *
+ * Deletes the element at @offset of the @a array. The array
+ * is shrinked by one.
+ * Returns the deleted element.
+ */
 fdm_v fdm_adel(fdm_v a, int offset)
 {
 	fdm_v v;
