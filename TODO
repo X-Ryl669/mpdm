@@ -18,6 +18,7 @@ Open Bugs
    autosweep-safe.
  * 1018: Support for optional features (like gdbm) should be stored
    in an mpdm array or hash to easily ask for capabilities.
+ * 1031: Size in MPDM_ND_A() is superfluous, as it can be calculated.
 
 Pending Enhancements
 --------------------
