@@ -35,7 +35,7 @@ mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <ins> stmt expr sym_list stmt_list list hash compsym
+%type <ins> stmt expr sym_list stmt_list block list hash compsym
 
 %%
 
@@ -59,16 +59,19 @@ stmt:
 				{ $$ = _ins(MPDM_LS(L"IF"), $3, $5, NULL); }
 	| IF '(' expr ')' stmt ELSE stmt
 				{ $$ = _ins(MPDM_LS(L"IFELSE"), $3, $5, $7); }
-	| SUB compsym '{' stmt_list '}'
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $4); }
-	| SUB compsym '(' ')' '{' stmt_list '}'
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $6); }
-	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
-				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, $7); }
+	| SUB compsym block
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $3); }
+	| SUB compsym '(' ')' block
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $5); }
+	| SUB compsym '(' sym_list ')' block
+				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, $6); }
 	| FOREACH compsym '(' list ')' stmt
 				{ $$ = _ins(MPDM_LS(L"FOREACH"), $2, $4, $6); }
-	| '{' stmt_list '}'	{ $$ = $2; }
+	| block			{ $$ = $1; }
 	;
+
+block:
+	'{' stmt_list '}'	{ $$ = $2; }
 
 stmt_list:
 	stmt			{ $$ = $1; }
