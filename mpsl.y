@@ -62,7 +62,7 @@ typedef enum
 	MPSL_OP_SUB,		/* math substract */
 	MPSL_OP_MUL,		/* math multiply */
 	MPSL_OP_DIV,		/* math divide */
-	MPSL_OP_MODULO,		/* math modulo */
+	MPSL_OP_MOD,		/* math modulo */
 
 	MPSL_OP_NOT,		/* boolean negation */
 	MPSL_OP_NUMEQ,		/* numerical equal */
@@ -293,7 +293,8 @@ mpdm_v mpsl_compile(mpdm_v code)
 	mpdm_v x=NULL;
 
 	/* create a new holder for the bytecode */
-	_mpsl_bytecode=MPDM_A(0);
+	_mpsl_bytecode=MPDM_A(1);
+	mpdm_aset(_mpsl_bytecode, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
 
 	/* point to code */
 	_mpsl_next_char=(wchar_t *) code->data;
@@ -302,7 +303,10 @@ mpdm_v mpsl_compile(mpdm_v code)
 
 	/* compile! */
 	if(yyparse() == 0)
+	{
+		mpdm_apush(_mpsl_bytecode, INS0(MPDM_LS(L"SUB_POSTFIX")));
 		x=MPDM_X2(_mpsl_machine, _mpsl_bytecode);
+	}
 
 	mpdm_unref(code);
 	_mpsl_bytecode=NULL;
