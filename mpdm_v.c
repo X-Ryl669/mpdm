@@ -295,7 +295,7 @@ void fdm_sweep(int count)
 	}
 
 	/* if count is -1, sweep all */
-	if(count == -1) count=_fdm.count;
+	if(count == -1) count=_fdm.count * 2;
 
 	/* if count is zero, sweep 'some' values */
 	if(count == 0) count=_fdm.count - lcount + 2;
