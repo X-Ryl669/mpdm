@@ -400,10 +400,12 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
  * @step: increment step
  *
  * Sorts the array. @step is the number of elements to group together.
+ *
+ * Returns the sorted array (the original one is left untouched).
  */
-void mpdm_asort(mpdm_v a, int step)
+mpdm_v mpdm_asort(mpdm_v a, int step)
 {
-	mpdm_asort_cb(a, step, NULL);
+	return(mpdm_asort_cb(a, step, NULL));
 }
 
 
@@ -418,13 +420,20 @@ void mpdm_asort(mpdm_v a, int step)
  * @sort_cb is called with an array containing the two elements as
  * argument. It must return a signed numerical mpdm_v value indicating
  * the sorting order.
+ *
+ * Returns the sorted array (the original one is left untouched).
  */
-void mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
+mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
 {
+	/* creates a copy to be sorted */
+	a=mpdm_clone(a);
+
 	_mpdm_asort_cb=asort_cb;
 
 	qsort(a->data, mpdm_size(a) / step,
 		sizeof(mpdm_v) * step, _mpdm_asort_cmp);
+
+	return(a);
 }
 
 
