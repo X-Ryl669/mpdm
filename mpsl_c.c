@@ -35,6 +35,9 @@
 /* array containing the opcodes */
 mpdm_v _mpsl_ops=NULL;
 
+/* local symbol table */
+mpdm_v _mpsl_local=NULL;
+
 /*******************
 	Code
 ********************/
@@ -238,18 +241,36 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 {
 	mpdm_v ret=NULL;
+	mpdm_v v;
+	mpdm_v l;
+	int n;
+
+	/* if local symbol table don't exist, create */
+	if(_mpsl_local == NULL)
+		_mpsl_local=mpdm_ref(MPDM_A(0));
 
 	/* creates a subroutine frame */
-	/* ... */
+	l=MPDM_H(0);
+	v=MPDM_A(1);
+	mpdm_aset(v, l, 0);
+	mpdm_apush(_mpsl_local, v);
 
 	/* if the instruction has 3 elements, 3rd is the argument list */
-	/* ... */
+	if(mpdm_size(c) > 2)
+	{
+		v=_mpsl_machine(mpdm_aget(c, 2), NULL);
+
+		/* transfer all arguments with the keys as the
+		   symbol names and args as the values */
+		for(n=0;n < mpdm_size(args) && n < mpdm_size(v);n++)
+			mpdm_hset(l, mpdm_aget(v, n), mpdm_aget(args, n));
+	}
 
 	/* execute instruction */
 	ret=_mpsl_machine(mpdm_aget(c, 1), args);
 
 	/* destroys the subroutine frame */
-	/* ... */
+	mpdm_apop(_mpsl_local);
 
 	return(ret);
 }

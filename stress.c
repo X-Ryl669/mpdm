@@ -1063,6 +1063,10 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("exec 2", mpdm_rval(v) == 31416);
 
+	v=_test_mpsl("mysum(100, 20);");
+	v=mpdm_exec(v, NULL);
+	_test("exec 3", mpdm_rval(v) == 120.0);
+
 	mpdm_dump(mpdm_root());
 }
 
