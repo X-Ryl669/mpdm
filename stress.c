@@ -791,12 +791,13 @@ void test_nondyn(void)
 }
 
 
-void _test_mpsl(char * code)
+mpdm_v _test_mpsl(char * code)
 {
 	mpdm_v v=mpsl_compile(MPDM_MBS(code));
 
 	_test(code, v != NULL);
 	mpdm_exec(v, NULL);
+	return(v);
 }
 
 
@@ -847,6 +848,10 @@ void test_mpsl(void)
 
 	_test_mpsl("a > b - 1;");
 	_test_mpsl("a > b - 1 && a < c + 1;");
+
+	_test_mpsl("a = NULL;");
+	_test_mpsl("sub test {a = 100; b = 200;c = 300;}");
+	_test_mpsl("a = 100; b = 200;c = 300;");
 }
 
 
