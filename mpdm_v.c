@@ -50,12 +50,17 @@ static mpdm_v _mpdm_alloc(int flags)
 
 	if(flags & MPDM_NONDYN)
 	{
+		if(_mpdm->nd_size <= _mpdm->nd_index)
+		{
+			/* if not enough, create more nondyn values */
+			_mpdm->nd_size ++;
+
+			_mpdm->nd_pool=realloc(_mpdm->nd_pool,
+				sizeof(struct _mpdm_v) * _mpdm->nd_size);
+		}
+
 		/* return next one */
 		v=&_mpdm->nd_pool[_mpdm->nd_index++];
-
-		/* skip to next and wrap */
-		if(_mpdm->nd_index >= _mpdm->nd_size)
-			_mpdm->nd_index=0;
 	}
 	else
 	{
@@ -72,8 +77,7 @@ static void _mpdm_free(mpdm_v v)
 	if(v->flags & MPDM_NONDYN)
 	{
 		/* count back */
-		if(-- _mpdm->nd_index <= 0)
-			_mpdm->nd_index = _mpdm->nd_size - 1;
+		_mpdm->nd_index--;
 	}
 	else
 	{
@@ -376,11 +380,6 @@ int mpdm_startup(void)
 
 		/* sets the defaults */
 		_mpdm->low_threshold=16;
-
-		/* alloc the non-dyn pool */
-		_mpdm->nd_size=16;
-		_mpdm->nd_pool=malloc(sizeof(struct _mpdm_v) *
-			_mpdm->nd_size);
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
