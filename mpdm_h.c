@@ -214,7 +214,15 @@ static fdm_v _fdm_sym(fdm_v r, fdm_v k, fdm_v v, int s)
 
 	/* if want to set, do it */
 	if(s && r != NULL)
-		r=fdm_hset(r, fdm_aget(p, n), v);
+	{
+		if(r->flags & FDM_HASH)
+			r=fdm_hset(r, fdm_aget(p, n), v);
+		else
+		{
+			int i=fdm_ival(fdm_aget(p, n));
+			r=fdm_aset(r, v, i);
+		}
+	}
 
 	return(r);
 }
