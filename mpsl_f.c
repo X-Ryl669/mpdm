@@ -88,6 +88,9 @@ mpdm_v _mpsl_write(mpdm_v args) { return(mpsl_true_or_false(mpdm_write(A(0),A(1)
 mpdm_v _mpsl_unlink(mpdm_v args) { return(mpsl_true_or_false(mpdm_unlink(A(0)))); }
 mpdm_v _mpsl_glob(mpdm_v args) { return(mpdm_glob(A(0))); }
 
+mpdm_v _mpsl_regex(mpdm_v args) { return(mpdm_regex(A(0),A(1),IA(2))); }
+mpdm_v _mpsl_sregex(mpdm_v args) { return(mpdm_sregex(A(0),A(1),A(2),IA(3))); }
+
 void _mpsl_lib(void)
 /* inits the mpsl library */
 {
@@ -134,6 +137,9 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"write", MPDM_X(_mpsl_write));
 	mpdm_hset_s(r, L"unlink", MPDM_X(_mpsl_unlink));
 	mpdm_hset_s(r, L"glob", MPDM_X(_mpsl_glob));
+
+	mpdm_hset_s(r, L"regex", MPDM_X(_mpsl_regex));
+	mpdm_hset_s(r, L"sregex", MPDM_X(_mpsl_sregex));
 
 	mpdm_hset_s(r, L"dump", MPDM_X(_mpsl_dump));
 }
