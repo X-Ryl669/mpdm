@@ -11,12 +11,28 @@
 void yyerror(char * s);
 %}
 
+DIGIT		[0-9]
+LETTER		[a-zA-Z_]
+COMMENT		#.*\n
+WSPACE		[ \t\n]+
+OPERATOR	[-()<>=+*/;{}?:.\[\],]
+
+INTEGER		{DIGIT}+
+REAL		{DIGIT}*[\.]?{DIGIT}+
+SYMBOL		{LETTER}({LETTER}|{DIGIT})*
+
 %%
 
-[0-9]+		{
+{INTEGER}	{
 			/* integer */
 			yylval.v=FDM_S(yytext);
 			return(INTEGER);
+		}
+
+{REAL}		{
+			/* real numbers */
+			yylval.v=FDM_S(yytext);
+			return(REAL);
 		}
 
 \"[^"]*\"	{
@@ -26,7 +42,7 @@ void yyerror(char * s);
 			return(STRING);
 		}
 
-[-()<>=+*/;{}?:.\[\],]	return(*yytext);
+{OPERATOR}	return(*yytext);
 
 "while"		return WHILE;
 "if"		return IF;
@@ -40,15 +56,15 @@ void yyerror(char * s);
 "ne"		return STRNE;
 "=>"		return HASHPAIR;
 
-[A-Za-z_]+	{
+{SYMBOL}	{
 			/* symbol name */
 			yylval.v=FDM_S(yytext);
 			return(SYMBOL);
 		}
 
-#.*\n		;	/* ignore comments */
+{COMMENT}	;	/* ignore comments */
 
-[ \t\n]+	;	/* ignore spaces */
+{WSPACE}	;	/* ignore spaces */
 
 .		yyerror("LEX Unknown character");
 
