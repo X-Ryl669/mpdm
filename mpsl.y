@@ -140,18 +140,12 @@ stmt:
 				{ $$ = INS3(MPDM_LS(L"IFELSE"), $3, $5, $7); }
 
 	| SUB compsym '{' stmt_list '}'
-				{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
-				mpdm_aset(w, $4, 1);
-				mpdm_aset(w, INS0(MPDM_LS(L"SUB_POSTFIX")), 2);
-				$$ = INS2(MPDM_LS(L"SUB"), $2, w); }
+				{ $$ = INS2(MPDM_LS(L"SUB"), $2,
+					INS2(MPDM_LS(L"SUBFRAME"), $4); }
 
 	| SUB compsym '(' ')' '{' stmt_list '}'
-				{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
-				mpdm_aset(w, $6, 1);
-				mpdm_aset(w, INS0(MPDM_LS(L"SUB_POSTFIX")), 2);
-				$$ = INS2(MPDM_LS(L"SUB"), $2, w); }
+				{ $$ = INS2(MPDM_LS(L"SUB"), $2,
+					INS2(MPDM_LS(L"SUBFRAME"), $6); }
 
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
 				{ mpdm_v w=MPDM_A(4);
