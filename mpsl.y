@@ -21,6 +21,7 @@ fdm_v _ins(fdm_v opcode, fdm_v a1, fdm_v a2, fdm_v a3);
 };
 
 %token <v> INTEGER
+%token <v> REAL
 %token <v> STRING
 %token <v> SYMBOL
 %token <v> LITERAL
@@ -94,6 +95,7 @@ compsym:
 expr:
 	INTEGER			{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
 	| STRING		{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
+	| REAL			{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
 /*	| compsym		{ $$ = _ins(FDM_LS("SYMVAL"), $1, NULL, NULL); } */
 	| compsym		{ fdm_aset($1, FDM_LS("SYMVAL"), 0); $$ = $1; }
 
