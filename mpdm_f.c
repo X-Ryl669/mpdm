@@ -200,6 +200,15 @@ void _mpdm_write_wcs(FILE * f, wchar_t * str)
 }
 
 
+wchar_t * _mpdm_read_dec(FILE * f, mpdm_v dec, int * s)
+/* reads a multibyte string from a stream into a dynamic string, using dec as decoder */
+{
+	wchar_t * ptr=NULL;
+
+	return(ptr);
+}
+
+
 void _mpdm_write_enc(FILE * f, mpdm_v enc, wchar_t * str)
 /* writes a wide string to a stream, using enc as encoder */
 {
@@ -287,11 +296,17 @@ mpdm_v mpdm_read(mpdm_v fd)
 	FILE * f;
 	wchar_t * ptr;
 	int s;
+	mpdm_v dec;
 
 	if((f=(FILE *)fd->data) == NULL)
 		return(NULL);
 
-	if((ptr=_mpdm_read_mbs(f, &s)) != NULL)
+	if((dec=mpdm_get_tie(fd, MPDM_TIE_FDEC)) != NULL)
+		ptr=_mpdm_read_dec(f, dec, &s);
+	else
+		ptr=_mpdm_read_mbs(f, &s);
+
+	if(ptr != NULL)
 		v=mpdm_new(MPDM_STRING, ptr, s, _mpdm_tie_fre());
 
 	return(v);
