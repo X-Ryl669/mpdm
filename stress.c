@@ -501,11 +501,51 @@ static mpdm_v _sum(mpdm_v args)
 }
 
 
+static mpdm_v _calculator(mpdm_v c, mpdm_v args)
+/* 2 argument version: calculator. c contains a 'script' to
+   do things with the arguments */
+{
+	int n,t;
+	mpdm_v v;
+	mpdm_v a;
+	mpdm_v o;
+
+	/* to avoid destroying args */
+	a=mpdm_clone(args);
+
+	/* c[0] is a pointer to _calculator(), and c[1] the script itself */
+	c=mpdm_aget(c, 1);
+
+	/* unshift first argument */
+	v=mpdm_adel(a, 0);
+	t=mpdm_ival(v);
+
+	for(n=0;n < mpdm_size(c);n++)
+	{
+		/* gets operator */
+		o=mpdm_aget(c, n);
+
+		/* gets next value */
+		v=mpdm_adel(a, 0);
+
+		switch(*(char *)o->data)
+		{
+		case '+': t += mpdm_ival(v); break;
+		case '-': t -= mpdm_ival(v); break;
+		case '*': t *= mpdm_ival(v); break;
+		case '/': t /= mpdm_ival(v); break;
+		}
+	}
+
+	return(MPDM_I(t));
+}
+
+
 void test_exec(void)
 {
 	mpdm_v x;
 	mpdm_v w;
-	mpdm_v v;
+	mpdm_v p;
 
 	x=MPDM_X(_dumper);
 
@@ -521,13 +561,34 @@ void test_exec(void)
 
 	_test("exec 0", mpdm_ival(mpdm_exec(x, w)) == 653);
 
-	/* multiple executable value */
-	v=MPDM_A(2);
-	v->flags |= MPDM_EXEC;
-	mpdm_aset(v, x, 0);
-	mpdm_aset(v, w, 1);
+	mpdm_apush(w, MPDM_I(1));
 
-	_test("exec 1", mpdm_ival(mpdm_exec(v, NULL)) == 653);
+	/* multiple executable value: vm and compiler support */
+
+	/* calculator 'script' */
+	p=MPDM_A(0);
+	mpdm_apush(p, MPDM_LS("+"));
+	mpdm_apush(p, MPDM_LS("-"));
+	mpdm_apush(p, MPDM_LS("+"));
+
+	/* the value */
+	x=MPDM_A(2);
+	x->flags |= MPDM_EXEC;
+
+	mpdm_aset(x, MPDM_X(_calculator), 0);
+	mpdm_aset(x, p, 1);
+
+	_test("exec 1", mpdm_ival(mpdm_exec(x, w)) == -12);
+
+	/* another 'script', different operations with the same values */
+	p=MPDM_A(0);
+	mpdm_apush(p, MPDM_LS("*"));
+	mpdm_apush(p, MPDM_LS("/"));
+	mpdm_apush(p, MPDM_LS("+"));
+
+	mpdm_aset(x, p, 1);
+
+	_test("exec 2", mpdm_ival(mpdm_exec(x, w)) == 67);
 }
 
 
