@@ -30,7 +30,7 @@
 #include <string.h>
 #include <wchar.h>
 
-#ifdef CONF_GDBM
+#ifdef CONFOPT_GDBM
 #include <gdbm.h>
 #endif
 
@@ -44,7 +44,17 @@
 	Code
 ********************/
 
-#ifdef CONF_GDBM
+#ifdef CONFOPT_GDBM
+
+static void _gdbm_key_to_datum(mpdm_v k, datum * dat)
+{
+	wchar_t * ptr;
+
+	ptr=mpdm_string(k);
+	dat->dptr=(char *)ptr;
+	dat->dsize=(wcslen(ptr) + 1) * sizeof(wchar_t);
+}
+
 
 /* gdbm ties */
 
@@ -66,20 +76,19 @@ static mpdm_v _mpdm_tie_gdbm_hget(mpdm_v a)
 	mpdm_v k;
 	mpdm_v v=NULL;
 	datum key, val;
-	wchar_t * ptr;
 
 	/* get hash and key */
 	h=mpdm_aget(a, 0);
 	k=mpdm_aget(a, 1);
 
 	/* build a key to be fetched */
-	ptr=mpdm_string(k);
-	key.dptr=(char *)ptr;
-	key.dsize=wcslen(ptr) + 1;
+	_gdbm_key_to_datum(k, &key);
 
 	/* try to fetch the value, and if found, create as a
 	   free()able value */
-	if((val=gdbm_fetch((GDBM_FILE) h->data, key)) != NULL)
+	val=gdbm_fetch((GDBM_FILE) h->data, key);
+
+	if(val.dptr != NULL)
 		v=mpdm_new(MPDM_STRING,val.dptr,val.dsize,_mpdm_tie_fre());
 
 	return(v);
@@ -93,7 +102,6 @@ static mpdm_v _mpdm_tie_gdbm_hset(mpdm_v a)
 	mpdm_v v;
 	mpdm_v ov;
 	datum key, val;
-	wchar * ptr;
 
 	/* fetch old value */
 	ov=_mpdm_tie_gdbm_hget(a);
@@ -104,13 +112,8 @@ static mpdm_v _mpdm_tie_gdbm_hset(mpdm_v a)
 	v=mpdm_aget(a, 2);
 
 	/* build key and val */
-	ptr=mpdm_string(k);
-	key.dptr=(char *)ptr;
-	key.dsize=wcslen(ptr) + 1;
-
-	ptr=mpdm_string(v);
-	val.dptr=(char *)ptr;
-	val.dsize=wcslen(ptr) + 1;
+	_gdbm_key_to_datum(k, &key);
+	_gdbm_key_to_datum(v, &val);
 
 	/* do the insertion */
 	gdbm_store((GDBM_FILE) h->data, key, val, GDBM_REPLACE);
@@ -124,10 +127,8 @@ static mpdm_v _mpdm_tie_gdbm_hdel(mpdm_v a)
 {
 	mpdm_v h;
 	mpdm_v k;
-	mpdm_v v=NULL;
 	mpdm_v ov;
-	datum key, val;
-	wchar * ptr;
+	datum key;
 
 	/* fetch old value */
 	ov=_mpdm_tie_gdbm_hget(a);
@@ -137,9 +138,7 @@ static mpdm_v _mpdm_tie_gdbm_hdel(mpdm_v a)
 	k=mpdm_aget(a, 1);
 
 	/* build a key to be fetched */
-	ptr=mpdm_string(k);
-	key.dptr=(char *)ptr;
-	key.dsize=wcslen(ptr);
+	_gdbm_key_to_datum(k, &key);
 
 	gdbm_delete((GDBM_FILE) h->data, key);
 
@@ -177,14 +176,14 @@ mpdm_v _mpdm_tie_ph_gdbm(void)
 	return(_tie);
 }
 
-#endif /* CONF_GDBM */
+#endif /* CONFOPT_GDBM */
 
 
 mpdm_v mpdm_ph_gdbm(mpdm_v filename)
 {
 	mpdm_v v=NULL;
 
-#ifdef CONF_GDBM
+#ifdef CONFOPT_GDBM
 
 	GDBM_FILE dbf;
 
@@ -192,15 +191,15 @@ mpdm_v mpdm_ph_gdbm(mpdm_v filename)
 	filename=MPDM_2MBS(filename->data);
 
 	if((dbf = gdbm_open(filename->data, 512,
-		GDBM_WRCREAT, 0666, NULL) != NULL)
+		GDBM_WRCREAT, 0666, NULL)) != NULL)
 			v=mpdm_new(MPDM_HASH|MPDM_DESTROY, dbf,
 			0, _mpdm_tie_ph_gdbm());
 
-#endif /* CONF_GDBM */
+#endif /* CONFOPT_GDBM */
 
 	return(v);
 }
-11
+
 
 mpdm_v mpdm_ph(mpdm_v filename)
 {

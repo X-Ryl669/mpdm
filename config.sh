@@ -172,6 +172,24 @@ else
 	echo "No"
 fi
 
+# gdbm detection
+echo -n "Testing for GDBM library... "
+echo "#include <gdbm.h>" > .tmp.c
+echo "int main(void) {" >> .tmp.c
+echo "gdbm_close(gdbm_open(\".t\", 512, GDBM_WRCREAT, 0666, 0));" >> .tmp.c
+echo "return 0; }" >> .tmp.c
+TMP_LDFLAGS="-lgdbm"
+
+$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_GDBM 1" >> config.h
+	echo "$TMP_LDFLAGS" >> config.ldflags
+	echo "OK"
+else
+	echo "No"
+fi
+
 #########################################################
 
 # final setup
