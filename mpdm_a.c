@@ -297,7 +297,7 @@ int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
 		if((v=fdm_aget(a, n * step))==NULL)
 			break;
 
-		c=fdm_cmp(v, k);
+		c=fdm_cmp(k, v);
 
 		if(c == 0)
 			return(n * step);
