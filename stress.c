@@ -490,11 +490,7 @@ void test_file(void)
 
 	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0")) == 0);
 	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1")) == 0);
-	_test("test written file 2.0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.0")) == 0);
-	_test("test written file 2.1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.1")) == 0);
-	_test("test written file 2.2", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.2")) == 0);
-	_test("test written file 3.0.1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"3.0.0")) == 0);
-	_test("test written file 3.0.2", mpdm_cmp(mpdm_read(f), MPDM_LS(L"3.0.1")) == 0);
+	_test("test written file 2.0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.02.12.23.0.03.0.1")) == 0);
 	v=mpdm_read(f);
 	mpdm_dump(v);
 
