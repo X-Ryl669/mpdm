@@ -178,6 +178,10 @@ mpdm_v mpsl_local_find_symbol(mpdm_v s)
 	mpdm_v l;
 	mpdm_v v = NULL;
 
+	/* if s is multiple, take just the first element */
+	if(s->flags & MPDM_MULTIPLE)
+		s=mpdm_aget(s, 0);
+
 	l=mpdm_aget(_mpsl_local, -1);
 
 	/* travel the local symbol table trying to find it */
@@ -355,6 +359,27 @@ static mpdm_v _mpsl_op_blkframe(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_local(mpdm_v c, mpdm_v args)
+/* creates a bunch of local variables */
+{
+	int n;
+	mpdm_v l;
+	mpdm_v v;
+
+	/* gets current local symbol table */
+	l=mpdm_aget(mpdm_aget(_mpsl_local, -1), -1);
+
+	/* gets symbols to be created */
+	v=_mpsl_machine(mpdm_aget(c, 1), args);
+
+	/* creates all of them as NULL values */
+	for(n=0;n < mpdm_size(v);n++)
+		mpdm_hset(l, mpdm_aget(v, n), NULL);
+
+	return(NULL);
+}
+
+
 static mpdm_v _mpsl_op_brmath(mpdm_v c, mpdm_v args)
 /* binary, real math operations */
 {
@@ -521,6 +546,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_EXEC: ret=_mpsl_op_exec(c, args); break;
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_BLKFRAME: ret=_mpsl_op_blkframe(c, args); break;
+	case MPSL_OP_LOCAL: ret=_mpsl_op_local(c, args); break;
 	case MPSL_OP_ADD: /* falls */
 	case MPSL_OP_SUB: /* falls */
 	case MPSL_OP_MUL: /* falls */

@@ -1075,6 +1075,14 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("NULL 2", mpdm_ival(v) == 1);
 
+	v=_test_mpsl("local a, b; a = 1; b = 2;");
+	v=mpdm_exec(v, NULL);
+
+	v=_test_mpsl("a == NULL;");
+	v=mpdm_exec(v, NULL);
+	_test("local 1", mpdm_ival(v) == 1);
+
+
 	mpdm_dump(mpdm_root());
 }
 
