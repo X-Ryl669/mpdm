@@ -28,7 +28,7 @@
 #include "mpdm.h"
 
 /* the script being compiled */
-static mpdm_v _bytecode=NULL;
+static mpdm_v _mpsl_bytecode=NULL;
 
 int yylex(void);
 void yyerror(char * s);
@@ -74,7 +74,7 @@ program:
 	;
 
 function:
-	function stmt		{ mpdm_apush(_bytecode, $2); }
+	function stmt		{ mpdm_apush(_mpsl_bytecode, $2); }
 	| /* NULL */
 	;
 
@@ -228,7 +228,7 @@ mpdm_v mpsl_compile(mpdm_v code)
 	mpdm_v x=NULL;
 
 	/* create a new holder for the bytecode */
-	_bytecode=MPDM_A(0);
+	_mpsl_bytecode=MPDM_A(0);
 
 	/* stores the code to be compiled */
 	_mpsl_store_code(code);
@@ -244,11 +244,11 @@ mpdm_v mpsl_compile(mpdm_v code)
 
 		/* first argument is the interpreter, and second the bytecode */
 		mpdm_aset(x, MPDM_X(_mpsl_machine), 0);
-		mpdm_aset(x, _bytecode, 1);
+		mpdm_aset(x, _mpsl_bytecode, 1);
 	}
 
 	mpdm_unref(code);
-	_bytecode=NULL;
+	_mpsl_bytecode=NULL;
 
 	return(x);
 }
