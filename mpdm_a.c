@@ -154,6 +154,10 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 
 	p=(mpdm_v *)a->data;
 
+	/* if e is nondyn, store a clone and not the value itself */
+	if(e != NULL && e->flags & MPDM_NONDYN)
+		e=mpdm_clone(e);
+
 	/* unrefs, refs and assigns */
 	v=mpdm_unref(p[offset]);
 	p[offset]=mpdm_ref(e);
