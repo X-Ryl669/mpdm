@@ -1041,6 +1041,11 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("symval 3", mpdm_ival(v) == -30);
 
+	v=_test_mpsl("sub mysum(a, b) { a + b; }");
+	mpdm_dump(v);
+	v=mpdm_exec(v, NULL);
+	_test("sub 1", v != NULL);
+
 	mpdm_dump(mpdm_root());
 }
 
