@@ -23,14 +23,14 @@
 
 /* tag flags */
 
-#define FDM_ALLOC	0x00010000	/* uses private memory */
+#define FDM_COPY	0x00010000	/* data is a private copy */
 #define FDM_STRING	0x00020000	/* data can be compared */
 #define FDM_MULTIPLE	0x00040000	/* data is multiple */
 
 #define FDM_FLAGS(t)	((t)&0xffff0000)
 #define FDM_TYPE(t)	((t)&0x0000ffff)
 
-typedef struct _fdm_v fdm_v;
+typedef struct _fdm_v * fdm_v;
 
 struct _fdm_v
 {
@@ -38,5 +38,5 @@ struct _fdm_v
 	int ref;	/* reference count */
 	int size;	/* data size */
 	void * data;	/* the real data */
-	fdm_v * next;	/* next in chain */
+	fdm_v next;	/* next in chain */
 };
