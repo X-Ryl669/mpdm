@@ -58,6 +58,7 @@ mpdm_v mpdm_ref(mpdm_v v);
 mpdm_v mpdm_unref(mpdm_v v);
 void mpdm_sweep(int count);
 
+int mpdm_size(mpdm_v v);
 mpdm_v mpdm_clone(mpdm_v v);
 mpdm_v mpdm_root(void);
 mpdm_v mpdm_exec(mpdm_v c, mpdm_v args);
