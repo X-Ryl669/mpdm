@@ -103,6 +103,7 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
 	/* search the regex in the cache */
 	if((c=mpdm_hget(_regex, r)) == NULL)
 	{
+		mpdm_v rmb;
 		regex_t re;
 		char * regex;
 		char * flags;
@@ -111,9 +112,9 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
 		/* not found; regex must be compiled */
 
 		/* convert to mbs */
-		r=MPDM_2MBS(r->data);
+		rmb=MPDM_2MBS(r->data);
 
-		regex=(char *)r->data;
+		regex=(char *)rmb->data;
 		if((flags=strrchr(regex, *regex)) == NULL)
 			return(NULL);
 
