@@ -404,11 +404,13 @@ expr:
 
 	| compsym '(' ')'	{
 					/* function call (without args) */
-					$$ = INS1(MPSL_OP_EXEC, $1);
+					$$ = INS1(MPSL_OP_EXEC,
+						INS1(MPSL_OP_SYMVAL, $1));
 				}
 	| compsym '(' list ')'	{
 					/* function call (with args) */
-					$$ = INS2(MPSL_OP_EXEC, $1, $3);
+					$$ = INS2(MPSL_OP_EXEC,
+						INS1(MPSL_OP_SYMVAL, $1), $3);
 				}
 
 	;
