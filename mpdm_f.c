@@ -200,6 +200,36 @@ void _mpdm_write_wcs(FILE * f, wchar_t * str)
 }
 
 
+void _mpdm_write_enc(FILE * f, mpdm_v enc, wchar_t * str)
+/* writes a wide string to a stream, using enc as encoder */
+{
+#ifdef CONFOPT_ICONV
+
+	iconv_t * ic;
+	char tmp[128];
+
+	/* get the encoder and resets it */
+	ic=(iconv_t *) enc->data;
+	iconv(*ic, NULL, NULL, NULL, NULL);
+
+	/* convert char by char */
+	for(;*str != L'\0';str++)
+	{
+		size_t il, ol;
+		char * iptr, * optr;
+
+		il=sizeof(wchar_t); iptr=(char *)str;
+		ol=sizeof(tmp); optr=tmp;
+
+		/* write to file */
+		if(iconv(*ic, &iptr, &il, &optr, &ol) != -1)
+			fwrite(tmp, 1, sizeof(tmp) - ol, f);
+	}
+
+#endif /* CONFOPT_ICONV */
+}
+
+
 /**
  * mpdm_open - Opens a file.
  * @filename: the file name
@@ -277,7 +307,16 @@ mpdm_v mpdm_read(mpdm_v fd)
  */
 int mpdm_write(mpdm_v fd, mpdm_v v)
 {
-	_mpdm_write_wcs((FILE *)fd->data, mpdm_string(v));
+	FILE * f;
+	mpdm_v enc;
+
+	if((f=(FILE *)fd->data) == NULL)
+		return(-1);
+
+	if((enc=mpdm_get_tie(fd, MPDM_TIE_FENC)) != NULL)
+		_mpdm_write_enc(f, enc, mpdm_string(v));
+	else
+		_mpdm_write_wcs(f, mpdm_string(v));
 
 	return(0);
 }
@@ -303,9 +342,10 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
  * files will be assumed to be encoded with @charset, which can
  * be any of the supported charset names (utf-8, iso-8859-1, etc.),
  * and converted on each read / write. If charset is NULL, it
- * is reverted to default charset conversion (i.e. the locale).
- * If @charset is a supported one, zero is returned, or nonzero
- * if it's an unsupported encoding.
+ * is reverted to default charset conversion (i.e. the one defined
+ * in the locale).
+ * Returns a negative number if @charset is unsupported, or zero
+ * if no errors were found.
  */
 int mpdm_encoding(mpdm_v charset)
 {
