@@ -43,6 +43,8 @@
 #include <commctrl.h>
 #endif
 
+#include "mpdm.h"
+
 #ifdef CONFOPT_ICONV
 
 #include <iconv.h>
@@ -52,8 +54,6 @@
 static mpdm_v _f_enc=NULL;
 
 #endif
-
-#include "mpdm.h"
 
 /* file structure */
 struct _mpdm_file
