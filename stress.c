@@ -1026,6 +1026,21 @@ void test_mpsl2(void)
 	mpdm_dump(v);
 	v=mpdm_exec(v, NULL);
 
+	v=_test_mpsl("CACHE={}; CACHE.regex=[]; CACHE.regex[0]=12345;");
+	v=mpdm_exec(v, NULL);
+
+	v=_test_mpsl("variable;");
+	v=mpdm_exec(v, NULL);
+	_test("symval 1", mpdm_ival(v) == 16384);
+
+	v=_test_mpsl("variable2=1 + ((3 - 5) * 8); variable2;");
+	v=mpdm_exec(v, NULL);
+	_test("symval 2", mpdm_rval(v) == -15);
+
+	v=_test_mpsl("variable3=variable2 * 2;");
+	v=mpdm_exec(v, NULL);
+	_test("symval 3", mpdm_ival(v) == -30);
+
 	mpdm_dump(mpdm_root());
 }
 
