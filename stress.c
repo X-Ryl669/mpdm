@@ -27,6 +27,8 @@
 #include <string.h>
 #include <wchar.h>
 
+#include <time.h>
+
 #include "mpdm.h"
 
 /* total number of tests and oks */
@@ -36,6 +38,8 @@ int oks=0;
 /* failed tests messages */
 char * _failed_msgs[5000];
 int _i_failed_msgs=0;
+
+int _do_benchmarks=0;
 
 /*******************
 	Code
@@ -848,8 +852,94 @@ void test_encoding(void)
 }
 
 
-int main(void)
+void _timer(int secs)
 {
+	static clock_t clks=0;
+
+	switch(secs)
+	{
+	case 0:
+		clks=clock();
+		break;
+
+	case -1:
+		printf("%.2f seconds\n",
+			(float)(clock() - clks)/(float)CLOCKS_PER_SEC);
+		break;
+	}
+}
+
+
+void bench_hash(int i, mpdm_v l, int buckets)
+{
+	mpdm_v h;
+	mpdm_v v;
+	int n;
+
+	printf("Hash of %d buckets: \n", buckets);
+	h=MPDM_H(buckets);
+
+	_timer(0);
+	for(n=0;n < i;n++)
+	{
+		v=mpdm_aget(l, n);
+		mpdm_hset(h, v, v);
+	}
+	_timer(-1);
+/*
+	printf("Bucket usage:\n");
+	for(n=0;n < mpdm_size(h);n++)
+		printf("\t%d: %d\n", n, mpdm_size(mpdm_aget(h, n)));
+*/
+	mpdm_sweep(-1);
+}
+
+
+void benchmark(void)
+{
+	mpdm_v l;
+	int i,n;
+	char tmp[64];
+
+	printf("\n");
+
+	if(!_do_benchmarks)
+	{
+		printf("Skipping benchmarks\nRun them with 'stress -b'\n");
+		return;
+	}
+
+	printf("BENCHMARKS\n");
+
+	i=500000;
+
+	printf("Creating %d values...\n", i);
+
+	l=mpdm_ref(MPDM_A(i));
+	for(n=0;n < i;n++)
+	{
+		sprintf(tmp,"%08x",n);
+/*		mpdm_aset(l, MPDM_MBS(tmp), n);*/
+		mpdm_aset(l, MPDM_I(n), n);
+	}
+
+	printf("OK\n");
+
+	bench_hash(i, l, 0);
+	bench_hash(i, l, 7);
+	bench_hash(i, l, 13);
+	bench_hash(i, l, 63);
+	bench_hash(i, l, 127);
+
+	mpdm_unref(l);
+}
+
+
+int main(int argc, char * argv[])
+{
+	if(argc > 1 && strcmp(argv[1], "-b") == 0)
+		_do_benchmarks=1;
+
 	mpdm_startup();
 
 	test_basic();
@@ -865,6 +955,7 @@ int main(void)
 	test_dh();
 	test_nondyn();
 	test_encoding();
+	benchmark();
 
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
