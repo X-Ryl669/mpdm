@@ -52,6 +52,19 @@ struct _mpdm_v
 	mpdm_v next;	/* next in chain */
 };
 
+/* tie functions */
+typedef enum
+{
+	MPDM_TIE_CREATE,
+	MPDM_TIE_DESTROY,
+	MPDM_TIE_CLONE,
+	MPDM_TIE_HGET,
+	MPDM_TIE_HSET,
+	MPDM_TIE_HDEL,
+	MPDM_TIE_HKEYS,
+	MPDM_TIE_HSIZE
+} _mpdm_tie_func;
+
 /* the main control structure */
 struct _mpdm_ctl
 {
@@ -65,16 +78,6 @@ struct _mpdm_ctl
 };
 
 extern struct _mpdm_ctl * _mpdm;
-
-/* tie functions */
-#define MPDM_TIE_CREATE		0
-#define MPDM_TIE_DESTROY	1
-#define MPDM_TIE_CLONE		2
-#define MPDM_TIE_HGET		3
-#define MPDM_TIE_HSET		4
-#define MPDM_TIE_HDEL		5
-#define MPDM_TIE_HKEYS		6
-#define MPDM_TIE_HSIZE		7
 
 mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie);
 mpdm_v mpdm_ref(mpdm_v v);
