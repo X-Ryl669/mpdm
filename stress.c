@@ -324,6 +324,10 @@ void test_file(void)
 	fdm_aset(v, w, 3);
 
 	fdm_write(f, v);
+
+	/* write its own file pointer */
+	fdm_write(f, f);
+
 	fdm_close(f);
 
 	f=fdm_open(FDM_LS("test.txt"), FDM_LS("r"));
@@ -335,6 +339,8 @@ void test_file(void)
 	_test("test written file 2.2", fdm_cmp(fdm_read(f), FDM_LS("2.2")) == 0);
 	_test("test written file 3.0.1", fdm_cmp(fdm_read(f), FDM_LS("3.0.0")) == 0);
 	_test("test written file 3.0.2", fdm_cmp(fdm_read(f), FDM_LS("3.0.1")) == 0);
+	v=fdm_read(f);
+	fdm_dump(v);
 
 	fdm_close(f);
 
