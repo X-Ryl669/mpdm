@@ -32,6 +32,13 @@
 #include "mpdm.h"
 
 /*******************
+	Data
+********************/
+
+/* sorting callback code */
+static mpdm_v _mpdm_asort_cb=NULL;
+
+/*******************
 	Code
 ********************/
 
@@ -332,8 +339,27 @@ int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos)
 
 
 static int _mpdm_asort_cmp(const void * s1, const void * s2)
+/* qsort help function */
 {
-	return(mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2));
+	int ret=0;
+
+	/* if callback is NULL, use basic value comparisons */
+	if(_mpdm_asort_cb == NULL)
+		ret=mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2);
+	else
+	{
+		mpdm_v a;
+
+		/* creates a two element array for the arguments */
+		a=MPDM_A(2);
+		mpdm_aset(a, MPDM_P(s1), 0);
+		mpdm_aset(a, MPDM_P(s2), 1);
+
+		/* executes the callback and converts to integer */
+		ret=mpdm_ival(mpdm_exec(_mpdm_asort_cb, a));
+	}
+
+	return(ret);
 }
 
 
@@ -346,6 +372,26 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
  */
 void mpdm_asort(mpdm_v a, int step)
 {
+	mpdm_asort_cb(a, step, NULL);
+}
+
+
+/**
+ * mpdm_asort_cb - Sorts an array with a special sorting function.
+ * @a: the array
+ * @step: increment step
+ * @asort_cb: sorting function
+ *
+ * Sorts the array. @step is the number of elements to group together.
+ * For each pair of elements being sorted, the executable mpdm_v value
+ * @sort_cb is called with an array containing the two elements as
+ * argument. It must return a signed numerical mpdm_v value indicating
+ * the sorting order.
+ */
+void mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
+{
+	_mpdm_asort_cb=asort_cb;
+
 	qsort(a->data, mpdm_size(a) / step,
 		sizeof(mpdm_v) * step, _mpdm_asort_cmp);
 }
