@@ -3,6 +3,8 @@ TODO
 
  * Create some versions of functions that avoid doing boundary checks
    when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).
+ * _mpdm_dump() should print via an executable mpdm_v instead of a
+   direct printf().
  * Each value should have a 'destroy' pointer to a function or scripting code
    that destroys v->data. For example, a call to regfree() in compiled
    regular expressions. So, normal MPDM_FREE values could include a standard
