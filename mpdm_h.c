@@ -265,7 +265,12 @@ static mpdm_v _mpdm_sym(mpdm_v r, mpdm_v k, mpdm_v v, int s)
 	if(k->flags & MPDM_MULTIPLE)
 		p=k;
 	else
-		p=mpdm_asplit(MPDM_LS(L"."), k);
+	{
+		mpdm_ndv d;
+
+		MPDM_ND_LS(d, L".");
+		p=mpdm_asplit(&d, k);
+	}
 
 	for(n=0;n < mpdm_size(p) - s;n++)
 	{
