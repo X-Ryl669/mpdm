@@ -143,7 +143,7 @@ int yy_input_for_flex(char * buf, int max)
 		return(0);
 	}
 
-	printf("[%c]\n", tmp[0]);
+	_mpsl_next_char ++;
 
 	buf[0]=tmp[0];
 
