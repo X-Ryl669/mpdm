@@ -3,7 +3,7 @@
 /* lex file */
 
 #include <stdio.h>
-#include "fdm.h"
+#include "mpdm.h"
 
 #include <stdlib.h>
 #include "y.tab.h"
@@ -25,20 +25,20 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {INTEGER}	{
 			/* integer */
-			yylval.v=FDM_S(yytext);
+			yylval.v=MPDM_S(yytext);
 			return(INTEGER);
 		}
 
 {REAL}		{
 			/* real numbers */
-			yylval.v=FDM_S(yytext);
+			yylval.v=MPDM_S(yytext);
 			return(REAL);
 		}
 
 \"[^"]*\"	{
 			/* string includes quotes; strip them */
 			yytext[yyleng - 1]='\0';
-			yylval.v=FDM_S(yytext + 1);
+			yylval.v=MPDM_S(yytext + 1);
 			return(STRING);
 		}
 
@@ -59,7 +59,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {SYMBOL}	{
 			/* symbol name */
-			yylval.v=FDM_S(yytext);
+			yylval.v=MPDM_S(yytext);
 			return(SYMBOL);
 		}
 
