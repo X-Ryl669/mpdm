@@ -306,7 +306,7 @@ int mpdm_hexists(mpdm_v h, mpdm_v k)
 	mpdm_v b;
 	int ret=0;
 
-	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
+	if((b=mpdm_get_tie(h, MPDM_TIE_HEXISTS)) != NULL)
 		ret=mpdm_ival(mpdm_exec_2(b, h, k));
 
 	return(ret);
