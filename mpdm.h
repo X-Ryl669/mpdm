@@ -57,7 +57,6 @@ int fdm_cmp(fdm_v v1, fdm_v v2);
 int fdm_ival(fdm_v v);
 
 void fdm_poke(fdm_v v, char c, int offset);
-fdm_v fdm_splice(fdm_v v, int offset, int size, char * new);
 
 fdm_v fdm_dup(fdm_v v);
 fdm_v fdm_root(void);
@@ -73,6 +72,8 @@ fdm_v fdm_apop(fdm_v a);
 int fdm_aseek(fdm_v a, fdm_v k, int step);
 int fdm_abseek(fdm_v a, fdm_v k, int step);
 void fdm_asort(fdm_v a, int step);
+
+fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
 
 fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);

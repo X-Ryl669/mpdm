@@ -302,3 +302,61 @@ void fdm_asort(fdm_v a, int step)
 	qsort(a->data, a->size / step,
 		sizeof(fdm_v) * step, _fdm_asort_cmp);
 }
+
+
+/**
+ * fdm_splice - Creates a new string value from another.
+ * @v: the original value
+ * @offset: offset where the substring is to be inserted
+ * @size: number of characters to substitute
+ * @new: the new string to be inserted
+ *
+ * Creates a new string value from @v, deleting @size chars
+ * at @offset and substituting them by @new.
+ */
+fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
+{
+	fdm_v w;
+	fdm_v n=NULL;
+	fdm_v d=NULL;
+	int ns, r;
+
+	/* adjustments */
+	if(offset > v->size) offset=v->size;
+	if(offset + del > v->size) del=v->size - offset;
+
+	/* deleted space */
+	if(del > 0)
+	{
+		d=fdm_new(FDM_COPY | FDM_STRING, NULL, del + 1);
+
+		memcpy(d->data, v->data + offset, del);
+		((char *)(d->data))[del]='\0';
+	}
+
+	/* new size and remainder */
+	ns=v->size + i->size - del + 1;
+	r=offset + del;
+
+	if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
+		return(NULL);
+
+	if(offset > 0)
+		memcpy(n->data, v->data, offset);
+
+	if(i->size > 0)
+		memcpy(n->data + offset, i->data, i->size);
+
+	if(v->size - r > 0)
+		memcpy(n->data + offset + i->size, v->data + r, v->size - r);
+
+	((char *)(n->data))[ns - 1]='\0';
+
+	/* creates the output array */
+	w=FDM_A(2);
+
+	fdm_aset(w, n, 0);
+	fdm_aset(w, d, 1);
+
+	return(w);
+}
