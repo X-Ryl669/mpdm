@@ -127,7 +127,7 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 {
 	mpdm_v v;
 	iconv_t * ic;
-	size_t o;
+	size_t o, r;
 	char * op;
 
 	/* creates a new (or gets a cached) iconv converter */
@@ -137,7 +137,7 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 	ic=(iconv_t *)v->data;
 
 	op=NULL;
-	o=0;
+	r=o=1 + s->size * (from ? 1 : sizeof(wchar_t));
 
 	/* convert using brute force; instead of trying the cumbersome
 	   block-based logic documented everywhere, just try resizing the
@@ -146,14 +146,14 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 	for(;;)
 	{
 		size_t n;
+		size_t i;
 		char * np;
-		size_t i=s->size * (from ? 1 : sizeof(wchar_t));
 		char * ip=(char *)s->data;
 
 		/* make (more) size in the output buffer */
-		o += i;
 		op=realloc(op, o);
 
+		i=r;
 		n=o;
 		np=op;
 
@@ -171,7 +171,7 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 			}
 
 			/* try again, using more space */
-			o=i;
+			o *= 2;
 		}
 		else
 		{
