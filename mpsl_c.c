@@ -225,17 +225,12 @@ mpdm_v mpsl_local_find_symbol(mpdm_v s)
 }
 
 
-mpdm_v mpsl_get_local_symbol_table(void)
-{
-	return(mpdm_aget(mpdm_aget(_mpsl_local, -1), -1));
-}
-
-
 void mpsl_local_set_symbols(mpdm_v s, mpdm_v v)
 {
 	mpdm_v l;
 
-	l=mpsl_get_local_symbol_table();
+	/* gets the top local variable frame */
+	l=mpdm_aget(mpdm_aget(_mpsl_local, -1), -1);
 
 	if(s->flags & MPDM_MULTIPLE)
 	{
@@ -389,35 +384,7 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
 	return(ret);
 }
 
-
-static mpdm_v _O_local(mpdm_v c, mpdm_v a)
-/* creates a bunch of local variables */
-{
-	int n;
-	mpdm_v l;
-	mpdm_v v;
-
-	/* gets current local symbol table */
-	l=mpsl_get_local_symbol_table();
-
-	/* gets symbol(s) to be created */
-	v=M1;
-
-	if(v->flags & MPDM_MULTIPLE)
-	{
-		/* creates all of them as NULL values */
-		for(n=0;n < mpdm_size(v);n++)
-			mpdm_hset(l, mpdm_aget(v, n), NULL);
-	}
-	else
-	{
-		/* only one; create it as NULL */
-		mpdm_hset(l, v, NULL);
-	}
-
-	return(NULL);
-}
-
+static mpdm_v _O_local(mpdm_v c, mpdm_v a) { mpsl_local_set_symbols(M1, NULL); return(NULL); }
 
 static mpdm_v _O_uminus(mpdm_v c, mpdm_v a) { return(MPDM_R(-mpdm_rval(M1))); }
 static mpdm_v _O_add(mpdm_v c, mpdm_v a) { return(MPDM_R(mpdm_rval(M1) + mpdm_rval(M2))); }
