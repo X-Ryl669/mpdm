@@ -32,7 +32,7 @@
 	Code
 ********************/
 
-int _fdm_hashfunc(unsigned char * string, int mod)
+static int _fdm_hashfunc(unsigned char * string, int mod)
 {
 	int c;
 
