@@ -64,6 +64,30 @@ static mpdm_v _tie_file(void)
 }
 
 
+void _mpdm_write_wcs(FILE * f, wchar_t * str)
+/* writes a wide string to a stream, converting */
+{
+	char tmp[MB_CUR_MAX + 1];
+	int l,n;
+
+	while(*str != L'\0')
+	{
+		if((l=wctomb(tmp, *str)) <= 0)
+		{
+			/* if char couldn't be converted,
+			   write a question mark instead */
+			l=1;
+			tmp[0]='?';
+		}
+
+		for(n=0;n < l;n++)
+			fputc(tmp[n], f);
+
+		str++;
+	}
+}
+
+
 /**
  * mpdm_open - Opens a file.
  * @filename: the file name
@@ -166,7 +190,10 @@ int mpdm_write(mpdm_v fd, mpdm_v v)
 			mpdm_write(fd, mpdm_aget(v, n));
 	}
 	else
-		fprintf((FILE *)fd->data, "%ls\n", mpdm_string(v));
+	{
+		_mpdm_write_wcs((FILE *)fd->data, mpdm_string(v));
+		_mpdm_write_wcs((FILE *)fd->data, L"\n");
+	}
 
 	return(0);
 }
