@@ -883,9 +883,12 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("mpsl calculator 2", mpdm_rval(v) == -15.0);
 
+	/* next value cannot be tested as an exact equality,
+	   as rounding errors will manifest */
 	v=_test_mpsl("1.5 + ((3.1 - 5.8) * 8.0);");
 	v=mpdm_exec(v, NULL);
-	_test("mpsl calculator 3", mpdm_rval(v) == -20.10);
+	_test("mpsl calculator 3",
+		mpdm_rval(v) < -20.0 && mpdm_rval(v) > -21.0);
 
 /*	_test_mpsl("1.5 + ((3.1 - 5.8) * 8.0);");
 	_test_mpsl("a=1 + ((3 - 5) * 8);");

@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
+#include <locale.h>
 
 #include "mpdm.h"
 
@@ -267,9 +268,19 @@ double mpdm_rval(mpdm_v v)
 		if(v->flags & MPDM_STRING)
 		{
 			char tmp[128];
+			char * prev_locale;
 
 			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
+
+			/* set locale to C for non locale-dependent
+			   floating point conversion */
+			prev_locale=setlocale(LC_ALL, "C");
+
+			/* read */
 			sscanf(tmp, "%lf", &r);
+
+			/* set previous locale */
+			setlocale(LC_ALL, prev_locale);
 		}
 
 		v->rval=r;
