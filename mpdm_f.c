@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 #ifdef CONFOPT_UNISTD_H
 #include <unistd.h>
@@ -131,34 +132,33 @@ static mpdm_v _tie_iconv(void)
 wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
-	char tmp[MB_CUR_MAX + 1];
 	wchar_t * ptr=NULL;
-	wchar_t wc;
-	int c, n;
+	int c;
+	mbstate_t ps;
 
 	*s=0;
 
-	for(;;)
+	memset(&ps, '\0', sizeof(ps));
+
+	while((c = fgetc(f)) != EOF)
 	{
-		/* loop first until a complete char is completed
-		   or tmp is filled */
-		n=0;
-		while((c = fgetc(f)) != EOF && n < MB_CUR_MAX)
-		{
-			tmp[n++]=c;
+		size_t r;
+		char cc;
+		wchar_t wc;
 
-			/* already a valid char? */
-			if(mbtowc(NULL, tmp, n) >= 0)
-				break;
-		}
+		/* convert char */
+		cc=c;
+		r=mbrtowc(&wc, &cc, 1, &ps);
 
-		/* if no chars were read, it's EOF; finish */
-		if(n == 0)
-			break;
+		printf("r: %d\n", r);
 
-		/* convert char or set to '?' on error */
-		if(mbtowc(&wc, tmp, n) == -1)
+		/* bad char? store as '?' */
+		if(r == -1)
 			wc=L'?';
+		else
+		/* incomplete? read another */
+		if(r == -2)
+			continue;
 
 		/* alloc space */
 		ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t));
