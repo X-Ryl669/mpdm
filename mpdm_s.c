@@ -56,11 +56,8 @@ char * mpdm_string(mpdm_v v)
 	if(v->flags & MPDM_STRING)
 		return((char *)v->data);
 
-	/* if it's a multiple value, print its size and pointer */
-	if(v->flags & MPDM_MULTIPLE)
-		snprintf(tmp, sizeof(tmp), "[%d] %p", mpdm_size(v), v->data);
-	else
-		snprintf(tmp, sizeof(tmp), "%p", v->data);
+	/* otherwise, return a visual representation */
+	snprintf(tmp, sizeof(tmp), "%p", v->data);
 
 	return(tmp);
 }
