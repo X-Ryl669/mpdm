@@ -366,20 +366,23 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 
 int mpdm_startup(void)
 {
-	/* alloc space for the control structure, unless already set up */
+	/* do the startup only unless done beforehand */
 	if(_mpdm == NULL)
+	{
+		/* alloc space */
 		_mpdm=malloc(sizeof(struct _mpdm_ctl));
 
-	/* cleans it */
-	memset(_mpdm, '\0', sizeof(struct _mpdm_ctl));
+		/* cleans it */
+		memset(_mpdm, '\0', sizeof(struct _mpdm_ctl));
 
-	/* sets the defaults */
-	_mpdm->low_threshold=16;
-	_mpdm->high_threshold=0;
+		/* sets the defaults */
+		_mpdm->low_threshold=16;
+		_mpdm->high_threshold=0;
 
-	/* sets the locale */
-	if(setlocale(LC_ALL, "") == NULL)
-		setlocale(LC_ALL, "C");
+		/* sets the locale */
+		if(setlocale(LC_ALL, "") == NULL)
+			setlocale(LC_ALL, "C");
+	}
 
 	/* everything went OK */
 	return(0);
