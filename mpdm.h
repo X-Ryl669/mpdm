@@ -46,3 +46,15 @@ int fdm_unref(fdm_v v);
 fdm_v fdm_new(int tag, void * data, int size);
 void fdm_sweep(int count);
 int fdm_cmp(fdm_v v1, fdm_v v2);
+
+void fdm_aexpand(fdm_v a, int offset, int num);
+void fdm_acollapse(fdm_v a, int offset, int num);
+fdm_v fdm_aset(fdm_v a, fdm_v e, int offset);
+fdm_v fdm_aget(fdm_v a, int offset);
+void fdm_ains(fdm_v a, fdm_v e, int offset);
+fdm_v fdm_adel(fdm_v a, int offset);
+void fdm_apush(fdm_v a, fdm_v e);
+fdm_v fdm_apop(fdm_v a);
+int fdm_aseek(fdm_v a, fdm_v k, int step);
+int fdm_abseek(fdm_v a, fdm_v k, int step);
+void fdm_asort(fdm_v a, int step);

@@ -104,7 +104,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 	{
 		int s;
 
-		s=(tag & FDM_MULTIPLE) ? s * sizeof(struct _fdm_v *) : s;
+		s=(tag & FDM_MULTIPLE) ? s * sizeof(fdm_v) : s;
 
 		/* alloc new space for data */
 		if((v->data=malloc(s)) == NULL)
