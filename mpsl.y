@@ -159,8 +159,8 @@ stmt:
 				mpdm_aset(w, INS0(MPDM_LS(L"SUB_POSTFIX")), 3);
 				$$ = INS2(MPDM_LS(L"SUB"), $2, w); }
 
-	| FOREACH compsym expr stmt
-				{ $$ = INS3(MPDM_LS(L"FOREACH"), $2, $3, $4); }
+	| FOREACH '(' compsym ',' expr ')' stmt
+				{ $$ = INS3(MPDM_LS(L"FOREACH"), $3, $5, $7); }
 
 	| '{' stmt_list '}'	{ mpdm_v w=MPDM_A(3);
 				mpdm_aset(w, INS0(MPDM_LS(L"BLK_PREFIX")), 0);
