@@ -59,7 +59,7 @@ wchar_t * mpdm_string(mpdm_v v)
 		return((wchar_t *)v->data);
 
 	/* otherwise, return a visual representation */
-	swprintf(tmp, sizeof(tmp) / sizeof(wchar_t), L"%p", v->data);
+	swprintf(tmp, sizeof(tmp) / sizeof(wchar_t), L"%p", v);
 
 	return(tmp);
 }

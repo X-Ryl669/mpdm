@@ -662,6 +662,7 @@ void test_ph(void)
 	mpdm_hset(h, MPDM_LS(L"tuesday"), MPDM_LS(L"martes"));
 
 	_test("Persistent hash size", mpdm_hsize(h) == 3);
+	mpdm_dump(h);
 }
 
 

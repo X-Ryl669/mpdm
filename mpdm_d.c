@@ -88,7 +88,8 @@ void _mpdm_dump(mpdm_v v, int l)
 				(v->flags & MPDM_EXEC ? 'X' : '-')),
 		v->flags & MPDM_HASH	? 'H' :
 			(v->flags & MPDM_MULTIPLE ? 'M' : '-'),
-		v->flags & MPDM_IVAL	? 'I' : '-');
+		v->flags & MPDM_DESTROY ? 'D' :
+			(v->flags & MPDM_IVAL	? 'I' : '-'));
 
 		mpdm_apush(w, MPDM_S(tmp));
 
