@@ -113,16 +113,6 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 int yywrap(void) { return(1); }
 
-int code_getchar(void)
-{
-	int c;
-
-	c=getchar();
-
-	return(c == EOF ? '\0' : c);
-}
-
-
 void _mpsl_store_code(mpdm_v code)
 /* stores the code string */
 {
