@@ -490,10 +490,76 @@ mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 
 static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 {
-	printf("Executing mpsl!!!\n");
-	mpdm_dump(c);
+	mpsl_op op;
+	mpdm_v ret=NULL;
+	int n;
+	double r, r1, r2;
 
-	return(args);
+	/* gets the opcode */
+	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
+
+	/* the very big switch */
+	switch(op)
+	{
+	case MPSL_OP_MULTI:
+
+		/* multi-instruction */
+
+		/* executes all following instructions */
+		for(n=1;n < mpdm_size(c);n++)
+			ret=_mpsl_machine(mpdm_aget(c, n), args);
+
+		/* returns the output of the last one */
+		break;
+
+	case MPSL_OP_LITERAL:
+
+		/* literal value */
+		ret=mpdm_aget(c, 1);
+		break;
+
+	case MPSL_OP_SUBFRAME:
+
+		/* creates a subroutine frame */
+		/* ... */
+
+		/* executes all following instructions */
+		for(n=1;n < mpdm_size(c);n++)
+			ret=_mpsl_machine(mpdm_aget(c, n), args);
+
+		/* destroys the subroutine frame */
+		/* ... */
+
+		break;
+
+	case MPSL_OP_ADD:
+	case MPSL_OP_SUB:
+	case MPSL_OP_MUL:
+	case MPSL_OP_DIV:
+
+		/* binary math operations */
+
+		r1=mpdm_rval(_mpsl_machine(mpdm_aget(c, 1), args));
+		r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+
+		switch(op)
+		{
+		case MPSL_OP_ADD: r = r1 + r2; break;
+		case MPSL_OP_SUB: r = r1 - r2; break;
+		case MPSL_OP_MUL: r = r1 * r2; break;
+		case MPSL_OP_DIV: r = r1 / r2; break;
+		default: r=0; break;
+		}
+
+		ret=MPDM_R(r);
+
+		break;
+
+	case MPSL_OP_MOD:
+		break;
+	}
+
+	return(ret);
 }
 
 

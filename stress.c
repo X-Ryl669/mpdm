@@ -795,8 +795,8 @@ mpdm_v _test_mpsl(char * code)
 {
 	mpdm_v v=mpsl_compile(MPDM_MBS(code));
 
+	printf("Compile: ");
 	_test(code, v != NULL);
-	mpdm_exec(v, NULL);
 	return(v);
 }
 
@@ -858,6 +858,35 @@ void test_mpsl(void)
 	_test_mpsl("! (1 > 2);");
 	_test_mpsl("1 != 2;");
 	_test_mpsl("\"hello\" ne \"goodbye\";");
+
+}
+
+
+void test_mpsl2(void)
+{
+	mpdm_v v;
+
+	/* execution tests */
+	v=_test_mpsl("666;");
+	v=mpdm_exec(v, NULL);
+	_test("literal number", mpdm_ival(v) == 666);
+
+	v=_test_mpsl("\"goodbye\";");
+	v=mpdm_exec(v, NULL);
+	_test("literal string", mpdm_cmp(v, MPDM_LS(L"goodbye")) == 0);
+
+	v=_test_mpsl("1 + 3 + 5;");
+	v=mpdm_exec(v, NULL);
+	_test("mpsl calculator 1", mpdm_rval(v) == 9.0);
+
+	v=_test_mpsl("1 + ((3 - 5) * 8);");
+	v=mpdm_exec(v, NULL);
+	_test("mpsl calculator 2", mpdm_rval(v) == -15.0);
+
+/*	_test_mpsl("1.5 + ((3.1 - 5.8) * 8.0);");
+	_test_mpsl("a=1 + ((3 - 5) * 8);");
+	_test_mpsl("2 + 3 * 4;");
+	_test_mpsl("2 * 3 + 4;");*/
 }
 
 
@@ -878,6 +907,7 @@ int main(void)
 	test_dh();
 	test_nondyn();
 	test_mpsl();
+	test_mpsl2();
 
 	mpdm_shutdown();
 
