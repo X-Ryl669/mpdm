@@ -10,7 +10,7 @@ CFLAGS=-g -Wall
 DOCS=
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
-	mpdm_r.o mpdm_dh.o gnu_regex.o
+	mpdm_r.o mpdm_dh.o gnu_regex.o mpsl_l.o mpsl_y.o
 
 ##################################################################
 
@@ -22,6 +22,21 @@ ChangeLog:
 
 .c.o:
 	$(CC) $(CFLAGS) `cat config.cflags` -c $<
+
+y.tab.h:
+	$(YACC) -d mpsl.y
+
+y.tab.c: mpsl.y
+	$(YACC) -d mpsl.y
+
+lex.yy.c: mpsl.l
+	$(LEX) mpsl.l
+
+mpsl_l.o: lex.yy.c y.tab.h
+	$(CC) $(CFLAGS) -c lex.yy.c -o mpsl_l.o
+
+mpsl_y.o: y.tab.c
+	$(CC) $(CFLAGS) -c y.tab.c -o mpsl_y.o
 
 dep:
 	gcc -MM *.c > makefile.depend
@@ -35,13 +50,16 @@ stress: stress.c $(LIB)
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
 
-distclean: clean
-	rm -f config.h config.cflags config.ldflags makefile.opts Makefile
+realclean: clean
+	rm -f y.tab.c y.tab.h lex.yy.c
+
+distclean: realclean
+	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
 docs:
 	mkdir -p doc
 
-dist: distclean docs ChangeLog
+dist: distclean ChangeLog y.tab.c y.tab.h lex.yy.c
 	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
 	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=CVS $(PROJ)-$(VERSION)/* ; \
 	rm $(PROJ)-$(VERSION)
@@ -50,3 +68,4 @@ install:
 	install $(TARGET) $(PREFIX)/bin
 	mkdir -p $(PREFIX)/share/doc/$(PROJ)
 	cp $(DOCS) $(PREFIX)/share/doc/$(PROJ)
+

@@ -6,3 +6,6 @@ config.ldflags
 makefile.opts
 stress
 test.db
+lex.yy.c
+y.tab.c
+y.tab.h
