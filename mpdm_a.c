@@ -123,7 +123,7 @@ fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
 	p[offset]=e;
 
 	if(v != NULL) fdm_unref(v);
-	if(e != NULL) fdm_ref(v);
+	if(e != NULL) fdm_ref(e);
 
 	return(v);
 }
