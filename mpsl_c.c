@@ -223,6 +223,18 @@ static mpdm_v _mpsl_op_assign(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
+/* executes an executable value */
+{
+	mpdm_v v;
+
+	if((v=mpdm_aget(c, 2)) != NULL)
+		v=_mpsl_machine(v, args);
+
+	return(mpdm_exec(_mpsl_machine(mpdm_aget(c, 1), args), v));
+}
+
+
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 {
 	mpdm_v ret=NULL;
@@ -398,6 +410,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_HASH: ret=_mpsl_op_hash(c, args); break;
 	case MPSL_OP_SYMVAL: ret=_mpsl_op_symval(c, args); break;
 	case MPSL_OP_ASSIGN: ret=_mpsl_op_assign(c, args); break;
+	case MPSL_OP_EXEC: ret=_mpsl_op_exec(c, args); break;
 	case MPSL_OP_SUBFRAME: ret=_mpsl_op_subframe(c, args); break;
 	case MPSL_OP_ADD:
 	case MPSL_OP_SUB:
