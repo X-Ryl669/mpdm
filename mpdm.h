@@ -124,7 +124,7 @@ int mpdm_cmp(mpdm_v v1, mpdm_v v2);
 int mpdm_ival(mpdm_v v);
 
 mpdm_v _mpdm_inew(int ival);
-mpdm_v _mpdm_new_wcs(wchar_t * s, int n, mpdm_v tie);
+mpdm_v _mpdm_new_wcs(int f, wchar_t * s, int n, mpdm_v tie);
 mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie);
 
 int mpdm_hsize(mpdm_v h);
@@ -168,16 +168,16 @@ mpdm_v _mpdm_tie_hash(void);
 
 #define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n,_mpdm_tie_mul())
 #define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n,_mpdm_tie_hash())
-#define MPDM_LS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_lstr())
-#define MPDM_S(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_str())
-#define MPDM_NS(s,n)	_mpdm_new_wcs(s,n,_mpdm_tie_str())
+#define MPDM_LS(s)	_mpdm_new_wcs(0,s,-1,_mpdm_tie_lstr())
+#define MPDM_S(s)	_mpdm_new_wcs(0,s,-1,_mpdm_tie_str())
+#define MPDM_NS(s,n)	_mpdm_new_wcs(0,s,n,_mpdm_tie_str())
 
 #define MPDM_I(i)	_mpdm_inew((i))
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0,NULL)
 #define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
 #define MPDM_M(m,s)	mpdm_new(0,m,s,_mpdm_tie_cpy())
 #define MPDM_MBS(s)	_mpdm_new_mbs(s,-1,_mpdm_tie_mbstowcs())
-#define MPDM_2MBS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_wcstombs())
+#define MPDM_2MBS(s)	_mpdm_new_wcs(0,s,-1,_mpdm_tie_wcstombs())
 #define MPDM_F(f)	mpdm_new(MPDM_FILE|MPDM_DESTROY,f,0,_tie_file())
 
 #define MPDM_ND_LS(v,s) v.ref=0 ; v.tie=v.next=NULL; \
