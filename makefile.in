@@ -1,0 +1,52 @@
+# -*- Mode: sh
+
+TARGET=libfdm.a
+LIB=$(TARGET)
+
+all: $(TARGET)
+
+PROJ=fdm
+CFLAGS=-g -Wall
+DOCS=
+PREFIX=/usr/local
+
+OBJS=fdm_v.o fdm_a.o fdm_h.o fdm_d.o fdm_s.o
+
+##################################################################
+
+version:
+	@echo $(VERSION)
+
+ChangeLog:
+	cvs2cl --fsf --stdout > Changelog
+
+.c.o:
+	$(CC) $(CFLAGS) `cat config.cflags` -c $<
+
+dep: config
+	gcc -MM *.c > makefile.depend
+
+$(LIB): $(OBJS)
+	$(AR) rv $(LIB) $(OBJS)
+
+stress: stress.c $(LIB)
+	$(CC) $(CFLAGS) $< -L. -lfdm -o $@
+
+clean:
+	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
+
+distclean: clean
+	rm -f config.h config.cflags config.ldflags makefile.opts Makefile
+
+docs:
+	mkdir -p doc
+
+dist: distclean docs ChangeLog
+	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
+	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=CVS $(PROJ)-$(VERSION)/* ; \
+	rm $(PROJ)-$(VERSION)
+
+install:
+	install $(TARGET) $(PREFIX)/bin
+	mkdir -p $(PREFIX)/share/doc/$(PROJ)
+	cp $(DOCS) $(PREFIX)/share/doc/$(PROJ)
