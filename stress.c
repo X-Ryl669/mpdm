@@ -1209,11 +1209,18 @@ void test_mpsl3(void)
 	_test("splice 2", mpdm_cmp(v, MPDM_LS(L" of life")) == 0);
 
 	v=_test_mpsl("sub func() { if(1 == 1) { return(6); 24; } 12; }");
-	mpdm_dump(v);
 	v=mpdm_exec(v, NULL);
 	v=_test_mpsl("a=func();");
 	v=mpdm_exec(v, NULL);
-	mpdm_dump(v);
+	_test("return", mpdm_ival(v) == 6);
+
+	v=_test_mpsl("a=1; while(a < 10) { a++; } a;");
+	v=mpdm_exec(v, NULL);
+	_test("while", mpdm_ival(v) == 10);
+
+	v=_test_mpsl("a=1; while(a < 10) { if(a == 5) break; a++; } a;");
+	v=mpdm_exec(v, NULL);
+	_test("break", mpdm_ival(v) == 5);
 
 /*	mpdm_dump(mpdm_root());*/
 }
