@@ -383,6 +383,9 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
  */
 int fdm_ival(fdm_v v)
 {
+	if(v == NULL)
+		return(0);
+
 	/* if there is no cached integer, calculate it */
 	if(!(v->flags & FDM_INTEGER))
 	{

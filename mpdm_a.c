@@ -244,7 +244,7 @@ fdm_v fdm_aqueue(fdm_v a, fdm_v e, int size)
 {
 	fdm_v v=NULL;
 
-	if(a->size > size)
+	if(a->size > size - 1)
 		v=fdm_adel(a, 0);
 
 	fdm_apush(a, e);
