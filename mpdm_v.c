@@ -119,7 +119,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 	if(tag & FDM_INTEGER)
 	{
 		v->ival=(int) data;
-		sprintf(tmp, "%d", v->ival);
+		snprintf(tmp, sizeof(tmp) - 1,"%d", v->ival);
 		data=tmp;
 
 		/* force copy and calculation */
@@ -392,6 +392,14 @@ fdm_v fdm_splice(fdm_v v, int offset, int size, char * new)
 }
 
 
+/**
+ * fdm_dup - Duplicates a value
+ * @v: the value
+ *
+ * Duplicates a value. If the value is multiple, a new value will
+ * be created containing duplicates of all its elements; otherwise,
+ * the same unchanged value is returned.
+ */
 fdm_v fdm_dup(fdm_v v)
 {
 	fdm_v w;
