@@ -385,7 +385,7 @@ static mpdm_v _tie_wcstombs_c(mpdm_v v)
 	/* always calculate needed space; v->size is currently ignored */
 	v->size=wcstombs(NULL, v->data, 0);
 
-	if((ptr=malloc(v->size + 1)) == NULL)
+	if(v->size == -1 || (ptr=malloc(v->size + 1)) == NULL)
 		return(NULL);
 
 	wcstombs(ptr, v->data, v->size);

@@ -101,14 +101,15 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	v->data=data;
 	v->size=size;
 
-	/* add to the value chain and count */
-	if(_mpdm.head == NULL) _mpdm.head=v;
-	if(_mpdm.tail != NULL) _mpdm.tail->next=v;
-	_mpdm.tail=v;
-	_mpdm.count ++;
-
-	/* tie */
-	v=mpdm_tie(v, tie);
+	/* tie (can fail) */
+	if((v=mpdm_tie(v, tie)) != NULL)
+	{
+		/* add to the value chain and count */
+		if(_mpdm.head == NULL) _mpdm.head=v;
+		if(_mpdm.tail != NULL) _mpdm.tail->next=v;
+		_mpdm.tail=v;
+		_mpdm.count ++;
+	}
 
 	/* if it's the first time, install the atexit function */
 	if(!_init)
