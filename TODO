@@ -10,7 +10,6 @@ Release Critical Bugs
  * 1034: Implement ++ and --.
  * 1035: Implement +=, -=, *=, /=.
  * 1036: Implement the 'local' variable creation in mpsl.
- * 1037: Add caching support in values for real numbers (like ival).
 
 Open Bugs
 ---------
@@ -96,5 +95,7 @@ Closed
    (Thu, 09 Dec 2004 11:19:03 +0100).
  * 1021: Merge mpsl (the scripting language) lex and yacc files from
    CVS project filp2 (Thu, 09 Dec 2004 11:55:42 +0100).
+ * 1037: Add caching support in values for real numbers (like ival).
+   (Sun, 12 Dec 2004 17:54:34 +0100).
 
 Email bugs to angel@triptico.com
