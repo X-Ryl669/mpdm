@@ -46,12 +46,24 @@ static struct
 	Code
 ********************/
 
+/**
+ * fdm_ref - Increments the reference count.
+ * @v: the value
+ *
+ * Increments the reference count.
+ */
 int fdm_ref(fdm_v v)
 {
 	return(v->ref++);
 }
 
 
+/**
+ * fdm_unref - Decrements the reference count.
+ * @v: the value
+ *
+ * Decrements the reference count.
+ */
 int fdm_unref(fdm_v v)
 {
 	return(v->ref--);
@@ -70,6 +82,26 @@ static void _fdm_nref(fdm_v v[], int count, int ref)
 }
 
 
+/**
+ * fdm_new - Creates a new value.
+ * @tag: flags and type
+ * @data: pointer to real data
+ * @size: size of data
+ *
+ * Creates a new value. @tag is the OR operation of the following
+ * possible bits: FDM_COPY, if a copy of the data is to be stored
+ * (so it uses allocated memory); FDM_STRING, if the value is a string
+ * (so usual string operations as strlen or strcmp can be done over it);
+ * and FDM_MULTIPLE, if the value is going to contain an array of other
+ * values. @tag can also include it its lower 16 bits a user-defined
+ * 'type' value that will be stored but ignored. @data is a pointer to
+ * a string (if FDM_STRING is used), a block of pointers to other values
+ * (if FDM_MULTIPLE is set), or any other kind of data; a NULL value
+ * is also valid. @size contains the size of @data; if FDM_MULTIPLE is
+ * set, the size is expressed in number of values pointed to, or
+ * otherwise in bytes. A special value of -1 can be sent if FDM_STRING
+ * is set to force the automatic calculation of the size (via strlen()).
+ */
 fdm_v fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
@@ -134,6 +166,15 @@ fdm_v fdm_new(int tag, void * data, int size)
 }
 
 
+/**
+ * fdm_sweep - Sweeps unused values
+ * @count: number of values to be swept
+ *
+ * Sweeps unused values. @count is the number of values to be
+ * checked for deletion; if it's -1, all currently stored
+ * values are checked. A special value of zero in @count
+ * tell fdm_sweep() to check a small group of them on each call.
+ */
 void fdm_sweep(int count)
 {
 	static int lcount=0;
