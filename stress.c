@@ -729,13 +729,16 @@ void test_dh(void)
 	v2=mpdm_hget(h, k);
 	mpdm_dump(v2);
 
-	_test("Persistent hash 1", mpdm_ival(v) == mpdm_ival(v2));
+	_test("Disk hash 1", mpdm_ival(v) == mpdm_ival(v2));
 
 	mpdm_hset(h, MPDM_LS(L"monday"), MPDM_LS(L"lunes"));
 	mpdm_hset(h, MPDM_LS(L"tuesday"), MPDM_LS(L"martes"));
 
-	_test("Persistent hash size", mpdm_hsize(h) == 3);
+	_test("Disk hash size", mpdm_hsize(h) == 3);
 	mpdm_dump(h);
+
+	_test("hexists in disk hash 1", mpdm_hexists(h, MPDM_LS(L"lastval")));
+	_test("hexists in disk hash 2", ! mpdm_hexists(h, MPDM_LS(L"nextval")));
 }
 
 
