@@ -69,6 +69,22 @@ mpdm_v _mpsl_dump(mpdm_v args)
 }
 
 
+mpdm_v _mpsl_splice(mpdm_v args)
+{
+	mpdm_v v;
+	mpdm_v i;
+	int offset;
+	int del;
+
+	v=mpdm_aget(args, 0);
+	i=mpdm_aget(args, 1);
+	offset=mpdm_ival(mpdm_aget(args, 2));
+	del=mpdm_ival(mpdm_aget(args, 3));
+
+	return(mpdm_splice(v, i, offset, del));
+}
+
+
 void _mpsl_lib(void)
 /* inits the mpsl library */
 {
@@ -87,5 +103,8 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"size", MPDM_X(_mpsl_size));
 	mpdm_hset_s(r, L"is_array", MPDM_X(_mpsl_is_array));
 	mpdm_hset_s(r, L"is_hash", MPDM_X(_mpsl_is_hash));
+
+	mpdm_hset_s(r, L"splice", MPDM_X(_mpsl_splice));
+
 	mpdm_hset_s(r, L"dump", MPDM_X(_mpsl_dump));
 }

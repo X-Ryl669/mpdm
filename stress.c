@@ -1166,6 +1166,12 @@ void test_mpsl2(void)
 
 	v=_test_mpsl("\"big\" ~ \" \" ~ \"lebowski\";");
 	_test("~ (strcat 2)", mpdm_cmp(mpdm_exec(v, NULL), MPDM_LS(L"big lebowski")) == 0);
+}
+
+
+void test_mpsl3(void)
+{
+	mpdm_v v;
 
 	/* library functions tests */
 	v=_test_mpsl("dump( [1, 2, 3, 4, 5] );");
@@ -1188,7 +1194,13 @@ void test_mpsl2(void)
 	v=_test_mpsl("is_hash({});");
 	_test("is_hash 3", mpdm_exec(v, NULL) != NULL);
 
-	mpdm_dump(mpdm_root());
+	v=_test_mpsl("v=splice(\"inventions of life\", NULL, 0, 10); v[1];");
+	mpdm_dump(v);
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+	_test("splice 1", mpdm_cmp(v, MPDM_LS(L"inventions")) == 0);
+
+/*	mpdm_dump(mpdm_root());*/
 }
 
 
@@ -1210,6 +1222,7 @@ int main(void)
 	test_nondyn();
 	test_mpsl();
 	test_mpsl2();
+	test_mpsl3();
 
 	mpdm_shutdown();
 
