@@ -144,3 +144,6 @@ mpdm_v _mpdm_tie_wcstombs(void);
 #define MPDM_M(m,s)	mpdm_new(0,m,s,_mpdm_tie_cpy())
 #define MPDM_MBS(s)	_mpdm_new_mbs(s,-1,_mpdm_tie_mbstowcs())
 #define MPDM_2MBS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_wcstombs())
+
+int mpdm_startup(void);
+void mpdm_shutdown(void);

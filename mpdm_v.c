@@ -42,8 +42,9 @@ static struct
 	mpdm_v root;		/* the root hash */
 	mpdm_v head;		/* head of values */
 	mpdm_v tail;		/* tail of values */
-	int count;		/* total count */
-	int lcount;		/* last count */
+	int count;		/* total count of values */
+	int lcount;		/* last count seen in mpdm_sweep() */
+	int low_threshold;	/* minimum number of values to sweep */
 } _mpdm;
 
 
@@ -53,21 +54,6 @@ static struct
 
 #define _mpdm_alloc() (mpdm_v)malloc(sizeof(struct _mpdm_v))
 #define _mpdm_free(v) free(v)
-
-
-static void _mpdm_atexit(void)
-/* atexit callback */
-{
-	mpdm_v v;
-
-	/* travels the complete list of values */
-	for(v=_mpdm.head;v != NULL;v=v->next)
-	{
-		/* destroys all values that need to be destroyed */
-		if(v->flags & MPDM_DESTROY)
-			mpdm_tie(v, NULL);
-	}
-}
 
 
 /**
@@ -88,7 +74,6 @@ static void _mpdm_atexit(void)
  */
 mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 {
-	static int _init=0;
 	mpdm_v v;
 	mpdm_v r=NULL;
 
@@ -115,13 +100,6 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	{
 		/* tie creation failed; free the new value */
 		_mpdm_free(v);
-	}
-
-	/* if it's the first time, install the atexit function */
-	if(!_init)
-	{
-		atexit(_mpdm_atexit);
-		_init=1;
 	}
 
 	return(r);
@@ -166,7 +144,7 @@ mpdm_v mpdm_unref(mpdm_v v)
  */
 void mpdm_sweep(int count)
 {
-	if(_mpdm.count > 16)
+	if(_mpdm.count > _mpdm.low_threshold)
 	{
 		/* if count is -1, sweep all */
 		if(count == -1) count=_mpdm.count * 2;
@@ -365,4 +343,40 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 	}
 
 	return(v);
+}
+
+
+static void _mpdm_atexit(void)
+/* atexit callback */
+{
+	mpdm_v v;
+
+	/* travels the complete list of values */
+	for(v=_mpdm.head;v != NULL;v=v->next)
+	{
+		/* destroys all values that need to be destroyed */
+		if(v->flags & MPDM_DESTROY)
+			mpdm_tie(v, NULL);
+	}
+}
+
+
+int mpdm_startup(void)
+{
+	/* cleans the _mpdm structure */
+	memset(&_mpdm, '\0', sizeof(_mpdm));
+
+	/* sets the defaults */
+	_mpdm.low_threshold=16;
+
+	/* sets the atexit function */
+	atexit(_mpdm_atexit);
+
+	/* everything went OK */
+	return(0);
+}
+
+
+void mpdm_shutdown(void)
+{
 }

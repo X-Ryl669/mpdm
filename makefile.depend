@@ -1,9 +1,9 @@
 gnu_regex.o: gnu_regex.c config.h
 mpdm_a.o: mpdm_a.c config.h mpdm.h
 mpdm_d.o: mpdm_d.c config.h mpdm.h
+mpdm_dh.o: mpdm_dh.c config.h mpdm.h
 mpdm_f.o: mpdm_f.c config.h mpdm.h
 mpdm_h.o: mpdm_h.c config.h mpdm.h
-mpdm_ph.o: mpdm_ph.c config.h mpdm.h
 mpdm_r.o: mpdm_r.c config.h mpdm.h
 mpdm_s.o: mpdm_s.c config.h mpdm.h
 mpdm_v.o: mpdm_v.c config.h mpdm.h

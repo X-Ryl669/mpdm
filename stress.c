@@ -696,6 +696,8 @@ void test_dh(void)
 
 int main(void)
 {
+	mpdm_startup();
+
 	test_basic();
 	test_array();
 	test_hash();
@@ -707,6 +709,8 @@ int main(void)
 	test_regex();
 	test_exec();
 	test_dh();
+
+	mpdm_shutdown();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");
