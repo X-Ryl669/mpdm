@@ -107,6 +107,7 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %nonassoc IFI
 %nonassoc ELSE
 
+%left INC DEC IMMADD IMMSUB IMMMUL IMMDIV
 %left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
 %left '*' '/'
@@ -214,6 +215,13 @@ expr:
 	| expr '-' expr		{ $$ = INS2(MPDM_LS(L"-"), $1, $3); }
 	| expr '*' expr		{ $$ = INS2(MPDM_LS(L"*"), $1, $3); }
 	| expr '/' expr		{ $$ = INS2(MPDM_LS(L"/"), $1, $3); }
+
+	| compsym INC		{ $$ = INS1(MPDM_LS(L"++"), $1); }
+	| compsym DEC		{ $$ = INS1(MPDM_LS(L"--"), $1); }
+	| compsym IMMADD expr	{ $$ = INS2(MPDM_LS(L"+="), $1, $3); }
+	| compsym IMMSUB expr	{ $$ = INS2(MPDM_LS(L"-="), $1, $3); }
+	| compsym IMMMUL expr	{ $$ = INS2(MPDM_LS(L"*="), $1, $3); }
+	| compsym IMMDIV expr	{ $$ = INS2(MPDM_LS(L"/="), $1, $3); }
 
 	| expr '<' expr		{ $$ = INS2(MPDM_LS(L"<"), $1, $3); }
 	| expr '>' expr		{ $$ = INS2(MPDM_LS(L">"), $1, $3); }
