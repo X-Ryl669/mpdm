@@ -81,7 +81,7 @@ mpdm_v _mpsl_apush(mpdm_v args) { return(mpdm_apush(A(0),A(1))); }
 mpdm_v _mpsl_apop(mpdm_v args) { return(mpdm_apop(A(0))); }
 mpdm_v _mpsl_aqueue(mpdm_v args) { return(mpdm_aqueue(A(0),A(1),IA(2))); }
 mpdm_v _mpsl_aseek(mpdm_v args) { return(MPDM_I(mpdm_aseek(A(0),A(1),IA(2)))); }
-mpdm_v _mpsl_asort(mpdm_v args) { return(mpdm_asort(A(0),IA(1))); }
+mpdm_v _mpsl_asort(mpdm_v args) { return(mpdm_asort_cb(A(0),IA(1),A(2))); }
 mpdm_v _mpsl_asplit(mpdm_v args) { return(mpdm_asplit(A(0),A(1))); }
 mpdm_v _mpsl_ajoin(mpdm_v args) { return(mpdm_ajoin(A(0),A(1))); }
 
