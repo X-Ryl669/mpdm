@@ -556,6 +556,29 @@ void test_regex(void)
 		MPDM_LS(L"sex"),0);
 	_test("sregex 8", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
 
+	/* multiple regex tests */
+	w=MPDM_A(0);
+
+	mpdm_apush(w, MPDM_LS(L"/^[ \t]*/"));
+	mpdm_apush(w, MPDM_LS(L"/[^ \t=]+/"));
+	mpdm_apush(w, MPDM_LS(L"/[ \t]*=[ \t]*/"));
+	mpdm_apush(w, MPDM_LS(L"/[^ \t]+/"));
+	mpdm_apush(w, MPDM_LS(L"/[ \t]*$/"));
+
+	v=mpdm_regex(w, MPDM_LS(L"key=value"), 0);
+	_test("multi-regex 1.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
+	_test("multi-regex 1.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
+
+	v=mpdm_regex(w, MPDM_LS(L" key = value"), 0);
+	_test("multi-regex 2.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
+	_test("multi-regex 2.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
+
+	v=mpdm_regex(w, MPDM_LS(L"\t\tkey\t=\tvalue  "), 0);
+	_test("multi-regex 3.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
+	_test("multi-regex 3.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
+
+	v=mpdm_regex(w, MPDM_LS(L"key= "), 0);
+	_test("multi-regex 4", v == NULL);
 }
 
 
@@ -777,7 +800,7 @@ int main(void)
 
 		printf("\nFailed tests:\n\n");
 		for(n=0;n < _i_failed_msgs;n++)
-			printf("%s\n", _failed_msgs[n]);
+			printf("%s", _failed_msgs[n]);
 	}
 
 	return(0);
