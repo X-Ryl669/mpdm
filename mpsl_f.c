@@ -62,6 +62,15 @@ mpdm_v _mpsl_is_hash(mpdm_v args)
 }
 
 
+mpdm_v _mpsl_is_exec(mpdm_v args)
+{
+	mpdm_v v;
+
+	v=A(0);
+	return(mpsl_true_or_false(v->flags & MPDM_EXEC));
+}
+
+
 mpdm_v _mpsl_dump(mpdm_v args) { mpdm_dump(A(0)); return(NULL); }
 mpdm_v _mpsl_splice(mpdm_v args) { return(mpdm_splice(A(0),A(1),IA(2),IA(3))); }
 mpdm_v _mpsl_aexpand(mpdm_v args) { return(mpdm_aexpand(A(0),IA(1),IA(2))); }
@@ -110,6 +119,7 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"clone", MPDM_X(_mpsl_clone));
 	mpdm_hset_s(r, L"is_array", MPDM_X(_mpsl_is_array));
 	mpdm_hset_s(r, L"is_hash", MPDM_X(_mpsl_is_hash));
+	mpdm_hset_s(r, L"is_exec", MPDM_X(_mpsl_is_exec));
 
 	mpdm_hset_s(r, L"splice", MPDM_X(_mpsl_splice));
 
