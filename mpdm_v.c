@@ -78,6 +78,10 @@ mpdm_v mpdm_alloc(int flags, int count)
 		v=malloc(sizeof(struct _mpdm_v) * count);
 	}
 
+	/* reset */
+	if(v != NULL)
+		memset(v, '\0', sizeof(struct _mpdm_v) * count);
+
 	return(v);
 }
 
@@ -124,9 +128,6 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	/* alloc new value */
 	if((v=mpdm_alloc(flags, 1)) == NULL)
 		return(NULL);
-
-	/* init */
-	memset(v, '\0', sizeof(struct _mpdm_v));
 
 	v->flags=flags;
 	v->data=data;
@@ -342,25 +343,40 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 
 mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
 {
-	mpdm_ndv a;
-	mpdm_v av[2];
+	mpdm_v a;
+	mpdm_v r;
 
-	MPDM_ND_A(a,av);
-	av[0]=a1; av[1]=a2;
+	MPDM_ND_BEGIN();
 
-	return(mpdm_exec(c, &a));
+	a=MPDM_ND_A(2);
+	mpdm_aset(a, a1, 0);
+	mpdm_aset(a, a2, 1);
+
+	r=mpdm_exec(c, a);
+
+	MPDM_ND_END();
+
+	return(r);
 }
 
 
 mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 {
-	mpdm_ndv a;
-	mpdm_v av[3];
+	mpdm_v a;
+	mpdm_v r;
 
-	MPDM_ND_A(a,av);
-	av[0]=a1; av[1]=a2; av[2]=a3;
+	MPDM_ND_BEGIN();
 
-	return(mpdm_exec(c, &a));
+	a=MPDM_ND_A(3);
+	mpdm_aset(a, a1, 0);
+	mpdm_aset(a, a2, 1);
+	mpdm_aset(a, a3, 2);
+
+	r=mpdm_exec(c, a);
+
+	MPDM_ND_END();
+
+	return(r);
 }
 
 

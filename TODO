@@ -29,11 +29,6 @@ Pending Enhancements
  * 1009: bwrite().
  * 1016: Add optional iconv support.
  * 1017: Add optional gettext support.
- * 1025: Change non-dyn values. They should be stored in a pool of
-   values, and 'allocated' from within mpdm_new(). Two macros, for
-   instance MPDM_NONDYN_BEGIN() and MPDM_NONDYN_END(), could save
-   / restore a static index to that pool. Instead, the allocation
-   from the pool would just wrap.
  * 1027: Store all static _tie... values in ties in the main
    control structure.
  * 1028: With the closing of bugs #1026 and #1027, it should be
@@ -82,5 +77,10 @@ Closed
    fine; Wed, 08 Dec 2004 09:52:32 +0100).
  * 1026: Make the _mpdm control structure public
    (Wed, 08 Dec 2004 11:34:54 +0100).
+ * 1025: Change non-dyn values. They should be stored in a pool of
+   values, and 'allocated' from within mpdm_new(). Two macros, for
+   instance MPDM_ND_BEGIN() and MPDM_ND_END(), could save
+   / restore a static index to that pool. Instead, the allocation
+   from the pool would just wrap (Wed, 08 Dec 2004 16:52:21 +0100).
 
 Email bugs to angel@triptico.com
