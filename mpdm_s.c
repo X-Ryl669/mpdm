@@ -86,7 +86,7 @@ int mpdm_cmp(mpdm_v v1, mpdm_v v2)
 		return(wcscmp((wchar_t *)v1->data, (wchar_t *)v2->data));
 
 	/* in any other case, compare just pointers */
-	return(v1->data - v2->data);
+	return((int)v1->data - (int)v2->data);
 }
 
 
