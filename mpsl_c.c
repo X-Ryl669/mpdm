@@ -311,6 +311,25 @@ _O_TYPE _O_immsinc(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) +
 _O_TYPE _O_immsdec(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) - 1)); return(v); }
 _O_TYPE _O_numeq(_O_ARGS) { mpdm_v v1=M1; mpdm_v v2=M2; return(BOOL((v1 == NULL || v2 == NULL) ? (v1 == v2) : (R(v1) == R(v2)))); }
 
+_O_TYPE _O_foreach(_O_ARGS)
+/* foreach loop */
+{
+	mpdm_v s=M1;
+	mpdm_v v=M2;
+	int n;
+
+	for(n=0;n < mpdm_size(v) && ! *f;n++)
+	{
+		SET(s, mpdm_aget(v, n));
+		M3;
+	}
+
+	if(*f == 1) *f=0;
+
+	return(NULL);
+}
+
+
 _O_TYPE _O_list(_O_ARGS)
 /* build list from instructions */
 {
@@ -387,7 +406,7 @@ static struct _op
 	{ L"EXEC",	_O_exec },
 	{ L"IF",	_O_if },
 	{ L"WHILE",	_O_while },
-	{ L"FOREACH",	NULL },
+	{ L"FOREACH",	_O_foreach },
 	{ L"SUBFRAME",	_O_subframe },
 	{ L"BLKFRAME",	_O_blkframe },
 	{ L"BREAK",	_O_break },

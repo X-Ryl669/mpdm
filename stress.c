@@ -1226,6 +1226,10 @@ void test_mpsl3(void)
 	v=mpdm_exec(v, NULL);
 	_test("break", mpdm_ival(v) == 5);
 
+	v=_test_mpsl("b=0; foreach(a, [1, 2, 3, 4]) { dump(a); b += a; } return(b);");
+	v=mpdm_exec(v, NULL);
+	_test("foreach", mpdm_ival(v) == 10);
+
 /*	mpdm_dump(mpdm_root());*/
 }
 
