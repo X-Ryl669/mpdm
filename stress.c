@@ -914,6 +914,7 @@ int main(int argc, char * argv[])
 	test_encoding();
 	benchmark();
 
+	printf("memory: %d\n", _mpdm->memory_usage);
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
@@ -923,6 +924,7 @@ int main(int argc, char * argv[])
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
+	printf("memory: %d\n", _mpdm->memory_usage);
 
 	mpdm_shutdown();
 
