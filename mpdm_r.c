@@ -151,6 +151,7 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
  * for case-insensitive matching, and 'c', to return the coordinates
  * where the match has been found (offset and size) instead of the
  * found substring.
+ * FIXME: Document @r as a multiple value case.
  *
  * If the regex is not matched, returns NULL. If it's matched, the
  * matched string is returned unless the 'c' flag is used; in that
@@ -159,14 +160,38 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
  */
 mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 {
-	mpdm_v cr;
 	mpdm_v w=NULL;
 
 	if(r->flags & MPDM_MULTIPLE)
 	{
+		int n;
+		mpdm_v t;
+
+		/* multiple value; try sequentially all regexes,
+		   moving the offset forward */
+
+		w=MPDM_A(mpdm_size(r));
+
+		for(n=0;n < mpdm_size(r);n++)
+		{
+			t=mpdm_regex(mpdm_aget(r, n), v, offset);
+
+			/* if not found, invalid all search and exit */
+			if(t == NULL)
+			{
+				w=NULL;
+				break;
+			}
+
+			/* found; store and move forward */
+			mpdm_aset(w, t, n);
+			offset += rm.rm_eo;
+		}
 	}
 	else
 	{
+		mpdm_v cr;
+
 		/* single value; really do the regex */
 
 		/* compile the regex */
