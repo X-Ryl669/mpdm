@@ -48,14 +48,13 @@ void fdm_dump(fdm_v v, int l)
 		return;
 	}
 
-	printf("%d,[%c%c%c%c],%d:", v->ref,
-		v->tag & FDM_COPY     ? 'C' : ' ',
-		v->tag & FDM_STRING   ? 'S' : ' ',
-		v->tag & FDM_MULTIPLE ? 'M' : ' ',
-		v->tag & FDM_INTEGER  ? 'I' : ' ',
-		FDM_TYPE(v->tag));
+	printf("%d,%c%c%c%c:", v->ref,
+		v->flags & FDM_COPY	? 'C' : '-',
+		v->flags & FDM_STRING	? 'S' : '-',
+		v->flags & FDM_HASH	? 'H' : (v->flags & FDM_MULTIPLE ? 'M' : '-'),
+		v->flags & FDM_INTEGER	? 'I' : '-');
 
-	if(v->tag & FDM_MULTIPLE)
+	if(v->flags & FDM_MULTIPLE)
 	{
 		printf("[%d]\n", v->size);
 
@@ -63,7 +62,7 @@ void fdm_dump(fdm_v v, int l)
 			fdm_dump(fdm_aget(v, n), l + 1);
 	}
 	else
-	if(v->tag & FDM_STRING)
+	if(v->flags & FDM_STRING)
 	{
 		char * ptr=(char *)v->data;
 

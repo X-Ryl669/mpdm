@@ -71,29 +71,29 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
 }
 
 
-fdm_v _fdm_new(int tag, void * data, int size)
+fdm_v _fdm_new(int flags, void * data, int size)
 {
 	fdm_v v;
 	char tmp[32];
 	int ival=0;
 
 	/* sanity checks */
-	if(tag & FDM_MULTIPLE)
+	if(flags & FDM_MULTIPLE)
 	{
 		/* multiple values are always copies and never strings */
-		tag |= FDM_COPY;
-		tag &= ~ (FDM_STRING | FDM_INTEGER);
+		flags |= FDM_COPY;
+		flags &= ~ (FDM_STRING | FDM_INTEGER);
 	}
 
 	/* is data an integer? */
-	if(tag & FDM_INTEGER)
+	if(flags & FDM_INTEGER)
 	{
 		ival=(int) data;
 		snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
 		data=tmp;
 
 		/* force copy, string and calculation */
-		tag |= (FDM_COPY | FDM_STRING);
+		flags |= (FDM_COPY | FDM_STRING);
 		size=-1;
 	}
 
@@ -101,7 +101,7 @@ fdm_v _fdm_new(int tag, void * data, int size)
 	if(size == -1)
 	{
 		/* only size of string values can be calculated */
-		if(data == NULL || !(tag & FDM_STRING))
+		if(data == NULL || !(flags & FDM_STRING))
 			return(NULL);
 
 		size=strlen((char *) data);
@@ -113,15 +113,15 @@ fdm_v _fdm_new(int tag, void * data, int size)
 
 	memset(v, '\0', sizeof(struct _fdm_v));
 
-	v->tag=tag;
+	v->flags=flags;
 	v->size=size;
 	v->ival=ival;
 
-	if((tag & FDM_COPY) && size)
+	if((flags & FDM_COPY) && size)
 	{
 		int s;
 
-		s=(tag & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
+		s=(flags & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
 
 		/* alloc new space for data */
 		if((v->data=_fdm_malloc(s + 1)) == NULL)
@@ -132,13 +132,13 @@ fdm_v _fdm_new(int tag, void * data, int size)
 			memset(v->data, '\0', s);
 		else
 		{
-			if(tag & FDM_STRING)
+			if(flags & FDM_STRING)
 				strcpy(v->data, data);
 			else
 				memcpy(v->data, data, s);
 
 			/* if data is multiple, re-reference its elements */
-			if(tag & FDM_MULTIPLE)
+			if(flags & FDM_MULTIPLE)
 				_fdm_nref((fdm_v *)v->data, size, 1);
 		}
 	}
@@ -155,7 +155,7 @@ fdm_v _fdm_new(int tag, void * data, int size)
 }
 
 
-fdm_v _fdm_cache(int tag, void * data, int size)
+fdm_v _fdm_cache(int flags, void * data, int size)
 {
 	static fdm_v _fdm_0=NULL;
 	static fdm_v _fdm_1=NULL;
@@ -176,7 +176,7 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 	}
 
 	/* try very common values */
-	if(tag & FDM_INTEGER)
+	if(flags & FDM_INTEGER)
 	{
 		if((int) data == 0)
 			v=_fdm_0;
@@ -185,7 +185,7 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 			v=_fdm_1;
 	}
 	else
-	if(data != NULL && (tag & FDM_STRING))
+	if(data != NULL && (flags & FDM_STRING))
 	{
 		if(*((char *)data) == '\0')
 			v=_fdm_empty;
@@ -198,12 +198,12 @@ fdm_v _fdm_cache(int tag, void * data, int size)
 
 /**
  * fdm_new - Creates a new value.
- * @tag: flags and type
+ * @flags: flags
  * @data: pointer to real data
  * @size: size of data
  *
- * Creates a new value. @tag is an or-ed set of flags and an optional
- * user-defined type, @data is a pointer to the data the value will
+ * Creates a new value. @flags is an or-ed set of flags,
+ * @data is a pointer to the data the value will
  * store and @size the size of these data. The flags in @tag define
  * how the data will be stored and its behaviour:
  *
@@ -231,8 +231,9 @@ fdm_v _fdm_cache(int tag, void * data, int size)
  * but can also be the @data pointer of another multiple value;
  * in this case, the values will be re-referenced.
  *
- * The user defined type optionally stored in @tag must range
- * from 0 to FDM_FLAGS_MASK-1.
+ * There are other informative flags that do nothing but describe
+ * the information stored in the value: they are FDM_HASH, FDM_FILE
+ * and FDM_BINCODE.
  */
 fdm_v fdm_new(int tag, void * data, int size)
 {
@@ -319,11 +320,11 @@ void fdm_sweep(int count)
 			_fdm.head=_fdm.head->next;
 
 			/* unref all elements if multiple */
-			if(v->tag & FDM_MULTIPLE)
+			if(v->flags & FDM_MULTIPLE)
 				_fdm_nref((fdm_v *)v->data, v->size, -1);
 
 			/* free data if local copy */
-			if(v->tag & FDM_COPY) _fdm_free(v->data);
+			if(v->flags & FDM_COPY) _fdm_free(v->data);
 
 			/* free the value itself */
 			_fdm_free(v);
@@ -349,7 +350,7 @@ void fdm_sweep(int count)
 int fdm_cmp(fdm_v v1, fdm_v v2)
 {
 	/* if both values are strings, compare as such */
-	if((v1->tag & FDM_STRING) && (v2->tag & FDM_STRING))
+	if((v1->flags & FDM_STRING) && (v2->flags & FDM_STRING))
 		return(strcmp((char *)v1->data, (char *)v2->data));
 
 	/* in any other case, compare just pointers */
@@ -370,17 +371,17 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
 int fdm_ival(fdm_v v)
 {
 	/* if there is no cached integer, calculate it */
-	if(!(v->tag & FDM_INTEGER))
+	if(!(v->flags & FDM_INTEGER))
 	{
 		int i=0;
 
 		/* if it's a string, calculate it; other
 		   values will have an ival of 0 */
-		if(v->tag & FDM_STRING)
+		if(v->flags & FDM_STRING)
 			sscanf((char *)v->data, "%i", &i);
 
 		v->ival=i;
-		v->tag |= FDM_INTEGER;
+		v->flags |= FDM_INTEGER;
 	}
 
 	return(v->ival);
@@ -401,11 +402,11 @@ fdm_v fdm_copy(fdm_v v)
 	int n;
 
 	/* if NULL or value is not multiple, return as is */
-	if(v == NULL || !(v->tag & FDM_MULTIPLE))
+	if(v == NULL || !(v->flags & FDM_MULTIPLE))
 		return(v);
 
 	/* create new */
-	w=fdm_new(v->tag, NULL, v->size);
+	w=fdm_new(v->flags, NULL, v->size);
 
 	/* fills each element with duplicates of the original */
 	for(n=0;n < v->size;n++)

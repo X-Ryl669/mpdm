@@ -1,3 +1,4 @@
 fdm_a.o: fdm_a.c fdm.h
+fdm_d.o: fdm_d.c fdm.h
 fdm_h.o: fdm_h.c fdm.h
 fdm_v.o: fdm_v.c fdm.h
