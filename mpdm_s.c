@@ -128,12 +128,8 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 
 		/* deleted space */
 		if(del > 0)
-		{
-			d=fdm_new(FDM_COPY | FDM_STRING, NULL, del);
-
-			memcpy(d->data, v->data + offset, del);
-			((char *)(d->data))[del]='\0';
-		}
+			d=fdm_new(FDM_COPY | FDM_STRING,
+				v->data + offset, del);
 
 		/* something to insert? */
 		if(i != NULL)
