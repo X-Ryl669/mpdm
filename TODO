@@ -7,8 +7,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1040: MPSL_OP_SYMNAM (SYMBOL) should not exist; it should just
-   be a MPSL_OP_LIST.
  * 1041: MPSL_OP_SYMLIST (SYMLIST) should not exist, and be just
    a MPSL_OP_LIST. Also, it should have only one argument
    with the list of symbols, and not an undefined number or arguments.
@@ -112,5 +110,7 @@ Closed
  * 1039: SUB_PREFIX and SUB_POSTFIX should be only one instruction,
    that create the prefix / execute things / destroy the prefix,
    instead of two (Thu, 16 Dec 2004 09:08:38 +0100).
+ * 1040: MPSL_OP_SYMNAM (SYMBOL) should not exist; it should just
+   be a MPSL_OP_LIST (Fri, 17 Dec 2004 07:49:10 +0100).
 
 Email bugs to angel@triptico.com
