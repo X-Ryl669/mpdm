@@ -115,7 +115,7 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 	else
 	{
 		/* the bucket does not exist; create it */
-		b=mpdm_new(MPDM_MULTIPLE, NULL, 2);
+		b=MPDM_A(2);
 
 		/* insert now both key and value */
 		mpdm_aset(b, k, 0);
@@ -173,7 +173,7 @@ mpdm_v mpdm_hkeys(mpdm_v h)
 	mpdm_v a;
 	mpdm_v b;
 
-	a=mpdm_new(MPDM_MULTIPLE, NULL, 0);
+	a=MPDM_A(0);
 
 	for(n=0;n < h->size;n++)
 	{
