@@ -634,14 +634,14 @@ void test_exec(void)
 }
 
 
-void test_ph(void)
+void test_dh(void)
 {
 	mpdm_v h;
 	mpdm_v k;
 	mpdm_v v;
 	mpdm_v v2;
 
-	h=mpdm_ph(MPDM_LS(L"test.ph"));
+	h=mpdm_gdbm(MPDM_LS(L"test.db"));
 	mpdm_dump(h);
 
 	k=MPDM_LS(L"lastval");
@@ -678,7 +678,7 @@ int main(void)
 	test_file();
 	test_regex();
 	test_exec();
-	test_ph();
+	test_dh();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");
