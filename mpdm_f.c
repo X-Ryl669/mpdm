@@ -49,21 +49,33 @@
 
 #include "mpdm.h"
 
-/* file encoder/decoder information */
-
+/* current charset encoding for files */
 static mpdm_v _f_enc=NULL;
-static mpdm_v _f_dec=NULL;
+
+/* file structure */
+struct _mpdm_file
+{
+	FILE * fd;
+
+#ifdef CONFOPT_ICONV
+
+	iconv_t ic_enc;
+	iconv_t ic_dec;
+	int has_iconv:1;
+
+#endif /* CONFOPT_ICONV */
+};
 
 
 /*******************
 	Code
 ********************/
 
+
 static mpdm_v _tie_file(void)
 /* tie for files */
 {
 	static mpdm_v _tie=NULL;
-	mpdm_v t;
 
 	if(_tie == NULL)
 	{
@@ -73,60 +85,8 @@ static mpdm_v _tie_file(void)
 		mpdm_aset(_tie, MPDM_X(mpdm_close), MPDM_TIE_DESTROY);
 	}
 
-	if(_f_enc != NULL || _f_dec != NULL)
-	{
-		/* if file co/decs are defined, clone the tie and
-		   store them inside it */
-		t=mpdm_clone(_tie);
-
-		mpdm_aset(t, _f_enc, MPDM_TIE_FENC);
-		mpdm_aset(t, _f_dec, MPDM_TIE_FDEC);
-	}
-	else
-		t=_tie;
-
-	return(t);
-}
-
-
-#ifdef CONFOPT_ICONV
-
-static mpdm_v _tie_iconv_d(mpdm_v v)
-/* destroy tie for iconv objects */
-{
-	if(v->data != NULL)
-	{
-		/* closes the iconv data */
-		iconv_close((iconv_t *)v->data);
-
-		/* frees the struct itself */
-		free(v->data);
-		v->data=NULL;
-	}
-
-	return(NULL);
-}
-
-
-static mpdm_v _tie_iconv(void)
-/* tie for iconv objects */
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		/* creates a clone of the cpy tie */
-		_tie=mpdm_ref(mpdm_clone(_mpdm_tie_cpy()));
-
-		/* replaces the destructor with its own */
-		mpdm_aset(_tie, MPDM_X(_tie_iconv_d), MPDM_TIE_DESTROY);
-	}
-
 	return(_tie);
 }
-
-
-#endif /* CONFOPT_ICONV */
 
 
 wchar_t * _mpdm_read_mbs(FILE * f, int * s)
@@ -188,7 +148,9 @@ void _mpdm_write_wcs(FILE * f, wchar_t * str)
 }
 
 
-wchar_t * _mpdm_read_dec(FILE * f, mpdm_v dec, int * s)
+#ifdef CONFOPT_ICONV
+
+wchar_t * _mpdm_read_dec(FILE * f, iconv_t ic, int * s)
 /* reads a multibyte string from a stream into a dynamic string, using dec as decoder */
 {
 	wchar_t * ptr=NULL;
@@ -197,17 +159,13 @@ wchar_t * _mpdm_read_dec(FILE * f, mpdm_v dec, int * s)
 }
 
 
-void _mpdm_write_enc(FILE * f, mpdm_v enc, wchar_t * str)
+void _mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
 /* writes a wide string to a stream, using enc as encoder */
 {
-#ifdef CONFOPT_ICONV
-
-	iconv_t * ic;
 	char tmp[128];
 
-	/* get the encoder and resets it */
-	ic=(iconv_t *) enc->data;
-	iconv(*ic, NULL, NULL, NULL, NULL);
+	/* resets the encoder */
+	iconv(ic, NULL, NULL, NULL, NULL);
 
 	/* convert char by char */
 	for(;*str != L'\0';str++)
@@ -219,12 +177,12 @@ void _mpdm_write_enc(FILE * f, mpdm_v enc, wchar_t * str)
 		ol=sizeof(tmp); optr=tmp;
 
 		/* write to file */
-		if(iconv(*ic, &iptr, &il, &optr, &ol) != -1)
+		if(iconv(ic, &iptr, &il, &optr, &ol) != -1)
 			fwrite(tmp, 1, sizeof(tmp) - ol, f);
 	}
+}
 
 #endif /* CONFOPT_ICONV */
-}
 
 
 /**
@@ -238,20 +196,37 @@ void _mpdm_write_enc(FILE * f, mpdm_v enc, wchar_t * str)
  */
 mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 {
-	FILE * f;
-	mpdm_v fd;
+	struct _mpdm_file * fs;
+
+	fs=malloc(sizeof(struct _mpdm_file));
+	memset(fs, '\0', sizeof(struct _mpdm_file));
 
 	/* convert to mbs,s */
 	filename=MPDM_2MBS(filename->data);
 	mode=MPDM_2MBS(mode->data);
 
-	if((f=fopen((char *)filename->data, (char *)mode->data)) == NULL)
+	if((fs->fd=fopen((char *)filename->data, (char *)mode->data)) == NULL)
+	{
+		free(fs);
 		return(NULL);
+	}
 
-	/* creates the file value */
-	fd=MPDM_F(f);
+#ifdef CONFOPT_ICONV
 
-	return(fd);
+	if(_f_enc)
+	{
+		mpdm_v cs=MPDM_2MBS(_f_enc->data);
+
+		fs->ic_enc=iconv_open("WCHAR_T", (char *)cs->data);
+		fs->ic_dec=iconv_open((char *)cs->data, "WCHAR_T");
+
+		fs->has_iconv=1;
+	}
+
+#endif
+
+	return(mpdm_new(MPDM_FILE|MPDM_DESTROY, fs,
+		sizeof(struct _mpdm_file), _tie_file()));
 }
 
 
@@ -263,8 +238,24 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
  */
 mpdm_v mpdm_close(mpdm_v fd)
 {
-	if((fd->flags & MPDM_FILE) && fd->data != NULL)
-		fclose((FILE *)fd->data);
+	struct _mpdm_file * fs=fd->data;
+
+	if((fd->flags & MPDM_FILE) && fs != NULL)
+	{
+		fclose(fs->fd);
+
+#ifdef CONFOPT_ICONV
+
+		if(fs->has_iconv)
+		{
+			iconv_close(fs->ic_enc);
+			iconv_close(fs->ic_dec);
+		}
+
+#endif
+
+		free(fs);
+	}
 
 	fd->data=NULL;
 
@@ -281,18 +272,22 @@ mpdm_v mpdm_close(mpdm_v fd)
 mpdm_v mpdm_read(mpdm_v fd)
 {
 	mpdm_v v=NULL;
-	FILE * f;
 	wchar_t * ptr;
 	int s;
-	mpdm_v dec;
+	struct _mpdm_file * fs=fd->data;
 
-	if((f=(FILE *)fd->data) == NULL)
+	if(fs == NULL)
 		return(NULL);
 
-	if((dec=mpdm_get_tie(fd, MPDM_TIE_FDEC)) != NULL)
-		ptr=_mpdm_read_dec(f, dec, &s);
+#ifdef CONFOPT_ICONV
+
+	if(fs->has_iconv)
+		ptr=_mpdm_read_dec(fs->fd, fs->ic_dec, &s);
 	else
-		ptr=_mpdm_read_mbs(f, &s);
+
+#endif /* CONFOPT_ICONV */
+
+		ptr=_mpdm_read_mbs(fs->fd, &s);
 
 	if(ptr != NULL)
 		v=mpdm_new(MPDM_STRING, ptr, s, _mpdm_tie_fre());
@@ -310,16 +305,20 @@ mpdm_v mpdm_read(mpdm_v fd)
  */
 int mpdm_write(mpdm_v fd, mpdm_v v)
 {
-	FILE * f;
-	mpdm_v enc;
+	struct _mpdm_file * fs=fd->data;
 
-	if((f=(FILE *)fd->data) == NULL)
+	if(fs == NULL)
 		return(-1);
 
-	if((enc=mpdm_get_tie(fd, MPDM_TIE_FENC)) != NULL)
-		_mpdm_write_enc(f, enc, mpdm_string(v));
+#ifdef CONFOPT_ICONV
+
+	if(fs->has_iconv)
+		_mpdm_write_enc(fs->fd, fs->ic_enc, mpdm_string(v));
 	else
-		_mpdm_write_wcs(f, mpdm_string(v));
+
+#endif /* CONFOPT_ICONV */
+
+		_mpdm_write_wcs(fs->fd, mpdm_string(v));
 
 	return(0);
 }
@@ -352,46 +351,35 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
  */
 int mpdm_encoding(mpdm_v charset)
 {
-	/* unref current co/decs */
-	mpdm_unref(_f_enc);
-	mpdm_unref(_f_dec);
-
-	/* reset */
-	_f_enc=_f_dec=NULL;
-
-	if(charset != NULL)
-	{
+	int ret = -1;
 
 #ifdef CONFOPT_ICONV
 
-		mpdm_v e;
-		iconv_t ic;
+	iconv_t ic;
+	mpdm_v cs=MPDM_2MBS(charset->data);
 
-		e=MPDM_2MBS(charset->data);
+	/* tries to create an encoder and a decoder for this charset */
 
-		/* creates the converters */
+	if((ic=iconv_open("WCHAR_T", (char *)cs->data)) == (iconv_t) -1)
+		return(-1);
 
-		if((ic=iconv_open((char *)e->data, "WCHAR_T")) == NULL)
-			return(-1);
+	iconv_close(ic);
 
-		/* encoder */
-		_f_enc=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+	if((ic=iconv_open((char *)cs->data, "WCHAR_T")) == (iconv_t) -1)
+		return(-2);
 
-		if((ic=iconv_open("WCHAR_T", (char *)e->data)) == NULL)
-			return(-2);
+	iconv_close(ic);
 
-		/* decoder */
-		_f_dec=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
+	/* can create; store and exit */
 
-#endif /* CONFOPT_ICONV */
+	mpdm_unref(_f_enc);
+	_f_enc=mpdm_ref(charset);
 
-	}
+	ret=0;
 
-	/* ref new co/decs */
-	mpdm_ref(_f_enc);
-	mpdm_ref(_f_dec);
+#endif
 
-	return(0);
+	return(ret);
 }
 
 
