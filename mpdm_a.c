@@ -430,8 +430,17 @@ mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
 
 	_mpdm_asort_cb=asort_cb;
 
+	/* references the array and the code, as the latter
+	   can include anything (including sweeping) */
+	mpdm_ref(a);
+	mpdm_ref(_mpdm_asort_cb);
+
 	qsort(a->data, mpdm_size(a) / step,
 		sizeof(mpdm_v) * step, _mpdm_asort_cmp);
+
+	/* unreferences */
+	mpdm_unref(_mpdm_asort_cb);
+	mpdm_unref(a);
 
 	return(a);
 }
