@@ -7,7 +7,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1036: Implement the 'local' variable creation in mpsl.
 
 Open Bugs
 ---------
@@ -97,5 +96,7 @@ Closed
    (Sun, 12 Dec 2004 17:54:34 +0100).
  * 1034: Implement ++ and -- (Tue, 14 Dec 2004 12:15:25 +0100).
  * 1035: Implement +=, -=, *=, /= (Tue, 14 Dec 2004 12:15:28 +0100).
+ * 1036: Implement the 'local' variable creation in mpsl.
+   (Tue, 14 Dec 2004 13:06:53 +0100).
 
 Email bugs to angel@triptico.com
