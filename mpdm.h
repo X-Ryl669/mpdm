@@ -24,8 +24,8 @@
 /* structural flags */
 #define MPDM_STRING	0x00000001	/* data can be string-compared */
 #define MPDM_MULTIPLE	0x00000002	/* data is multiple */
-#define MPDM_DESTROY	0x00000004	/* force destroy at exit() */
-#define MPDM_NONDYN	0x00000008	/* value is non-dynamic (on stack) */
+#define MPDM_DESTROY	0x00000004	/* force destroy at shutdown */
+#define MPDM_NONDYN	0x00000008	/* value is non-dynamic */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 
@@ -34,7 +34,7 @@
 #define MPDM_FILE	0x00020000	/* data is a FILE * */
 #define MPDM_EXEC	0x00040000	/* data is 'executable' */
 
-/* dynamic (standard) values */
+/* mpdm values */
 typedef struct _mpdm_v * mpdm_v;
 
 /* a value */
@@ -74,7 +74,7 @@ struct _mpdm_ctl
 	int lcount;		/* last count seen in mpdm_sweep() */
 	int low_threshold;	/* minimum number of values to sweep */
 	int high_threshold;	/* maximum number to trigger auto-sweep */
-	unsigned int nd_index;	/* index to next non-dyn value */
+	int nd_index;		/* index to next non-dyn value */
 	int nd_size;		/* size of nd_pool */
 	mpdm_v nd_pool;		/* pool of non-dyn values */
 };
