@@ -24,7 +24,8 @@
 /* structural flags */
 #define MPDM_STRING	0x00000001	/* data can be string-compared */
 #define MPDM_MULTIPLE	0x00000002	/* data is multiple */
-#define MPDM_DESTROY	0x0000004	/* force destroy at exit() */
+#define MPDM_DESTROY	0x00000004	/* force destroy at exit() */
+#define MPDM_NONDYN	0x00000008	/* value is non-dynamic (on stack) */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 
@@ -154,11 +155,11 @@ mpdm_v _mpdm_tie_wcstombs(void);
 #define MPDM_F(f)	mpdm_new(MPDM_FILE|MPDM_DESTROY,f,0,_tie_file())
 
 #define MPDM_ND_LS(v,s) v.ref=0 ; v.tie=v.next=NULL; \
-			v.flags=MPDM_STRING; v.data=s; \
+			v.flags=MPDM_STRING|MPDM_NONDYN; v.data=s; \
 			v.size=(sizeof(s) - 1) / sizeof(wchar_t);
 
 #define MPDM_ND_A(v,a) v.ref=0 ; v.tie=v.next=NULL; \
-			v.flags=MPDM_MULTIPLE; v.data=&a; \
+			v.flags=MPDM_MULTIPLE|MPDM_NONDYN; v.data=&a; \
 			v.size=sizeof(a) / sizeof(mpdm_v);
 
 int mpdm_startup(void);
