@@ -38,7 +38,7 @@ fdm_v _ins(fdm_v opcode, fdm_v a1, fdm_v a2, fdm_v a3);
 %%
 
 program:
-	function		{ fdm_dump(_pcode, 0); }
+	function		{ ; }
 	;
 
 function:
@@ -152,8 +152,11 @@ int main(void)
 	/* create a new pcode */
 	_pcode=FDM_A(0);
 	fdm_ref(_pcode);
+	fdm_apush(_pcode, FDM_LS("PROG"));
 
 	yyparse();
+
+	fdm_dump(_pcode, 0);
 
 	printf("Exiting main...\n");
 	exit(0);
