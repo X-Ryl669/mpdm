@@ -188,7 +188,7 @@ fdm_v fdm_strcat(fdm_v s1, fdm_v s2)
  * Returns a value's data as an integer. If the value is a string,
  * it's converted via sscanf and returned; non-string values have all
  * an ival of 0. The converted integer is cached, so costly string
- * conversions are only done once. Values created with the FDM_INTEGER
+ * conversions are only done once. Values created with the FDM_IVAL
  * flag set have its ival cached from the beginning.
  */
 int fdm_ival(fdm_v v)
@@ -197,7 +197,7 @@ int fdm_ival(fdm_v v)
 		return(0);
 
 	/* if there is no cached integer, calculate it */
-	if(!(v->flags & FDM_INTEGER))
+	if(!(v->flags & FDM_IVAL))
 	{
 		int i=0;
 
@@ -207,7 +207,7 @@ int fdm_ival(fdm_v v)
 			sscanf((char *)v->data, "%i", &i);
 
 		v->ival=i;
-		v->flags |= FDM_INTEGER;
+		v->flags |= FDM_IVAL;
 	}
 
 	return(v->ival);
