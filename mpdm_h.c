@@ -42,8 +42,6 @@ int _fdm_hashfunc(unsigned char * string, int mod)
 	return(c);
 }
 
-/* 31 is a good number of buckets */
-
 #define HASH_BUCKET(h, k) (_fdm_hashfunc((unsigned char *)k->data, h->size))
 
 fdm_v fdm_hget(fdm_v h, fdm_v k)
