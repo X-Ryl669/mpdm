@@ -46,7 +46,8 @@ int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
 int fdm_cmp(fdm_v v1, fdm_v v2);
-void fdm_spoke(fdm_v v, char c, int offset);
+void fdm_poke(fdm_v v, char c, int offset);
+fdm_v fdm_splice(fdm_v v, int offset, int size, char * new);
 
 void fdm_aexpand(fdm_v a, int offset, int num);
 void fdm_acollapse(fdm_v a, int offset, int num);
