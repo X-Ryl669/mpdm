@@ -89,7 +89,7 @@ fdm_v _fdm_new(int tag, void * data, int size)
 	if(tag & FDM_INTEGER)
 	{
 		ival=(int) data;
-		snprintf(tmp, sizeof(tmp) - 1, "%d", v->ival);
+		snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
 		data=tmp;
 
 		/* force copy, string and calculation */
