@@ -831,7 +831,7 @@ void test_encoding(void)
 
 	if(mpdm_encoding(MPDM_LS(L"UTF-8")) < 0)
 	{
-		printf("No multiple encoding support; no more tests possible.\n");
+		printf("No multiple encoding (iconv) support; no more tests possible.\n");
 		return;
 	}
 
