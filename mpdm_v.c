@@ -121,7 +121,16 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
  */
 mpdm_v mpdm_ref(mpdm_v v)
 {
-	if(v != NULL) v->ref++;
+	if(v != NULL)
+	{
+		/* if value is nondyn, it's nonsense (and potentially
+		   dangerous) to reference; just clone it */
+		if(v->flags & MPDM_NONDYN)
+			v=mpdm_clone(v);
+
+		v->ref++;
+	}
+
 	return(v);
 }
 
