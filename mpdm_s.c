@@ -318,9 +318,19 @@ mpdm_v _mpdm_rnew(double rval)
 	mpdm_v v;
 	wchar_t wtmp[128];
 	char tmp[128];
+	char * ptr;
 
 	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp), "%lg", rval);
+	snprintf(tmp, sizeof(tmp), "%lf", rval);
+
+	/* manually strip leading zeroes */
+	if(strchr(tmp, '.') != NULL)
+	{
+		for(ptr=tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
+		ptr++;
+		*ptr='\0';
+	}
+
 	mbstowcs(wtmp, tmp, sizeof(wtmp));
 
 	v=MPDM_S(wtmp);

@@ -125,8 +125,25 @@ void test_basic(void)
 	printf("(Previous value will only show on an Unicode terminal)\n");
 
 	v=MPDM_R(3.1416);
+	mpdm_dump(v);
 	_test("rval 1", mpdm_rval(v) == 3.1416);
 	_test("ival 1", mpdm_ival(v) == 3);
+
+	v=MPDM_R(777777.0 / 2.0);
+	mpdm_dump(v);
+	_test("_mpdm_rnew 1", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
+
+	v=MPDM_R(388888.500);
+	mpdm_dump(v);
+	_test("_mpdm_rnew 2", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
+
+	v=MPDM_R(388888.412);
+	mpdm_dump(v);
+	_test("_mpdm_rnew 3", mpdm_cmp(v, MPDM_LS(L"388888.412")) == 0);
+
+	v=MPDM_R(388888.6543);
+	mpdm_dump(v);
+	_test("_mpdm_rnew 4", mpdm_cmp(v, MPDM_LS(L"388888.6543")) == 0);
 }
 
 mpdm_v _asort_cb(mpdm_v args)
