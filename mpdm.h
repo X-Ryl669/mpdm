@@ -85,5 +85,8 @@ fdm_v fdm_hkeys(fdm_v h);
 
 void fdm_dump(fdm_v v, int l);
 
+#define FDM_SGET(r, k) fdm_sget((r), FDM_LS((k)))
+#define FDM_SSET(r, k, v) fdm_sset((r), FDM_LS((k)), (v))
+
 fdm_v fdm_sget(fdm_v r, fdm_v k);
 fdm_v fdm_sset(fdm_v r, fdm_v k, fdm_v v);
