@@ -203,9 +203,9 @@ mpdm_v mpdm_aget(mpdm_v a, int offset)
  *
  * Inserts the @e value in the @a array at @offset.
  * Further elements are pushed up, so the array increases its size
- * by one.
+ * by one. Returns the inserted element.
  */
-void mpdm_ains(mpdm_v a, mpdm_v e, int offset)
+mpdm_v mpdm_ains(mpdm_v a, mpdm_v e, int offset)
 {
 	offset=_wrap_offset(a, offset);
 
@@ -214,6 +214,8 @@ void mpdm_ains(mpdm_v a, mpdm_v e, int offset)
 
 	/* set value */
 	mpdm_aset(a, e, offset);
+
+	return(e);
 }
 
 
@@ -249,10 +251,10 @@ mpdm_v mpdm_adel(mpdm_v a, int offset)
  *
  * Pushes a value into an array (i.e. inserts at the end).
  */
-void mpdm_apush(mpdm_v a, mpdm_v e)
+mpdm_v mpdm_apush(mpdm_v a, mpdm_v e)
 {
 	/* inserts at the end */
-	mpdm_ains(a, e, mpdm_size(a));
+	return(mpdm_ains(a, e, mpdm_size(a)));
 }
 
 
