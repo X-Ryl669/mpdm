@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 #include <wchar.h>
 
 #include "mpdm.h"
@@ -466,8 +465,6 @@ mpdm_v _mpdm_tie_mbstowcs(void)
 
 	if(_tie == NULL)
 	{
-		setlocale(LC_ALL, "");
-
 		_tie=mpdm_ref(MPDM_A(2));
 		mpdm_aset(_tie, MPDM_X(_tie_mbstowcs_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
@@ -483,8 +480,6 @@ mpdm_v _mpdm_tie_wcstombs(void)
 
 	if(_tie == NULL)
 	{
-		setlocale(LC_ALL, "");
-
 		_tie=mpdm_ref(MPDM_A(2));
 		mpdm_aset(_tie, MPDM_X(_tie_wcstombs_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
