@@ -1,7 +1,7 @@
 /*
 
     mpdm - Minimum Profit Data Manager
-    Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2005 Angel Ortega <angel@triptico.com>
 
     mpsl_c.c - Minimum Profit Scripting Language Core
 
