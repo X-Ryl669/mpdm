@@ -12,6 +12,10 @@ Release Critical Bugs
  * 1041: MPSL_OP_SYMLIST (SYMLIST) should not exist, and be just
    a MPSL_OP_LIST. Also, it should have only one argument
    with the list of symbols, and not an undefined number or arguments.
+ * 1042: The local t = v instruction is very buggy; it should be
+   implemented as a ';' instruction with the local and the assignation
+   part and the arguments to LOCAL and to '=' should be instructions and
+   not values.
 
 Open Bugs
 ---------
