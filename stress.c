@@ -802,7 +802,16 @@ void test_iconv(void)
 	v=mpdm_iconv_from(MPDM_LS(L"ISO-8859-1"),
 		MPDM_2MBS(L"¡España! (non-ASCII string, as ISO-8859-1 char *)"));
 	mpdm_dump(v);
+	printf("[%ls]\n", (wchar_t *)v->data);
+
 	_test("iconv from ISO-8859-1", v != NULL);
+
+	v=mpdm_iconv_from(MPDM_LS(L"UTF-8"),
+		MPDM_2MBS(L"Â¡EspaÃ±a! (non-ASCII string, as UTF-8 char *)"));
+	mpdm_dump(v);
+	printf("[%ls]\n", (wchar_t *)v->data);
+
+	_test("iconv from UTF-8", v != NULL);
 }
 
 
