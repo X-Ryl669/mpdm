@@ -37,7 +37,7 @@
 #define FDM_H(n)	fdm_new(FDM_MULTIPLE|FDM_HASH,NULL,n)
 #define FDM_LS(s)	fdm_new(FDM_STRING,s,-1)
 #define FDM_S(s)	fdm_new(FDM_STRING|FDM_COPY,s,-1)
-#define FDM_I(i)	fdm_new(FDM_INTEGER,(void *)(i),-1)
+#define FDM_I(i)	fdm_inew((i))
 
 typedef struct _fdm_v * fdm_v;
 
@@ -52,6 +52,7 @@ struct _fdm_v
 };
 
 fdm_v fdm_new(int flags, void * data, int size);
+fdm_v fdm_inew(int ival);
 int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
