@@ -338,10 +338,9 @@ static mpdm_v _mpdm_sym(mpdm_v r, mpdm_v k, mpdm_v v, int s)
 		p=k;
 	else
 	{
-		mpdm_ndv d;
-
-		MPDM_ND_LS(d, L".");
-		p=mpdm_asplit(&d, k);
+		MPDM_ND_BEGIN();
+		p=mpdm_asplit(MPDM_ND_LS(L"."), k);
+		MPDM_ND_END();
 	}
 
 	for(n=0;n < mpdm_size(p) - s;n++)

@@ -503,6 +503,7 @@ mpdm_v _mpdm_tie_nd_ls(void)
 	if(_tie == NULL)
 	{
 		_tie=mpdm_ref(MPDM_A(0));
+		mpdm_aset(_tie, MPDM_X(_tie_lstr_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_nd_ls_clo), MPDM_TIE_CLONE);
 	}
 

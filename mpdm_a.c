@@ -158,9 +158,16 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 	if(e != NULL && e->flags & MPDM_NONDYN)
 		e=mpdm_clone(e);
 
-	/* unrefs, refs and assigns */
-	v=mpdm_unref(p[offset]);
-	p[offset]=mpdm_ref(e);
+	/* assigns */
+	v=p[offset];
+	p[offset]=e;
+
+	/* if array is dynamic, ref and unref the values */
+	if(! (a->flags & MPDM_NONDYN))
+	{
+		mpdm_unref(v);
+		mpdm_ref(e);
+	}
 
 	return(v);
 }
