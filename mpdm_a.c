@@ -367,16 +367,10 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
 		ret=mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2);
 	else
 	{
-		mpdm_ndv a;
-		mpdm_v av[2];
-
-		MPDM_ND_A(a,av);
-
-		av[0]=(mpdm_v) * ((mpdm_v *)s1);
-		av[1]=(mpdm_v) * ((mpdm_v *)s2);
-
 		/* executes the callback and converts to integer */
-		ret=mpdm_ival(mpdm_exec(_mpdm_asort_cb, &a));
+		ret=mpdm_ival(mpdm_exec_2(_mpdm_asort_cb,
+			(mpdm_v) * ((mpdm_v *)s1),
+			(mpdm_v) * ((mpdm_v *)s2)));
 	}
 
 	return(ret);
