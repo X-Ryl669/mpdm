@@ -1,9 +1,20 @@
 TODO
 ====
 
-fdm_dump() should store its output in a _v or _a.
+fdm_sset()/fdm_sget() should accept integers as components in case that
+a branch is an array and not a hash.
 
-New functions to do:
+	"mp.txt.lines.0"
+
+gets the first element of lines.
+
+Also, it should include 'interpolation' strings, recursively resolved, i.e.:
+
+	"mp.txt.lines.{mp.txt.y}"
+
+
+Other
+-----
 
 filp should be a different project. It's config.sh should decide to use
 ./fdm or ../fdm in -I and -L.
