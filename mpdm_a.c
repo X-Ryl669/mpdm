@@ -128,12 +128,13 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 	if(offset < 0 || offset >= a->size)
 		return(NULL);
 
+	/* gets the pointer to the element and the old element */
 	p=(mpdm_v *)a->data;
 	v=p[offset];
-	p[offset]=e;
 
-	if(v != NULL) mpdm_unref(v);
-	if(e != NULL) mpdm_ref(e);
+	/* unrefs, refs and assigns */
+	mpdm_unref(v);
+	p[offset]=mpdm_ref(e);
 
 	return(v);
 }
