@@ -83,16 +83,16 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 	int n;
 	mpdm_v b;
 	mpdm_v v = NULL;
-	static mpdm_v w = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
 	{
-		if(w == NULL) w=mpdm_ref(MPDM_A(2));
+		mpdm_ndv w;
+		mpdm_v av[2];
 
-		mpdm_aset(w, h, 0);
-		mpdm_aset(w, k, 1);
+		MPDM_ND_A(w,av);
+		av[0]=h; av[1]=k;
 
-		v=mpdm_exec(b, w);
+		v=mpdm_exec(b, &w);
 	}
 	else
 	if(mpdm_size(h))
@@ -123,17 +123,16 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 	int n, pos;
 	mpdm_v b;
 	mpdm_v p = NULL;
-	static mpdm_v w = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HSET)) != NULL)
 	{
-		if(w == NULL) w=mpdm_ref(MPDM_A(3));
+		mpdm_ndv w;
+		mpdm_v av[3];
 
-		mpdm_aset(w, h, 0);
-		mpdm_aset(w, k, 1);
-		mpdm_aset(w, v, 2);
+		MPDM_ND_A(w,av);
+		av[0]=h; av[1]=k; av[2]=v;
 
-		return(mpdm_exec(b, w));
+		return(mpdm_exec(b, &w));
 	}
 
 	/* if hash is empty, create an optimal number of buckets */
@@ -191,16 +190,16 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 	int n;
 	mpdm_v b;
 	mpdm_v v = NULL;
-	static mpdm_v w = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HDEL)) != NULL)
 	{
-		if(w == NULL) w=mpdm_ref(MPDM_A(2));
+		mpdm_ndv w;
+		mpdm_v av[2];
 
-		mpdm_aset(w, h, 0);
-		mpdm_aset(w, k, 1);
+		MPDM_ND_A(w,av);
+		av[0]=h; av[1]=k;
 
-		v=mpdm_exec(b, w);
+		v=mpdm_exec(b, &w);
 	}
 	else
 	if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
