@@ -86,7 +86,7 @@ static struct
  *
  * There are other informative flags that do nothing but describe
  * the information stored in the value: they are MPDM_HASH, MPDM_FILE
- * and MPDM_BINCODE.
+ * and MPDM_EXEC.
  */
 mpdm_v mpdm_new(int flags, void * data, int size)
 {
