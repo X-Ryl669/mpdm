@@ -362,6 +362,12 @@ static mpdm_v _O_blkframe(mpdm_v c, mpdm_v a)
 }
 
 
+static mpdm_v _O_return(mpdm_v c, mpdm_v a)
+{
+	return(M1);
+}
+
+
 static struct __op_table
 {
 	wchar_t * name;
@@ -371,18 +377,20 @@ static struct __op_table
 	{ L"NOP",	NULL },
 	{ L"MULTI",	_O_multi },
 	{ L"LITERAL",	_O_literal },
-	{ L"LIST",	_O_list },
-	{ L"HASH",	_O_hash },
 	{ L"SYMVAL",	_O_symval },
 	{ L"ASSIGN",	_O_assign },
 	{ L"EXEC",	_O_exec },
 	{ L"IF",	_O_if },
 	{ L"WHILE",	_O_while },
 	{ L"FOREACH",	NULL },
-	{ L"RANGE",	NULL },
 	{ L"SUBFRAME",	_O_subframe },
 	{ L"BLKFRAME",	_O_blkframe },
+	{ L"BREAK",	NULL },
+	{ L"RETURN",	_O_return },
 	{ L"LOCAL",	_O_local },
+	{ L"LIST",	_O_list },
+	{ L"HASH",	_O_hash },
+	{ L"RANGE",	NULL },
 	{ L"UMINUS",	_O_uminus },
 	{ L"ADD",	_O_add },
 	{ L"SUB",	_O_sub },
