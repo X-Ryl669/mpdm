@@ -68,6 +68,10 @@ mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num)
 	int n;
 	mpdm_v * p;
 
+	/* avoid expanding non-dyn arrays */
+	if(a->flags & MPDM_NONDYN)
+		return(NULL);
+
 	/* add only if the allocated block exists */
 	if(a->data != NULL)
 		a->size += num;
@@ -103,6 +107,10 @@ mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
 {
 	int n;
 	mpdm_v * p;
+
+	/* avoid collapsing non-dyn arrays */
+	if(a->flags & MPDM_NONDYN)
+		return(NULL);
 
 	/* don't try to delete beyond the limit */
 	if(offset + num > a->size)
@@ -150,7 +158,8 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 
 	/* if the array is shorter than offset, expand to make room for it */
 	if(offset >= mpdm_size(a))
-		mpdm_aexpand(a, mpdm_size(a), offset - mpdm_size(a) + 1);
+		if(mpdm_aexpand(a, mpdm_size(a), offset - mpdm_size(a) + 1) == NULL)
+			return(NULL);
 
 	p=(mpdm_v *)a->data;
 
@@ -209,11 +218,9 @@ mpdm_v mpdm_ains(mpdm_v a, mpdm_v e, int offset)
 {
 	offset=_wrap_offset(a, offset);
 
-	/* open room */
-	mpdm_aexpand(a, offset, 1);
-
-	/* set value */
-	mpdm_aset(a, e, offset);
+	/* open room and set value */
+	if(mpdm_aexpand(a, offset, 1))
+		mpdm_aset(a, e, offset);
 
 	return(e);
 }
@@ -289,8 +296,8 @@ mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size)
 {
 	mpdm_v v=NULL;
 
-	/* a zero size queue is nonsense */
-	if(size == 0)
+	/* zero size or non-dyn queues are nonsense */
+	if(size == 0 || a->flags & MPDM_NONDYN)
 		return(NULL);
 
 	/* loop until a has the desired size */
