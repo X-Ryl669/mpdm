@@ -315,14 +315,15 @@ mpdm_v _mpdm_rnew(double rval)
 {
 	mpdm_v v;
 	char tmp[128];
-	char * ptr;
 
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp), "%lf", rval);
 
-	/* manually strip leading zeroes */
+	/* manually strip useless zeroes */
 	if(strchr(tmp, '.') != NULL)
 	{
+		char * ptr;
+
 		for(ptr=tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
 		ptr++;
 		*ptr='\0';
