@@ -164,11 +164,7 @@ stmt:
 	| FOREACH '(' compsym ',' expr ')' stmt
 				{ $$ = INS3(MPDM_LS(L"FOREACH"), $3, $5, $7); }
 
-	| '{' stmt_list '}'	{ mpdm_v w=MPDM_A(3);
-				mpdm_aset(w, INS0(MPDM_LS(L"BLK_PREFIX")), 0);
-				mpdm_aset(w, $2, 1);
-				mpdm_aset(w, INS0(MPDM_LS(L"BLK_POSTFIX")), 2);
-				$$ = w; }
+	| '{' stmt_list '}'	{ $$ = INS1(MPDM_LS(L"BLKFRAME"), $2); }
 
 	| LOCAL sym_list ';'	{ $$ = INS1(MPDM_LS(L"LOCAL"), $2); }
 	| LOCAL SYMBOL '=' expr	';'
