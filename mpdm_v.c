@@ -57,6 +57,18 @@ int fdm_unref(fdm_v v)
 }
 
 
+static void _fdm_nref(fdm_v v[], int count, int ref)
+{
+	int n;
+
+	for(n=0;n < count;n++)
+	{
+		if(v[n] != NULL)
+			v[n]->ref += ref;
+	}
+}
+
+
 fdm_v fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
@@ -106,16 +118,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 
 			/* if data is multiple, re-reference its elements */
 			if(tag & FDM_MULTIPLE)
-			{
-				int n;
-				fdm_v * va=v->data;
-
-				for(n=0;n < size;n++)
-				{
-					if(va[n] != NULL)
-						fdm_ref(va[n]);
-				}
-			}
+				_fdm_nref((fdm_v *)v->data, size, 1);
 		}
 	}
 	else
@@ -164,12 +167,14 @@ void fdm_sweep(int count)
 			v=_fdm.head;
 			_fdm.head=_fdm.head->next;
 
-			if(tag & FDM_MULTIPLE)
-			{
-				/* unref elements... */
-			}
+			/* unref all elements if multiple */
+			if(v->tag & FDM_MULTIPLE)
+				_fdm_nref((fdm_v *)v->data, v->size, -1);
 
-			if(tag & FDM_COPY) free(v->data);
+			/* free data if local copy */
+			if(v->tag & FDM_COPY) free(v->data);
+
+			/* free the value itself */
 			free(v);
 
 			/* one value less */
