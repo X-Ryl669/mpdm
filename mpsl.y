@@ -28,12 +28,58 @@
 #include <wchar.h>
 #include "mpdm.h"
 
-/* the script being compiled */
+/*******************
+	Data
+********************/
+
+/* the opcodes */
+
+typedef enum
+{
+	MPSL_OP_MULTI,		/* ; */
+	MPSL_OP_LITERAL,	/* literal values */
+	MPSL_OP_SYMNAM,		/* symbol name */
+	MPSL_OP_SYMVAL,		/* symbol value */
+	MPSL_OP_SYMLIST,	/* list of symbol names */
+	MPSL_OP_ASSIGN,		/* assign to symbol */
+	MPSL_OP_EXEC,		/* execute executable value */
+	MPSL_OP_LIST,		/* build list from instructions */
+	MPSL_OP_HASH,		/* build hash from instructions */
+	MPSL_OP_RANGE,		/* build range from instructions */
+
+	MPSL_OP_WHILE,		/* while */
+	MPSL_OP_IF,		/* if (or ifelse) */
+	MPSL_OP_FOREACH,	/* foreach */
+	MPSL_OP_SUBPRE,		/* subroutine prefix */
+	MPSL_OP_SUBPOST,	/* subroutine postfix */
+	MPSL_OP_BLKPRE,		/* block prefix */
+	MPSL_OP_BLKPOST,	/* block postfix */
+	MPSL_OP_ARGS,		/* argument list */
+
+	MPSL_OP_UMINUS,		/* unary minus */
+	MPSL_OP_ADD,		/* math add */
+	MPSL_OP_SUB,		/* math substract */
+	MPSL_OP_MUL,		/* math multiply */
+	MPSL_OP_DIV,		/* math divide */
+	MPSL_OP_MODULO,		/* math modulo */
+
+	MPSL_OP_NOT,		/* boolean negation */
+	MPSL_OP_NUMEQ,		/* numerical equal */
+	MPSL_OP_STREQ,		/* string equal */
+	MPSL_OP_NUMLT,		/* numerical less than */
+	MPSL_OP_NUMGE,		/* numerical greater or equal than */
+
+	MPSL_OP_LASTOP		/* last opcode */
+} mpsl_op;
+
+
+/* the bytecode */
 static mpdm_v _mpsl_bytecode=NULL;
 
 int yylex(void);
 void yyerror(char * s);
 
+/* pointer to source code being compiled */
 extern wchar_t * _mpsl_next_char;
 
 /* shortcut macros to insert instructions */
@@ -44,6 +90,10 @@ extern wchar_t * _mpsl_next_char;
 #define INS3(o,a1,a2,a3)	_ins(o, 3, a1, a2, a3)
 
 mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
+
+/*******************
+	Code
+********************/
 
 %}
 
