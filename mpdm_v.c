@@ -405,6 +405,20 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 }
 
 
+mpdm_v _mpdm_xnew(mpdm_v (* a1)(mpdm_v, mpdm_v), mpdm_v a2)
+{
+	mpdm_v x;
+
+	x=MPDM_A(2);
+	x->flags |= MPDM_EXEC;
+
+	mpdm_aset(x, MPDM_X(a1), 0);
+	mpdm_aset(x, a2, 1);
+
+	return(x);
+}
+
+
 int mpdm_startup(void)
 {
 	/* do the startup only unless done beforehand */

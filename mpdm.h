@@ -126,6 +126,7 @@ double mpdm_rval(mpdm_v v);
 
 mpdm_v _mpdm_inew(int ival);
 mpdm_v _mpdm_rnew(double rval);
+mpdm_v _mpdm_xnew(mpdm_v (* a1)(mpdm_v, mpdm_v), mpdm_v a2);
 mpdm_v _mpdm_new_wcs(int f, wchar_t * s, int n, mpdm_v tie);
 mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie);
 
@@ -177,12 +178,14 @@ mpdm_v _mpdm_tie_hash(void);
 
 #define MPDM_I(i)	_mpdm_inew((i))
 #define MPDM_R(r)	_mpdm_rnew((r))
-#define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0,NULL)
 #define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
 #define MPDM_M(m,s)	mpdm_new(0,m,s,_mpdm_tie_cpy())
 #define MPDM_MBS(s)	_mpdm_new_mbs(s,-1,_mpdm_tie_mbstowcs())
 #define MPDM_2MBS(s)	_mpdm_new_wcs(0,s,-1,_mpdm_tie_wcstombs())
 #define MPDM_F(f)	mpdm_new(MPDM_FILE|MPDM_DESTROY,f,0,_tie_file())
+
+#define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0,NULL)
+#define MPDM_X2(f,b)	_mpdm_xnew(f,b)
 
 #define MPDM_ND_BEGIN()	unsigned int _mpdm_nd_save=_mpdm->nd_index
 #define MPDM_ND_END()	_mpdm->nd_index=_mpdm_nd_save

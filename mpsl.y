@@ -236,15 +236,7 @@ mpdm_v mpsl_compile(mpdm_v code)
 
 	/* compile! */
 	if(yyparse() == 0)
-	{
-		/* compilation went OK; create the new executable value */
-		x=MPDM_A(2);
-		x->flags |= MPDM_EXEC;
-
-		/* first argument is the interpreter, and second the bytecode */
-		mpdm_aset(x, MPDM_X(_mpsl_machine), 0);
-		mpdm_aset(x, _mpsl_bytecode, 1);
-	}
+		x=MPDM_X2(_mpsl_machine, _mpsl_bytecode);
 
 	mpdm_unref(code);
 	_mpsl_bytecode=NULL;
