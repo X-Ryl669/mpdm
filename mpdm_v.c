@@ -171,54 +171,52 @@ mpdm_v mpdm_unref(mpdm_v v)
  */
 void mpdm_sweep(int count)
 {
-	if(_mpdm->count > _mpdm->low_threshold)
+	mpdm_v v;
+	int rf=0;
+	int uf=0;
+
+	/* if count is -1, sweep all */
+	if(count == -1) count=_mpdm->count;
+
+	/* if count is zero, sweep 'some' values */
+	if(count == 0) count=16;
+
+	while(count > 0 && _mpdm->count > _mpdm->low_threshold)
 	{
-		mpdm_v v;
-		int rf=0;
-		int uf=0;
+		/* take head and rotate */
+		v=_mpdm->head;
+		_mpdm->head=v->next;
 
-		/* if count is -1, sweep all */
-		if(count == -1) count=_mpdm->count;
-
-		/* if count is zero, sweep 'some' values */
-		if(count == 0) count=16;
-
-		while(count > 0)
+		/* is the value referenced? */
+		if(v->ref)
 		{
-			/* take head and rotate */
-			v=_mpdm->head;
-			_mpdm->head=v->next;
+			/* yes; move to tail */
+			_mpdm->tail=_mpdm->tail->next=v;
+			v->next=NULL;
 
-			/* is the value referenced? */
-			if(v->ref)
-			{
-				/* yes; move to tail */
-				_mpdm->tail=_mpdm->tail->next=v;
-				v->next=NULL;
+			rf++;
+			count--;
+		}
+		else
+		{
+			/* value is to be destroyed */
 
-				rf++;
-				count--;
-			}
-			else
-			{
-				/* value is to be destroyed */
+			/* untie and destroy */
+			mpdm_tie(v, NULL);
 
-				/* untie and destroy */
-				mpdm_tie(v, NULL);
+			/* free the value itself */
+			_mpdm_free(v);
 
-				/* free the value itself */
-				_mpdm_free(v);
+			/* one value less */
+			_mpdm->count--;
 
-				/* one value less */
-				_mpdm->count--;
-
-				uf++;
-				count -= 2;
-			}
+			uf++;
+			count -= 2;
 		}
 
-		/* printf("#### SWEEP %d, %d, %d\n", rf, uf, _mpdm->count); */
 	}
+
+	/* printf("#### SWEEP %d, %d, %d\n", rf, uf, _mpdm->count); */
 }
 
 
