@@ -774,12 +774,38 @@ void test_nondyn(void)
 }
 
 
+void _test_mpsl(char * code)
+{
+	mpdm_v v=mpsl_compile(MPDM_MBS(code));
+
+	_test(code, v != NULL);
+}
+
+
 void test_mpsl(void)
 {
 	mpdm_v v;
 
+	printf("mpsl (Minimum Profit Scripting Language)\n\n");
+
 	v=mpsl_compile(MPDM_LS(L"a=1;"));
 	mpdm_exec(v, NULL);
+
+	printf("mpsl compilation tests-------------\n");
+
+	_test_mpsl("a=1;");
+	_test_mpsl("a.b.c=1;");
+	_test_mpsl("a[\"b\"]=1;");
+	_test_mpsl("a[\"b\"].c=1;");
+	_test_mpsl("a[\"b\"][\"c\"]=1;");
+	_test_mpsl("/* empty hash */ days={};");
+	_test_mpsl("days.lunes=\"monday\";");
+	_test_mpsl("days[\"martes\"]=\"tuesday\";");
+
+	_test_mpsl("a=1 + ((3 - 5) * 8);");
+
+	_test_mpsl("/* hash */ y={ \"enero\" => \"january\", \"febrero\" => \"february\" };");
+	_test_mpsl("/* array */ a=[\"this\", \"one\", \"is\", 666, \"cool\"];");
 }
 
 
