@@ -217,7 +217,7 @@ fdm_v fdm_apop(fdm_v a)
 
 
 /**
- * fdm_afifo - Implements a fifo in an array.
+ * fdm_aqueue - Implements a queue in an array.
  * @a: the array
  * @e: the element to be pushed
  * @size: maximum size of array
@@ -229,7 +229,7 @@ fdm_v fdm_apop(fdm_v a)
  * Returns the deleted element, or NULL if the array doesn't have
  * @size elements yet.
  */
-fdm_v fdm_afifo(fdm_v a, fdm_v e, int size)
+fdm_v fdm_aqueue(fdm_v a, fdm_v e, int size)
 {
 	fdm_v v=NULL;
 
