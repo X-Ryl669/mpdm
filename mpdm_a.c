@@ -262,7 +262,7 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
 	{
 		fdm_v v=fdm_aget(a, n);
 
-		if(v != NULL && fdm_cmp(v, k)==0)
+		if(fdm_cmp(v, k) == 0)
 			return(n);
 	}
 
@@ -275,13 +275,16 @@ int fdm_aseek(fdm_v a, fdm_v k, int step)
  * @a: the ordered array
  * @k: the key
  * @step: number of elements to step
+ * @pos: the position where the element should be, if it's not found
  *
  * Seeks the value @k in the @a array in increments of @step.
  * The array should be sorted to work correctly. A complete search
  * should use a step of 1.
+ *
  * If the element is found, returns the offset of the element
- * as a positive number; otherwise, if the element is not found,
- * returns the offset where the element should be as a negative number.
+ * as a positive number; otherwise, -1 is returned and the position
+ * where the element should be is stored in @pos. You can set @pos
+ * to NULL if you don't mind.
  */
 int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
 {
@@ -294,7 +297,7 @@ int fdm_abseek(fdm_v a, fdm_v k, int step, int * pos)
 		fdm_v v;
 
 		n=(b + t) / 2;
-		if((v=fdm_aget(a, n * step))==NULL)
+		if((v=fdm_aget(a, n * step)) == NULL)
 			break;
 
 		c=fdm_cmp(k, v);
@@ -341,7 +344,7 @@ void fdm_asort(fdm_v a, int step)
  * @del: number of characters to delete
  *
  * Creates a new string value from @v, deleting @size chars
- * at @offset and substituting them by @new. Returns a
+ * at @offset and substituting them by @i. Returns a
  * two element array, with the new string in the first
  * element and the deleted string in the second.
  */
