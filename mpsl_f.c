@@ -76,6 +76,11 @@ mpdm_v _mpsl_asort(mpdm_v args) { mpdm_asort(A(0),IA(1)); return(NULL); }
 mpdm_v _mpsl_asplit(mpdm_v args) { return(mpdm_asplit(A(0),A(1))); }
 mpdm_v _mpsl_ajoin(mpdm_v args) { return(mpdm_ajoin(A(0),A(1))); }
 
+mpdm_v _mpsl_hsize(mpdm_v args) { return(MPDM_I(mpdm_hsize(A(0)))); }
+mpdm_v _mpsl_hexists(mpdm_v args) { return(mpsl_true_or_false(mpdm_hexists(A(0), A(1)))); }
+mpdm_v _mpsl_hdel(mpdm_v args) { return(mpdm_hdel(A(0), A(1))); }
+mpdm_v _mpsl_hkeys(mpdm_v args) { return(mpdm_hkeys(A(0))); }
+
 void _mpsl_lib(void)
 /* inits the mpsl library */
 {
@@ -110,6 +115,11 @@ void _mpsl_lib(void)
 	mpdm_hset_s(r, L"asort", MPDM_X(_mpsl_asort));
 	mpdm_hset_s(r, L"asplit", MPDM_X(_mpsl_asplit));
 	mpdm_hset_s(r, L"ajoin", MPDM_X(_mpsl_ajoin));
+
+	mpdm_hset_s(r, L"hsize", MPDM_X(_mpsl_hsize));
+	mpdm_hset_s(r, L"hexists", MPDM_X(_mpsl_hexists));
+	mpdm_hset_s(r, L"hdel", MPDM_X(_mpsl_hdel));
+	mpdm_hset_s(r, L"hkeys", MPDM_X(_mpsl_hkeys));
 
 	mpdm_hset_s(r, L"dump", MPDM_X(_mpsl_dump));
 }
