@@ -525,6 +525,9 @@ mpdm_v _mpdm_tie_mul(void)
 		mpdm_aset(_tie, MPDM_X(_tie_mul_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_mul_d), MPDM_TIE_DESTROY);
 		mpdm_aset(_tie, MPDM_X(_tie_mul_clo), MPDM_TIE_CLONE);
+
+		/* the tie itself is an array */
+		_tie->tie=_tie;
 	}
 
 	return(_tie);
