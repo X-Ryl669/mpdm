@@ -230,6 +230,10 @@ void test_array(void)
 	mpdm_apush(a, MPDM_I(888));
 	v=mpdm_aget(a, -1);
 	_test("negative offsets in arrays 3", mpdm_ival(v) == 888);
+
+	v=MPDM_A(0);
+	mpdm_apush(v, MPDM_I(100));
+	mpdm_apop(v);
 }
 
 

@@ -207,6 +207,8 @@ mpdm_v mpdm_aget(mpdm_v a, int offset)
  */
 void mpdm_ains(mpdm_v a, mpdm_v e, int offset)
 {
+	offset=_wrap_offset(a, offset);
+
 	/* open room */
 	mpdm_aexpand(a, offset, 1);
 
@@ -227,6 +229,8 @@ void mpdm_ains(mpdm_v a, mpdm_v e, int offset)
 mpdm_v mpdm_adel(mpdm_v a, int offset)
 {
 	mpdm_v v;
+
+	offset=_wrap_offset(a, offset);
 
 	/* gets current value */
 	v=mpdm_aget(a, offset);
