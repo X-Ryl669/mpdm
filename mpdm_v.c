@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #include "mpdm.h"
 
@@ -375,6 +376,10 @@ int mpdm_startup(void)
 	/* sets the defaults */
 	_mpdm.low_threshold=16;
 	_mpdm.high_threshold=0;
+
+	/* sets the locale */
+	if(setlocale(LC_ALL, "") == NULL)
+		setlocale(LC_ALL, "C");
 
 	/* sets the atexit function */
 	atexit(_mpdm_atexit);
