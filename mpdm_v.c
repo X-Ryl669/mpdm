@@ -97,6 +97,10 @@ fdm_v _fdm_new(int flags, void * data, int size)
 		size=-1;
 	}
 
+	/* local copies will be freed */
+	if(flags & FDM_COPY)
+		flags |= FDM_FREE;
+
 	/* a size of -1 means 'calculate it' */
 	if(size == -1)
 	{
@@ -209,7 +213,7 @@ fdm_v _fdm_cache(int flags, void * data, int size)
  *
  * If the FDM_COPY flag is set, the value will store a copy of the data
  * using an allocated block of memory. Otherwise, the @data pointer is
- * stored inside the value as is.
+ * stored inside the value as is. FDM_COPY implies FDM_FREE.
  *
  * If FDM_STRING is set, it means @data can be treated as a string
  * (i.e., operations like strcmp() or strlen() can be done on it).
@@ -230,6 +234,9 @@ fdm_v _fdm_cache(int flags, void * data, int size)
  * (meaning to allocate a NULL-initialized array of @size values),
  * but can also be the @data pointer of another multiple value;
  * in this case, the values will be re-referenced.
+ *
+ * If FDM_FREE is set, memory in @data will be released using free()
+ * when the value is destroyed.
  *
  * There are other informative flags that do nothing but describe
  * the information stored in the value: they are FDM_HASH, FDM_FILE
@@ -323,8 +330,8 @@ void fdm_sweep(int count)
 			if(v->flags & FDM_MULTIPLE)
 				_fdm_nref((fdm_v *)v->data, v->size, -1);
 
-			/* free data if local copy */
-			if(v->flags & FDM_COPY) _fdm_free(v->data);
+			/* free data if needed */
+			if(v->flags & FDM_FREE) _fdm_free(v->data);
 
 			/* free the value itself */
 			_fdm_free(v);
