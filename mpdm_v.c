@@ -362,13 +362,10 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 		if((t=mpdm_get_tie(v, MPDM_TIE_DESTROY)) != NULL)
 			mpdm_exec(t, v);
 
-		/* unref previous tie (if any) */
-		mpdm_unref(v->tie);
+		/* store tie */
+		v->tie=tie;
 
-		/* ref new tie */
-		v->tie=mpdm_ref(tie);
-
-		/* execute creator */
+		/* execute new creator */
 		if((t=mpdm_get_tie(v, MPDM_TIE_CREATE)) != NULL)
 			v=mpdm_exec(t, v);
 	}
