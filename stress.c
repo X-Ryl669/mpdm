@@ -747,7 +747,11 @@ int main(void)
 	mpdm_shutdown();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
-	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");
+
+	if(oks == tests)
+		printf("*** ALL TESTS PASSED\n");
+	else
+		printf("*** %d %s\n", tests - oks, "TESTS ---FAILED---");
 
 	return(0);
 }
