@@ -38,15 +38,15 @@ void fdm_dump(fdm_v v, int l)
 {
 	int n;
 
+	/* indent */
+	for(n=0;n < l * 2;n++)
+		printf(" ");
+
 	if(v == NULL)
 	{
 		printf("[NULL]\n");
 		return;
 	}
-
-	/* indent */
-	for(n=0;n < l * 2;n++)
-		printf(" ");
 
 	printf("%d,[%c%c%c%c],%d:", v->ref,
 		v->tag & FDM_COPY     ? 'C' : ' ',
@@ -57,7 +57,7 @@ void fdm_dump(fdm_v v, int l)
 
 	if(v->tag & FDM_MULTIPLE)
 	{
-		printf("(\n");
+		printf("\n");
 
 		for(n=0;n < v->size;n++)
 			fdm_dump(fdm_aget(v, n), l + 1);
@@ -67,10 +67,8 @@ void fdm_dump(fdm_v v, int l)
 	{
 		char * ptr=(char *)v->data;
 
-		printf("%s", ptr);
+		printf("%s\n", ptr);
 	}
 	else
-		printf("%p", v->data);
-
-	printf("\n");
+		printf("%p\n", v->data);
 }

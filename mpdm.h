@@ -60,6 +60,7 @@ void fdm_poke(fdm_v v, char c, int offset);
 fdm_v fdm_splice(fdm_v v, int offset, int size, char * new);
 
 fdm_v fdm_dup(fdm_v v);
+fdm_v fdm_root(void);
 
 void fdm_aexpand(fdm_v a, int offset, int num);
 void fdm_acollapse(fdm_v a, int offset, int num);

@@ -39,6 +39,7 @@ static struct
 	fdm_v head;		/* head of values */
 	fdm_v tail;		/* tail of values */
 	int count;		/* total count */
+	fdm_v root;		/* the root hash */
 } _fdm;
 
 
@@ -419,3 +420,14 @@ fdm_v fdm_dup(fdm_v v)
 	return(w);
 }
 
+
+fdm_v fdm_root(void)
+{
+	if(_fdm.root == NULL)
+	{
+		_fdm.root=FDM_H();
+		fdm_ref(_fdm.root);
+	}
+
+	return(_fdm.root);
+}
