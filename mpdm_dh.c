@@ -95,6 +95,17 @@ static mpdm_v _tie_gdbm_hget(mpdm_v a)
 }
 
 
+static mpdm_v _tie_gdbm_hexists(mpdm_v a)
+{
+	int ret=0;
+
+	if(_tie_gdbm_hget(a) != NULL)
+		ret=1;
+
+	return(MPDM_I(ret));
+}
+
+
 static mpdm_v _tie_gdbm_hset(mpdm_v a)
 {
 	mpdm_v h;
@@ -192,6 +203,7 @@ mpdm_v mpdm_gdbm(mpdm_v filename)
 		_tie=mpdm_ref(MPDM_A(0));
 		mpdm_aset(_tie, MPDM_X(_tie_gdbm_d), MPDM_TIE_DESTROY);
 		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hget), MPDM_TIE_HGET);
+		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hexists), MPDM_TIE_HEXISTS);
 		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hset), MPDM_TIE_HSET);
 		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hdel), MPDM_TIE_HDEL);
 		mpdm_aset(_tie, MPDM_X(_tie_gdbm_hkeys), MPDM_TIE_HKEYS);
