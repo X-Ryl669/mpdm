@@ -241,19 +241,11 @@ mpdm_v mpdm_read(mpdm_v fd)
  * @fd: the file descriptor.
  * @v: the value to be written.
  *
- * Writes @v into @fd. If @v is an array, each element will be written.
+ * Writes the @v string value into @fd, using the current encoding.
  */
 int mpdm_write(mpdm_v fd, mpdm_v v)
 {
-	if(v->flags & MPDM_MULTIPLE)
-	{
-		int n;
-
-		for(n=0;n < mpdm_size(v);n++)
-			mpdm_write(fd, mpdm_aget(v, n));
-	}
-	else
-		_mpdm_write_wcs((FILE *)fd->data, mpdm_string(v));
+	_mpdm_write_wcs((FILE *)fd->data, mpdm_string(v));
 
 	return(0);
 }
