@@ -173,32 +173,23 @@ mpdm_v mpdm_read(mpdm_v fd)
 
 
 /**
- * mpdm_write - Writes a value into a file descriptor.
- * @fd: the value containing the file descriptor
+ * mpdm_write - Writes a value into a file.
+ * @fd: the file descriptor.
  * @v: the value to be written.
- * @eol: end of line value.
  *
- * Writes @v into @fd. If @v is an array, each element will be written
- * as separate lines. Each line will have @eol appended. It will (usually)
- * be a string value containing "\n", but can be anything (even NULL,
- * meaning nothing).
+ * Writes @v into @fd. If @v is an array, each element will be written.
  */
-int mpdm_write(mpdm_v fd, mpdm_v v, mpdm_v eol)
+int mpdm_write(mpdm_v fd, mpdm_v v)
 {
 	if(v->flags & MPDM_MULTIPLE)
 	{
 		int n;
 
 		for(n=0;n < mpdm_size(v);n++)
-			mpdm_write(fd, mpdm_aget(v, n), eol);
+			mpdm_write(fd, mpdm_aget(v, n));
 	}
 	else
-	{
 		_mpdm_write_wcs((FILE *)fd->data, mpdm_string(v));
-
-		if(eol != NULL)
-			_mpdm_write_wcs((FILE *)fd->data, mpdm_string(eol));
-	}
 
 	return(0);
 }
