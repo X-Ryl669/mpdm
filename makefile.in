@@ -10,8 +10,7 @@ CFLAGS=-g -Wall
 DOCS=
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
-	mpdm_r.o mpdm_dh.o gnu_regex.o \
-	mpsl_c.o mpsl_l.o mpsl_y.o mpsl_f.o
+	mpdm_r.o mpdm_dh.o gnu_regex.o
 
 ##################################################################
 
@@ -23,21 +22,6 @@ ChangeLog:
 
 .c.o:
 	$(CC) $(CFLAGS) `cat config.cflags` -c $<
-
-y.tab.h: mpsl.y
-	$(YACC) -d mpsl.y
-
-y.tab.c: mpsl.y
-	$(YACC) -d mpsl.y
-
-lex.yy.c: mpsl.l
-	flex mpsl.l
-
-mpsl_l.o: lex.yy.c y.tab.h
-	$(CC) $(CFLAGS) -c lex.yy.c -o mpsl_l.o
-
-mpsl_y.o: y.tab.c
-	$(CC) $(CFLAGS) -c y.tab.c -o mpsl_y.o
 
 dep:
 	gcc -MM *.c > makefile.depend
