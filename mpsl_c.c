@@ -434,20 +434,14 @@ static mpdm_v _mpsl_op_bimath(mpdm_v c, mpdm_v args)
 }
 
 
-static mpdm_v _mpsl_op_simath(mpdm_v c, mpdm_v args)
-/* immediate, suffix math operations */
-{
-	return(NULL);
-}
-
-
-static mpdm_v _mpsl_op_pimath(mpdm_v c, mpdm_v args)
-/* immediate, prefix math operations */
+static mpdm_v _mpsl_op_immmath(mpdm_v c, mpdm_v args)
+/* immediate math operations */
 {
 	mpsl_op op;
 	mpdm_v s;
 	mpdm_v v;
-	double r, r2;
+	mpdm_v ret = NULL;
+	double r, r2=0;
 
 	/* gets the opcode */
 	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
@@ -456,13 +450,17 @@ static mpdm_v _mpsl_op_pimath(mpdm_v c, mpdm_v args)
 	s=_mpsl_machine(mpdm_aget(c, 1), args);
 
 	/* gets the symbol value */
-	r=mpdm_rval(mpsl_get_symbol(s));
+	v=mpsl_get_symbol(s);
+	r=mpdm_rval(v);
 
 	/* gets the (optional) second value */
-	r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
+	if(mpdm_size(c) > 2)
+		r2=mpdm_rval(_mpsl_machine(mpdm_aget(c, 2), args));
 
 	switch(op)
 	{
+	case MPSL_OP_SINC: r ++; ret=v; break;
+	case MPSL_OP_SDEC: r --; ret=v; break;
 	case MPSL_OP_PINC: r ++; break;
 	case MPSL_OP_PDEC: r --; break;
 	case MPSL_OP_IMMADD: r += r2; break;
@@ -477,7 +475,7 @@ static mpdm_v _mpsl_op_pimath(mpdm_v c, mpdm_v args)
 	/* sets the value */
 	mpsl_set_symbol(s, v);
 
-	return(v);
+	return(ret == NULL ? v : ret);
 }
 
 
