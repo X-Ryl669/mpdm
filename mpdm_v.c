@@ -287,6 +287,13 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 }
 
 
+/**
+ * mpdm_get_tie - Gets a tied function from a value
+ * @v: the value
+ * @tie_func: the wanted function number
+ *
+ * Returns the tie function number @tie_func from the value @v.
+ */
 mpdm_v mpdm_get_tie(mpdm_v v, int tie_func)
 {
 	mpdm_v t=NULL;
@@ -298,6 +305,14 @@ mpdm_v mpdm_get_tie(mpdm_v v, int tie_func)
 }
 
 
+/**
+ * mpdm_tie - Ties an array of functions to a value
+ * @v: the value
+ * @tie: the array of function ties
+ *
+ * Ties the array of functions @tie to the value @v. Each of the
+ * elements of @tie must be executable.
+ */
 mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 {
 	mpdm_v t;
