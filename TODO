@@ -1,0 +1,38 @@
+Filp startup
+------------
+
+	fdm_v _dict;
+	fdm_v _stack;
+
+	_dict=FILP_H();
+	_stack=FILP_A(0);
+	filp_hset(_dict, FILP_LS("DICT"), _dict);
+	filp_hset(_dict, FILP_LS("STACK"), _stack);
+
+Filp main exec loop
+-------------------
+
+	fdm_ref(v);
+
+	if(FDM_TYPE(v) == FILP_BINCODE)
+		ret=(v->data)();
+	else
+	if(FDM_TYPE(v) != FILP_CODE)
+		ret=FILP_SYNTAX_ERROR;
+	else
+	for(n=0;ret == FILP_OK && n < v->size;n++)
+	{
+		c=fdm_hget(v, n);
+
+		if(FDM_TYPE(c) == FILP_BC_EXEC)
+			ret=filp_exec(fdm_aget(c, 0));
+		else
+		if(FDM_TYPE(c) == FILP_BC_SYMV)
+			filp_push(fdm_hget(_dict, fdm_aget(c, 0)));
+		else
+		filp_push(c);
+
+		fdm_sweep(0);
+	}
+
+	fdm_unref(v);
