@@ -359,29 +359,18 @@ void fdm_asort(fdm_v a, int step)
 fdm_v fdm_asplit(fdm_v s, fdm_v v)
 {
 	fdm_v w;
-	char * wrk;
-	char * ptr1;
-	char * ptr2;
+	char * ptr;
+	char * sptr;
 
 	w=FDM_A(0);
 
-	/* create a working copy */
-	wrk=malloc(v->size + 1);
-	memcpy(wrk, v->data, v->size + 1);
-
-	/* break string into pieces */
-	for(ptr1=ptr2=wrk;*ptr2 != '\0' &&
-		(ptr1=strstr(ptr2, s->data)) != NULL;
-		ptr2=ptr1 + s->size)
-	{
-		*ptr1='\0';
-		fdm_apush(w, FDM_S(ptr2));
-	}
+	for(ptr=v->data;
+		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
+		ptr=sptr + s->size)
+		fdm_apush(w, fdm_new(FDM_COPY|FDM_STRING, ptr, sptr - ptr));
 
 	/* add last part */
-	fdm_apush(w, FDM_S(ptr2));
-
-	free(wrk);
+	fdm_apush(w, FDM_S(ptr));
 
 	return(w);
 }
