@@ -40,6 +40,7 @@
 #define MPDM_S(s)	mpdm_new(MPDM_STRING|MPDM_COPY,s,-1)
 #define MPDM_I(i)	_mpdm_inew((i))
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
+#define MPDM_P(p)	mpdm_new(0,(void *)p,0)
 
 typedef struct _mpdm_v * mpdm_v;
 
@@ -75,6 +76,7 @@ mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size);
 int mpdm_aseek(mpdm_v a, mpdm_v k, int step);
 int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos);
 void mpdm_asort(mpdm_v a, int step);
+void mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb);
 
 mpdm_v mpdm_asplit(mpdm_v s, mpdm_v a);
 mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a);
