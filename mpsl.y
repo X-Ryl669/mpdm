@@ -128,7 +128,8 @@ stmt:
 					/* subroutine definition,
 					   without arguments */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS1(MPSL_OP_SUBFRAME, $4));
+						INS1(MPSL_OP_LITERAL,
+							INS1(MPSL_OP_SUBFRAME, $4)));
 				}
 
 	| SUB compsym '(' ')' '{' stmt_list '}'
@@ -137,7 +138,8 @@ stmt:
 					   without arguments (second
 					   syntax, including parens) */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS1(MPSL_OP_SUBFRAME, $6));
+						INS1(MPSL_OP_LITERAL,
+							INS1(MPSL_OP_SUBFRAME, $6)));
 				}
 
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
@@ -145,7 +147,8 @@ stmt:
 					/* subroutine definition,
 					   with arguments */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS2(MPSL_OP_SUBFRAME, $7, $4));
+						INS1(MPSL_OP_LITERAL,
+							INS2(MPSL_OP_SUBFRAME, $7, $4)));
 				}
 
 	| FOREACH '(' compsym ',' expr ')' stmt
