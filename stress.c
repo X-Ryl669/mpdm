@@ -832,7 +832,7 @@ void test_mpsl(void)
 	_test_mpsl("/* hash */ y={ \"enero\" => \"january\", \"febrero\" => \"february\" };");
 	_test_mpsl("/* array */ a=[\"this\", \"one\", \"is\", 666, \"cool\"];");
 
-	mpdm_dump(_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { local t = m; m = n; n = t; } m -= n; } n; }"));
+	_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { local t = m; m = n; n = t; } m -= n; } n; }");
 
 	_test_mpsl("/* range assign */ a = 1 .. 1000;");
 
@@ -860,6 +860,9 @@ void test_mpsl(void)
 	_test_mpsl("1 != 2;");
 	_test_mpsl("\"hello\" ne \"goodbye\";");
 
+	mpdm_dump(_test_mpsl("sub test(a, b) { c=1; }"));
+	mpdm_dump(_test_mpsl("sub test(a, b) { c=1; d=2; }"));
+	mpdm_dump(_test_mpsl("sub test(a, b) { c=1; d=2; e=3; }"));
 }
 
 
@@ -1009,6 +1012,20 @@ void test_mpsl2(void)
 	v=_test_mpsl("11 % 6;");
 	v=mpdm_exec(v, NULL);
 	_test("modulo", mpdm_ival(v) == 5);
+
+	v=_test_mpsl("variable=16384;");
+	v=mpdm_exec(v, NULL);
+	_test("assign 1", mpdm_ival(v) == 16384);
+
+	v=_test_mpsl("array=[10, 20, 30, 40];");
+	v=mpdm_exec(v, NULL);
+	_test("assign 2", mpdm_ival(mpdm_aget(v, 2)) == 30);
+
+	v=_test_mpsl("a=1; b=2; c=3;");
+	mpdm_dump(v);
+	v=mpdm_exec(v, NULL);
+
+	mpdm_dump(mpdm_root());
 }
 
 
