@@ -101,8 +101,8 @@ mpdm_v _mpsl_op(mpsl_op opcode)
  * mpsl_is_true - Tests if a value is true
  * @v: the value
  *
- * If @v is a valid mpsl 'false' value (NULL or the "0" string), return
- * zero, or nonzero otherwise.
+ * If @v is a valid mpsl 'false' value (NULL, "" or the "0" string),
+ * returns zero, or nonzero otherwise.
  */
 int mpsl_is_true(mpdm_v v)
 {
@@ -115,8 +115,8 @@ int mpsl_is_true(mpdm_v v)
 	{
 		wchar_t * ptr=(wchar_t *)v->data;
 
-		/* ... and it's the "0" string, it's false */
-		if(*ptr == L'0' && *(ptr + 1) == L'\0')
+		/* ... and it's "" or the "0" string, it's false */
+		if(*ptr == L'\0' || (*ptr == L'0' && *(ptr + 1) == L'\0'))
 			return(0);
 	}
 
