@@ -8,6 +8,8 @@ Release Critical Bugs
  * 1056: Document internals.
  * 1008: bread().
  * 1009: bwrite().
+ * 1058: Changeset on "2005-03-25 02:26 CET" (file descriptors in their's
+   own structure) broke mpsl (SIGSEGV's on compiling from file).
 
 Open Bugs
 ---------
