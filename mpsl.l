@@ -89,6 +89,8 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "ne"		return STRNE;
 ">="		return NUMGE;
 "<="		return NUMLE;
+"&&"		return BOOLAND;
+"||"		return BOOLOR;
 "=>"		return HASHPAIR;
 ".."		return RANGE;
 
