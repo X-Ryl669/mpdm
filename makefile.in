@@ -23,7 +23,7 @@ ChangeLog:
 .c.o:
 	$(CC) $(CFLAGS) `cat config.cflags` -c $<
 
-dep: config
+dep:
 	gcc -MM *.c > makefile.depend
 
 $(LIB): $(OBJS)
