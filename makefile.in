@@ -45,7 +45,7 @@ $(LIB): $(OBJS)
 	$(AR) rv $(LIB) $(OBJS)
 
 stress: stress.c $(LIB)
-	$(CC) $(CFLAGS) `cat config.ldflags` $< -L. -lmpdm -o $@
+	$(CC) $(CFLAGS) `cat config.ldflags` stress.c -L. -lmpdm -o $@
 
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
