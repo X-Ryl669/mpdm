@@ -8,6 +8,8 @@ Release Critical Bugs
  * 1056: Document internals.
  * 1008: bread().
  * 1009: bwrite().
+ * 1059: Get rid of ties. They are flexible and sexy, but add a complexity
+   that isn't worth.
 
 Open Bugs
 ---------
