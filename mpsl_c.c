@@ -380,7 +380,6 @@ static struct _op
 	mpdm_v (* func)(_O_ARGS);
 } _op_table[]=
 {
-	{ L"NOP",	NULL },
 	{ L"MULTI",	_O_multi },
 	{ L"LITERAL",	_O_literal },
 	{ L"SYMVAL",	_O_symval },
