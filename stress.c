@@ -1005,6 +1005,10 @@ void test_mpsl2(void)
 	v=_test_mpsl("5 >= 6;");
 	v=mpdm_exec(v, NULL);
 	_test("numeric >= 3", v == NULL);
+
+	v=_test_mpsl("11 % 6;");
+	v=mpdm_exec(v, NULL);
+	_test("modulo", mpdm_ival(v) == 5);
 }
 
 
