@@ -90,6 +90,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 {
 	static int _init=0;
 	mpdm_v v;
+	mpdm_v r=NULL;
 
 	/* alloc new value and init */
 	if((v=_mpdm_alloc()) == NULL)
@@ -102,13 +103,18 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	v->size=size;
 
 	/* tie (can fail) */
-	if((v=mpdm_tie(v, tie)) != NULL)
+	if((r=mpdm_tie(v, tie)) != NULL)
 	{
 		/* add to the value chain and count */
 		if(_mpdm.head == NULL) _mpdm.head=v;
 		if(_mpdm.tail != NULL) _mpdm.tail->next=v;
 		_mpdm.tail=v;
 		_mpdm.count ++;
+	}
+	else
+	{
+		/* tie creation failed; free the new value */
+		_mpdm_free(v);
 	}
 
 	/* if it's the first time, install the atexit function */
@@ -118,7 +124,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 		_init=1;
 	}
 
-	return(v);
+	return(r);
 }
 
 
