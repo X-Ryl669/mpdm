@@ -93,6 +93,13 @@ mpdm_v _mpsl_op(mpsl_op opcode)
 }
 
 
+/**
+ * mpsl_is_true - Tests if a value is true
+ * @v: the value
+ *
+ * If @v is a valid mpsl 'false' value (NULL or the "0" string), return
+ * zero, or nonzero otherwise.
+ */
 int mpsl_is_true(mpdm_v v)
 {
 	/* if value or its data is NULL, it's false */
@@ -114,6 +121,12 @@ int mpsl_is_true(mpdm_v v)
 }
 
 
+/**
+ * mpsl_true_or_false - Returns mpsl values true or false
+ * @b: boolean selector
+ *
+ * Returns mpsl's 'false' or 'true' values depending on the value in @b.
+ */
 mpdm_v mpsl_true_or_false(int b)
 {
 	static mpdm_v _true=NULL;
@@ -125,6 +138,16 @@ mpdm_v mpsl_true_or_false(int b)
 }
 
 
+/**
+ * _mpsl_machine - The mpsl virtual machine
+ * @c: Multiple value containing the bytecode
+ * @args: Optional arguments for the bytecode
+ *
+ * Executes an instruction (or group of instructions) in the
+ * mpsl virtual machine. Usually not called directly, but from an
+ * executable value returned by mpsl_compile() and executed by
+ * mpdm_exec().
+ */
 mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 {
 	mpsl_op op;
