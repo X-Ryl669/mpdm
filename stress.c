@@ -98,7 +98,11 @@ void test_basic(void)
 	printf("(Previous value will be NULL if locale doesn't match stress.c encoding)\n");
 
 	v=MPDM_2MBS(L"¡España! (should be correcly seen in any locale)");
-	printf("%s\n", (char *)v->data);
+
+	if(v == NULL)
+		printf("Warning: can't convert to current locale. Broken locales?\n");
+	else
+		printf("%s\n", (char *)v->data);
 
 	v=MPDM_LS(L"A capital greek omega between brackets [\x03a9]");
 	mpdm_dump(v);
@@ -458,7 +462,8 @@ void test_file(void)
 	mpdm_unlink(MPDM_LS(L"test.txt"));
 	_test("unlink", mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r")) == NULL);
 
-	v=mpdm_glob(MPDM_LS(L"*"));
+/*	v=mpdm_glob(MPDM_LS(L"*"));*/
+	v=mpdm_glob(NULL);
 	mpdm_dump(v);
 }
 
@@ -660,6 +665,12 @@ void test_dh(void)
 
 	h=mpdm_gdbm(MPDM_LS(L"test.db"));
 	mpdm_dump(h);
+
+	if(h == NULL)
+	{
+		printf("Can't open test.db; no further gdbm tests possible.\n");
+		return;
+	}
 
 	k=MPDM_LS(L"lastval");
 

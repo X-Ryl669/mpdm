@@ -276,10 +276,15 @@ mpdm_v mpdm_glob(mpdm_v spec)
 	char * ptr;
 
 	/* convert to mbs */
-	spec=MPDM_2MBS(spec->data);
+	if(spec != NULL)
+	{
+		spec=MPDM_2MBS(spec->data);
 
-	ptr=spec->data;
-	if(ptr == NULL || *ptr == '\0')
+		ptr=spec->data;
+		if(ptr == NULL || *ptr == '\0')
+			ptr="*";
+	}
+	else
 		ptr="*";
 
 	globbuf.gl_offs=1;
