@@ -40,6 +40,9 @@ mpdm_v _mpsl_ops=NULL;
 /* local symbol table */
 mpdm_v _mpsl_local=NULL;
 
+/* instruction execution tracing flag */
+int _mpsl_trace=0;
+
 /*******************
 	Code
 ********************/
@@ -458,7 +461,7 @@ mpdm_v _mpsl_exec_i(_O_ARGS)
 {
 	mpdm_v ret=NULL;
 
-	if(c != NULL && ! *f)
+	if(c != NULL)
 	{
 		int op;
 
@@ -476,7 +479,8 @@ mpdm_v _mpsl_exec_i(_O_ARGS)
 		}
 	}
 
-	printf("** %ls %ls\n", mpdm_string(C0), mpdm_string(ret));
+	if(_mpsl_trace)
+		printf("** %ls: %ls\n", mpdm_string(C0), mpdm_string(ret));
 
 	return(ret);
 }

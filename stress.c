@@ -1246,6 +1246,8 @@ int main(void)
 	test_exec();
 	test_dh();
 	test_nondyn();
+
+	_mpsl_trace=1;
 	test_mpsl();
 	test_mpsl2();
 	test_mpsl3();
