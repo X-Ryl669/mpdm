@@ -449,8 +449,8 @@ void test_file(void)
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 	_test("Create test.txt", f != NULL);
 
-	mpdm_write(f, MPDM_LS(L"0"));
-	mpdm_write(f, MPDM_LS(L"1"));
+	mpdm_write(f, MPDM_LS(L"0"), MPDM_LS(L"\n"));
+	mpdm_write(f, MPDM_LS(L"1"), MPDM_LS(L"\n"));
 
 	/* test an array */
 	v=MPDM_A(4);
@@ -463,10 +463,10 @@ void test_file(void)
 	mpdm_aset(w, MPDM_LS(L"3.0.1"), 1);
 	mpdm_aset(v, w, 3);
 
-	mpdm_write(f, v);
+	mpdm_write(f, v, MPDM_LS(L"\n"));
 
 	/* write its own file pointer */
-	mpdm_write(f, f);
+	mpdm_write(f, f, MPDM_LS(L"\n"));
 
 	mpdm_close(f);
 

@@ -149,7 +149,7 @@ void _mpdm_write_wcs(FILE * f, wchar_t * str);
 mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode);
 mpdm_v mpdm_close(mpdm_v fd);
 mpdm_v mpdm_read(mpdm_v fd);
-int mpdm_write(mpdm_v fd, mpdm_v v);
+int mpdm_write(mpdm_v fd, mpdm_v v, mpdm_v eol);
 int mpdm_unlink(mpdm_v filename);
 mpdm_v mpdm_glob(mpdm_v spec);
 

@@ -14,8 +14,6 @@ Release Critical Bugs
    implemented as a ';' instruction with the local and the assignation
    part and the arguments to LOCAL and to '=' should be instructions and
    not values.
- * 1044: mpdm_write() should include a 3rd argument, a separator
-   for the end of line.
 
 Open Bugs
 ---------
@@ -118,5 +116,7 @@ Closed
    wcstombs() and an small local buffer (Mon, 20 Dec 2004 08:41:20 -0800).
  * 1045: mpdm_dump() should not use printf() for mpdm_string(), but
    convert by hand using wcstombs() (Mon, 20 Dec 2004 08:44:52 -0800).
+ * 1044: mpdm_write() should include a 3rd argument, a separator
+   for the end of line (Mon, 20 Dec 2004 08:54:39 -0800).
 
 Email bugs to angel@triptico.com
