@@ -116,10 +116,17 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	{
 		if(! (flags & MPDM_NONDYN))
 		{
-			/* add to the value chain and count */
-			if(_mpdm->head == NULL) _mpdm->head=v;
-			if(_mpdm->tail != NULL) _mpdm->tail->next=v;
-			_mpdm->tail=v;
+			/* add to the circular list and count */
+			if(_mpdm->cur == NULL)
+				v->next=v;
+			else
+			{
+				v->next=_mpdm->cur->next;
+				_mpdm->cur->next=v;
+			}
+
+			_mpdm->cur=v;
+
 			_mpdm->count ++;
 		}
 	}
@@ -172,8 +179,6 @@ mpdm_v mpdm_unref(mpdm_v v)
 void mpdm_sweep(int count)
 {
 	mpdm_v v;
-	int rf=0;
-	int uf=0;
 
 	/* if count is -1, sweep all */
 	if(count == -1) count=_mpdm->count;
@@ -183,23 +188,14 @@ void mpdm_sweep(int count)
 
 	while(count > 0 && _mpdm->count > _mpdm->low_threshold)
 	{
-		/* take head and rotate */
-		v=_mpdm->head;
-		_mpdm->head=v->next;
+		/* takes next value */
+		v=_mpdm->cur->next;
 
 		/* is the value referenced? */
-		if(v->ref)
+		if(! v->ref)
 		{
-			/* yes; move to tail */
-			_mpdm->tail=_mpdm->tail->next=v;
-			v->next=NULL;
-
-			rf++;
-			count--;
-		}
-		else
-		{
-			/* value is to be destroyed */
+			/* dequeue */
+			_mpdm->cur->next=v->next;
 
 			/* untie and destroy */
 			mpdm_tie(v, NULL);
@@ -210,13 +206,14 @@ void mpdm_sweep(int count)
 			/* one value less */
 			_mpdm->count--;
 
-			uf++;
-			count -= 2;
+			/* freed values count as two */
+			count --;
 		}
 
+		/* move to next */
+		count --;
+		_mpdm->cur=_mpdm->cur->next;
 	}
-
-	/* printf("#### SWEEP %d, %d, %d\n", rf, uf, _mpdm->count); */
 }
 
 
@@ -455,10 +452,11 @@ int mpdm_startup(void)
 
 void mpdm_shutdown(void)
 {
+	int n;
 	mpdm_v v;
 
 	/* travels the complete list of values */
-	for(v=_mpdm->head;v != NULL;v=v->next)
+	for(v=_mpdm->cur,n=_mpdm->count;n > 0;n--,v=v->next)
 	{
 		/* destroys all values that need to be destroyed */
 		if(v->flags & MPDM_DESTROY)
