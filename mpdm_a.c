@@ -53,7 +53,7 @@ void fdm_aexpand(fdm_v a, int offset, int num)
 
 	/* array is now longer */
 	a->size += num;
-	p=(fdm_v *) realloc(a->data, a->size * sizeof(struct _fdm_v *));
+	p=(fdm_v *) realloc(a->data, a->size * sizeof(fdm_v));
 
 	/* moves up from top of the array */
 	for(n=a->size - 1;n >= offset + num;n--)
@@ -85,7 +85,7 @@ void fdm_acollapse(fdm_v a, int offset, int num)
 		p[n]=p[n + num];
 
 	/* finally shrinks the memory block */
-	a->data=realloc(p, a->size * sizeof(struct _fdm_v *));
+	a->data=realloc(p, a->size * sizeof(fdm_v));
 }
 
 
@@ -117,4 +117,100 @@ fdm_v fdm_aget(fdm_v a, int offset)
 
 	va=(fdm_v *)a->data;
 	return(va[offset]);
+}
+
+
+void fdm_ains(fdm_v a, fdm_v e, int offset)
+{
+	/* open room */
+	fdm_aexpand(a, offset, 1);
+
+	/* set value */
+	fdm_aset(a, e, offset);
+}
+
+
+fdm_v fdm_adel(fdm_v a, int offset)
+{
+	fdm_v v;
+
+	/* sets a NULL value there */
+	v=fdm_aset(a, NULL, offset);
+
+	/* shrinks the array */
+	fdm_acollapse(a, offset, 1);
+
+	return(v);
+}
+
+
+void fdm_apush(fdm_v a, fdm_v e)
+{
+	/* inserts at the end */
+	fdm_ains(a, e, a->size - 1);
+}
+
+
+fdm_v fdm_apop(fdm_v a)
+{
+	/* deletes from the end */
+	return(fdm_adel(a, a->size - 1));
+}
+
+
+int fdm_aseek(fdm_v a, fdm_v k, int step)
+{
+	int n;
+
+	for(n=0;n < a->size;n+=step)
+	{
+		fdm_v v=fdm_aget(a, n);
+
+		if(v != NULL && fdm_cmp(v, k)==0)
+			return(n);
+	}
+
+	return(-1);
+}
+
+
+int fdm_abseek(fdm_v a, fdm_v k, int step)
+{
+	int b, t, n, c;
+
+	b=n=0; t=(a->size - 1) / step;
+
+	while(t >= b)
+	{
+		fdm_v v;
+
+		n=(b + t) / 2;
+		if((v=fdm_aget(a, n * step))==NULL)
+			break;
+
+		c=fdm_cmp(v, k);
+
+		if(c == 0)
+			return(n * step);
+		else
+		if(c < 0)
+			t=n - 1;
+		else
+			b=n + 1;
+	}
+
+	return(-(b * step));
+}
+
+
+static int _fdm_asort_cmp(const void * s1, const void * s2)
+{
+	return(fdm_cmp(*(fdm_v *)s1, *(fdm_v *)s2));
+}
+
+
+void fdm_asort(fdm_v a, int step)
+{
+	qsort(a->data, a->size / step,
+		sizeof(fdm_v) * step, _fdm_asort_cmp);
 }
