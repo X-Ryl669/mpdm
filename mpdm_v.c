@@ -144,6 +144,49 @@ fdm_v _fdm_new(int tag, void * data, int size)
 }
 
 
+fdm_v _fdm_cache(int tag, void * data, int size)
+{
+	static fdm_v _fdm_0=NULL;
+	static fdm_v _fdm_1=NULL;
+	static fdm_v _fdm_empty=NULL;
+	fdm_v v=NULL;
+
+	/* first time init */
+	if(_fdm_0 == NULL)
+	{
+		_fdm_0=_fdm_new(FDM_INTEGER, (void *)0, -1);
+		_fdm_1=_fdm_new(FDM_INTEGER, (void *)1, -1);
+		_fdm_empty=_fdm_new(FDM_STRING, "", 0);
+
+		/* reference them */
+		fdm_ref(_fdm_0);
+		fdm_ref(_fdm_1);
+		fdm_ref(_fdm_empty);
+	}
+
+	/* try very common values */
+	if(data != NULL)
+	{
+		if(tag & FDM_STRING)
+		{
+			if(*((char *)data) == '\0')
+				v=_fdm_empty;
+		}
+
+		if(tag & FDM_INTEGER)
+		{
+			if((int) data == 0)
+				v=_fdm_0;
+			else
+			if((int) data == 1)
+				v=_fdm_1;
+		}
+	}
+
+	return(v);
+}
+
+
 /**
  * fdm_new - Creates a new value.
  * @tag: flags and type
@@ -184,44 +227,9 @@ fdm_v _fdm_new(int tag, void * data, int size)
  */
 fdm_v fdm_new(int tag, void * data, int size)
 {
-	static fdm_v _fdm_0=NULL;
-	static fdm_v _fdm_1=NULL;
-	static fdm_v _fdm_empty=NULL;
-	fdm_v v=NULL;
+	fdm_v v;
 
-	/* first time init */
-	if(_fdm_0 == NULL)
-	{
-		_fdm_0=_fdm_new(FDM_INTEGER, (void *)0, -1);
-		_fdm_1=_fdm_new(FDM_INTEGER, (void *)1, -1);
-		_fdm_empty=_fdm_new(FDM_STRING, "", 0);
-
-		/* reference them */
-		fdm_ref(_fdm_0);
-		fdm_ref(_fdm_1);
-		fdm_ref(_fdm_empty);
-	}
-
-	/* try very common values */
-	if(data != NULL)
-	{
-		if(tag & FDM_STRING)
-		{
-			if(*((char *)data) == '\0')
-				v=_fdm_empty;
-		}
-
-		if(tag & FDM_INTEGER)
-		{
-			if((int) data == 0)
-				v=_fdm_0;
-			else
-			if((int) data == 1)
-				v=_fdm_1;
-		}
-	}
-
-	if(v == NULL)
+	if((v=_fdm_cache(tag, data, size)) == NULL)
 		v=_fdm_new(tag, data, size);
 
 	return(v);
