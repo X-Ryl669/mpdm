@@ -4,10 +4,10 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1054: Add a main() function, similar to the filp one.
  * 1055: Iconv support works, but is nearly useless; iconverters
    should be associated to file descriptors, which are the only
    place where iconv will really be used.
+ * 1017: Add optional gettext support.
 
 Open Bugs
 ---------
@@ -28,7 +28,6 @@ Pending Enhancements
  * 1007: chmod().
  * 1008: bread().
  * 1009: bwrite().
- * 1017: Add optional gettext support.
  * 1027: Store all static _tie... values in ties in the main
    control structure.
  * 1028: With the closing of bugs #1026, #1027 and #1029, it should be
@@ -105,5 +104,7 @@ Closed
    Sat, 08 Jan 2005 21:30:55 +0100).
  * 1016: Add optional iconv support
    (Closed by #1055; Thu, 10 Mar 2005 13:26:54 +0100).
+ * 1054: Add a main() function, similar to the filp one
+   (Not applicable; Fri, 18 Mar 2005 06:46:06 +0100).
 
 Email bugs to angel@triptico.com
