@@ -387,6 +387,33 @@ void test_file(void)
 void test_regex(void)
 {
 	mpdm_v v;
+	mpdm_v w;
+
+	v=mpdm_regex(MPDM_LS("[0-9]+"), MPDM_LS("123456"), 0, NULL);
+	_test("regex 0", v != NULL);
+
+	v=mpdm_regex(MPDM_LS("[0-9]+"), MPDM_I(65536), 0, NULL);
+	_test("regex 1", v != NULL);
+
+	v=mpdm_regex(MPDM_LS("^[0-9]+$"), MPDM_LS("12345678"), 0, NULL);
+	_test("regex 2", v != NULL);
+
+	v=mpdm_regex(MPDM_LS("^[0-9]+$"), MPDM_I(1), 0, NULL);
+	_test("regex 3", v != NULL);
+
+	v=mpdm_regex(MPDM_LS("^[0-9]+$"), MPDM_LS("A12345-678"), 0, NULL);
+	_test("regex 4", v == NULL);
+
+	w=MPDM_LS("Hell street, 666");
+	v=mpdm_regex(MPDM_LS("[0-9]+"), w, 0, NULL);
+	_test("regex 5", v != NULL);
+
+	mpdm_dump(v);
+
+	v=mpdm_regex(MPDM_LS("regex"), MPDM_LS("CASE-INSENSITIVE REGEX"), 0, "i");
+	_test("regex 6", v != NULL);
+
+	/* sregex */
 
 	v=mpdm_sregex(MPDM_LS("A"),MPDM_LS("change all A to A"),
 		MPDM_LS("E"),0,NULL);
