@@ -10,6 +10,7 @@ Release Critical Bugs
  * 1047: Change _mpdm_sym() to force the creation of all intermediate
    arrays or hashes in the way. Also, it does not make much sense to
    be in plain mpdm; it should be part of mpsl.
+ * 1048: mpdm_rval() breaks locales.
 
 Open Bugs
 ---------

@@ -145,12 +145,7 @@ stmt:
 					/* subroutine definition,
 					   with arguments */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
-						INS1(MPSL_OP_SUBFRAME,
-							INS2(MPSL_OP_MULTI,
-								INS1(MPSL_OP_ARGS, $4),
-								$7)
-						)
-					);
+						INS2(MPSL_OP_SUBFRAME, $7, $4));
 				}
 
 	| FOREACH '(' compsym ',' expr ')' stmt

@@ -62,7 +62,6 @@ mpdm_v _mpsl_op(mpsl_op opcode)
 		OP(MPSL_OP_FOREACH);
 		OP(MPSL_OP_SUBFRAME);
 		OP(MPSL_OP_BLKFRAME);
-		OP(MPSL_OP_ARGS);
 		OP(MPSL_OP_LOCAL);
 		OP(MPSL_OP_UMINUS);
 		OP(MPSL_OP_ADD);
@@ -198,15 +197,16 @@ static mpdm_v _mpsl_op_hash(mpdm_v c, mpdm_v args)
 
 static mpdm_v _mpsl_op_subframe(mpdm_v c, mpdm_v args)
 {
-	int n;
 	mpdm_v ret=NULL;
 
 	/* creates a subroutine frame */
 	/* ... */
 
-	/* executes all following instructions */
-	for(n=1;n < mpdm_size(c);n++)
-		ret=_mpsl_machine(mpdm_aget(c, n), args);
+	/* if the instruction has 3 elements, 3rd is the argument list */
+	/* ... */
+
+	/* execute instruction */
+	ret=_mpsl_machine(mpdm_aget(c, 1), args);
 
 	/* destroys the subroutine frame */
 	/* ... */
