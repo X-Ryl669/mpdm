@@ -96,7 +96,7 @@ mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 	Code
 ********************/
 
-#define OP(o) { mpdm_v v = MPDM_MBS(#o); v->ival=o; \
+#define OP(o) { mpdm_v v = MPDM_MBS(#o + 8); v->ival=o; \
 		v->flags |= MPDM_IVAL ; mpdm_aset(_mpsl_ops, v, o); }
 
 mpdm_v _op(mpsl_op opcode)
