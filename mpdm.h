@@ -53,7 +53,6 @@ struct _fdm_v
 };
 
 fdm_v fdm_new(int flags, void * data, int size);
-fdm_v _fdm_inew(int ival);
 int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
@@ -82,6 +81,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
 fdm_v fdm_strcat(fdm_v s1, fdm_v s2);
 int fdm_cmp(fdm_v v1, fdm_v v2);
 int fdm_ival(fdm_v v);
+fdm_v _fdm_inew(int ival);
 
 fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
