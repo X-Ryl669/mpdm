@@ -1089,11 +1089,11 @@ void test_mpsl2(void)
 
 	v=_test_mpsl("\"test\" eq \"test\";");
 	v=mpdm_exec(v, NULL);
-	_test("streq 1", mpdm_ival(v) == 0);
+	_test("streq 1", mpsl_is_true(v));
 
 	v=_test_mpsl("\"test\" eq \"prueba\";");
 	v=mpdm_exec(v, NULL);
-	_test("streq 1", mpdm_ival(v) > 0);
+	_test("streq 1", ! mpsl_is_true(v));
 
 	v=_test_mpsl("a = 6; ++ a;");
 	v=mpdm_exec(v, NULL);

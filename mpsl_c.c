@@ -492,7 +492,7 @@ static mpdm_v _O_nbool(mpdm_v c, mpdm_v a)
 
 
 static mpdm_v _O_strcat(mpdm_v c, mpdm_v a) { return(mpdm_strcat(M1, M2)); }
-static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(MPDM_I(mpdm_cmp(M1, M2))); }
+static mpdm_v _O_streq(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_cmp(M1, M2) == 0)); }
 
 
 /**
