@@ -21,6 +21,8 @@ INTEGER		{DIGIT}+
 REAL		{DIGIT}*[\.]?{DIGIT}+
 SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
+%x REM
+
 %%
 
 {INTEGER}	{
@@ -69,6 +71,10 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 {WSPACE}	;	/* ignore spaces */
 
 .		yyerror("LEX Unknown character");
+
+\/\*		{ BEGIN REM; /* C-like comments */ }
+<REM>\*\/	{ BEGIN 0; }
+<REM>.		;
 
 %%
 
