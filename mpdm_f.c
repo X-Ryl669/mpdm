@@ -177,8 +177,18 @@ void _mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
 		ol=sizeof(tmp); optr=tmp;
 
 		/* write to file */
-		if(iconv(ic, &iptr, &il, &optr, &ol) != -1)
-			fwrite(tmp, 1, sizeof(tmp) - ol, f);
+		if(iconv(ic, &iptr, &il, &optr, &ol) == -1)
+		{
+			/* error converting; convert a '?' instead */
+			wchar_t q=L'?';
+
+			il=sizeof(wchar_t); iptr=&q;
+			ol=sizeof(tmp); optr=tmp;
+
+			iconv(ic, &iptr, &il, &optr, &ol);
+		}
+
+		fwrite(tmp, 1, sizeof(tmp) - ol, f);
 	}
 }
 
@@ -217,8 +227,8 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 	{
 		mpdm_v cs=MPDM_2MBS(_f_enc->data);
 
-		fs->ic_enc=iconv_open("WCHAR_T", (char *)cs->data);
-		fs->ic_dec=iconv_open((char *)cs->data, "WCHAR_T");
+		fs->ic_enc=iconv_open((char *)cs->data, "WCHAR_T");
+		fs->ic_dec=iconv_open("WCHAR_T", (char *)cs->data);
 
 		fs->has_iconv=1;
 	}
