@@ -144,6 +144,22 @@ void test_hash(void)
 	}
 
 	fdm_dump(h, 0);
+
+	/* use of non-strings as hashes */
+	h=FDM_H(0);
+
+	v=FDM_A(0);
+	fdm_hset(h, v, FDM_I(1234));
+	v=FDM_H(0);
+	fdm_hset(h, v, FDM_I(12345));
+	v=FDM_H(0);
+	fdm_hset(h, v, FDM_I(9876));
+	v=FDM_A(0);
+	fdm_hset(h, v, FDM_I(6543));
+	i=fdm_ival(fdm_hget(h, v));
+
+	fdm_dump(h, 0);
+	_test("hash: using non-strings as hash keys", (i == 6543));
 }
 
 
