@@ -259,8 +259,6 @@ int fdm_unref(fdm_v v)
  */
 void fdm_sweep(int count)
 {
-	int n;
-
 	/* if it's worthless, don't do it */
 	if(_fdm.count < 16)
 	{
@@ -276,7 +274,7 @@ void fdm_sweep(int count)
 	/* if count is zero, sweep 'some' values */
 	if(count == 0) count=_fdm.count - _fdm.lcount + 2;
 
-	for(n=0;n < count;n++)
+	while(count > 0)
 	{
 		/* is the value referenced? */
 		if(_fdm.head->ref)
@@ -295,24 +293,21 @@ void fdm_sweep(int count)
 			v=_fdm.head;
 			_fdm.head=_fdm.head->next;
 
-			/* unref all elements if multiple */
+			/* destroy */
 			if(v->flags & FDM_MULTIPLE)
-			{
-				int i;
-
-				for(i=0;i < v->size;i++)
-					fdm_aset(v, NULL, i);
-			}
-
-			/* free data if needed */
-			if(v->flags & FDM_FREE) free(v->data);
+				fdm_acollapse(v, 0, v->size);
+			else
+			if(v->flags & FDM_FREE)
+				free(v->data);
 
 			/* free the value itself */
 			free(v);
 
 			/* one value less */
-			_fdm.count --;
+			_fdm.count--;
 		}
+
+		count--;
 	}
 
 	_fdm.lcount=_fdm.count;
