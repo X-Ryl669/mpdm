@@ -161,7 +161,7 @@ int main(void)
 
 	yyparse();
 
-	fdm_dump(_pcode, 0);
+	fdm_dump(_pcode);
 
 	printf("Exiting main...\n");
 	exit(0);
