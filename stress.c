@@ -1238,6 +1238,9 @@ void test_mpsl3(void)
 	v=mpdm_exec(v, NULL);
 	_test("foreach+range 2", mpdm_ival(v) == 210);
 
+	v=_test_mpsl("print(\"print: \", 1, 2, [1, 2, 3], func(), 4);");
+	v=mpdm_exec(v, NULL);
+
 /*	mpdm_dump(mpdm_root());*/
 }
 

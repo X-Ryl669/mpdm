@@ -83,6 +83,16 @@ static mpdm_v _F_glob(mpdm_v a) { return(mpdm_glob(A0)); }
 static mpdm_v _F_regex(mpdm_v a) { return(mpdm_regex(A0,A1,IA2)); }
 static mpdm_v _F_sregex(mpdm_v a) { return(mpdm_sregex(A0,A1,A2,IA3)); }
 
+static mpdm_v _F_print(mpdm_v a)
+{
+	int n;
+
+	for(n=0;n < mpdm_size(a);n++)
+		printf("%ls", mpdm_string(A(n)));
+	return(NULL);
+}
+
+
 static struct
 {
 	wchar_t * name;
@@ -119,6 +129,7 @@ static struct
 	{ L"glob",	_F_glob },
 	{ L"regex",	_F_regex },
 	{ L"sregex",	_F_sregex },
+	{ L"print",	_F_print },
 	{ NULL,		NULL }
 };
 
