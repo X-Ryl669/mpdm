@@ -273,13 +273,13 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 #define _O_TYPE static mpdm_v
 #define _O_ARGS mpdm_v c, mpdm_v a, int * f
 
-_O_TYPE _O_multi(_O_ARGS) { M1; return(M2); }
+_O_TYPE _O_multi(_O_ARGS) { mpdm_v v=M1; if(!*f) v=M2; return(v); }
 _O_TYPE _O_literal(_O_ARGS) { return(mpdm_clone(C1)); }
 _O_TYPE _O_symval(_O_ARGS) { return(GET(M1)); }
 _O_TYPE _O_assign(_O_ARGS) { return(SET(M1, M2)); }
 _O_TYPE _O_exec(_O_ARGS) { return(mpdm_exec(M1, M2)); }
 _O_TYPE _O_if(_O_ARGS) { return(ISTRU(M1) ? M2 : M3); }
-_O_TYPE _O_while(_O_ARGS) { while(ISTRU(M1)) M2; return(NULL); }
+_O_TYPE _O_while(_O_ARGS) { while(! *f && ISTRU(M1)) M2; if(*f == 1) *f=0; return(NULL); }
 _O_TYPE _O_local(_O_ARGS) { mpsl_local_set_symbols(M1, NULL); return(NULL); }
 _O_TYPE _O_uminus(_O_ARGS) { return(MPDM_R(-RM1)); }
 _O_TYPE _O_add(_O_ARGS) { return(MPDM_R(RM1 + RM2)); }
@@ -365,10 +365,8 @@ _O_TYPE _O_blkframe(_O_ARGS)
 }
 
 
-_O_TYPE _O_return(_O_ARGS)
-{
-	return(M1);
-}
+_O_TYPE _O_break(_O_ARGS) { *f=1; return(NULL); }
+_O_TYPE _O_return(_O_ARGS) { mpdm_v v=M1; *f=2; return(v); }
 
 
 static struct _op
@@ -388,7 +386,7 @@ static struct _op
 	{ L"FOREACH",	NULL },
 	{ L"SUBFRAME",	_O_subframe },
 	{ L"BLKFRAME",	_O_blkframe },
-	{ L"BREAK",	NULL },
+	{ L"BREAK",	_O_break },
 	{ L"RETURN",	_O_return },
 	{ L"LOCAL",	_O_local },
 	{ L"LIST",	_O_list },
@@ -460,7 +458,7 @@ mpdm_v _mpsl_exec_i(_O_ARGS)
 {
 	mpdm_v ret=NULL;
 
-	if(c != NULL)
+	if(c != NULL && ! *f)
 	{
 		int op;
 
@@ -477,6 +475,8 @@ mpdm_v _mpsl_exec_i(_O_ARGS)
 				ret=o->func(c, a, f);
 		}
 	}
+
+	printf("** %ls %ls\n", mpdm_string(C0), mpdm_string(ret));
 
 	return(ret);
 }
