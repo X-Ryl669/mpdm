@@ -1,7 +1,13 @@
-TODO
-====
+Minimum Profit Data Manager (mpdm) TODO / Bug List
+==================================================
 
- * Beyond ties: suppress all flags (except some internal ones as IVAL
+Open Bugs
+---------
+
+Pending Enhancements
+--------------------
+
+ * 1003: Beyond ties; suppress all flags (except some internal ones as IVAL
    or EXEC). Everything should be done with ties; for example, there
    should exist a _CMP tie function that would be executed when two
    values being compared have the same tie (or, better, the same _CMP
@@ -9,20 +15,25 @@ TODO
    A value will be assumed multiple when having a tie function _AEXPAND
    (or _AGET, or so). Code will become incidentally clean (no more "if
    flags & MPDM_" scattered through the code). Risky change!
- * Create a tie function for mpdm_dump().
- * Should ties be in a special source file, mpdm_t.c ?
- * stat(), chmod(), bread(), bwrite().
+ * 1004: Create a tie function for mpdm_dump().
+ * 1005: Should ties be in a special source file, mpdm_t.c ?
+ * 1006: stat()
+ * 1007: chmod()
+ * 1008: bread()
+ * 1009: bwrite()
+ * 1010: Find a name for the scripting language (mpsl?).
+ * 1011: Will the scripting language be included here, or as a
+   separated package? it could poison the mpdm concept as a 'low
+   level utility library'.
 
-The scripting language
-----------------------
+Closed
+------
 
- * Find a name (mpsl?).
- * Will it be included here, or as a separated package? it could poison
-   the mpdm concept as a 'low level utility library'.
+ * 1000: All string operations should use wchar_t instead of char
+   (closed by: #1001) (Sat, 3 Jul 2004 11:14:00 +0200).
+ * 1001: Merge mpdm-branch-wchar (closes: #1000)
+   (Sun, 4 Jul 2004 11:06:00 +0200).
+ * 1002: mpdm_aget() and mpdm_aset() should accept negative offsets
+   (Mon, 12 Jul 2004 17:44:00 +0200).
 
-Using mpdm elsewhere
---------------------
-
- * Of course, mp-4.
- * ahxm.
-
+Email bugs to angel@triptico.com
