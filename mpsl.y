@@ -20,6 +20,7 @@ fdm_v _ins(fdm_v opcode, fdm_v a1, fdm_v a2, fdm_v a3);
 	fdm_v ins;	/* an 'instruction': [ opcode, args ] */
 };
 
+%token <v> NULLV
 %token <v> INTEGER
 %token <v> REAL
 %token <v> STRING
@@ -98,6 +99,7 @@ expr:
 	| REAL			{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
 /*	| compsym		{ $$ = _ins(FDM_LS("SYMVAL"), $1, NULL, NULL); } */
 	| compsym		{ fdm_aset($1, FDM_LS("SYMVAL"), 0); $$ = $1; }
+	| NULLV			{ $$ = _ins(FDM_LS("NULL"), NULL, NULL, NULL); }
 
 	| '-' expr %prec UMINUS	{ $$ = _ins(FDM_LS("UMINUS"), $2, NULL, NULL); }
 

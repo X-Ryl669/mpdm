@@ -44,6 +44,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {OPERATOR}	return(*yytext);
 
+"NULL"		return NULLV;
 "while"		return WHILE;
 "if"		return IF;
 "else"		return ELSE;
