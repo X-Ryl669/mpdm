@@ -284,6 +284,8 @@ void test_sym(void)
 	i=fdm_ival(v);
 
 	_test("auto_indent == 16384", (i == 16384));
+
+	fdm_sweep(-1);
 }
 
 
