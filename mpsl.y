@@ -421,9 +421,13 @@ static mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 }
 
 
+void _mpsl_lib(void);
+
 mpdm_v mpsl_compile(mpdm_v code)
 {
 	mpdm_v x=NULL;
+
+	_mpsl_lib();
 
 	/* point to code */
 	_mpsl_next_char=(wchar_t *) code->data;
