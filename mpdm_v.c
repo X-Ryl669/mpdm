@@ -226,7 +226,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
 
-	if((v=_fdm_cache(tag, data, size)) == NULL)
+/*	if((v=_fdm_cache(tag, data, size)) == NULL) */
 		v=_fdm_new(tag, data, size);
 
 	return(v);
