@@ -4,16 +4,11 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1047: Change _mpdm_sym() to force the creation of all intermediate
-   arrays or hashes in the way. Also, it does not make much sense to
-   be in plain mpdm; it should be part of mpsl.
- * 1049: Multiple instructions are buggy; they should always have
-   two arguments.
  * 1050: Document the virtual machine.
  * 1051: Document the scripting language.
+ * 1052: Implement the 'return' directive in mpsl.
 
 Open Bugs
 ---------
@@ -129,5 +124,14 @@ Closed
  * 1046: Subroutine definitions are using MPSL_OP_SUB that is
    really the substract opcode (Sun, 26 Dec 2004 19:26:32 +0100).
  * 1048: mpdm_rval() breaks locales (Wed, 05 Jan 2005 16:05:52 +0100).
+ * 1022: Implement return values for mpsl functions (Closed by #1052;
+   Sat, 08 Jan 2005 21:30:37 +0100).
+ * 1047: Change _mpdm_sym() to force the creation of all intermediate
+   arrays or hashes in the way. Also, it does not make much sense to
+   be in plain mpdm; it should be part of mpsl (Discarded;
+   Sat, 08 Jan 2005 21:30:55 +0100).
+ * 1049: Multiple instructions are buggy; they should always have
+   two arguments (Though the parser spits 18 shift/reduce conflicts,
+   everything seems to be fine; Sat, 08 Jan 2005 21:32:57 +0100).
 
 Email bugs to angel@triptico.com
