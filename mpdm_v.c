@@ -201,21 +201,6 @@ fdm_v fdm_new(int tag, void * data, int size)
 }
 
 
-fdm_v _fdm_inew(int ival)
-{
-	fdm_v v;
-	char tmp[32];
-
-	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp) - 1, "%d", ival);
-
-	v=fdm_new(FDM_COPY | FDM_STRING | FDM_IVAL, tmp, -1);
-	v->ival=ival;
-
-	return(v);
-}
-
-
 /**
  * fdm_ref - Increments the reference count of a value.
  * @v: the value
