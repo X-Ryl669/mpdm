@@ -37,7 +37,7 @@
 #define FDM_H(n)	fdm_new(FDM_MULTIPLE|FDM_HASH,NULL,n)
 #define FDM_LS(s)	fdm_new(FDM_STRING,s,-1)
 #define FDM_S(s)	fdm_new(FDM_STRING|FDM_COPY,s,-1)
-#define FDM_I(i)	fdm_inew((i))
+#define FDM_I(i)	_fdm_inew((i))
 
 typedef struct _fdm_v * fdm_v;
 
@@ -52,12 +52,10 @@ struct _fdm_v
 };
 
 fdm_v fdm_new(int flags, void * data, int size);
-fdm_v fdm_inew(int ival);
+fdm_v _fdm_inew(int ival);
 int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
-int fdm_cmp(fdm_v v1, fdm_v v2);
-int fdm_ival(fdm_v v);
 
 fdm_v fdm_copy(fdm_v v);
 fdm_v fdm_root(void);
@@ -78,9 +76,11 @@ void fdm_asort(fdm_v a, int step);
 fdm_v fdm_asplit(fdm_v s, fdm_v a);
 fdm_v fdm_ajoin(fdm_v s, fdm_v a);
 
+char * fdm_string(fdm_v v);
 fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del);
 fdm_v fdm_strcat(fdm_v s1, fdm_v s2);
-char * fdm_string(fdm_v v);
+int fdm_cmp(fdm_v v1, fdm_v v2);
+int fdm_ival(fdm_v v);
 
 fdm_v fdm_hget(fdm_v h, fdm_v k);
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v);
