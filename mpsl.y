@@ -5,19 +5,27 @@
 #include <stdio.h>
 #include "fdm.h"
 
+/* the script being compiled */
+static fdm_v _pcode=NULL;
+
 int yylex(void);
 void yyerror(char * s);
+
+fdm_v _ins(fdm_v opcode, fdm_v a1, fdm_v a2, fdm_v a3);
 
 %}
 
 %union {
-	fdm_v v;
+	fdm_v v;	/* a simple value */
+	fdm_v ins;	/* an 'instruction': [ opcode, args ] */
 };
 
 %token <v> INTEGER
-%token <v> SYMBOL
 %token <v> STRING
+%token <v> SYMBOL
+%token <v> LITERAL
 %token WHILE IF SUB DUMP
+%nonassoc IFI
 %nonassoc ELSE
 
 %left STREQ NUMEQ STRNE NUMNE HASHPAIR '>''<'
@@ -25,66 +33,73 @@ void yyerror(char * s);
 %left '*' '/'
 %nonassoc UMINUS
 
-%type <v> stmt expr list hash compsym
+%type <ins> stmt expr stmt_list list hash
 
 %%
 
 program:
-	function		{ exit(0); }
+	function		{ fdm_dump(_pcode, 0); }
 	;
 
 function:
-	function stmt		{ printf("execute!!!\n"); }
+	function stmt		{ fdm_apush(_pcode, $2); }
 	| /* NULL */
 	;
 
 stmt:
-	';'			{ printf (";\n"); }
+	';'			{ $$ = _ins(FDM_LS(";"), NULL, NULL, NULL); }
 	| expr ';'		{ $$ = $1; }
-	| compsym '=' expr ';'	{ fdm_sset(NULL, $1, $3); }
-	| DUMP expr ';'		{ fdm_dump($2, 0); }
+	| SYMBOL '=' expr ';'	{ $$ = _ins(FDM_LS("="),
+					_ins(FDM_LS("SYMBOL"), $1, NULL, NULL),
+					$3, NULL); }
+	| DUMP expr ';'		{ $$ = _ins(FDM_LS("DUMP"), $2, NULL, NULL); }
+	| WHILE '(' expr ')' stmt
+				{ $$ = _ins(FDM_LS("WHILE"), $3, $5, NULL); }
+	| IF '(' expr ')' stmt %prec IFI
+				{ $$ = _ins(FDM_LS("IF"), $3, $5, NULL); }
+	| IF '(' expr ')' stmt ELSE stmt
+				{ $$ = _ins(FDM_LS("IFELSE"), $3, $5, $7); }
+	| SUB SYMBOL '{' stmt_list '}'
+				{ $$ = _ins(FDM_LS("SUB"),
+					_ins(FDM_LS("SYMBOL"), $2, NULL, NULL),
+					$4, NULL); }
+	| '{' stmt_list '}'	{ $$ = $2; }
+	;
+
+stmt_list:
+	stmt			{ $$ = $1; }
+	| stmt_list stmt	{ $$ = _ins(FDM_LS(";"), $1, $2, NULL); }
 	;
 
 list:
-	expr			{ $$=FDM_A(1); fdm_aset($$, $1, 0); }
+	expr			{ $$ = _ins(FDM_LS("LIST"), $1, NULL, NULL); }
 	| list ',' expr		{ fdm_apush($1, $3); $$ = $1; }
 	;
 
 hash:
-	expr HASHPAIR expr		{ $$=FDM_H(0); fdm_hset($$, $1, $3); }
-	| hash ',' expr HASHPAIR expr	{ fdm_hset($1, $3, $5); }
-
-compsym:
-	SYMBOL			{ $$=FDM_A(1); fdm_aset($$, $1, 0); }
-	| compsym '.' INTEGER	{ fdm_apush($1, $3); $$ = $1; }
-	| compsym '.' SYMBOL	{ fdm_apush($1, $3); $$ = $1; }
-	| compsym '[' expr ']' { fdm_apush($1, $3); $$ = $1; }
+	expr HASHPAIR expr	{ $$ = _ins(FDM_LS("HASH"), $1, $3, NULL); }
+	| hash ',' expr HASHPAIR expr
+				{ fdm_apush($1, $3); fdm_apush($1, $5); $$ = $1; }
+	;
 
 expr:
-	INTEGER			{ $$ = $1; }
-	| STRING		{ $$ = $1; }
-	| compsym		{ $$ = fdm_sget(NULL, $1); }
-	| compsym '(' ')'	{ printf("call()!!!\n"); fdm_dump($1, 0); }
-	| compsym '(' list ')'	{ printf("call(args)!!!\n"); fdm_dump($3, 0); }
+	INTEGER			{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
+	| STRING		{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
+	| SYMBOL		{ $$ = _ins(FDM_LS("SYMBOL"), $1, NULL, NULL); }
 
-	| expr '+' expr		{ $$ = FDM_I(fdm_ival($1) + fdm_ival($3)); }
-	| expr '-' expr		{ $$ = FDM_I(fdm_ival($1) - fdm_ival($3)); }
-	| expr '*' expr		{ $$ = FDM_I(fdm_ival($1) * fdm_ival($3)); }
-	| expr '/' expr		{ $$ = FDM_I(fdm_ival($1) / fdm_ival($3)); }
-	| expr '<' expr		{ $$ = FDM_I(fdm_ival($1) < fdm_ival($3)); }
-	| expr '>' expr		{ $$ = FDM_I(fdm_ival($1) > fdm_ival($3)); }
-	| expr NUMEQ expr	{ $$ = FDM_I(fdm_ival($1) == fdm_ival($3)); }
-	| expr NUMNE expr	{ $$ = FDM_I(fdm_ival($1) != fdm_ival($3)); }
-	| expr STREQ expr	{ $$ = FDM_I(fdm_cmp($1, $3) == 0); }
-	| expr STRNE expr	{ $$ = FDM_I(fdm_cmp($1, $3) != 0); }
-	| expr '?' expr ':' expr { $$ = fdm_ival($1) ? $3 : $5; }
+	| expr '+' expr		{ $$ = _ins(FDM_LS("+"), $1, $3, NULL); }
+	| expr '*' expr		{ $$ = _ins(FDM_LS("*"), $1, $3, NULL); }
 	| '(' expr ')'		{ $$ = $2; }
-
-	| '[' ']'		{ $$ = FDM_A(0); }
 	| '[' list ']'		{ $$ = $2; }
-
-	| '{' '}'		{ $$ = FDM_H(0); }
 	| '{' hash '}'		{ $$ = $2; }
+
+	| SYMBOL '(' ')'	{ $$ = _ins(FDM_LS("CALL"),
+					_ins(FDM_LS("SYMBOL"), $1, NULL, NULL),
+					NULL, NULL); }
+	| SYMBOL '(' list ')'	{ $$ = _ins(FDM_LS("CALL"),
+					_ins(FDM_LS("SYMBOL"), $1, NULL, NULL),
+					$3, NULL); }
+
 	;
 
 %%
@@ -95,8 +110,30 @@ void yyerror(char * s)
 }
 
 
+fdm_v _ins(fdm_v opcode, fdm_v a1, fdm_v a2, fdm_v a3)
+{
+	fdm_v v;
+
+	v=FDM_A(1);
+
+	/* inserts the opcode */
+	fdm_aset(v, opcode, 0);
+	if(a1 != NULL) fdm_apush(v, a1);
+	if(a2 != NULL) fdm_apush(v, a2);
+	if(a3 != NULL) fdm_apush(v, a3);
+
+	return(v);
+}
+
+
 int main(void)
 {
+	/* create a new pcode */
+	_pcode=FDM_A(0);
+	fdm_ref(_pcode);
+
 	yyparse();
+
+	printf("Exiting main...\n");
 	exit(0);
 }
