@@ -285,6 +285,11 @@ void test_hash(void)
 
 	mpdm_dump(h);
 	_test("hash: using non-strings as hash keys", (i == 6543));
+
+	mpdm_hset(h, MPDM_LS(L"ok"), MPDM_I(666));
+
+	_test("hexists 1", mpdm_hexists(h, MPDM_LS(L"ok")));
+	_test("hexists 2", ! mpdm_hexists(h, MPDM_LS(L"notok")));
 }
 
 

@@ -9,7 +9,6 @@ Release Critical Bugs
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
- * 1033: Create a new mpdm_hexists() function.
 
 Open Bugs
 ---------
@@ -91,5 +90,7 @@ Closed
    (Wed, 08 Dec 2004 19:16:05 +0100).
  * 1031: Size in MPDM_ND_A() is superfluous, as it can be calculated
    (Wed, 08 Dec 2004 22:12:57 +0100).
+ * 1033: Create a new mpdm_hexists() function
+   (Thu, 09 Dec 2004 11:19:03 +0100).
 
 Email bugs to angel@triptico.com

@@ -57,6 +57,7 @@ typedef enum
 	MPDM_TIE_DESTROY,
 	MPDM_TIE_CLONE,
 	MPDM_TIE_HGET,
+	MPDM_TIE_HEXISTS,
 	MPDM_TIE_HSET,
 	MPDM_TIE_HDEL,
 	MPDM_TIE_HKEYS,
@@ -126,6 +127,7 @@ mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie);
 
 int mpdm_hsize(mpdm_v h);
 mpdm_v mpdm_hget(mpdm_v h, mpdm_v k);
+int mpdm_hexists(mpdm_v h, mpdm_v k);
 mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v);
 mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k);
 mpdm_v mpdm_hkeys(mpdm_v h);

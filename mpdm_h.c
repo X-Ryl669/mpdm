@@ -88,6 +88,34 @@ static mpdm_v _tie_hget(mpdm_v a)
 }
 
 
+static mpdm_v _tie_hexists(mpdm_v a)
+/* tie function for hexists */
+{
+	int n;
+	mpdm_v h;
+	mpdm_v k;
+	mpdm_v b;
+	int ret=0;
+
+	/* gets hash and key */
+	h=mpdm_aget(a, 0);
+	k=mpdm_aget(a, 1);
+
+	if(mpdm_size(h))
+	{
+		/* if hash is not empty... */
+		if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
+		{
+			/* if bucket exists, binary-seek it */
+			if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
+				ret=1;
+		}
+	}
+
+	return(MPDM_I(ret));
+}
+
+
 static mpdm_v _tie_hset(mpdm_v a)
 /* tie function for hset */
 {
@@ -215,6 +243,7 @@ mpdm_v _mpdm_tie_hash(void)
 
 		mpdm_aset(_tie, MPDM_X(_tie_hsize), MPDM_TIE_HSIZE);
 		mpdm_aset(_tie, MPDM_X(_tie_hget), MPDM_TIE_HGET);
+		mpdm_aset(_tie, MPDM_X(_tie_hexists), MPDM_TIE_HEXISTS);
 		mpdm_aset(_tie, MPDM_X(_tie_hset), MPDM_TIE_HSET);
 		mpdm_aset(_tie, MPDM_X(_tie_hdel), MPDM_TIE_HDEL);
 		mpdm_aset(_tie, MPDM_X(_tie_hkeys), MPDM_TIE_HKEYS);
@@ -262,6 +291,25 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 		v=mpdm_exec_2(b, h, k);
 
 	return(v);
+}
+
+
+/**
+ * mpdm_hexists - Tests if a key exists
+ * @h: the hash
+ * @k: the key
+ *
+ * Returns 1 if @k is defined in @h, or 0 othersize.
+ */
+int mpdm_hexists(mpdm_v h, mpdm_v k)
+{
+	mpdm_v b;
+	int ret=0;
+
+	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
+		ret=mpdm_ival(mpdm_exec_2(b, h, k));
+
+	return(ret);
 }
 
 
