@@ -737,47 +737,6 @@ void test_exec(void)
 }
 
 
-void test_dh(void)
-{
-	mpdm_v h;
-	mpdm_v k;
-	mpdm_v v;
-	mpdm_v v2;
-
-	h=mpdm_gdbm(MPDM_LS(L"test.db"));
-	mpdm_dump(h);
-
-	if(h == NULL)
-	{
-		printf("Can't open test.db; no further gdbm tests possible.\n");
-		return;
-	}
-
-	k=MPDM_LS(L"lastval");
-
-	v=mpdm_hget(h, k);
-	mpdm_dump(v);
-
-	v=MPDM_I(mpdm_ival(v) + 1);
-	mpdm_dump(v);
-	mpdm_hset(h, k, v);
-
-	v2=mpdm_hget(h, k);
-	mpdm_dump(v2);
-
-	_test("Disk hash 1", mpdm_ival(v) == mpdm_ival(v2));
-
-	mpdm_hset(h, MPDM_LS(L"monday"), MPDM_LS(L"lunes"));
-	mpdm_hset(h, MPDM_LS(L"tuesday"), MPDM_LS(L"martes"));
-
-	_test("Disk hash size", mpdm_hsize(h) == 3);
-	mpdm_dump(h);
-
-	_test("hexists in disk hash 1", mpdm_hexists(h, MPDM_LS(L"lastval")));
-	_test("hexists in disk hash 2", ! mpdm_hexists(h, MPDM_LS(L"nextval")));
-}
-
-
 void test_nondyn(void)
 {
 	mpdm_v v;
@@ -951,7 +910,6 @@ int main(int argc, char * argv[])
 	test_file();
 	test_regex();
 	test_exec();
-	test_dh();
 	test_nondyn();
 	test_encoding();
 	benchmark();

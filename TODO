@@ -8,22 +8,17 @@ Release Critical Bugs
  * 1056: Document internals.
  * 1008: bread().
  * 1009: bwrite().
- * 1059: Get rid of ties. They are flexible and sexy, but add a complexity
-   that isn't worth.
 
 Open Bugs
 ---------
 
- * 1018: Support for optional features (like gdbm) should be stored
-   in an mpdm array or hash to easily ask for capabilities.
+None!
 
 Pending Enhancements
 --------------------
 
  * 1006: stat().
  * 1007: chmod().
- * 1027: Store all static _tie... values in ties in the main
-   control structure.
  * 1028: With the closing of bugs #1026, #1027 and #1029, it should be
    easy to have multiple mpdm engines, just by commuting the _mpdm
    pointer. So, there should exist an mpdm_cleanup() function,
@@ -31,7 +26,6 @@ Pending Enhancements
    free the rest of values stored inside. This kind of cleanup should
    not be necessary on normal shutdown, as memory will be freed by
    the operating system anyway.
- * 1029: Store the regex cache in the main control structure.
 
 Closed
 ------
@@ -117,5 +111,14 @@ Closed
  * 1015: The auto-sweep introduced by _mpdm.high_threshold is
    extremely unsafe. At least, internal parts of mpdm should be
    autosweep-safe (high_threshold abandoned; Mon, 28 Mar 2005 16:40:38 +0200).
+ * 1059: Get rid of ties. They are flexible and sexy, but add a complexity
+   that isn't worth (Sun, 03 Apr 2005 16:38:44 +0200).
+ * 1018: Support for optional features (like gdbm) should be stored
+   in an mpdm array or hash to easily ask for capabilities (gdbm support
+   dropped, and no other optional features; Sun, 03 Apr 2005 16:39:19 +0200).
+ * 1027: Store all static _tie... values in ties in the main
+   control structure (ties no longer exist; Sun, 03 Apr 2005 16:40:12 +0200).
+ * 1029: Store the regex cache in the main control structure
+   (Sun, 03 Apr 2005 16:40:32 +0200).
 
 Email bugs to angel@triptico.com

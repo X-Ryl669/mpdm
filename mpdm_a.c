@@ -45,6 +45,22 @@ static mpdm_v _mpdm_asort_cb=NULL;
 	Code
 ********************/
 
+mpdm_v _mpdm_new_a(int flags, int size)
+/* creates a new array value */
+{
+	mpdm_v v;
+
+	/* standard arrays can't be nondyn */
+	flags &= ~ MPDM_NONDYN;
+
+	/* creates and expands */
+	if((v=mpdm_new(flags|MPDM_MULTIPLE, NULL, 0)) != NULL)
+		mpdm_aexpand(v, 0, size);
+
+	return(v);
+}
+
+
 static int _wrap_offset(mpdm_v a, int offset)
 /* manages negative offsets */
 {
@@ -53,6 +69,25 @@ static int _wrap_offset(mpdm_v a, int offset)
 	return(offset);
 }
 
+
+mpdm_v _mpdm_aclone(mpdm_v v)
+/* clones a multiple value */
+{
+	mpdm_v w;
+	int n;
+
+	/* creates a similar value */
+	w=_mpdm_new_a(v->flags, v->size);
+
+	/* fills each element with duplicates of the original */
+	for(n=0;n < w->size;n++)
+		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+
+	return(w);
+}
+
+
+/* interface */
 
 /**
  * mpdm_aexpand - Expands an array.
@@ -72,11 +107,8 @@ mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num)
 	if(a->flags & MPDM_NONDYN)
 		return(NULL);
 
-	/* add only if the allocated block exists */
-	if(a->data != NULL)
-		a->size += num;
-	else
-		a->size = num;
+	/* add size */
+	a->size += num;
 
 	p=(mpdm_v *) realloc(a->data, a->size * sizeof(mpdm_v));
 
@@ -449,6 +481,8 @@ mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
 	mpdm_unref(_mpdm_asort_cb);
 	mpdm_unref(a);
 
+	_mpdm_asort_cb=NULL;
+
 	return(a);
 }
 
@@ -509,79 +543,4 @@ mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 	}
 
 	return(v);
-}
-
-
-/* ties */
-
-static mpdm_v _tie_mul_c(mpdm_v v) { return(mpdm_aexpand(v, 0, v->size)); }
-static mpdm_v _tie_mul_d(mpdm_v v) { return(mpdm_acollapse(v, 0, v->size)); }
-
-static mpdm_v _tie_mul_clo(mpdm_v v)
-/* clone function for standard multiple values */
-{
-	mpdm_v w;
-	int n;
-
-	/* creates a similar value */
-	w=mpdm_new(v->flags, NULL, v->size, v->tie);
-
-	/* fills each element with duplicates of the original */
-	for(n=0;n < w->size;n++)
-		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
-
-	return(w);
-}
-
-
-static mpdm_v _tie_nd_mul_clo(mpdm_v v)
-/* clone tie function for nondyn values */
-{
-	mpdm_v w;
-	int n;
-
-	/* creates a standard (dynamic) array with the same size */
-	w=MPDM_A(v->size);
-
-	/* fills each element with duplicates of the original */
-	for(n=0;n < w->size;n++)
-		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
-
-	return(w);
-}
-
-
-mpdm_v _mpdm_tie_mul(void)
-/* tie for standard multiple values */
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(mpdm_new(MPDM_MULTIPLE, NULL, 0, NULL));
-		mpdm_aexpand(_tie, 0, 3);
-		mpdm_aset(_tie, MPDM_X(_tie_mul_c), MPDM_TIE_CREATE);
-		mpdm_aset(_tie, MPDM_X(_tie_mul_d), MPDM_TIE_DESTROY);
-		mpdm_aset(_tie, MPDM_X(_tie_mul_clo), MPDM_TIE_CLONE);
-
-		/* the tie itself is an array */
-		_tie->tie=_tie;
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_nd_mul(void)
-/* tie for nondyn multiple values */
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(0));
-		mpdm_aset(_tie, MPDM_X(_tie_nd_mul_clo), MPDM_TIE_CLONE);
-	}
-
-	return(_tie);
 }

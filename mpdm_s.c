@@ -37,6 +37,143 @@
 	Code
 ********************/
 
+mpdm_v _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
+/* creates a new string value from a wcs */
+{
+	wchar_t * ptr;
+
+	/* a size of -1 means 'calculate it' */
+	if(size == -1 && str != NULL)
+		size=wcslen(str);
+
+	/* create a copy? */
+	if(cpy)
+	{
+		/* free() on destruction */
+		flags |= MPDM_FREE;
+
+		/* allocs */
+		if((ptr=malloc((size + 1) * sizeof(wchar_t))) == NULL)
+			return(NULL);
+
+		/* if no source, reset to zeroes; otherwise, copy */
+		if(str == NULL)
+			memset(ptr, '\0', size * sizeof(wchar_t));
+		else
+		{
+			wcsncpy(ptr, str, size);
+			ptr[size]=L'\0';
+		}
+
+		str=ptr;
+	}
+
+	/* it's a string */
+	flags |= MPDM_STRING;
+
+	return(mpdm_new(flags, str, size));
+}
+
+
+mpdm_v _mpdm_new_mbstowcs(int flags, char * str)
+/* creates a new string value from an mbs */
+{
+	wchar_t * ptr;
+	int size;
+
+	/* calculate needed space */
+	size=mbstowcs(NULL, str, 0);
+
+	/* this can occur in case of invalid encodings */
+	if(size < 0)
+		return(NULL);
+
+	if((ptr=malloc((size + 1) * sizeof(wchar_t))) == NULL)
+		return(NULL);
+
+	mbstowcs(ptr, str, size);
+	ptr[size]=L'\0';
+
+	/* it's a string */
+	flags |= (MPDM_STRING|MPDM_FREE);
+
+	return(mpdm_new(flags, ptr, size));
+}
+
+
+mpdm_v _mpdm_new_wcstombs(int flags, wchar_t * str)
+/* creates a new mbs value from a wbs */
+{
+	char * ptr;
+	int size;
+
+	/* calculate needed space */
+	size=wcstombs(NULL, str, 0);
+
+	if(size == -1 || (ptr=malloc(size + 1)) == NULL)
+		return(NULL);
+
+	wcstombs(ptr, str, size);
+	ptr[size]='\0';
+
+	flags |= MPDM_FREE;
+
+	/* unset the string flag; mbs,s are not 'strings' */
+	flags &= ~ MPDM_STRING;
+
+	return(mpdm_new(flags, ptr, size));
+}
+
+
+mpdm_v _mpdm_new_i(int ival)
+/* creates a new string value from an integer */
+{
+	mpdm_v v;
+	char tmp[32];
+
+	/* creates the visual representation */
+	snprintf(tmp, sizeof(tmp), "%d", ival);
+
+	v=MPDM_MBS(tmp);
+	v->flags |= MPDM_IVAL;
+	v->ival=ival;
+
+	return(v);
+}
+
+
+mpdm_v _mpdm_new_r(double rval)
+/* creates a new string value from a real number */
+{
+	mpdm_v v;
+	char tmp[128];
+
+	/* creates the visual representation */
+	snprintf(tmp, sizeof(tmp), "%lf", rval);
+
+	/* manually strip useless zeroes */
+	if(strchr(tmp, '.') != NULL)
+	{
+		char * ptr;
+
+		for(ptr=tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
+
+		/* if it's over the ., strip it also */
+		if(*ptr != '.') ptr++;
+
+		*ptr='\0';
+	}
+
+	v=MPDM_MBS(tmp);
+	v->flags |= MPDM_RVAL;
+	v->rval=rval;
+
+	return(v);
+}
+
+
+/* interface */
+
 /**
  * mpdm_string - Returns a printable representation of a value.
  * @v: the value
@@ -62,6 +199,7 @@ wchar_t * mpdm_string(mpdm_v v)
 	/* otherwise, return a visual representation */
 	snprintf(tmp, sizeof(tmp), "%p", v);
 	mbstowcs(wtmp, tmp, sizeof(wtmp));
+	wtmp[sizeof(wtmp) - 1]=L'\0';
 
 	return(wtmp);
 }
@@ -236,6 +374,7 @@ int mpdm_ival(mpdm_v v)
 			char tmp[32];
 
 			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
+			tmp[sizeof(tmp) - 1]='\0';
 			sscanf(tmp, "%i", &i);
 		}
 
@@ -275,6 +414,7 @@ double mpdm_rval(mpdm_v v)
 			char * prev_locale;
 
 			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
+			tmp[sizeof(tmp) - 1]='\0';
 
 			/* set locale to C for non locale-dependent
 			   floating point conversion */
@@ -292,309 +432,4 @@ double mpdm_rval(mpdm_v v)
 	}
 
 	return(v->rval);
-}
-
-
-mpdm_v _mpdm_inew(int ival)
-{
-	mpdm_v v;
-	char tmp[32];
-
-	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp), "%d", ival);
-
-	v=MPDM_MBS(tmp);
-	v->flags |= MPDM_IVAL;
-	v->ival=ival;
-
-	return(v);
-}
-
-
-mpdm_v _mpdm_rnew(double rval)
-{
-	mpdm_v v;
-	char tmp[128];
-
-	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp), "%lf", rval);
-
-	/* manually strip useless zeroes */
-	if(strchr(tmp, '.') != NULL)
-	{
-		char * ptr;
-
-		for(ptr=tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
-
-		/* if it's over the ., strip it also */
-		if(*ptr != '.') ptr++;
-
-		*ptr='\0';
-	}
-
-	v=MPDM_MBS(tmp);
-	v->flags |= MPDM_RVAL;
-	v->rval=rval;
-
-	return(v);
-}
-
-
-mpdm_v _mpdm_new_wcs(int f, wchar_t * s, int n, mpdm_v tie)
-/* wrapper function to ensure wchar_t * type testing by the compiler */
-{
-	return(mpdm_new(f, s, n, tie));
-}
-
-
-mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie)
-/* wrapper function to ensure char * type testing by the compiler */
-{
-	return(mpdm_new(0, s, n, tie));
-}
-
-
-/* tie functions */
-
-static mpdm_v _tie_cpy_c(mpdm_v v)
-{
-	void * ptr;
-
-	/* creates a copy of data */
-	if(v != NULL && v->size)
-	{
-		if((ptr=malloc(v->size)) == NULL)
-			return(NULL);
-
-		if(v->data == NULL)
-			memset(ptr, '\0', v->size);
-		else
-			memcpy(ptr, v->data, v->size);
-
-		v->data=ptr;
-	}
-
-	/* unset the string flag; memory blocks are not strings */
-	v->flags &= ~ MPDM_STRING;
-
-	return(v);
-}
-
-
-static mpdm_v _tie_cpy_d(mpdm_v v)
-{
-	/* destroys the copy of data */
-	if(v->data != NULL)
-	{
-		free(v->data);
-		v->data=NULL;
-	}
-
-	return(v);
-}
-
-
-static mpdm_v _tie_lstr_c(mpdm_v v)
-{
-	/* just tests if size has to be calculated */
-	if(v->size == -1 && v->data != NULL)
-		v->size=wcslen((wchar_t *) v->data);
-
-	/* it's a string */
-	v->flags |= MPDM_STRING;
-
-	return(v);
-}
-
-
-static mpdm_v _tie_str_c(mpdm_v v)
-{
-	wchar_t * ptr;
-
-	/* tests if size has to be calculated */
-	if(v->size == -1 && v->data != NULL)
-		v->size=wcslen((wchar_t *) v->data);
-
-	/* creates a copy */
-	if((ptr=malloc((v->size + 1) * sizeof(wchar_t))) == NULL)
-		return(NULL);
-
-	if(v->data == NULL)
-		memset(ptr, '\0', v->size * sizeof(wchar_t));
-	else
-	{
-		wcsncpy(ptr, v->data, v->size);
-		ptr[v->size]=L'\0';
-	}
-
-	v->data=ptr;
-
-	/* it's a string */
-	v->flags |= MPDM_STRING;
-
-	return(v);
-}
-
-
-static mpdm_v _tie_mbstowcs_c(mpdm_v v)
-{
-	wchar_t * ptr;
-
-	/* v->data contains a multibyte string (char *) */
-
-	/* always calculate needed space; v->size is currently ignored */
-	v->size=mbstowcs(NULL, v->data, 0);
-
-	/* this can occur in case of invalid encodings */
-	if(v->size < 0)
-		return(NULL);
-
-	if((ptr=malloc((v->size + 1) * sizeof(wchar_t))) == NULL)
-		return(NULL);
-
-	mbstowcs(ptr, v->data, v->size);
-	ptr[v->size]=L'\0';
-
-	v->data=ptr;
-
-	/* it's a string */
-	v->flags |= MPDM_STRING;
-
-	return(v);
-}
-
-
-static mpdm_v _tie_wcstombs_c(mpdm_v v)
-{
-	char * ptr;
-
-	/* v->data contains a wide char string (wchar_t *) */
-
-	/* always calculate needed space; v->size is currently ignored */
-	v->size=wcstombs(NULL, v->data, 0);
-
-	if(v->size == -1 || (ptr=malloc(v->size + 1)) == NULL)
-		return(NULL);
-
-	wcstombs(ptr, v->data, v->size);
-	ptr[v->size]='\0';
-
-	v->data=ptr;
-
-	/* unset the string flag; mbs,s are not 'strings' */
-	v->flags &= ~ MPDM_STRING;
-
-	return(v);
-}
-
-
-static mpdm_v _tie_nd_ls_clo(mpdm_v v)
-/* cloning tie function for nondyn literal string values */
-{
-	return(MPDM_S((wchar_t *)v->data));
-}
-
-
-/* ties */
-
-mpdm_v _mpdm_tie_cpy(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(2));
-		mpdm_aset(_tie, MPDM_X(_tie_cpy_c), MPDM_TIE_CREATE);
-		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_str(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(2));
-		mpdm_aset(_tie, MPDM_X(_tie_str_c), MPDM_TIE_CREATE);
-		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_lstr(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(1));
-		mpdm_aset(_tie, MPDM_X(_tie_lstr_c), MPDM_TIE_CREATE);
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_fre(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(2));
-		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_mbstowcs(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(2));
-		mpdm_aset(_tie, MPDM_X(_tie_mbstowcs_c), MPDM_TIE_CREATE);
-		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_wcstombs(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(2));
-		mpdm_aset(_tie, MPDM_X(_tie_wcstombs_c), MPDM_TIE_CREATE);
-		mpdm_aset(_tie, MPDM_X(_tie_cpy_d), MPDM_TIE_DESTROY);
-	}
-
-	return(_tie);
-}
-
-
-mpdm_v _mpdm_tie_nd_ls(void)
-{
-	static mpdm_v _tie=NULL;
-
-	if(_tie == NULL)
-	{
-		_tie=mpdm_ref(MPDM_A(0));
-		mpdm_aset(_tie, MPDM_X(_tie_lstr_c), MPDM_TIE_CREATE);
-		mpdm_aset(_tie, MPDM_X(_tie_nd_ls_clo), MPDM_TIE_CLONE);
-	}
-
-	return(_tie);
 }
