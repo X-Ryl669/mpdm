@@ -906,6 +906,11 @@ void test_mpsl2(void)
 	v=mpdm_exec(_test_mpsl("2 + 3 * 4;"), NULL);
 	w=mpdm_exec(_test_mpsl("(2 + 3) * 4;"), NULL);
 	_test("mpsl calculator 7 (operator precedence)", mpdm_rval(v) != mpdm_rval(w));
+
+	v=_test_mpsl("/* array */ [\"this\", \"one\", \"is\", 666, \"cool\"];");
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+	_test("mpsl array", mpdm_ival(mpdm_aget(v, 3)) == 666);
 }
 
 

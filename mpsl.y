@@ -518,6 +518,19 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 		ret=mpdm_aget(c, 1);
 		break;
 
+	case MPSL_OP_LIST:
+
+		/* build list from instructions */
+		ret=MPDM_A(mpdm_size(c) - 1);
+
+		for(n=0;n < mpdm_size(ret);n++)
+		{
+			mpdm_v v = mpdm_aget(c, n + 1);
+			mpdm_aset(ret, _mpsl_machine(v, args), n);
+		}
+
+		break;
+
 	case MPSL_OP_SUBFRAME:
 
 		/* creates a subroutine frame */
