@@ -46,38 +46,14 @@ static struct
 	Code
 ********************/
 
-/**
- * fdm_ref - Increments the reference count.
- * @v: the value
- *
- * Increments the reference count.
- */
-int fdm_ref(fdm_v v)
-{
-	return(v->ref++);
-}
-
-
-/**
- * fdm_unref - Decrements the reference count.
- * @v: the value
- *
- * Decrements the reference count.
- */
-int fdm_unref(fdm_v v)
-{
-	return(v->ref--);
-}
-
-
-static void _fdm_nref(fdm_v v[], int count, int ref)
+static void _fdm_nref(fdm_v v[], int count, int iref)
 {
 	int n;
 
 	for(n=0;n < count;n++)
 	{
 		if(v[n] != NULL)
-			v[n]->ref += ref;
+			v[n]->ref += iref;
 	}
 }
 
@@ -176,13 +152,38 @@ fdm_v fdm_new(int tag, void * data, int size)
 
 
 /**
- * fdm_sweep - Sweeps unused values
+ * fdm_ref - Increments the reference count of a value.
+ * @v: the value
+ *
+ * Increments the reference count of a value.
+ */
+int fdm_ref(fdm_v v)
+{
+	return(v->ref++);
+}
+
+
+/**
+ * fdm_unref - Decrements the reference count of a value.
+ * @v: the value
+ *
+ * Decrements the reference count of a value.
+ */
+int fdm_unref(fdm_v v)
+{
+	return(v->ref--);
+}
+
+
+/**
+ * fdm_sweep - Sweeps unreferenced values
  * @count: number of values to be swept
  *
- * Sweeps unused values. @count is the number of values to be
- * checked for deletion; if it's -1, all currently stored
- * values are checked. A special value of zero in @count
- * tell fdm_sweep() to check a small group of them on each call.
+ * Destroys values with a reference count of 0. @count is the
+ * number of values to be checked for deletion; special values of
+ * @count are -1, that forces a check of all currently known values
+ * (can be time-consuming) and 0, which tells fdm_sweep() to check a
+ * small group of them on each call.
  */
 void fdm_sweep(int count)
 {
@@ -237,6 +238,15 @@ void fdm_sweep(int count)
 }
 
 
+/**
+ * fdm_cmp - Compares two values.
+ * @v1: the first value
+ * @v2: the second value
+ *
+ * Compares two values. If both has the FDM_STRING flag set,
+ * a comparison using strcmp() is returned; otherwise, a
+ * simple pointer comparison is done.
+ */
 int fdm_cmp(fdm_v v1, fdm_v v2)
 {
 	/* if both values are strings, compare as such */
@@ -248,6 +258,18 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
 }
 
 
+/**
+ * fdm_poke - Inserts a character in a dynamic string value.
+ * @v: the value
+ * @c: the char
+ * @offset: offset where the character is to be inserted
+ *
+ * Inserts the character @c at @offset inside a value, that
+ * should have the FDM_COPY and FDM_STRING flags set (no check
+ * is done). If there is no room in the buffer (i.e. offset
+ * is bigger than the value's size), it is expanded via realloc()
+ * to make it fit.
+ */
 void fdm_poke(fdm_v v, char c, int offset)
 {
 	char * ptr;
@@ -264,6 +286,16 @@ void fdm_poke(fdm_v v, char c, int offset)
 }
 
 
+/**
+ * fdm_splice - Creates a new string value from another.
+ * @v: the original value
+ * @offset: offset where the substring is to be inserted
+ * @size: number of characters to substitute
+ * @new: the new string to be inserted
+ *
+ * Creates a new string value from @v, deleting @size chars
+ * at @offset and substituting them by @new.
+ */
 fdm_v fdm_splice(fdm_v v, int offset, int size, char * new)
 {
 	int n, i;
@@ -271,7 +303,7 @@ fdm_v fdm_splice(fdm_v v, int offset, int size, char * new)
 	char * ptr;
 
 	/* creates the new value */
-	w=fdm_new(v->tag, NULL, 0);
+	w=fdm_new(v->tag | FDM_STRING | FDM_COPY, NULL, 0);
 
 	ptr=(char *)v->data;
 
