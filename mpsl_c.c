@@ -229,6 +229,9 @@ void mpsl_local_set_symbols(mpdm_v s, mpdm_v v)
 {
 	mpdm_v l;
 
+	if(s == NULL)
+		return;
+
 	/* gets the top local variable frame */
 	l=mpdm_aget(mpdm_aget(_mpsl_local, -1), -1);
 
@@ -342,30 +345,20 @@ static mpdm_v _O_while(mpdm_v c, mpdm_v a) { while(mpsl_is_true(M1)) M2; return(
 static mpdm_v _O_subframe(mpdm_v c, mpdm_v a)
 /* runs an instruction inside a subroutine frame */
 {
-	mpdm_v ret=NULL;
-	mpdm_v v;
-	mpdm_v l;
-	int n;
+	mpdm_v ret;
 
 	/* creates subroutine and block frames */
 	mpsl_local_add_subframe();
-	l=mpsl_local_add_blkframe();
+	mpsl_local_add_blkframe();
 
-	/* if the instruction has 3 elements, 3rd is the argument list */
-	if(mpdm_size(c) > 2)
-	{
-		v=M2;
-
-		/* transfer all arguments with the keys as the
-		   symbol names and args as the values */
-		for(n=0;n < mpdm_size(a) && n < mpdm_size(v);n++)
-			mpdm_hset(l, mpdm_aget(v, n), mpdm_aget(a, n));
-	}
+	/* creates the arguments (if any) as local variables */
+	mpsl_local_set_symbols(M2, a);
 
 	/* execute instruction */
 	ret=M1;
 
 	/* destroys the frames */
+	mpsl_local_del_blkframe();
 	mpsl_local_del_subframe();
 
 	return(ret);
