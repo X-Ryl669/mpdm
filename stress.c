@@ -1046,6 +1046,19 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("sub 1", v != NULL);
 
+	v=_test_mpsl("sub pi() { 3.1416; }");
+	mpdm_dump(v);
+	v=mpdm_exec(v, NULL);
+	_test("sub 2", v != NULL);
+
+	v=_test_mpsl("var10=pi();");
+	v=mpdm_exec(v, NULL);
+	_test("exec 1", mpdm_rval(v) == 3.1416);
+
+	v=_test_mpsl("var11=pi() * 10000; var11;");
+	v=mpdm_exec(v, NULL);
+	_test("exec 2", mpdm_rval(v) == 31416);
+
 	mpdm_dump(mpdm_root());
 }
 
