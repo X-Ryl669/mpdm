@@ -809,18 +809,33 @@ void test_nondyn(void)
 }
 
 
-void test_iconv(void)
+void test_encoding(void)
 {
 	mpdm_v f;
+	mpdm_v v;
+	mpdm_v w;
+
+	v=MPDM_LS(L"¡España!\n");
+
+	printf("\nLocale encoding tests\n\n");
+
+	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
+	mpdm_write(f, v);
+	mpdm_close(f);
+
+	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
+	w=mpdm_read(f);
+	mpdm_dump(w);
+	_test("Locale encoding", mpdm_cmp(w, v) == 0);
+	mpdm_close(f);
 
 	mpdm_encoding(MPDM_LS(L"UTF-8"));
 
 	/* new open file will use the specified encoding */
-	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
-
+/*	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 	mpdm_write(f, MPDM_LS(L"¡España!\n"));
 	mpdm_close(f);
-
+*/
 /*	mpdm_v v;
 
 	v=mpdm_iconv_from(MPDM_LS(L"ISO-8859-1"),
@@ -856,7 +871,7 @@ int main(void)
 	test_exec();
 	test_dh();
 	test_nondyn();
-	test_iconv();
+	test_encoding();
 
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
