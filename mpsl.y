@@ -122,101 +122,213 @@ program:
 	;
 
 function:
-	function stmt		{ mpdm_apush(_mpsl_bytecode, $2); }
+	function stmt		{
+					mpdm_apush(_mpsl_bytecode, $2);
+				}
 	| /* NULL */
 	;
 
 stmt:
-	';'			{ $$ = INS0(MPSL_OP_MULTI); }
-	| expr ';'		{ $$ = $1; }
-	| compsym '=' expr ';'	{ $$ = INS2(MPSL_OP_ASSIGN, $1, $3); }
+	';'			{
+					/* null instruction */
+					$$ = INS0(MPSL_OP_MULTI);
+				}
+	| expr ';'		{
+					/* expression, as is */
+					$$ = $1;
+				}
+	| compsym '=' expr ';'	{
+					/* simple assignation */
+					$$ = INS2(MPSL_OP_ASSIGN, $1, $3);
+				}
+
 	| WHILE '(' expr ')' stmt
-				{ $$ = INS2(MPSL_OP_WHILE, $3, $5); }
+				{
+					/* while loop */
+					$$ = INS2(MPSL_OP_WHILE, $3, $5);
+				}
 	| IF '(' expr ')' stmt %prec IFI
-				{ $$ = INS2(MPSL_OP_IF, $3, $5); }
+				{
+					/* if - then construction */
+					$$ = INS2(MPSL_OP_IF, $3, $5);
+				}
 	| IF '(' expr ')' stmt ELSE stmt
-				{ $$ = INS3(MPSL_OP_IF, $3, $5, $7); }
+				{
+					/* if - then - else construction */
+					$$ = INS3(MPSL_OP_IF, $3, $5, $7);
+				}
 
 	| SUB compsym '{' stmt_list '}'
-				{ $$ = INS2(MPSL_OP_SUB, $2,
-					INS1(MPSL_OP_SUBFRAME, $4)); }
+				{
+					/* subroutine definition,
+					   without arguments */
+					$$ = INS2(MPSL_OP_SUB, $2,
+						INS1(MPSL_OP_SUBFRAME, $4));
+				}
 
 	| SUB compsym '(' ')' '{' stmt_list '}'
-				{ $$ = INS2(MPSL_OP_SUB, $2,
-					INS1(MPSL_OP_SUBFRAME, $6)); }
+				{
+					/* subroutine definition,
+					   without arguments (second
+					   syntax, including parens) */
+					$$ = INS2(MPSL_OP_SUB, $2,
+						INS1(MPSL_OP_SUBFRAME, $6));
+				}
 
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
-				{ $$ = INS2(MPSL_OP_SUB, $2,
-					INS2(MPSL_OP_SUBFRAME,
-						INS1(MPSL_OP_ARGS, $4),
+				{
+					/* subroutine definition,
+					   with arguments */
+					$$ = INS2(MPSL_OP_SUB, $2,
+						INS2(MPSL_OP_SUBFRAME,
+							INS1(MPSL_OP_ARGS, $4),
 						$7));
 				}
 
 	| FOREACH '(' compsym ',' expr ')' stmt
-				{ $$ = INS3(MPSL_OP_FOREACH, $3, $5, $7); }
+				{
+					/* foreach construction */
+					$$ = INS3(MPSL_OP_FOREACH, $3, $5, $7);
+				}
 
-	| '{' stmt_list '}'	{ $$ = INS1(MPSL_OP_BLKFRAME, $2); }
+	| '{' stmt_list '}'	{
+					/* block of instructions,
+					   with local symbol table */
+					$$ = INS1(MPSL_OP_BLKFRAME, $2);
+				}
 
-	| LOCAL sym_list ';'	{ $$ = INS1(MPSL_OP_LOCAL, $2); }
+	| LOCAL sym_list ';'	{
+					/* local symbol creation */
+					$$ = INS1(MPSL_OP_LOCAL, $2);
+				}
 	| LOCAL SYMBOL '=' expr	';'
-				{ $$ = INS2(MPSL_OP_MULTI,
-					INS1(MPSL_OP_LOCAL,
-						INS1(MPSL_OP_LITERAL, $2)),
-					INS2(MPSL_OP_ASSIGN,
-						INS1(MPSL_OP_LITERAL, $2),$4)
-					);
+				{
+					/* contraction; local symbol
+					   creation and assignation */
+					$$ = INS2(MPSL_OP_MULTI,
+						INS1(MPSL_OP_LOCAL,
+							INS1(MPSL_OP_LITERAL, $2)),
+						INS2(MPSL_OP_ASSIGN,
+							INS1(MPSL_OP_LITERAL, $2),$4)
+						);
 				}
 
 	;
 
 stmt_list:
 	stmt			{ $$ = $1; }
-	| stmt_list stmt	{ $$ = INS2(MPSL_OP_MULTI, $1, $2); }
+	| stmt_list stmt	{
+					/* sequence of instructions */
+					$$ = INS2(MPSL_OP_MULTI, $1, $2);
+				}
 	;
 
 list:
-	expr			{ $$ = INS1(MPSL_OP_LIST, $1); }
-	| list ',' expr		{ mpdm_apush($1, $3); $$ = $1; }
+	expr			{
+					$$ = INS1(MPSL_OP_LIST, $1);
+				}
+	| list ',' expr		{
+					/* build list from list of
+					   instructions */
+					mpdm_apush($1, $3); $$ = $1;
+				}
 	;
 
 sym_list:
-	SYMBOL			{ $$ = INS1(MPSL_OP_LIST,
-					INS1(MPSL_OP_LITERAL, $1)); }
-	| sym_list ',' SYMBOL	{ mpdm_apush($1,
-					INS1(MPSL_OP_LITERAL, $3)); $$ = $1; }
+	SYMBOL			{
+					$$ = INS1(MPSL_OP_LIST,
+						INS1(MPSL_OP_LITERAL, $1));
+				}
+	| sym_list ',' SYMBOL	{
+					/* comma-separated list of symbols */
+					mpdm_apush($1,
+						INS1(MPSL_OP_LITERAL, $3));
+					$$ = $1;
+				}
 	;
 
 hash:
-	expr HASHPAIR expr	{ $$ = INS2(MPSL_OP_HASH, $1, $3); }
+	expr HASHPAIR expr	{
+					$$ = INS2(MPSL_OP_HASH, $1, $3);
+				}
 	| hash ',' expr HASHPAIR expr
-				{ mpdm_apush($1, $3); mpdm_apush($1, $5); $$ = $1; }
+				{
+					/* build hash from list of
+					   instructions */
+					mpdm_apush($1, $3);
+					mpdm_apush($1, $5);
+					$$ = $1;
+				}
 	;
 
 compsym:
-	SYMBOL			{ $$ = INS1(MPSL_OP_LIST,
-					INS1(MPSL_OP_LITERAL, $1)); }
-	| compsym '.' INTEGER	{ mpdm_apush($1,
-				  INS1(MPSL_OP_LITERAL, $3));
-				  $$ = $1; }
-	| compsym '.' SYMBOL	{ mpdm_apush($1,
-				  INS1(MPSL_OP_LITERAL, $3));
-				  $$ = $1; }
-	| compsym '[' expr ']'	{ mpdm_apush($1, $3); $$ = $1; }
+	SYMBOL			{
+					$$ = INS1(MPSL_OP_LIST,
+						INS1(MPSL_OP_LITERAL, $1));
+				}
+	| compsym '.' INTEGER	{
+					/* a.5 compound symbol */
+					mpdm_apush($1,
+				  		INS1(MPSL_OP_LITERAL, $3));
+				  	$$ = $1;
+				}
+	| compsym '.' SYMBOL	{
+					/* a.b compound symbol */
+					mpdm_apush($1,
+				  		INS1(MPSL_OP_LITERAL, $3));
+				  	$$ = $1;
+				}
+	| compsym '[' expr ']'	{
+					/* a["b"] or a[5] compound symbol */
+					mpdm_apush($1, $3);
+					$$ = $1;
+				}
 	;
 
 expr:
-	INTEGER			{ $$ = INS1(MPSL_OP_LITERAL, $1); }
-	| STRING		{ $$ = INS1(MPSL_OP_LITERAL, $1); }
-	| REAL			{ $$ = INS1(MPSL_OP_LITERAL, $1); }
-	| compsym		{ mpdm_aset($1, MPDM_I(MPSL_OP_SYMVAL), 0); $$ = $1; }
-	| NULLV			{ $$ = INS1(MPSL_OP_LITERAL, NULL); }
+	INTEGER			{
+					/* literal integer */
+					$$ = INS1(MPSL_OP_LITERAL, $1);
+				}
+	| STRING		{
+					/* literal string */
+					$$ = INS1(MPSL_OP_LITERAL, $1);
+				}
+	| REAL			{
+					/* literal real number */
+					$$ = INS1(MPSL_OP_LITERAL, $1);
+				}
+	| compsym		{
+					/* compound symbol */
+					mpdm_aset($1, MPDM_I(MPSL_OP_SYMVAL), 0);
+					$$ = $1;
+				}
+	| NULLV			{
+					/* NULL value */
+					$$ = INS1(MPSL_OP_LITERAL, NULL);
+				}
 
-	| '-' expr %prec UMINUS	{ $$ = INS1(MPSL_OP_UMINUS, $2); }
+	| '-' expr %prec UMINUS	{
+					/* unary minus */
+					$$ = INS1(MPSL_OP_UMINUS, $2);
+				}
 
-	| expr '+' expr		{ $$ = INS2(MPSL_OP_ADD, $1, $3); }
-	| expr '-' expr		{ $$ = INS2(MPSL_OP_SUB, $1, $3); }
-	| expr '*' expr		{ $$ = INS2(MPSL_OP_MUL, $1, $3); }
-	| expr '/' expr		{ $$ = INS2(MPSL_OP_DIV, $1, $3); }
+	| expr '+' expr		{
+					/* math add */
+					$$ = INS2(MPSL_OP_ADD, $1, $3);
+				}
+	| expr '-' expr		{
+					/* math substract */
+					$$ = INS2(MPSL_OP_SUB, $1, $3);
+				}
+	| expr '*' expr		{
+					/* math multiply */
+					$$ = INS2(MPSL_OP_MUL, $1, $3);
+				}
+	| expr '/' expr		{
+					/* math division */
+					$$ = INS2(MPSL_OP_DIV, $1, $3);
+				}
 
 /*	| compsym INC		{ $$ = INS1(MPDM_LS(L"++"), $1); }
 	| compsym DEC		{ $$ = INS1(MPDM_LS(L"--"), $1); }
@@ -225,28 +337,76 @@ expr:
 	| compsym IMMMUL expr	{ $$ = INS2(MPDM_LS(L"*="), $1, $3); }
 	| compsym IMMDIV expr	{ $$ = INS2(MPDM_LS(L"/="), $1, $3); }*/
 
-	| expr '<' expr		{ $$ = INS2(MPSL_OP_NUMLT, $1, $3); }
-	| expr '>' expr		{ $$ = INS2(MPSL_OP_NUMLE, $3, $1); }
-	| expr NUMLE expr	{ $$ = INS2(MPSL_OP_NUMLE, $1, $3); }
-	| expr NUMGE expr	{ $$ = INS2(MPSL_OP_NUMLT, $3, $1); }
-	| expr NUMEQ expr       { $$ = INS2(MPSL_OP_NUMEQ, $1, $3); }
+	| expr '<' expr		{
+					/* bool less than */
+					$$ = INS2(MPSL_OP_NUMLT, $1, $3);
+				}
+	| expr '>' expr		{
+					/* bool greater than */
+					$$ = INS2(MPSL_OP_NUMLE, $3, $1);
+				}
+	| expr NUMLE expr	{
+					/* bool less or equal than */
+					$$ = INS2(MPSL_OP_NUMLE, $1, $3);
+				}
+	| expr NUMGE expr	{
+					/* bool greater or equal than */
+					$$ = INS2(MPSL_OP_NUMLT, $3, $1);
+				}
+	| expr NUMEQ expr       {
+					/* bool numeric equal */
+					$$ = INS2(MPSL_OP_NUMEQ, $1, $3);
+				}
 /*	| expr NUMNE expr       { $$ = INS2(MPDM_LS(L"NUMNE"), $1, $3); }*/
-	| expr STREQ expr       { $$ = INS2(MPSL_OP_STREQ, $1, $3); }
+	| expr STREQ expr       {
+					/* bool string equal */
+					$$ = INS2(MPSL_OP_STREQ, $1, $3);
+				}
 /*	| expr STRNE expr       { $$ = INS2(MPDM_LS(L"STRNE"), $1, $3); }*/
-	| expr BOOLAND expr	{ $$ = INS2(MPSL_OP_AND, $1, $3); }
-	| expr BOOLOR expr	{ $$ = INS2(MPSL_OP_OR, $1, $3); }
+	| expr BOOLAND expr	{
+					/* boolean and */
+					$$ = INS2(MPSL_OP_AND, $1, $3);
+				}
+	| expr BOOLOR expr	{
+					/* boolean or */
+					$$ = INS2(MPSL_OP_OR, $1, $3);
+				}
  
-	| '(' expr ')'		{ $$ = $2; }
+	| '(' expr ')'		{
+					/* parenthesized expression */
+					$$ = $2;
+				}
 
-	| '[' ']'		{ $$ = INS0(MPSL_OP_LIST); }
-	| '[' list ']'		{ $$ = $2; }
-	| expr RANGE expr	{ $$ = INS2(MPSL_OP_RANGE, $1, $3); }
+	| '[' ']'		{
+					/* empty list */
+					$$ = INS0(MPSL_OP_LIST);
+				}
+	| '[' list ']'		{
+					/* non-empty list */
+					$$ = $2;
+				}
+	| expr RANGE expr	{
+					/* build range from expressions */
+					$$ = INS2(MPSL_OP_RANGE, $1, $3);
+				}
 
-	| '{' '}'		{ $$ = INS0(MPSL_OP_HASH); }
-	| '{' hash '}'		{ $$ = $2; }
+	| '{' '}'		{
+					/* empty hash */
+					$$ = INS0(MPSL_OP_HASH);
+				}
+	| '{' hash '}'		{
+					/* non-empty hash */
+					$$ = $2;
+				}
 
-	| compsym '(' ')'	{ $$ = INS1(MPSL_OP_EXEC, $1); }
-	| compsym '(' list ')'	{ $$ = INS2(MPSL_OP_EXEC, $1, $3); }
+	| compsym '(' ')'	{
+					/* function call (without args) */
+					$$ = INS1(MPSL_OP_EXEC, $1);
+				}
+	| compsym '(' list ')'	{
+					/* function call (with args) */
+					$$ = INS2(MPSL_OP_EXEC, $1, $3);
+				}
 
 	;
 
