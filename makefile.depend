@@ -1,6 +1,6 @@
-fdm_a.o: fdm_a.c fdm.h
-fdm_d.o: fdm_d.c fdm.h
-fdm_h.o: fdm_h.c fdm.h
-fdm_s.o: fdm_s.c fdm.h
-fdm_v.o: fdm_v.c fdm.h
+fdm_a.o: fdm_a.c config.h fdm.h
+fdm_d.o: fdm_d.c config.h fdm.h
+fdm_h.o: fdm_h.c config.h fdm.h
+fdm_s.o: fdm_s.c config.h fdm.h
+fdm_v.o: fdm_v.c config.h fdm.h
 stress.o: stress.c fdm.h
