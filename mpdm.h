@@ -81,9 +81,6 @@ struct _mpdm_ctl
 
 extern struct _mpdm_ctl * _mpdm;
 
-mpdm_v mpdm_alloc(int flags);
-void mpdm_free(mpdm_v v);
-
 mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie);
 mpdm_v mpdm_ref(mpdm_v v);
 mpdm_v mpdm_unref(mpdm_v v);
