@@ -1,6 +1,9 @@
 TODO
 ====
 
+ * Create a new temporal value, stored inside struct _mpdm, for literal
+   strings to be found in hashes, to avoid creating over and over temporal
+   values that only clobber the barbage collection.
  * Each value should have a 'destroy' pointer to a function or scripting code
    that destroys v->data. For example, a call to regfree() in compiled
    regular expressions. So, normal MPDM_FREE values could include a standard
