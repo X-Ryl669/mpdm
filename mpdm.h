@@ -85,12 +85,15 @@ void mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb);
 mpdm_v mpdm_asplit(mpdm_v s, mpdm_v a);
 mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a);
 
-char * mpdm_string(mpdm_v v);
+wchar_t * mpdm_string(mpdm_v v);
 mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del);
 mpdm_v mpdm_strcat(mpdm_v s1, mpdm_v s2);
 int mpdm_cmp(mpdm_v v1, mpdm_v v2);
 int mpdm_ival(mpdm_v v);
+
 mpdm_v _mpdm_inew(int ival);
+mpdm_v _mpdm_new_wcs(wchar_t * s, int n, mpdm_v tie);
+mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie);
 
 int mpdm_hsize(mpdm_v h);
 mpdm_v mpdm_hget(mpdm_v h, mpdm_v k);
@@ -121,15 +124,20 @@ mpdm_v _mpdm_tie_cpy(void);
 mpdm_v _mpdm_tie_str(void);
 mpdm_v _mpdm_tie_lstr(void);
 mpdm_v _mpdm_tie_fre(void);
+mpdm_v _mpdm_tie_mbstowcs(void);
+mpdm_v _mpdm_tie_wcstombs(void);
 
 /* value creation utility macros */
 
 #define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n,_mpdm_tie_mul())
 #define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n,_mpdm_tie_mul())
-#define MPDM_LS(s)	mpdm_new(MPDM_STRING,s,-1,_mpdm_tie_lstr())
-#define MPDM_S(s)	mpdm_new(MPDM_STRING,s,-1,_mpdm_tie_str())
-#define MPDM_NS(s,n)	mpdm_new(MPDM_STRING,s,n,_mpdm_tie_str())
+#define MPDM_LS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_lstr())
+#define MPDM_S(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_str())
+#define MPDM_NS(s,n)	_mpdm_new_wcs(s,n,_mpdm_tie_str())
+
 #define MPDM_I(i)	_mpdm_inew((i))
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0,NULL)
 #define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
 #define MPDM_M(m,s)	mpdm_new(0,m,s,_mpdm_tie_cpy())
+#define MPDM_MBS(s)	_mpdm_new_mbs(s,-1,_mpdm_tie_mbstowcs())
+#define MPDM_2MBS(s)	_mpdm_new_wcs(s,-1,_mpdm_tie_wcstombs())

@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 #include "mpdm.h"
 
@@ -420,14 +421,14 @@ void mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
 mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
 {
 	mpdm_v w;
-	char * ptr;
-	char * sptr;
+	wchar_t * ptr;
+	wchar_t * sptr;
 
 	w=MPDM_A(0);
 
 	/* travels the string finding separators and creating new values */
 	for(ptr=v->data;
-		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
+		*ptr != L'\0' && (sptr=wcsstr(ptr, s->data)) != NULL;
 		ptr=sptr + mpdm_size(s))
 		mpdm_apush(w, MPDM_NS(ptr, sptr - ptr));
 
@@ -447,50 +448,6 @@ mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
  */
 mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 {
-#ifdef MPDM_OPT_RAW_AJOIN
-	mpdm_v v;
-	mpdm_v w;
-	int n, t;
-
-	/* special case optimization: only one element */
-	if(mpdm_size(a) == 1)
-		return(mpdm_aget(a, 0));
-
-	/* first counts the total size */
-	v=mpdm_aget(a, 0);
-	for(t=mpdm_size(v),n=1;n < mpdm_size(a);n++)
-	{
-		v=mpdm_aget(a, n);
-		t+=mpdm_size(v);
-	}
-
-	/* if there is a separator, update total size */
-	if(s != NULL)
-		t += mpdm_size(s) * (mpdm_size(a) - 1);
-
-	/* create the value */
-	w=mpdm_new(MPDM_STRING | MPDM_COPY, NULL, t);
-
-	/* copy now */
-	v=mpdm_aget(a, 0);
-	memcpy(w->data, v->data, mpdm_size(v));
-	for(t=mpdm_size(v),n=1;n < mpdm_size(a);n++)
-	{
-		v=mpdm_aget(a, n);
-
-		if(s != NULL)
-		{
-			memcpy(w->data + t, s->data, mpdm_size(s));
-			t += mpdm_size(s);
-		}
-
-		memcpy(w->data + t, v->data, mpdm_size(v));
-		t+=mpdm_size(v);
-	}
-
-	*((char *)(w->data + t))='\0';
-	return(w);
-#else
 	mpdm_v v;
 	int n;
 
@@ -508,7 +465,6 @@ mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 	}
 
 	return(v);
-#endif
 }
 
 

@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 #include "mpdm.h"
 
@@ -84,9 +85,9 @@ static mpdm_v _tie_regex(void)
 }
 
 
-static char * _regex_flags(mpdm_v r)
+static wchar_t * _regex_flags(mpdm_v r)
 {
-	return(strrchr((char *)r->data, *(char *)r->data));
+	return(wcsrchr((wchar_t *)r->data, *(wchar_t *)r->data));
 }
 
 
@@ -102,7 +103,6 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
 	/* search the regex in the cache */
 	if((c=mpdm_hget(_regex, r)) == NULL)
 	{
-		mpdm_v t;
 		regex_t re;
 		char * regex;
 		char * flags;
@@ -110,19 +110,20 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
 
 		/* not found; regex must be compiled */
 
+		/* convert to mbs */
+		r=MPDM_2MBS(r->data);
+
 		regex=(char *)r->data;
 		if((flags=strrchr(regex, *regex)) == NULL)
 			return(NULL);
 
 		if(strchr(flags, 'i') != NULL)
 			f |= REG_ICASE;
+
 		regex++;
+		*flags='\0';
 
-		/* creates a duplicate, skipping the first
-		   and last characters */
-		t=mpdm_new(r->flags, regex, flags - regex, _mpdm_tie_str());
-
-		if(!regcomp(&re, (char *)t->data, f))
+		if(!regcomp(&re, regex, f))
 		{
 			/* correctly compiled; create value */
 			c=mpdm_new(0, &re, sizeof(regex_t), _tie_regex());
@@ -156,6 +157,9 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 	/* compile the regex */
 	if((cr=_mpdm_regcomp(r)) != NULL)
 	{
+		/* convert to mbs */
+		v=MPDM_2MBS(v->data);
+
 		/* match? */
 		if(regexec((regex_t *) cr->data,
 			(char *) v->data + offset, 1,
@@ -192,18 +196,23 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset)
 	char * ptr;
 	regmatch_t rm;
 	int f, i;
-	char * global;
-
-	/* takes pointer to global flag */
-	if((global=_regex_flags(r)) != NULL)
-		global=strchr(global, 'g');
+	wchar_t * global;
+	mpdm_v t;
+	int woffset=offset;
 
 	/* compile the regex */
 	if((cr=_mpdm_regcomp(r)) != NULL)
 	{
+		/* takes pointer to global flag */
+		if((global=_regex_flags(r)) != NULL)
+			global=wcschr(global, 'g');
+
+		/* convert to mbs */
+		t=MPDM_2MBS(v->data);
+
 		do
 		{
-			ptr=(char *) v->data + offset;
+			ptr=(char *) t->data + offset;
 
 			/* try match */
 			f=!regexec((regex_t *) cr->data, ptr,
@@ -214,13 +223,15 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset)
 				/* size of the found string */
 				i=rm.rm_eo - rm.rm_so;
 
+				/* move on */
+				offset += rm.rm_eo;
+				woffset += rm.rm_so;
+
 				/* do the substitution */
-				v=mpdm_splice(v, s, offset + rm.rm_so, i);
+				v=mpdm_splice(v, s, woffset, i);
 				v=mpdm_aget(v, 0);
 
-				/* move on */
-				offset += rm.rm_so;
-				if(s != NULL) offset += mpdm_size(s);
+				woffset += mpdm_size(s);
 			}
 
 		} while(f && global);
