@@ -12,6 +12,8 @@ Release Critical Bugs
    be in plain mpdm; it should be part of mpsl.
  * 1049: Multiple instructions are buggy; they should always have
    two arguments.
+ * 1050: Document the virtual machine.
+ * 1051: Document the scripting language.
 
 Open Bugs
 ---------
