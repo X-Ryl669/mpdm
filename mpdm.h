@@ -32,7 +32,7 @@
 /* 'informative' flags */
 #define MPDM_HASH	0x00010000	/* data is a hash */
 #define MPDM_FILE	0x00020000	/* data is a FILE * */
-#define MPDM_BINCODE	0x00040000	/* data is executable binary code */
+#define MPDM_EXEC	0x00040000	/* data is 'executable' */
 
 #define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n)
 #define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH,NULL,n)
@@ -53,12 +53,13 @@ struct _mpdm_v
 };
 
 mpdm_v mpdm_new(int flags, void * data, int size);
-int mpdm_ref(mpdm_v v);
-int mpdm_unref(mpdm_v v);
+void mpdm_ref(mpdm_v v);
+void mpdm_unref(mpdm_v v);
 void mpdm_sweep(int count);
 
 mpdm_v mpdm_clone(mpdm_v v);
 mpdm_v mpdm_root(void);
+mpdm_v mpdm_exec(mpdm_v c, mpdm_v args);
 
 void mpdm_aexpand(mpdm_v a, int offset, int num);
 void mpdm_acollapse(mpdm_v a, int offset, int num);

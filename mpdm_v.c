@@ -158,9 +158,10 @@ mpdm_v mpdm_new(int flags, void * data, int size)
  *
  * Increments the reference count of a value.
  */
-int mpdm_ref(mpdm_v v)
+void mpdm_ref(mpdm_v v)
 {
-	return(v->ref++);
+	if(v != NULL)
+		v->ref++;
 }
 
 
@@ -170,9 +171,10 @@ int mpdm_ref(mpdm_v v)
  *
  * Decrements the reference count of a value.
  */
-int mpdm_unref(mpdm_v v)
+void mpdm_unref(mpdm_v v)
 {
-	return(v->ref--);
+	if(v != NULL)
+		v->ref--;
 }
 
 
@@ -286,4 +288,50 @@ mpdm_v mpdm_root(void)
 	}
 
 	return(_mpdm.root);
+}
+
+
+/**
+ * mpdm_exec - Executes an executable value
+ * @c: the code value
+ * @args: the arguments
+ *
+ * Executes an executable value. If @c is a scalar value, it's data
+ * should be a pointer to a directly executable C function with a
+ * prototype of mpdm_v func(mpdm_v args); if it's a  multiple one,
+ * the first value should be the function and the second
+ * the arguments (so, in this case, @args will be ignored). Virtual
+ * machines and compilers should use the second variant, with a pointer
+ * to the executor as the first argument and an array of executable
+ * code as the second.
+ *
+ * Returns the return value of the code. If @c is NULL or not executable,
+ * returns NULL.
+ */
+mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
+{
+	mpdm_v r=NULL;
+	mpdm_v (* func)(mpdm_v);
+
+	if(c != NULL && (c->flags & MPDM_EXEC))
+	{
+		if(c->flags & MPDM_MULTIPLE)
+		{
+			/* if it's multiple, first arg should
+			   be the function and second the args */
+			r=mpdm_exec(mpdm_aget(c, 0), mpdm_aget(c, 1));
+		}
+		else
+		{
+			mpdm_ref(args);
+
+			/* value is a pointer to function */
+			func=(mpdm_v (*)(mpdm_v))(c->data);
+			if(func) r=func(args);
+
+			mpdm_unref(args);
+		}
+	}
+
+	return(r);
 }
