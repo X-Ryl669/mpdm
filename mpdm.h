@@ -74,7 +74,6 @@ struct _mpdm_ctl
 	mpdm_v head;		/* head of values */
 	mpdm_v tail;		/* tail of values */
 	int count;		/* total count of values */
-	int lcount;		/* last count seen in mpdm_sweep() */
 	int low_threshold;	/* minimum number of values to sweep */
 	int high_threshold;	/* maximum number to trigger auto-sweep */
 	int nd_index;		/* index to next non-dyn value */
