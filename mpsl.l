@@ -84,7 +84,6 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "else"		return ELSE;
 "sub"		return SUB;
 "foreach"	return FOREACH;
-"dump"		return DUMP;
 
 "=="		return NUMEQ;
 "!="		return NUMNE;
