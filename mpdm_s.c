@@ -131,12 +131,15 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 		/* never add further the end */
 		if(offset > os) offset=os;
 
-		/* never delete further the end */
-		if(offset + del > os) del=os - offset;
-
-		/* deleted space */
+		/* something to delete? */
 		if(del > 0)
+		{
+			/* never delete further the end */
+			if(offset + del > os) del=os - offset;
+
+			/* deleted string */
 			d=MPDM_NS(((wchar_t *) v->data) + offset, del);
+		}
 
 		/* something to insert? */
 		ins=mpdm_size(i);
@@ -165,10 +168,11 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 		}
 
 		/* copy the remaining */
-		if(os - r > 0)
+		os -= r;
+		if(os > 0)
 		{
-			wcsncpy(ptr, ((wchar_t *) v->data) + r, os - r);
-			ptr += (os - r);
+			wcsncpy(ptr, ((wchar_t *) v->data) + r, os);
+			ptr += os;
 		}
 
 		/* null terminate */
