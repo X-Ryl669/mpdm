@@ -352,8 +352,9 @@ void fdm_asort(fdm_v a, int step)
  * @del: number of characters to delete
  *
  * Creates a new string value from @v, deleting @del chars
- * at @offset and substituting them by @i. Returns a
- * two element array, with the new string in the first
+ * at @offset and substituting them by @i.
+ *
+ * Returns a two element array, with the new string in the first
  * element and the deleted string in the second.
  */
 fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
@@ -364,9 +365,13 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	int ns, r;
 	int ins=0;
 
-	/* adjustments */
+	/* negative offsets start from the end */
 	if(offset < 0) offset=v->size + 1 - offset;
+
+	/* never add further the end */
 	if(offset > v->size) offset=v->size;
+
+	/* never delete further the end */
 	if(offset + del > v->size) del=v->size - offset;
 
 	/* deleted space */
@@ -389,15 +394,19 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
 		return(NULL);
 
+	/* copy the beginning */
 	if(offset > 0)
 		memcpy(n->data, v->data, offset);
 
+	/* copy the text to be inserted */
 	if(ins > 0)
 		memcpy(n->data + offset, i->data, ins);
 
+	/* copy the remaining */
 	if(v->size - r > 0)
 		memcpy(n->data + offset + ins, v->data + r, v->size - r);
 
+	/* null terminate */
 	((char *)(n->data))[ns]='\0';
 
 	/* creates the output array */
