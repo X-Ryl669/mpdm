@@ -1,13 +1,6 @@
 TODO
 ====
 
- * In the 'persistent hashes' or 'disk hashes', add a fallthrough basic
-   driver that stores the hash in disk as a text file, but works as a
-   normal hash in any other case. The hash will be dumped to disk on
-   destroy time. But a problem arises: that hash (and any dbm hash, by
-   the way) will probably never be destroyed unless at exit ALL values are.
-   Add a flag (DESTROY) and an atexit() function that travels the list
-   of values and destroys all of them (even ignoring the reference count).
  * Beyond ties: suppress all flags (except some internal ones as IVAL
    or EXEC). Everything should be done with ties; for example, there
    should exist a _CMP tie function that would be executed when two
