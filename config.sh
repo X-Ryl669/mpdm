@@ -63,18 +63,30 @@ if [ "$CC" = "" ] ; then
 	fi
 fi
 
+echo "CC=$CC" >> makefile.opts
+
+# set cflags
+if [ "$CFLAGS" = "" ] ; then
+	CFLAGS="-g -Wall"
+fi
+
+echo "CFLAGS=$CFLAGS" >> makefile.opts
+
+# Add CFLAGS to CC
+CC="$CC $CFLAGS"
+
 # set archiver
 if [ "$AR" = "" ] ; then
 	AR=ar
 fi
+
+echo "AR=$AR" >> makefile.opts
 
 # set parser
 if [ "$YACC" = "" ] ; then
 	YACC=yacc
 fi
 
-echo "CC=$CC" >> makefile.opts
-echo "AR=$AR" >> makefile.opts
 echo "YACC=$YACC" >> makefile.opts
 
 # add version
