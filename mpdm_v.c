@@ -51,6 +51,10 @@ static struct
 	Code
 ********************/
 
+#define _fdm_alloc() (fdm_v)malloc(sizeof(struct _fdm_v))
+#define _fdm_free(v) free(v)
+
+
 fdm_v _fdm_new(int flags, void * data, int size)
 /* Creates a new value (overriding cache) */
 {
@@ -79,7 +83,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	}
 
 	/* alloc new value and init */
-	if((v=(fdm_v) malloc(sizeof(struct _fdm_v))) == NULL)
+	if((v=_fdm_alloc()) == NULL)
 		return(NULL);
 
 	memset(v, '\0', sizeof(struct _fdm_v));
@@ -301,7 +305,7 @@ void fdm_sweep(int count)
 				free(v->data);
 
 			/* free the value itself */
-			free(v);
+			_fdm_free(v);
 
 			/* one value less */
 			_fdm.count--;
