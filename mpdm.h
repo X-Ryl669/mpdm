@@ -40,3 +40,9 @@ struct _fdm_v
 	void * data;	/* the real data */
 	fdm_v next;	/* next in chain */
 };
+
+int fdm_ref(fdm_v v);
+int fdm_unref(fdm_v v);
+fdm_v fdm_new(int tag, void * data, int size);
+void fdm_sweep(int count);
+int fdm_cmp(fdm_v v1, fdm_v v2);
