@@ -47,6 +47,18 @@ static struct
 	Code
 ********************/
 
+static void * _fdm_malloc(size_t size)
+{
+	return(malloc(size));
+}
+
+
+static void _fdm_free(void * ptr)
+{
+	free(ptr);
+}
+
+
 static void _fdm_nref(fdm_v v[], int count, int iref)
 {
 	int n;
@@ -63,12 +75,7 @@ fdm_v _fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
 	char tmp[32];
-
-	/* alloc new value and init */
-	if((v=(fdm_v) malloc(sizeof(struct _fdm_v))) == NULL)
-		return(NULL);
-
-	memset(v, '\0', sizeof(struct _fdm_v));
+	int ival=0;
 
 	/* sanity checks */
 	if(tag & FDM_MULTIPLE)
@@ -81,8 +88,8 @@ fdm_v _fdm_new(int tag, void * data, int size)
 	/* is data an integer? */
 	if(tag & FDM_INTEGER)
 	{
-		v->ival=(int) data;
-		snprintf(tmp, sizeof(tmp) - 1,"%d", v->ival);
+		ival=(int) data;
+		snprintf(tmp, sizeof(tmp) - 1, "%d", v->ival);
 		data=tmp;
 
 		/* force copy, string and calculation */
@@ -95,16 +102,20 @@ fdm_v _fdm_new(int tag, void * data, int size)
 	{
 		/* only size of string values can be calculated */
 		if(data == NULL || !(tag & FDM_STRING))
-		{
-			free(v);
 			return(NULL);
-		}
 
 		size=strlen((char *) data);
 	}
 
+	/* alloc new value and init */
+	if((v=(fdm_v) _fdm_malloc(sizeof(struct _fdm_v))) == NULL)
+		return(NULL);
+
+	memset(v, '\0', sizeof(struct _fdm_v));
+
 	v->tag=tag;
 	v->size=size;
+	v->ival=ival;
 
 	if((tag & FDM_COPY) && size)
 	{
@@ -113,7 +124,7 @@ fdm_v _fdm_new(int tag, void * data, int size)
 		s=(tag & FDM_MULTIPLE) ? size * sizeof(fdm_v) : size;
 
 		/* alloc new space for data */
-		if((v->data=malloc(s + 1)) == NULL)
+		if((v->data=_fdm_malloc(s + 1)) == NULL)
 			return(NULL);
 
 		/* zero or copy the block */
@@ -314,10 +325,10 @@ void fdm_sweep(int count)
 				_fdm_nref((fdm_v *)v->data, v->size, -1);
 
 			/* free data if local copy */
-			if(v->tag & FDM_COPY) free(v->data);
+			if(v->tag & FDM_COPY) _fdm_free(v->data);
 
 			/* free the value itself */
-			free(v);
+			_fdm_free(v);
 
 			/* one value less */
 			_fdm.count --;
