@@ -48,6 +48,9 @@
 	Data
 ********************/
 
+/* matching of the last regex */
+static regmatch_t rm;
+
 /*******************
 	Code
 ********************/
@@ -158,38 +161,47 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 {
 	mpdm_v cr;
 	mpdm_v w=NULL;
-	regmatch_t rm;
 
-	/* compile the regex */
-	if((cr=_mpdm_regcomp(r)) != NULL)
+	if(r->flags & MPDM_MULTIPLE)
 	{
-		mpdm_v vmb;
+	}
+	else
+	{
+		/* single value; really do the regex */
 
-		/* convert to mbs */
-		vmb=MPDM_2MBS(v->data);
-
-		/* match? */
-		if(regexec((regex_t *) cr->data,
-			(char *) vmb->data + offset, 1,
-			&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
+		/* compile the regex */
+		if((cr=_mpdm_regcomp(r)) != NULL)
 		{
-			wchar_t * ptr=_regex_flags(r);
+			mpdm_v vmb;
 
-			/* found; test if coordinates wanted */
-			if(wcschr(ptr, 'c') != NULL)
+			/* convert to mbs */
+			vmb=MPDM_2MBS(v->data);
+
+			/* match? */
+			if(regexec((regex_t *) cr->data,
+				(char *) vmb->data + offset, 1,
+				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
-				w=MPDM_A(2);
+				wchar_t * ptr=_regex_flags(r);
 
-				mpdm_aset(w, MPDM_I(offset + rm.rm_so), 0);
-				mpdm_aset(w, MPDM_I(rm.rm_eo - rm.rm_so), 1);
-			}
-			else
-			{
-				/* just the found string wanted */
-				ptr=v->data;
+				/* found; test if coordinates wanted */
+				if(wcschr(ptr, 'c') != NULL)
+				{
+					w=MPDM_A(2);
 
-				w=MPDM_NS(ptr + offset + rm.rm_so,
-					rm.rm_eo - rm.rm_so);
+					mpdm_aset(w,
+						MPDM_I(offset + rm.rm_so), 0);
+					mpdm_aset(w,
+						MPDM_I(rm.rm_eo - rm.rm_so), 1);
+				}
+				else
+				{
+					/* just the found string wanted */
+					ptr=v->data;
+
+					w=MPDM_NS(ptr + offset + rm.rm_so,
+						rm.rm_eo - rm.rm_so);
+				}
 			}
 		}
 	}
@@ -217,7 +229,6 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset)
 {
 	mpdm_v cr;
 	char * ptr;
-	regmatch_t rm;
 	int f, i;
 	wchar_t * global;
 	mpdm_v t;
