@@ -316,7 +316,7 @@ mpdm_v _mpdm_rnew(double rval)
 	char tmp[128];
 
 	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp), "%lf", rval);
+	snprintf(tmp, sizeof(tmp), "%lg", rval);
 	mbstowcs(wtmp, tmp, sizeof(wtmp));
 
 	v=MPDM_S(wtmp);
