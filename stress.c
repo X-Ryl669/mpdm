@@ -463,8 +463,8 @@ void test_file(void)
 	_test("unlink", mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r")) == NULL);
 
 /*	v=mpdm_glob(MPDM_LS(L"*"));*/
-	v=mpdm_glob(NULL);
-	mpdm_dump(v);
+/*	v=mpdm_glob(NULL);
+	mpdm_dump(v);*/
 }
 
 

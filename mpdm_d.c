@@ -81,7 +81,7 @@ void _mpdm_dump(mpdm_v v, int l)
 		wchar_t tmp[32];
 
 		/* build flag information */
-		swprintf(tmp, sizeof(tmp) / sizeof(wchar_t),
+		SWPRINTF(tmp, sizeof(tmp) / sizeof(wchar_t),
 		L"%d,%c%c%c:", v->ref,
 		v->flags & MPDM_FILE	? 'F' :
 			(v->flags & MPDM_STRING	? 'S' :
@@ -97,7 +97,7 @@ void _mpdm_dump(mpdm_v v, int l)
 		   of elements */
 		if(v->flags & MPDM_MULTIPLE)
 		{
-			swprintf(tmp, sizeof(tmp) / sizeof(wchar_t),
+			SWPRINTF(tmp, sizeof(tmp) / sizeof(wchar_t),
 				L"[%d] ", mpdm_size(v));
 			mpdm_apush(w, MPDM_S(tmp));
 		}

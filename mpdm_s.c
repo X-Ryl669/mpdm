@@ -58,7 +58,7 @@ wchar_t * mpdm_string(mpdm_v v)
 		return((wchar_t *)v->data);
 
 	/* otherwise, return a visual representation */
-	swprintf(tmp, sizeof(tmp) / sizeof(wchar_t), L"%p", v);
+	SWPRINTF(tmp, sizeof(tmp) / sizeof(wchar_t), L"%p", v);
 
 	return(tmp);
 }
@@ -241,7 +241,7 @@ mpdm_v _mpdm_inew(int ival)
 	wchar_t tmp[32];
 
 	/* creates the visual representation */
-	swprintf(tmp, (sizeof(tmp) / sizeof(wchar_t)), L"%d", ival);
+	SWPRINTF(tmp, (sizeof(tmp) / sizeof(wchar_t)), L"%d", ival);
 
 	v=MPDM_S(tmp);
 	v->flags |= MPDM_IVAL;
