@@ -227,6 +227,39 @@ void test_asplit(void)
 }
 
 
+void test_ajoin(void)
+{
+	fdm_v v;
+	fdm_v s;
+	fdm_v w;
+
+	printf("fdm_ajoin test\n\n");
+
+	/* separator */
+	s=FDM_LS("--");
+
+	w=FDM_A(1);
+	fdm_aset(w, FDM_S("ce"), 0);
+
+	v=fdm_ajoin(NULL, w);
+	_test("1 elem, no separator", (fdm_cmp(v, FDM_LS("ce")) == 0));
+
+	v=fdm_ajoin(s, w);
+	_test("1 elem, '--' separator", (fdm_cmp(v, FDM_LS("ce")) == 0));
+
+	fdm_apush(w, FDM_LS("n'est"));
+	v=fdm_ajoin(s, w);
+	_test("2 elems, '--' separator", (fdm_cmp(v, FDM_LS("ce--n'est")) == 0));
+
+	fdm_apush(w, FDM_LS("pas"));
+	v=fdm_ajoin(s, w);
+	_test("3 elems, '--' separator", (fdm_cmp(v, FDM_LS("ce--n'est--pas")) == 0));
+
+	v=fdm_ajoin(NULL, w);
+	_test("3 elems, no separator", (fdm_cmp(v, FDM_LS("cen'estpas")) == 0));
+}
+
+
 void test_sym(void)
 {
 	fdm_v v;
@@ -258,10 +291,11 @@ int main(void)
 	test_hash();
 	test_splice();
 	test_asplit();
+	test_ajoin();
 	test_sym();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
-	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS FAILED");
+	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS ---FAILED---");
 
 	return(0);
 }

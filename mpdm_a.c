@@ -468,6 +468,7 @@ fdm_v fdm_asplit(fdm_v s, fdm_v v)
  */
 fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 {
+#ifdef FDM_OPT_RAW_AJOIN
 	fdm_v v;
 	fdm_v w;
 	int n, t;
@@ -510,4 +511,27 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 
 	*((char *)(w->data + t))='\0';
 	return(w);
+#else
+	fdm_v v;
+	int n;
+
+	/* unoptimized, but intelligible join */
+	v=fdm_aget(a, 0);
+
+	for(n=1;n < a->size;n++)
+	{
+		if(s != NULL)
+		{
+			/* add separator */
+			v=fdm_splice(v, s, -1, 0);
+			v=fdm_aget(v, 0);
+		}
+
+		/* add element */
+		v=fdm_splice(v, fdm_aget(a, n), -1, 0);
+		v=fdm_aget(v, 0);
+	}
+
+	return(v);
+#endif
 }

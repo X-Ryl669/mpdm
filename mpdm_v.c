@@ -84,7 +84,7 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	v->flags=flags;
 
 	if(flags & FDM_MULTIPLE)
-		fdm_aexpand(v, NULL, size);
+		fdm_aexpand(v, 0, size);
 	else
 	if(flags & FDM_COPY)
 	{
