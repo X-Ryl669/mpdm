@@ -14,6 +14,12 @@ Release Critical Bugs
    implemented as a ';' instruction with the local and the assignation
    part and the arguments to LOCAL and to '=' should be instructions and
    not values.
+ * 1043: Change mpdm_write() so that it doesn't use printf(), but
+   wcstombs() and an small local buffer.
+ * 1044: mpdm_write() should include a 3rd argument, a separator
+   for the end of line.
+ * 1045: mpdm_dump() should not use printf() for mpdm_string(), but
+   convert by hand using wcstombs().
 
 Open Bugs
 ---------
