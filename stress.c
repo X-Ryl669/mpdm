@@ -1132,7 +1132,7 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("mysum 2", mpdm_ival(v) == 2500);
 
-	w=MPDM_A(2);
+	w=mpdm_ref(MPDM_A(2));
 	mpdm_aset(w, MPDM_I(100), 0);
 	mpdm_aset(w, MPDM_I(50), 1);
 
@@ -1161,6 +1161,8 @@ void test_mpsl2(void)
 	/* executes gcd(100, 75); */
 	mpdm_aset(w, MPDM_I(75), 1);
 	_test("gcd() 2", mpdm_ival(mpdm_exec(v, w)) == 25);
+
+	mpdm_unref(w);
 
 	/* string concatenation */
 	v=_test_mpsl("\"big\" ~ \" lebowski\";");
@@ -1275,6 +1277,16 @@ int main(void)
 	test_mpsl();
 	test_mpsl2();
 	test_mpsl3();
+
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
+	mpdm_sweep(-1);
 
 	mpdm_shutdown();
 
