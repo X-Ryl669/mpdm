@@ -34,24 +34,6 @@
 	Code
 ********************/
 
-char * fdm_printable(fdm_v v)
-{
-	static char tmp[32];
-
-	/* if it's NULL, return a constant */
-	if(v == NULL)
-		return("[NULL]");
-
-	/* if it's a string, return it */
-	if(v->flags & FDM_STRING)
-		return((char *)v->data);
-
-	/* otherwise, convert to printable */
-	snprintf(tmp, sizeof(tmp), "%p", v->data);
-	return(tmp);
-}
-
-
 void _fdm_dump(fdm_v v, int l)
 {
 	int n;
