@@ -278,7 +278,10 @@ _O_TYPE _mpsl_exec_i(_O_ARGS);
 #define BOOL mpsl_boolean
 #define ISTRU mpsl_is_true
 
-_O_TYPE _O_multi(_O_ARGS) { mpdm_v v=M1; if(!*f) v=M2; return(v); }
+#define RF(v) mpdm_ref(v)
+#define UF(v) mpdm_unref(v)
+
+_O_TYPE _O_multi(_O_ARGS) { mpdm_v v=RF(M1); if(!*f) v=RF(M2); return(UF(v)); }
 _O_TYPE _O_literal(_O_ARGS) { return(mpdm_clone(C1)); }
 _O_TYPE _O_symval(_O_ARGS) { return(GET(M1)); }
 _O_TYPE _O_assign(_O_ARGS) { return(SET(M1, M2)); }
@@ -303,12 +306,12 @@ _O_TYPE _O_strcat(_O_ARGS) { return(mpdm_strcat(M1, M2)); }
 _O_TYPE _O_streq(_O_ARGS) { return(BOOL(mpdm_cmp(M1, M2) == 0)); }
 _O_TYPE _O_immpinc(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) + 1))); }
 _O_TYPE _O_immpdec(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) - 1))); }
-_O_TYPE _O_immadd(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) + RM2))); }
-_O_TYPE _O_immsub(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) - RM2))); }
-_O_TYPE _O_immmul(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) * RM2))); }
-_O_TYPE _O_immdiv(_O_ARGS) { mpdm_v s=M1; return(SET(s, MPDM_R(R(GET(s)) / RM2))); }
-_O_TYPE _O_immsinc(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) + 1)); return(v); }
-_O_TYPE _O_immsdec(_O_ARGS) { mpdm_v s=M1; mpdm_v v=GET(s); SET(s, MPDM_R(R(v) - 1)); return(v); }
+_O_TYPE _O_immadd(_O_ARGS) { mpdm_v s=RF(M1); return(SET(UF(s), MPDM_R(R(GET(s)) + RM2))); }
+_O_TYPE _O_immsub(_O_ARGS) { mpdm_v s=RF(M1); return(SET(UF(s), MPDM_R(R(GET(s)) - RM2))); }
+_O_TYPE _O_immmul(_O_ARGS) { mpdm_v s=RF(M1); return(SET(UF(s), MPDM_R(R(GET(s)) * RM2))); }
+_O_TYPE _O_immdiv(_O_ARGS) { mpdm_v s=RF(M1); return(SET(UF(s), MPDM_R(R(GET(s)) / RM2))); }
+_O_TYPE _O_immsinc(_O_ARGS) { mpdm_v s=RF(M1); mpdm_v v=GET(s); SET(UF(s), MPDM_R(R(v) + 1)); return(v); }
+_O_TYPE _O_immsdec(_O_ARGS) { mpdm_v s=RF(M1); mpdm_v v=GET(s); SET(UF(s), MPDM_R(R(v) - 1)); return(v); }
 _O_TYPE _O_numeq(_O_ARGS) { mpdm_v v1=M1; mpdm_v v2=M2; return(BOOL((v1 == NULL || v2 == NULL) ? (v1 == v2) : (R(v1) == R(v2)))); }
 _O_TYPE _O_break(_O_ARGS) { *f=1; return(NULL); }
 _O_TYPE _O_return(_O_ARGS) { mpdm_v v=M1; *f=-1; return(v); }
@@ -316,8 +319,8 @@ _O_TYPE _O_return(_O_ARGS) { mpdm_v v=M1; *f=-1; return(v); }
 _O_TYPE _O_foreach(_O_ARGS)
 /* foreach loop */
 {
-	mpdm_v s=M1;
-	mpdm_v v=M2;
+	mpdm_v s=RF(M1);
+	mpdm_v v=RF(M2);
 	int n;
 
 	for(n=0;n < mpdm_size(v) && ! *f;n++)
@@ -327,6 +330,8 @@ _O_TYPE _O_foreach(_O_ARGS)
 	}
 
 	if(*f == 1) *f=0;
+
+	UF(s); UF(v);
 
 	return(NULL);
 }
@@ -355,12 +360,12 @@ _O_TYPE _O_list(_O_ARGS)
 /* build list from instructions */
 {
 	int n;
-	mpdm_v ret=MPDM_A(mpdm_size(c) - 1);
+	mpdm_v ret=RF(MPDM_A(mpdm_size(c) - 1));
 
 	for(n=1;n < mpdm_size(c);n++)
 		mpdm_aset(ret, M(n), n - 1);
 
-	return(ret);
+	return(UF(ret));
 }
 
 
@@ -368,12 +373,12 @@ _O_TYPE _O_hash(_O_ARGS)
 /* build hash from instructions */
 {
 	int n;
-	mpdm_v ret=MPDM_H(0);
+	mpdm_v ret=RF(MPDM_H(0));
 
 	for(n=1;n < mpdm_size(c);n += 2)
 		mpdm_hset(ret, M(n), M(n + 1));
 
-	return(ret);
+	return(UF(ret));
 }
 
 _O_TYPE _O_subframe(_O_ARGS)
