@@ -47,6 +47,26 @@ static int _mpdm_hash_func(unsigned char * string, int mod)
 }
 
 
+/**
+ * mpdm_hsize - Returns the number of pairs of a hash
+ * @h: the hash
+ *
+ * Returns the number of key-value pairs of a hash.
+ */
+int mpdm_hsize(mpdm_v h)
+{
+	int r;
+	mpdm_v t;
+
+	if((t=mpdm_get_tie(h, MPDM_TIE_HSIZE)) != NULL)
+		r=mpdm_ival(mpdm_exec(t, h));
+	else
+		r=h->ival;
+
+	return(r);
+}
+
+
 #define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
 
 /**
@@ -63,6 +83,17 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 	mpdm_v b;
 	mpdm_v v = NULL;
 
+	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
+	{
+		mpdm_v w;
+
+		w=MPDM_A(2);
+		mpdm_aset(w, h, 0);
+		mpdm_aset(w, k, 1);
+
+		v=mpdm_exec(b, w);
+	}
+	else
 	if(mpdm_size(h))
 	{
 		if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
@@ -91,6 +122,18 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 	int n, pos;
 	mpdm_v b;
 	mpdm_v p = NULL;
+
+	if((b=mpdm_get_tie(h, MPDM_TIE_HSET)) != NULL)
+	{
+		mpdm_v w;
+
+		w=MPDM_A(3);
+		mpdm_aset(w, h, 0);
+		mpdm_aset(w, k, 1);
+		mpdm_aset(w, v, 2);
+
+		return(mpdm_exec(b, w));
+	}
 
 	/* if hash is empty, create an optimal number of buckets */
 	if(mpdm_size(h) == 0)
@@ -146,15 +189,26 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 {
 	int n;
 	mpdm_v b;
-	mpdm_v p = NULL;
+	mpdm_v v = NULL;
 
+	if((b=mpdm_get_tie(h, MPDM_TIE_HDEL)) != NULL)
+	{
+		mpdm_v w;
+
+		w=MPDM_A(2);
+		mpdm_aset(w, h, 0);
+		mpdm_aset(w, k, 1);
+
+		v=mpdm_exec(b, w);
+	}
+	else
 	if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
 	{
 		if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
 		{
 			/* the pair exists: set both to NULL */
 			mpdm_aset(b, NULL, n);
-			p=mpdm_aset(b, NULL, n + 1);
+			v=mpdm_aset(b, NULL, n + 1);
 
 			/* collapse the bucket */
 			mpdm_acollapse(b, n, 2);
@@ -164,7 +218,7 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 		}
 	}
 
-	return(p);
+	return(v);
 }
 
 
@@ -180,7 +234,10 @@ mpdm_v mpdm_hkeys(mpdm_v h)
 	mpdm_v a;
 	mpdm_v b;
 
-	a=MPDM_A(mpdm_ival(h));
+	if((b=mpdm_get_tie(h, MPDM_TIE_HKEYS)) != NULL)
+		return(mpdm_exec(b, h));
+
+	a=MPDM_A(mpdm_hsize(h));
 
 	for(n=i=0;n < mpdm_size(h);n++)
 	{

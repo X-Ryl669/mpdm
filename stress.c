@@ -52,6 +52,7 @@ void test_basic(void)
 {
 	int i;
 	mpdm_v v;
+	mpdm_v w;
 
 	v=MPDM_S("65536");
 	i=mpdm_ival(v);
@@ -64,9 +65,23 @@ void test_basic(void)
 
 	/* partial copies of strings */
 	v=MPDM_LS("this is not America");
-	v=mpdm_new(MPDM_STRING|MPDM_COPY, (char *)v->data + 4, 4);
+	v=MPDM_NS((char *)v->data + 4, 4);
 
 	_test("Partial string values", mpdm_cmp(v, MPDM_LS(" is ")) == 0);
+
+	v=MPDM_S("MUAHAHAHA!");
+	_test("Testing mpdm_clone semantics 1", mpdm_clone(v) == v);
+
+	v=MPDM_A(2);
+	mpdm_aset(v, MPDM_S("evil"), 0);
+	mpdm_aset(v, MPDM_S("dead"), 1);
+	w=mpdm_clone(v);
+
+	_test("Testing mpdm_clone semantics 2.1", w != v);
+
+	v=mpdm_aget(v, 0);
+	_test("Testing mpdm_clone semantics 2.2", v->ref > 1);
+	_test("Testing mpdm_clone semantics 2.3", mpdm_aget(w, 0) == v);
 }
 
 

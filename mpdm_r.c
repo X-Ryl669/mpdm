@@ -47,51 +47,84 @@
 	Data
 ********************/
 
-/* the regex cache */
-mpdm_v _mpdm_regex_cache=NULL;
-mpdm_v _mpdm_iregex_cache=NULL;
-
 /*******************
 	Code
 ********************/
 
+static mpdm_v _tie_d(mpdm_v v)
+{
+	if(v->data != NULL)
+	{
+		/* frees the regex data */
+		regfree((regex_t *)v->data);
+
+		/* frees the struct itself */
+		free(v->data);
+		v->data=NULL;
+	}
+
+	return(NULL);
+}
+
+
+static mpdm_v _tie_regex(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		/* creates a clone of the cpy tie */
+		_tie=mpdm_ref(mpdm_clone(_mpdm_tie_cpy()));
+
+		/* replaces the destructor with its own */
+		mpdm_aset(_tie, MPDM_X(_tie_d), MPDM_TIE_DESTROY);
+	}
+
+	return(_tie);
+}
+
+
 mpdm_v _mpdm_regcomp(mpdm_v r, char * flags)
 {
+	static mpdm_v _regex_cache=NULL;
+	static mpdm_v _iregex_cache=NULL;
 	mpdm_v cr;
 	mpdm_v c;
 	int f;
 
 	/* if cache does not exist, create it */
-	if(_mpdm_regex_cache == NULL)
+	if(_regex_cache == NULL)
 	{
-		mpdm_ref(_mpdm_regex_cache=MPDM_H(0));
-		mpdm_ref(_mpdm_iregex_cache=MPDM_H(0));
+		_regex_cache=mpdm_ref(MPDM_H(0));
+		_iregex_cache=mpdm_ref(MPDM_H(0));
 	}
 
 	/* flags */
 	if(flags != NULL && strchr(flags, 'i') != NULL)
 	{
-		c=_mpdm_iregex_cache;
+		c=_iregex_cache;
 		f=REG_ICASE;
 	}
 	else
 	{
-		c=_mpdm_regex_cache;
+		c=_regex_cache;
 		f=0;
 	}
 
 	/* search the regex in the cache */
 	if((cr=mpdm_hget(c, r)) == NULL)
 	{
+		regex_t re;
+
 		/* not found; regex must be compiled */
-		cr=mpdm_new(MPDM_COPY, NULL, sizeof(regex_t));
+		if(!regcomp(&re, (char *)r->data, REG_EXTENDED | f))
+		{
+			/* correctly compiled; create value */
+			cr=mpdm_new(0, &re, sizeof(regex_t), _tie_regex());
 
-		if(regcomp((regex_t *) cr->data,
-			(char *) r->data, REG_EXTENDED | f))
-			return(NULL);
-
-		/* stores */
-		mpdm_hset(c, r, cr);
+			/* stores */
+			mpdm_hset(c, r, cr);
+		}
 	}
 
 	return(cr);
@@ -109,7 +142,7 @@ mpdm_v _mpdm_regcomp(mpdm_v r, char * flags)
  * that can contain an 'i' for case-insensitive matches, or NULL.
  *
  * If the regex is matched, returns a two value array containing
- * the start and stop offsets of the matched string, or NULL otherwise.
+ * the offset and size of the matched string, or NULL otherwise.
  */
 mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset, char * flags)
 {
@@ -129,7 +162,7 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset, char * flags)
 			w=MPDM_A(2);
 
 			mpdm_aset(w, MPDM_I(offset + rm.rm_so), 0);
-			mpdm_aset(w, MPDM_I(offset + rm.rm_eo), 1);
+			mpdm_aset(w, MPDM_I(rm.rm_eo - rm.rm_so), 1);
 		}
 	}
 

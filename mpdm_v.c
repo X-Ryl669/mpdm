@@ -60,41 +60,20 @@ static struct
  * @flags: flags
  * @data: pointer to real data
  * @size: size of data
+ * @tie: array of functions
  *
- * Creates a new value. @flags is an or-ed set of flags,
- * @data is a pointer to the data the value will
- * store and @size the size of these data. The flags in @tag define
- * how the data will be stored and its behaviour:
+ * Creates a new value. @flags is an or-ed set of flags, @data is a
+ * pointer to the data the value will store, @size the size of these
+ * data (if value is to be a multiple one, @size is a number of elements,
+ * or a number of bytes otherwise) and @tie an optional multiple
+ * value with an array of functions (see tie documentation).
  *
- * If the MPDM_COPY flag is set, the value will store a copy of the data
- * using an allocated block of memory. Otherwise, the @data pointer is
- * stored inside the value as is. MPDM_COPY implies MPDM_FREE.
- *
- * If MPDM_STRING is set, it means @data can be treated as a string
- * (i.e., operations like strcmp() or strlen() can be done on it).
- * Otherwise, @data is treated as an opaque value. For MPDM_STRING
- * values, @size can be -1 to force a calculation using strlen().
- * This flag is incompatible with MPDM_MULTIPLE.
- *
- * IF MPDM_MULTIPLE is set, it means the value itself is an array
- * of values. @Size indicates the number of elements instead of
- * a quantity in bytes. MPDM_MULTIPLE implies MPDM_COPY and not
- * MPDM_STRING, and @data is ignored.
- *
- * If MPDM_FREE is set, memory in @data will be released using free()
- * when the value is destroyed.
- *
- * There are other informative flags that do nothing but describe
- * the information stored in the value: they are MPDM_HASH, MPDM_FILE
- * and MPDM_EXEC.
+ * This function is normally not directly used; use any of the type
+ * creation macros instead.
  */
-mpdm_v mpdm_new(int flags, void * data, int size)
+mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 {
 	mpdm_v v;
-
-	/* a size of -1 means 'calculate it' */
-	if(size == -1 && (flags & MPDM_STRING) && data != NULL)
-		size=strlen((char *) data);
 
 	/* alloc new value and init */
 	if((v=_mpdm_alloc()) == NULL)
@@ -103,44 +82,17 @@ mpdm_v mpdm_new(int flags, void * data, int size)
 	memset(v, '\0', sizeof(struct _mpdm_v));
 
 	v->flags=flags;
-
-	if(flags & MPDM_MULTIPLE)
-		mpdm_aexpand(v, 0, size);
-	else
-	if(flags & MPDM_COPY)
-	{
-		v->flags |= MPDM_FREE;
-		v->size=size;
-
-		/* alloc new space for data */
-		if((v->data=malloc(size + 1)) == NULL)
-			return(NULL);
-
-		/* zero or copy the block */
-		if(data == NULL)
-			memset(v->data, '\0', size);
-		else
-		{
-			if(flags & MPDM_STRING)
-			{
-				strncpy(v->data, data, size);
-				((char *)v->data)[size]='\0';
-			}
-			else
-				memcpy(v->data, data, size);
-		}
-	}
-	else
-	{
-		v->data=data;
-		v->size=size;
-	}
+	v->data=data;
+	v->size=size;
 
 	/* add to the value chain and count */
 	if(_mpdm.head == NULL) _mpdm.head=v;
 	if(_mpdm.tail != NULL) _mpdm.tail->next=v;
 	_mpdm.tail=v;
 	_mpdm.count ++;
+
+	/* tie */
+	mpdm_tie(v, tie);
 
 	return(v);
 }
@@ -184,55 +136,45 @@ mpdm_v mpdm_unref(mpdm_v v)
  */
 void mpdm_sweep(int count)
 {
-	/* if it's worthless, don't do it */
-	if(_mpdm.count < 16)
+	if(_mpdm.count > 16)
 	{
-		/* store current count, to avoid a sweeping
-		   rush when the threshold is crossed */
-		_mpdm.lcount=_mpdm.count;
-		return;
-	}
+		/* if count is -1, sweep all */
+		if(count == -1) count=_mpdm.count * 2;
 
-	/* if count is -1, sweep all */
-	if(count == -1) count=_mpdm.count * 2;
+		/* if count is zero, sweep 'some' values */
+		if(count == 0) count=_mpdm.count - _mpdm.lcount + 2;
 
-	/* if count is zero, sweep 'some' values */
-	if(count == 0) count=_mpdm.count - _mpdm.lcount + 2;
-
-	while(count > 0)
-	{
-		/* is the value referenced? */
-		if(_mpdm.head->ref)
+		while(count > 0)
 		{
-			/* yes; rotate to next */
-			_mpdm.tail->next=_mpdm.head;
-			_mpdm.head=_mpdm.head->next;
-			_mpdm.tail=_mpdm.tail->next;
-			_mpdm.tail->next=NULL;
-		}
-		else
-		{
-			mpdm_v v;
-
-			/* value is to be destroyed */
-			v=_mpdm.head;
-			_mpdm.head=_mpdm.head->next;
-
-			/* destroy */
-			if(v->flags & MPDM_MULTIPLE)
-				mpdm_acollapse(v, 0, mpdm_size(v));
+			/* is the value referenced? */
+			if(_mpdm.head->ref)
+			{
+				/* yes; rotate to next */
+				_mpdm.tail->next=_mpdm.head;
+				_mpdm.head=_mpdm.head->next;
+				_mpdm.tail=_mpdm.tail->next;
+				_mpdm.tail->next=NULL;
+			}
 			else
-			if(v->flags & MPDM_FREE)
-				free(v->data);
+			{
+				mpdm_v v;
 
-			/* free the value itself */
-			_mpdm_free(v);
+				/* value is to be destroyed */
+				v=_mpdm.head;
+				_mpdm.head=_mpdm.head->next;
 
-			/* one value less */
-			_mpdm.count--;
+				/* untie and destroy */
+				mpdm_tie(v, NULL);
+
+				/* free the value itself */
+				_mpdm_free(v);
+
+				/* one value less */
+				_mpdm.count--;
+			}
+
+			count--;
 		}
-
-		count--;
 	}
 
 	_mpdm.lcount=_mpdm.count;
@@ -264,21 +206,13 @@ int mpdm_size(mpdm_v v)
  */
 mpdm_v mpdm_clone(mpdm_v v)
 {
-	mpdm_v w;
-	int n;
+	mpdm_v t;
 
-	/* if NULL or value is not multiple, return as is */
-	if(v == NULL || !(v->flags & MPDM_MULTIPLE))
-		return(v);
+	/* if a clone tie exists, run it; otherwise, return same value */
+	if((t=mpdm_get_tie(v, MPDM_TIE_CLONE)) != NULL)
+		v=mpdm_exec(t, v);
 
-	/* create new */
-	w=mpdm_new(v->flags, NULL, mpdm_size(v));
-
-	/* fills each element with duplicates of the original */
-	for(n=0;n < mpdm_size(v);n++)
-		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
-
-	return(w);
+	return(v);
 }
 
 
@@ -291,10 +225,7 @@ mpdm_v mpdm_clone(mpdm_v v)
 mpdm_v mpdm_root(void)
 {
 	if(_mpdm.root == NULL)
-	{
-		_mpdm.root=MPDM_H(0);
-		mpdm_ref(_mpdm.root);
-	}
+		_mpdm.root=mpdm_ref(MPDM_H(0));
 
 	return(_mpdm.root);
 }
@@ -353,4 +284,40 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 	}
 
 	return(r);
+}
+
+
+mpdm_v mpdm_get_tie(mpdm_v v, int tie_func)
+{
+	mpdm_v t=NULL;
+
+	if(v != NULL && v->tie != NULL)
+		t=mpdm_aget(v->tie, tie_func);
+
+	return(t);
+}
+
+
+mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
+{
+	mpdm_v t;
+
+	if(v != NULL)
+	{
+		/* execute current destroyer */
+		if((t=mpdm_get_tie(v, MPDM_TIE_DESTROY)) != NULL)
+			mpdm_exec(t, v);
+
+		/* unref previous tie (if any) */
+		mpdm_unref(v->tie);
+
+		/* ref new tie */
+		v->tie=mpdm_ref(tie);
+
+		/* execute creator */
+		if((t=mpdm_get_tie(v, MPDM_TIE_CREATE)) != NULL)
+			mpdm_exec(t, v);
+	}
+
+	return(v);
 }

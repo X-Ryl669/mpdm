@@ -22,10 +22,8 @@
 */
 
 /* structural flags */
-#define MPDM_COPY	0x00000001	/* create a copy of data */
-#define MPDM_STRING	0x00000002	/* data can be string-compared */
-#define MPDM_MULTIPLE	0x00000004	/* data is multiple */
-#define MPDM_FREE	0x00000008	/* data must be freed on destroy */
+#define MPDM_STRING	0x00000001	/* data can be string-compared */
+#define MPDM_MULTIPLE	0x00000002	/* data is multiple */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 
@@ -33,14 +31,6 @@
 #define MPDM_HASH	0x00010000	/* data is a hash */
 #define MPDM_FILE	0x00020000	/* data is a FILE * */
 #define MPDM_EXEC	0x00040000	/* data is 'executable' */
-
-#define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n)
-#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n)
-#define MPDM_LS(s)	mpdm_new(MPDM_STRING,s,-1)
-#define MPDM_S(s)	mpdm_new(MPDM_STRING|MPDM_COPY,s,-1)
-#define MPDM_I(i)	_mpdm_inew((i))
-#define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
-#define MPDM_P(p)	mpdm_new(0,(void *)p,0)
 
 typedef struct _mpdm_v * mpdm_v;
 
@@ -51,10 +41,21 @@ struct _mpdm_v
 	int size;	/* data size */
 	void * data;	/* the real data */
 	int ival;	/* cached integer value */
+	mpdm_v tie;	/* array of commands */
 	mpdm_v next;	/* next in chain */
 };
 
-mpdm_v mpdm_new(int flags, void * data, int size);
+/* tie functions */
+#define MPDM_TIE_CREATE		0
+#define MPDM_TIE_DESTROY	1
+#define MPDM_TIE_CLONE		2
+#define MPDM_TIE_HGET		3
+#define MPDM_TIE_HSET		4
+#define MPDM_TIE_HDEL		5
+#define MPDM_TIE_HKEYS		6
+#define MPDM_TIE_HSIZE		7
+
+mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie);
 mpdm_v mpdm_ref(mpdm_v v);
 mpdm_v mpdm_unref(mpdm_v v);
 void mpdm_sweep(int count);
@@ -62,10 +63,13 @@ void mpdm_sweep(int count);
 int mpdm_size(mpdm_v v);
 mpdm_v mpdm_clone(mpdm_v v);
 mpdm_v mpdm_root(void);
-mpdm_v mpdm_exec(mpdm_v c, mpdm_v args);
 
-void mpdm_aexpand(mpdm_v a, int offset, int num);
-void mpdm_acollapse(mpdm_v a, int offset, int num);
+mpdm_v mpdm_exec(mpdm_v c, mpdm_v args);
+mpdm_v mpdm_get_tie(mpdm_v v, int tie_func);
+mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie);
+
+mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num);
+mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num);
 mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset);
 mpdm_v mpdm_aget(mpdm_v a, int offset);
 void mpdm_ains(mpdm_v a, mpdm_v e, int offset);
@@ -88,6 +92,7 @@ int mpdm_cmp(mpdm_v v1, mpdm_v v2);
 int mpdm_ival(mpdm_v v);
 mpdm_v _mpdm_inew(int ival);
 
+int mpdm_hsize(mpdm_v h);
 mpdm_v mpdm_hget(mpdm_v h, mpdm_v k);
 mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v);
 mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k);
@@ -102,7 +107,7 @@ mpdm_v mpdm_sget(mpdm_v r, mpdm_v k);
 mpdm_v mpdm_sset(mpdm_v r, mpdm_v k, mpdm_v v);
 
 mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode);
-int mpdm_close(mpdm_v fd);
+mpdm_v mpdm_close(mpdm_v fd);
 mpdm_v mpdm_read(mpdm_v fd);
 int mpdm_write(mpdm_v fd, mpdm_v v);
 int mpdm_unlink(mpdm_v filename);
@@ -110,3 +115,21 @@ mpdm_v mpdm_glob(mpdm_v spec);
 
 mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset, char * flags);
 mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags);
+
+mpdm_v _mpdm_tie_mul(void);
+mpdm_v _mpdm_tie_cpy(void);
+mpdm_v _mpdm_tie_str(void);
+mpdm_v _mpdm_tie_lstr(void);
+mpdm_v _mpdm_tie_fre(void);
+
+/* value creation utility macros */
+
+#define MPDM_A(n)	mpdm_new(MPDM_MULTIPLE,NULL,n,_mpdm_tie_mul())
+#define MPDM_H(n)	mpdm_new(MPDM_MULTIPLE|MPDM_HASH|MPDM_IVAL,NULL,n,_mpdm_tie_mul())
+#define MPDM_LS(s)	mpdm_new(MPDM_STRING,s,-1,_mpdm_tie_lstr())
+#define MPDM_S(s)	mpdm_new(MPDM_STRING,s,-1,_mpdm_tie_str())
+#define MPDM_NS(s,n)	mpdm_new(MPDM_STRING,s,n,_mpdm_tie_str())
+#define MPDM_I(i)	_mpdm_inew((i))
+#define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0,NULL)
+#define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
+#define MPDM_M(m,s)	mpdm_new(0,m,s,_mpdm_tie_cpy())

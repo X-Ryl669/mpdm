@@ -61,13 +61,17 @@ int _mpdm_wrap_offset(mpdm_v a, int offset)
  * Expands an array value, inserting @num elements (initialized
  * to NULL) at the specified @offset.
  */
-void mpdm_aexpand(mpdm_v a, int offset, int num)
+mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num)
 {
 	int n;
 	mpdm_v * p;
 
-	/* array is now longer */
-	a->size += num;
+	/* add only if the allocated block exists */
+	if(a->data != NULL)
+		a->size += num;
+	else
+		a->size = num;
+
 	p=(mpdm_v *) realloc(a->data, a->size * sizeof(mpdm_v));
 
 	/* moves up from top of the array */
@@ -79,6 +83,8 @@ void mpdm_aexpand(mpdm_v a, int offset, int num)
 		p[n]=NULL;
 
 	a->data=p;
+
+	return(a);
 }
 
 
@@ -91,7 +97,7 @@ void mpdm_aexpand(mpdm_v a, int offset, int num)
  * Collapses an array value, deleting @num elements at
  * the specified @offset.
  */
-void mpdm_acollapse(mpdm_v a, int offset, int num)
+mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
 {
 	int n;
 	mpdm_v * p;
@@ -114,6 +120,8 @@ void mpdm_acollapse(mpdm_v a, int offset, int num)
 
 	/* finally shrinks the memory block */
 	a->data=realloc(p, a->size * sizeof(mpdm_v));
+
+	return(a);
 }
 
 
@@ -422,7 +430,8 @@ mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
 	for(ptr=v->data;
 		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
 		ptr=sptr + mpdm_size(s))
-		mpdm_apush(w, mpdm_new(MPDM_COPY|MPDM_STRING, ptr, sptr - ptr));
+/*		mpdm_apush(w, mpdm_new(MPDM_COPY|MPDM_STRING, ptr, sptr - ptr)); */
+		mpdm_apush(w, MPDM_NS(ptr, sptr - ptr));
 
 	/* add last part */
 	mpdm_apush(w, MPDM_S(ptr));
@@ -502,4 +511,42 @@ mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 
 	return(v);
 #endif
+}
+
+
+/* ties */
+
+static mpdm_v _tie_mul_c(mpdm_v v) { return(mpdm_aexpand(v, 0, v->size)); }
+static mpdm_v _tie_mul_d(mpdm_v v) { return(mpdm_acollapse(v, 0, v->size)); }
+
+static mpdm_v _tie_mul_clo(mpdm_v v)
+{
+	mpdm_v w;
+	int n;
+
+	/* creates a similar value */
+	w=mpdm_new(v->flags, NULL, v->size, v->tie);
+
+	/* fills each element with duplicates of the original */
+	for(n=0;n < w->size;n++)
+		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+
+	return(w);
+}
+
+
+mpdm_v _mpdm_tie_mul(void)
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		_tie=mpdm_ref(mpdm_new(MPDM_MULTIPLE, NULL, 0, NULL));
+		mpdm_aexpand(_tie, 0, 3);
+		mpdm_aset(_tie, MPDM_X(_tie_mul_c), MPDM_TIE_CREATE);
+		mpdm_aset(_tie, MPDM_X(_tie_mul_d), MPDM_TIE_DESTROY);
+		mpdm_aset(_tie, MPDM_X(_tie_mul_clo), MPDM_TIE_CLONE);
+	}
+
+	return(_tie);
 }
