@@ -83,9 +83,12 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
  * of values. @Size indicates the number of elements instead of
  * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
  * FDM_STRING. For FDM_MULTIPLE values, @data is usually NULL
- * (meaning to allocate a zero-initialized array of @size values),
+ * (meaning to allocate a NULL-initialized array of @size values),
  * but can also be the @data pointer of another multiple value;
  * in this case, the values will be re-referenced.
+ *
+ * The user defined type optionally stored in @tag must range
+ * from 0 to FDM_FLAGS_MASK-1.
  */
 fdm_v fdm_new(int tag, void * data, int size)
 {
