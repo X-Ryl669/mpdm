@@ -86,6 +86,8 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "!="		return NUMNE;
 "eq"		return STREQ;
 "ne"		return STRNE;
+">="		return NUMGE;
+"<="		return NUMLE;
 "=>"		return HASHPAIR;
 ".."		return RANGE;
 

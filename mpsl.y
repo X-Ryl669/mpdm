@@ -112,7 +112,7 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %nonassoc IFI
 %nonassoc ELSE
 
-%left STREQ NUMEQ STRNE NUMNE HASHPAIR RANGE '>''<'
+%left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -222,6 +222,8 @@ expr:
 
 	| expr '<' expr		{ $$ = INS2(MPDM_LS(L"<"), $1, $3); }
 	| expr '>' expr		{ $$ = INS2(MPDM_LS(L">"), $1, $3); }
+	| expr NUMLE expr	{ $$ = INS2(MPDM_LS(L"NUMLE"), $1, $3); }
+	| expr NUMGE expr	{ $$ = INS2(MPDM_LS(L"NUMGE"), $1, $3); }
 	| expr NUMEQ expr       { $$ = INS2(MPDM_LS(L"NUMEQ"), $1, $3); }
 	| expr NUMNE expr       { $$ = INS2(MPDM_LS(L"NUMNE"), $1, $3); }
 	| expr STREQ expr       { $$ = INS2(MPDM_LS(L"STREQ"), $1, $3); }
