@@ -59,15 +59,6 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
 }
 
 
-/**
- * _fdm_new - Creates a new value, without caching.
- * @tag: flags and type
- * @data: pointer to real data
- * @size: size of data
- *
- * Creates a new value, without caching usual values. See fdm_new()
- * for details.
- */
 fdm_v _fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
@@ -211,7 +202,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 		fdm_ref(_fdm_empty);
 	}
 
-	/* try very common values of data */
+	/* try very common values */
 	if(data != NULL)
 	{
 		if(tag & FDM_STRING)
