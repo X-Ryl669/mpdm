@@ -1,4 +1,29 @@
 TODO
 ====
 
- * Regexes!
+ * Each value should have a 'destroy' pointer to a function or scripting code
+   that destroys v->data. For example, a call to regfree() in compiled
+   regular expressions. So, normal MPDM_FREE values could include a standard
+   function that do free(v->data).
+ * Hashes should include 'tie' code, that substitutes the default behaviour
+   of mpdm_hset(), mpdm_hget(), mpdm_del(), etc, in the same way as Perl ties.
+   This will be useful for hashes mapped to DBMs on disk, etc. But, it could
+   also be implemented in a higher level, as in the scripting language.
+ * A new version of mpdm_asort() that includes a sorting function.
+ * stat(), chmod(), bread(), bwrite().
+
+The scripting language
+----------------------
+
+ * Find a name (mpsl?).
+ * Will it be included here, or as a separated package? Here would prove
+   useful for the 'destroy', 'tie' and _asort() functions, and for many other
+   things. On the other hand, it could poison the mpdm concept as a 'low
+   level utility library'.
+
+Using mpdm elsewhere
+--------------------
+
+ * Of course, mp-4.
+ * ahxm.
+
