@@ -62,6 +62,7 @@ The FDM Machine Language
 	0		; push literal
 	HSET		; sets cdata.txt.x = 0
 
+;	cdata.txt.x=0
 ;	awesome lisp-like
 ;	HSET(HGET(cdata,"txt"),"x",0)
 

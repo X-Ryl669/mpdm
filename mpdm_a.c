@@ -410,6 +410,10 @@ fdm_v fdm_ajoin(fdm_v s, fdm_v a)
 	fdm_v w;
 	int n, t;
 
+	/* special case optimization: only one element */
+	if(a->size == 1)
+		return(fdm_aget(a, 0));
+
 	/* first counts the total size */
 	v=fdm_aget(a, 0);
 	for(t=v->size,n=1;n < a->size;n++)
