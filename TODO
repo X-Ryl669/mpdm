@@ -62,18 +62,31 @@ The FDM Machine Language
 	0		; push literal
 	HSET		; sets cdata.txt.x = 0
 
+;	awesome lisp-like
+;	HSET(HGET(cdata,"txt"),"x",0)
+
+; _mp_get_cursor_line_size
+
+	DUP		; txt txt
+	"lines"
+	HGET		; txt lines
+	SWAP
+	"y"
+	HGET		; lines y
+	AGET		; cursor
+	SIZE
 
 ; mp_move_eol(H cdata)
 
 	"txt"
-	HGET		; cdata.txt
-	DUP		; cdata.txt cdata.txt
-	"lines"
-	HGET		; cdata.txt cdata.txt.lines
-	SIZE		; cdata.txt cdata.txt.lines.size
+	HGET
+	DUP		; txt txt
+	$_mp_get_cursor_line_size	; txt strlen(cursor)
 	"x"
-	SWAP		; cdata.txt "x" cdata.txt.lines.size
-	HSET		; cdata.txt.x = size
+	SWAP		; txt "x" size
+	HSET
+
+;	cdata.txt.x=size(cdata.txt.lines[cdata.txt.y])
 
 ; mp_move_bof(H cdata)
 	"txt"
