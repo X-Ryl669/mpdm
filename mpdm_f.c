@@ -65,7 +65,7 @@ static mpdm_v _tie_file(void)
 
 
 /**
- * fmd_open - Opens a file.
+ * mpdm_open - Opens a file.
  * @filename: the file name
  * @mode: an fopen-like mode string
  *
