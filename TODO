@@ -11,6 +11,8 @@ Release Critical Bugs
    arrays or hashes in the way. Also, it does not make much sense to
    be in plain mpdm; it should be part of mpsl.
  * 1048: mpdm_rval() breaks locales.
+ * 1049: Multiple instructions are buggy; they should always have
+   two arguments.
 
 Open Bugs
 ---------
