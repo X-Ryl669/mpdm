@@ -488,9 +488,9 @@ void test_file(void)
 
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
 
-	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0")) == 0);
-	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1")) == 0);
-	_test("test written file 2.0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.02.12.23.0.03.0.1")) == 0);
+	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0\n")) == 0);
+	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1\n")) == 0);
+	_test("test written file 2.0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2.02.12.23.0.03.0.1\n")) == 0);
 	v=mpdm_read(f);
 	mpdm_dump(v);
 

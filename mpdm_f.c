@@ -157,7 +157,7 @@ mpdm_v mpdm_read(mpdm_v fd)
 		/* if line includes \n, it's complete */
 		if(line[i - 1] == '\n')
 		{
-			line[i - 1]='\0';
+			line[i]='\0';
 			i=0;
 		}
 
