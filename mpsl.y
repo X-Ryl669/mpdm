@@ -38,9 +38,7 @@ typedef enum
 {
 	MPSL_OP_MULTI,		/* ; */
 	MPSL_OP_LITERAL,	/* literal values */
-	MPSL_OP_SYMNAM,		/* symbol name */
 	MPSL_OP_SYMVAL,		/* symbol value */
-	MPSL_OP_SYMLIST,	/* list of symbol names */
 	MPSL_OP_ASSIGN,		/* assign to symbol */
 	MPSL_OP_EXEC,		/* execute executable value */
 	MPSL_OP_LIST,		/* build list from instructions */
@@ -179,8 +177,10 @@ list:
 	;
 
 sym_list:
-	SYMBOL			{ $$ = INS1(MPDM_LS(L"SYMLIST"), $1); }
-	| sym_list ',' SYMBOL	{ mpdm_apush($1, $3); $$ = $1; }
+	SYMBOL			{ $$ = INS1(MPDM_LS(L"LIST"),
+					INS1(MPDM_LS(L"LITERAL"), $1)); }
+	| sym_list ',' SYMBOL	{ mpdm_apush($1,
+					INS1(MPDM_LS(L"LITERAL"), $3)); $$ = $1; }
 	;
 
 hash:
