@@ -51,6 +51,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "if"		return IF;
 "else"		return ELSE;
 "sub"		return SUB;
+"foreach"	return FOREACH;
 "dump"		return DUMP;
 
 "=="		return NUMEQ;
