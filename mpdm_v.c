@@ -121,16 +121,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
  */
 mpdm_v mpdm_ref(mpdm_v v)
 {
-	if(v != NULL)
-	{
-		/* if value is nondyn, it's nonsense (and potentially
-		   dangerous) to reference; just clone it */
-		if(v->flags & MPDM_NONDYN)
-			v=mpdm_clone(v);
-
-		v->ref++;
-	}
-
+	if(v != NULL) v->ref++;
 	return(v);
 }
 
@@ -279,6 +270,9 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 
 	if(c != NULL && (c->flags & MPDM_EXEC))
 	{
+		mpdm_ref(c);
+		mpdm_ref(args);
+
 		if(c->flags & MPDM_MULTIPLE)
 		{
 			mpdm_v x;
@@ -299,6 +293,9 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 			func1=(mpdm_v (*)(mpdm_v))(c->data);
 			if(func1) r=func1(args);
 		}
+
+		mpdm_unref(args);
+		mpdm_unref(c);
 	}
 
 	return(r);
