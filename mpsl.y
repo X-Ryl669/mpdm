@@ -550,6 +550,7 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	int n;
 	double r, r1, r2;
 	int i, i1, i2;
+	mpdm_v v, w;
 
 	/* gets the opcode */
 	op=(mpsl_op) mpdm_ival(mpdm_aget(c, 0));
@@ -581,7 +582,7 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 
 		for(n=1;n < mpdm_size(c);n++)
 		{
-			mpdm_v v = mpdm_aget(c, n);
+			v = mpdm_aget(c, n);
 			mpdm_aset(ret, _mpsl_machine(v, args), n - 1);
 		}
 
@@ -594,10 +595,10 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 
 		for(n=1;n < mpdm_size(c);n += 2)
 		{
-			mpdm_v k = mpdm_aget(c, n);
-			mpdm_v v = mpdm_aget(c, n + 1);
+			w = mpdm_aget(c, n);
+			v = mpdm_aget(c, n + 1);
 
-			mpdm_hset(ret, _mpsl_machine(k, NULL),
+			mpdm_hset(ret, _mpsl_machine(w, NULL),
 				_mpsl_machine(v, NULL));
 		}
 
@@ -652,21 +653,35 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 		break;
 
 	case MPSL_OP_AND:
-	case MPSL_OP_OR:
 
-		/* boolean && and || */
+		/* boolean 'and' */
+		v=_mpsl_machine(mpdm_aget(c, 1), NULL);
 
-		i1=_mpsl_is_true(_mpsl_machine(mpdm_aget(c, 1), NULL));
-		i2=_mpsl_is_true(_mpsl_machine(mpdm_aget(c, 2), NULL));
-
-		switch(op)
+		if(_mpsl_is_true(v))
 		{
-		case MPSL_OP_AND: i = i1 && i2; break;
-		case MPSL_OP_OR: i = i1 || i2; break;
-		default: i=0; break;
+			w=_mpsl_machine(mpdm_aget(c, 2), NULL);
+
+			if(_mpsl_is_true(w))
+				ret=w;
 		}
 
-		ret=_mpsl_true_or_false(i);
+		break;
+
+	case MPSL_OP_OR:
+
+		/* boolean 'or' */
+		v=_mpsl_machine(mpdm_aget(c, 1), NULL);
+
+		if(_mpsl_is_true(v))
+			ret=v;
+		else
+		{
+			w=_mpsl_machine(mpdm_aget(c, 2), NULL);
+
+			if(_mpsl_is_true(w))
+				ret=w;
+		}
+
 		break;
 
 	case MPSL_OP_NUMEQ:
