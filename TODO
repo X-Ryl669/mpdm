@@ -25,9 +25,6 @@ Pending Enhancements
  * 1011: Will the scripting language be included here, or as a
    separated package? it could poison the mpdm concept as a 'low
    level utility library'.
- * 1012: mpdm_startup() and mpdm_shutdown().
- * 1013: Move the hardwired '16' number of minimum elements to an
-   struct _mpdm element, set from mpdm_startup().
  * 1014: Create a new high threshold for values, to force calling
    mpdm_sweep() from mpdm_new() if that threshold is overpassed (this
    will allow a limit to be imposed to the number of unreferenced
@@ -42,5 +39,9 @@ Closed
    (Sun, 4 Jul 2004 11:06:00 +0200).
  * 1002: mpdm_aget() and mpdm_aset() should accept negative offsets
    (Mon, 12 Jul 2004 17:44:00 +0200).
+ * 1012: mpdm_startup() and mpdm_shutdown() (Thu, 26 Aug 2004 20:10:02 +0200)
+ * 1013: Move the hardwired '16' number of minimum elements to an
+   struct _mpdm element, set from mpdm_startup()
+   (Thu, 26 Aug 2004 20:10:18 +0200)
 
 Email bugs to angel@triptico.com
