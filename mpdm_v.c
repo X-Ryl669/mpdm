@@ -55,6 +55,20 @@ static struct
 #define _mpdm_free(v) free(v)
 
 
+static void _mpdm_atexit(void)
+{
+	mpdm_v v;
+
+	/* travels the complete list of values */
+	for(v=_mpdm.head;v != NULL;v=v->next)
+	{
+		/* destroys all values that need to be destroyed */
+		if(v->flags & MPDM_DESTROY)
+			mpdm_tie(v, NULL);
+	}
+}
+
+
 /**
  * mpdm_new - Creates a new value.
  * @flags: flags
@@ -86,10 +100,19 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	v->size=size;
 
 	/* add to the value chain and count */
-	if(_mpdm.head == NULL) _mpdm.head=v;
 	if(_mpdm.tail != NULL) _mpdm.tail->next=v;
 	_mpdm.tail=v;
 	_mpdm.count ++;
+
+	/* is this the first value created? */
+	if(_mpdm.head == NULL)
+	{
+		/* store as head */
+		_mpdm.head=v;
+
+		/* add the atexit function */
+		atexit(_mpdm_atexit);
+	}
 
 	/* tie */
 	v=mpdm_tie(v, tie);
@@ -335,18 +358,4 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 	}
 
 	return(v);
-}
-
-
-void _mpdm_atexit(void)
-{
-	mpdm_v v;
-
-	/* travels the complete list of values */
-	for(v=_mpdm.head;v != NULL;v=v->next)
-	{
-		/* destroys all values that need to be destroyed */
-		if(v->flags & MPDM_DESTROY)
-			mpdm_tie(v, NULL);
-	}
 }
