@@ -469,7 +469,7 @@ mpdm_v _mpsl_op(wchar_t * opcode)
 		int n;
 
 		/* first time; load opcodes */
-		_mpsl_ops=MPDM_H(0);
+		_mpsl_ops=mpdm_ref(MPDM_H(0));
 
 		for(n=0;_op_table[n].name != NULL;n++)
 		{
@@ -528,6 +528,19 @@ _O_TYPE _mpsl_exec_i(_O_ARGS)
 mpdm_v _mpsl_exec(mpdm_v c, mpdm_v a)
 {
 	int f=0;
+	mpdm_v v;
 
-	return(_mpsl_exec_i(c, a, &f));
+	/* reference both code and arguments */
+	mpdm_ref(c); mpdm_ref(a);
+
+	/* execute first instruction */
+	v=_mpsl_exec_i(c, a, &f);
+
+	/* sweep values */
+	mpdm_sweep(0);
+
+	/* unreference */
+	mpdm_unref(a); mpdm_unref(c);
+
+	return(v);
 }

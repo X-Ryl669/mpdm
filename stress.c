@@ -878,6 +878,7 @@ void test_mpsl2(void)
 
 	/* execution tests */
 	v=_test_mpsl("666;");
+	mpdm_dump(v);
 	v=mpdm_exec(v, NULL);
 	_test("literal number", mpdm_ival(v) == 666);
 
