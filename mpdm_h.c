@@ -191,8 +191,11 @@ static fdm_v _fdm_sym(fdm_v r, fdm_v k, fdm_v v, int s)
 	if(r == NULL)
 		r=fdm_root();
 
-	/* splits the path */
-	p=fdm_asplit(FDM_LS("."), k);
+	/* splits the path, if needed */
+	if(k->flags & FDM_MULTIPLE)
+		p=k;
+	else
+		p=fdm_asplit(FDM_LS("."), k);
 
 	for(n=0;n < p->size - s;n++)
 	{
