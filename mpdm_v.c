@@ -93,13 +93,8 @@ mpdm_v mpdm_new(int flags, void * data, int size)
 	mpdm_v v;
 
 	/* a size of -1 means 'calculate it' */
-	if(size == -1 && (flags & MPDM_STRING))
-	{
-		/* only calculate size for new copies of string values;
-		   literal string value's size is deferred */
-		if((flags & MPDM_COPY) && data != NULL)
-			size=strlen((char *) data);
-	}
+	if(size == -1 && (flags & MPDM_STRING) && data != NULL)
+		size=strlen((char *) data);
 
 	/* alloc new value and init */
 	if((v=_mpdm_alloc()) == NULL)
@@ -254,10 +249,6 @@ int mpdm_size(mpdm_v v)
 {
 	/* NULL values have no size */
 	if(v == NULL) return(0);
-
-	/* deferred strlen calculation */
-	if(v->size == -1 && v->flags & MPDM_STRING)
-		v->size=strlen((char *)v->data);
 
 	return(v->size);
 }
