@@ -141,11 +141,11 @@ stmt:
 
 	| SUB compsym '{' stmt_list '}'
 				{ $$ = INS2(MPDM_LS(L"SUB"), $2,
-					INS2(MPDM_LS(L"SUBFRAME"), $4); }
+					INS1(MPDM_LS(L"SUBFRAME"), $4)); }
 
 	| SUB compsym '(' ')' '{' stmt_list '}'
 				{ $$ = INS2(MPDM_LS(L"SUB"), $2,
-					INS2(MPDM_LS(L"SUBFRAME"), $6); }
+					INS1(MPDM_LS(L"SUBFRAME"), $6)); }
 
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
 				{ mpdm_v w=MPDM_A(4);
