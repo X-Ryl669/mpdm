@@ -204,6 +204,11 @@ fdm_v fdm_new(int tag, void * data, int size)
 		_fdm_0=_fdm_new(FDM_INTEGER, (void *)0, -1);
 		_fdm_1=_fdm_new(FDM_INTEGER, (void *)1, -1);
 		_fdm_empty=_fdm_new(FDM_STRING, "", 0);
+
+		/* reference them */
+		fdm_ref(_fdm_0);
+		fdm_ref(_fdm_1);
+		fdm_ref(_fdm_empty);
 	}
 
 	/* try very common values of data */
