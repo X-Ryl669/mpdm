@@ -456,38 +456,14 @@ static mpdm_v _O_numle(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) <
 static mpdm_v _O_numgt(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) > mpdm_rval(M2))); }
 static mpdm_v _O_numge(mpdm_v c, mpdm_v a) { return(mpsl_boolean(mpdm_rval(M1) >= mpdm_rval(M2))); }
 
-static mpdm_v _O_nbool(mpdm_v c, mpdm_v a)
+static mpdm_v _O_numeq(mpdm_v c, mpdm_v a)
 /* boolean numeric comparisons */
 {
-	int i;
 	mpdm_v v1, v2;
-	double r1, r2;
-	mpsl_op op;
 
-	/* gets the opcode */
-	op=(mpsl_op) mpdm_ival(C0);
+	v1=M1; v2=M2;
 
-	v1=M1;
-	v2=M2;
-
-	/* special case: NULL equality test */
-	if(op == MPSL_OP_NUMEQ && v1 == NULL && v2 == NULL)
-		return(mpsl_boolean(1));
-
-	r1=mpdm_rval(v1);
-	r2=mpdm_rval(v2);
-
-	switch(op)
-	{
-	case MPSL_OP_NUMEQ: i = (r1 == r2); break;
-	case MPSL_OP_NUMLT: i = (r1 < r2); break;
-	case MPSL_OP_NUMLE: i = (r1 <= r2); break;
-	case MPSL_OP_NUMGT: i = (r1 > r2); break;
-	case MPSL_OP_NUMGE: i = (r1 >= r2); break;
-	default: i = 0; break;
-	}
-
-	return(mpsl_boolean(i));
+	return(mpsl_boolean((v1 == NULL || v2 == NULL) ? (v1 == v2) : (mpdm_rval(v1) == mpdm_rval(v2))));
 }
 
 
@@ -548,7 +524,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v a)
 	case MPSL_OP_NOT: ret=_O_not(c, a); break;
 	case MPSL_OP_AND: ret=_O_and(c, a); break;
 	case MPSL_OP_OR: ret=_O_or(c, a); break;
-	case MPSL_OP_NUMEQ: ret=_O_nbool(c, a); break;
+	case MPSL_OP_NUMEQ: ret=_O_numeq(c, a); break;
 	case MPSL_OP_NUMLT: ret=_O_numlt(c, a); break;
 	case MPSL_OP_NUMLE: ret=_O_numle(c, a); break;
 	case MPSL_OP_NUMGT: ret=_O_numgt(c, a); break;
