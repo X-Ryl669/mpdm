@@ -44,7 +44,7 @@ struct _mpdm_ctl * _mpdm=NULL;
 	Code
 ********************/
 
-mpdm_v mpdm_alloc(int flags)
+static mpdm_v _mpdm_alloc(int flags)
 {
 	mpdm_v v=NULL;
 
@@ -67,7 +67,7 @@ mpdm_v mpdm_alloc(int flags)
 }
 
 
-void mpdm_free(mpdm_v v)
+static void _mpdm_free(mpdm_v v)
 {
 	if(v->flags & MPDM_NONDYN)
 	{
@@ -107,7 +107,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 		mpdm_sweep(_mpdm->count - _mpdm->high_threshold);
 
 	/* alloc new value */
-	if((v=mpdm_alloc(flags)) == NULL)
+	if((v=_mpdm_alloc(flags)) == NULL)
 		return(NULL);
 
 	memset(v, '\0', sizeof(struct _mpdm_v));
@@ -131,7 +131,7 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	else
 	{
 		/* tie creation failed; free the new value */
-		mpdm_free(v);
+		_mpdm_free(v);
 	}
 
 	return(r);
@@ -207,7 +207,7 @@ void mpdm_sweep(int count)
 				mpdm_tie(v, NULL);
 
 				/* free the value itself */
-				mpdm_free(v);
+				_mpdm_free(v);
 
 				/* one value less */
 				_mpdm->count--;
