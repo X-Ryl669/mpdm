@@ -195,7 +195,12 @@ void fdm_sweep(int count)
 
 	/* if it's worthless, don't do it */
 	if(_fdm.count < 16)
+	{
+		/* store current count, to avoid a sweeping
+		   rush when the threshold is crossed */
+		lcount=_fdm.count;
 		return;
+	}
 
 	/* if count is -1, sweep all */
 	if(count == -1) count=_fdm.count;
