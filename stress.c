@@ -778,7 +778,11 @@ void test_encoding(void)
 	mpdm_v v;
 	mpdm_v w;
 
+#ifdef WIN32
+	v=MPDM_MBS("¡España!\n");
+#else
 	v=MPDM_LS(L"¡España!\n");
+#endif
 
 	printf("\nLocale encoding tests\n\n");
 
@@ -800,7 +804,7 @@ void test_encoding(void)
 
 	/* new open file will use the specified encoding */
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
-	mpdm_write(f, MPDM_LS(L"¡España!\n"));
+	mpdm_write(f, v);
 	mpdm_close(f);
 
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
