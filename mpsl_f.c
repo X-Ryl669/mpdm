@@ -44,32 +44,9 @@
 mpdm_v _mpsl_size(mpdm_v args) { return(MPDM_I(mpdm_size(A(0)))); }
 mpdm_v _mpsl_clone(mpdm_v args) { return(mpdm_clone(A(0))); }
 
-mpdm_v _mpsl_is_array(mpdm_v args)
-{
-	mpdm_v v;
-
-	v=A(0);
-	return(mpsl_true_or_false(v->flags & MPDM_MULTIPLE));
-}
-
-
-mpdm_v _mpsl_is_hash(mpdm_v args)
-{
-	mpdm_v v;
-
-	v=A(0);
-	return(mpsl_true_or_false(v->flags & MPDM_HASH));
-}
-
-
-mpdm_v _mpsl_is_exec(mpdm_v args)
-{
-	mpdm_v v;
-
-	v=A(0);
-	return(mpsl_true_or_false(v->flags & MPDM_EXEC));
-}
-
+mpdm_v _mpsl_is_array(mpdm_v args) { return(mpsl_true_or_false((A(0))->flags & MPDM_MULTIPLE)); }
+mpdm_v _mpsl_is_hash(mpdm_v args) { return(mpsl_true_or_false((A(0))->flags & MPDM_HASH)); }
+mpdm_v _mpsl_is_exec(mpdm_v args) { return(mpsl_true_or_false((A(0))->flags & MPDM_EXEC)); }
 
 mpdm_v _mpsl_dump(mpdm_v args) { mpdm_dump(A(0)); return(NULL); }
 mpdm_v _mpsl_splice(mpdm_v args) { return(mpdm_splice(A(0),A(1),IA(2),IA(3))); }
