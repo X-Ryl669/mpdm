@@ -57,7 +57,7 @@ void fdm_dump(fdm_v v, int l)
 
 	if(v->tag & FDM_MULTIPLE)
 	{
-		printf("\n");
+		printf("[%d]\n", v->size);
 
 		for(n=0;n < v->size;n++)
 			fdm_dump(fdm_aget(v, n), l + 1);
