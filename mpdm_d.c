@@ -62,15 +62,13 @@ void _mpdm_dump(mpdm_v v, int l)
 		v->flags & MPDM_HASH	? 'H' : (v->flags & MPDM_MULTIPLE ? 'M' : '-'),
 		v->flags & MPDM_IVAL	? 'I' : '-');
 
+	printf("%s\n", ptr);
+
 	if(v->flags & MPDM_MULTIPLE)
 	{
-		printf("[%d]\n", mpdm_size(v));
-
 		for(n=0;n < mpdm_size(v);n++)
 			_mpdm_dump(mpdm_aget(v, n), l + 1);
 	}
-	else
-		printf("%s\n", ptr);
 }
 
 
