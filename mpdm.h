@@ -152,7 +152,7 @@ mpdm_v _mpdm_tie_wcstombs(void);
 
 #define MPDM_ND_LS(v,s) memset(&v, '\0', sizeof(v)); \
 			v.flags=MPDM_STRING; v.data=s; \
-			v.size=sizeof(s) / sizeof(wchar_t);
+			v.size=(sizeof(s) - 1) / sizeof(wchar_t);
 
 #define MPDM_ND_A(v,a) memset(&v, '\0', sizeof(v)); \
 			v.flags=MPDM_MULTIPLE; v.data=&a; \
