@@ -296,8 +296,7 @@ mpdm_v mpsl_compile(mpdm_v code)
 	mpdm_v x=NULL;
 
 	/* create a new holder for the bytecode */
-	_mpsl_bytecode=MPDM_A(1);
-	mpdm_aset(_mpsl_bytecode, INS0(MPDM_LS(L"SUB_PREFIX")), 0);
+	_mpsl_bytecode=MPDM_A(0);
 
 	/* point to code */
 	_mpsl_next_char=(wchar_t *) code->data;
@@ -307,7 +306,7 @@ mpdm_v mpsl_compile(mpdm_v code)
 	/* compile! */
 	if(yyparse() == 0)
 	{
-		mpdm_apush(_mpsl_bytecode, INS0(MPDM_LS(L"SUB_POSTFIX")));
+		_mpsl_bytecode=INS1(MPDM_LS(L"SUBFRAME"), _mpsl_bytecode);
 		x=MPDM_X2(_mpsl_machine, _mpsl_bytecode);
 	}
 
