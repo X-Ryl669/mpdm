@@ -72,6 +72,7 @@ void test_basic(void)
 
 void test_array(void)
 {
+	int n;
 	mpdm_v a;
 	mpdm_v v;
 
@@ -108,6 +109,31 @@ void test_array(void)
 	v=mpdm_aget(a, 3);
 	mpdm_acollapse(a, 3, 1);
 	_test("acollapse unrefs values", (v->ref == 0));
+
+	/* test queues */
+	a=MPDM_A(0);
+
+	/* add several values */
+	for(n=0;n < 10;n++)
+		v=mpdm_aqueue(a, MPDM_I(n), 10);
+
+	_test("aqueue should still output NULL", (v == NULL));
+
+	v=mpdm_aqueue(a, MPDM_I(11), 10);
+	_test("aqueue should no longer output NULL", (v != NULL));
+
+	v=mpdm_aqueue(a, MPDM_I(12), 10);
+	_test("aqueue should return 1", mpdm_ival(v) == 1);
+	v=mpdm_aqueue(a, MPDM_I(13), 10);
+	_test("aqueue should return 2", mpdm_ival(v) == 2);
+	_test("queue size should be 10", a->size == 10);
+
+	mpdm_dump(a);
+	v=mpdm_aqueue(a, MPDM_I(14), 5);
+	mpdm_dump(a);
+
+	_test("queue size should be 5", a->size == 5);
+	_test("last taken value should be 8", mpdm_ival(v) == 8);
 }
 
 
