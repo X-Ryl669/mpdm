@@ -22,10 +22,11 @@
 */
 
 /* structural flags */
-#define FDM_COPY	0x00000001	/* data is a private copy */
+#define FDM_COPY	0x00000001	/* create a copy of data */
 #define FDM_STRING	0x00000002	/* data can be string-compared */
 #define FDM_MULTIPLE	0x00000004	/* data is multiple */
 #define FDM_INTEGER	0x00000008	/* integer value cached in .ival */
+#define FDM_FREE	0x00000010	/* data must be freed on destroy */
 
 /* 'informative' flags */
 #define FDM_HASH	0x00010000	/* data is a hash */
