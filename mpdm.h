@@ -32,6 +32,10 @@
 #define FDM_FLAGS(t)	((t) & FDM_FLAGS_MASK)
 #define FDM_TYPE(t)	((t) & ~ FDM_FLAGS_MASK)
 
+#define FDM_A(n)	fdm_new(FDM_MULTIPLE,NULL,n)
+#define FDM_H()		fdm_new(FDM_MULTIPLE,NULL,0)
+#define FDM_LS(s)	fdm_new(FDM_STRING,s,-1)
+
 typedef struct _fdm_v * fdm_v;
 
 struct _fdm_v
