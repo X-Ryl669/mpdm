@@ -323,7 +323,7 @@ mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
  *
  * Returns the tie function number @tie_func from the value @v.
  */
-mpdm_v mpdm_get_tie(mpdm_v v, int tie_func)
+mpdm_v mpdm_get_tie(mpdm_v v, _mpdm_tie_func tie_func)
 {
 	mpdm_v t=NULL;
 
