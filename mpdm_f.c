@@ -182,7 +182,7 @@ void _mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
 			/* error converting; convert a '?' instead */
 			wchar_t q=L'?';
 
-			il=sizeof(wchar_t); iptr=&q;
+			il=sizeof(wchar_t); iptr=(char *)&q;
 			ol=sizeof(tmp); optr=tmp;
 
 			iconv(ic, &iptr, &il, &optr, &ol);
