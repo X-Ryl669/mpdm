@@ -95,11 +95,17 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
  * @offset: offset where the substring is to be inserted
  * @del: number of characters to delete
  *
- * Creates a new string value from @v, deleting @del chars
- * at @offset and substituting them by @i.
+ * Creates a new string value from @v, deleting @del chars at @offset
+ * and substituting them by @i. If @del is 0, no deletion is done.
+ * If @offset is negative, is assumed as counting from the end of @v
+ * (so -1 means append at the end). If @v is NULL, @i will become the
+ * new string, and both @offset and @del will be ignored. If @v is not
+ * NULL and @i is, no insertion process is done (only deletion, if
+ * applicable).
  *
  * Returns a two element array, with the new string in the first
- * element and the deleted string in the second.
+ * element and the deleted string in the second (with a NULL value
+ * if @del is 0).
  */
 fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 {
