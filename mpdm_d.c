@@ -56,7 +56,7 @@ void _fdm_dump(fdm_v v, int l)
 
 	printf("%d,%c%c%c%c:", v->ref,
 		v->flags & FDM_COPY	? 'C' : (v->flags & FDM_FREE ? 'F' : '-'),
-		v->flags & FDM_STRING	? 'S' : '-',
+		v->flags & FDM_FILE	? 'F' : (v->flags & FDM_STRING	? 'S' : '-'),
 		v->flags & FDM_HASH	? 'H' : (v->flags & FDM_MULTIPLE ? 'M' : '-'),
 		v->flags & FDM_IVAL	? 'I' : '-');
 
