@@ -39,6 +39,7 @@
 #define MPDM_LS(s)	mpdm_new(MPDM_STRING,s,-1)
 #define MPDM_S(s)	mpdm_new(MPDM_STRING|MPDM_COPY,s,-1)
 #define MPDM_I(i)	_mpdm_inew((i))
+#define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
 
 typedef struct _mpdm_v * mpdm_v;
 
