@@ -167,6 +167,38 @@ mpdm_v mpsl_get_symbol(mpdm_v s)
 }
 
 
+mpdm_v mpsl_local_add_subframe(void)
+{
+	/* if local symbol table don't exist, create */
+	if(_mpsl_local == NULL)
+		_mpsl_local=mpdm_ref(MPDM_A(0));
+
+	/* creates a new array for holding the hashes */
+	return(mpdm_apush(_mpsl_local, MPDM_A(0)));
+}
+
+
+void mpsl_local_del_subframe(void)
+{
+	/* simply pops the subframe */
+	mpdm_apop(_mpsl_local);
+}
+
+
+mpdm_v mpsl_local_add_blkframe(void)
+{
+	/* pushes a new hash onto the last subframe */
+	return(mpdm_apush(mpdm_aget(_mpsl_local, -1), MPDM_H(0)));
+}
+
+
+void mpsl_local_del_blkframe(void)
+{
+	/* simply pops the blkframe */
+	mpdm_apop(mpdm_aget(_mpsl_local, -1));
+}
+
+
 /** opcodes **/
 
 static mpdm_v _mpsl_op_multi(mpdm_v c, mpdm_v args)
@@ -249,38 +281,6 @@ static mpdm_v _mpsl_op_exec(mpdm_v c, mpdm_v args)
 		v=_mpsl_machine(v, args);
 
 	return(mpdm_exec(_mpsl_machine(mpdm_aget(c, 1), args), v));
-}
-
-
-mpdm_v mpsl_local_add_subframe(void)
-{
-	/* if local symbol table don't exist, create */
-	if(_mpsl_local == NULL)
-		_mpsl_local=mpdm_ref(MPDM_A(0));
-
-	/* creates a new array for holding the hashes */
-	return(mpdm_apush(_mpsl_local, MPDM_A(0)));
-}
-
-
-void mpsl_local_del_subframe(void)
-{
-	/* simply pops the subframe */
-	mpdm_apop(_mpsl_local);
-}
-
-
-mpdm_v mpsl_local_add_blkframe(void)
-{
-	/* pushes a new hash onto the last subframe */
-	return(mpdm_apush(mpdm_aget(_mpsl_local, -1), MPDM_H(0)));
-}
-
-
-void mpsl_local_del_blkframe(void)
-{
-	/* simply pops the blkframe */
-	mpdm_apop(mpdm_aget(_mpsl_local, -1));
 }
 
 
