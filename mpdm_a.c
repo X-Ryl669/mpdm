@@ -79,8 +79,7 @@ void fdm_aexpand(fdm_v a, int offset, int num)
  * @num: number of elements to collapse
  *
  * Collapses an array value, deleting @num elements at
- * the specified @offset. The elements should be
- * unreferenced beforehand.
+ * the specified @offset.
  */
 void fdm_acollapse(fdm_v a, int offset, int num)
 {
@@ -90,6 +89,10 @@ void fdm_acollapse(fdm_v a, int offset, int num)
 	/* don't try to delete beyond the limit */
 /*	if(offset + num > a->size)
 		num=a->size - offset; */
+
+	/* cleans the about-to-be-deleted space */
+	for(n=offset;n < offset + num;n++)
+		fdm_aset(a, NULL, n);
 
 	/* array is now shorter */
 	a->size -= num;
@@ -178,8 +181,8 @@ fdm_v fdm_adel(fdm_v a, int offset)
 {
 	fdm_v v;
 
-	/* sets a NULL value there */
-	v=fdm_aset(a, NULL, offset);
+	/* gets current value */
+	v=fdm_aget(a, offset);
 
 	/* shrinks the array */
 	fdm_acollapse(a, offset, 1);
