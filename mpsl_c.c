@@ -76,10 +76,10 @@ mpdm_v _mpsl_op(mpsl_op opcode)
 		OP(MPSL_OP_SINC);
 		OP(MPSL_OP_PDEC);
 		OP(MPSL_OP_SDEC);
-		OP(MPSL_OP_IMMADD);
-		OP(MPSL_OP_IMMSUB);
-		OP(MPSL_OP_IMMMUL);
-		OP(MPSL_OP_IMMDIV);
+		OP(MPSL_OP_IADD);
+		OP(MPSL_OP_ISUB);
+		OP(MPSL_OP_IMUL);
+		OP(MPSL_OP_IDIV);
 		OP(MPSL_OP_NOT);
 		OP(MPSL_OP_AND);
 		OP(MPSL_OP_OR);
@@ -463,10 +463,10 @@ static mpdm_v _mpsl_op_immmath(mpdm_v c, mpdm_v args)
 	case MPSL_OP_SDEC: r --; ret=v; break;
 	case MPSL_OP_PINC: r ++; break;
 	case MPSL_OP_PDEC: r --; break;
-	case MPSL_OP_IMMADD: r += r2; break;
-	case MPSL_OP_IMMSUB: r -= r2; break;
-	case MPSL_OP_IMMMUL: r *= r2; break;
-	case MPSL_OP_IMMDIV: r /= r2; break;
+	case MPSL_OP_IADD: r += r2; break;
+	case MPSL_OP_ISUB: r -= r2; break;
+	case MPSL_OP_IMUL: r *= r2; break;
+	case MPSL_OP_IDIV: r /= r2; break;
 	default: r=0; break;
 	}
 
@@ -613,6 +613,14 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_MUL: /* falls */
 	case MPSL_OP_DIV: ret=_mpsl_op_brmath(c, args); break;
 	case MPSL_OP_MOD: ret=_mpsl_op_bimath(c, args); break;
+	case MPSL_OP_PINC: /* falls */
+	case MPSL_OP_PDEC: /* falls */
+	case MPSL_OP_SINC: /* falls */
+	case MPSL_OP_SDEC: /* falls */
+	case MPSL_OP_IADD: /* falls */
+	case MPSL_OP_ISUB: /* falls */
+	case MPSL_OP_IMUL: /* falls */
+	case MPSL_OP_IDIV: ret=_mpsl_op_immmath(c, args); break;
 	case MPSL_OP_NOT: ret=_mpsl_op_not(c, args); break;
 	case MPSL_OP_AND: ret=_mpsl_op_and(c, args); break;
 	case MPSL_OP_OR: ret=_mpsl_op_or(c, args); break;
