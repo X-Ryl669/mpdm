@@ -354,16 +354,15 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
 /* qsort help function */
 {
 	int ret=0;
+	static mpdm_v a = NULL;
 
 	/* if callback is NULL, use basic value comparisons */
 	if(_mpdm_asort_cb == NULL)
 		ret=mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2);
 	else
 	{
-		mpdm_v a;
+		if(a == NULL) a=mpdm_ref(MPDM_A(2));
 
-		/* creates a two element array for the arguments */
-		a=MPDM_A(2);
 		mpdm_aset(a, (mpdm_v) * ((mpdm_v *)s1), 0);
 		mpdm_aset(a, (mpdm_v) * ((mpdm_v *)s2), 1);
 
@@ -430,7 +429,6 @@ mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
 	for(ptr=v->data;
 		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
 		ptr=sptr + mpdm_size(s))
-/*		mpdm_apush(w, mpdm_new(MPDM_COPY|MPDM_STRING, ptr, sptr - ptr)); */
 		mpdm_apush(w, MPDM_NS(ptr, sptr - ptr));
 
 	/* add last part */
