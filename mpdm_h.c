@@ -44,6 +44,14 @@ static int _fdm_hashfunc(unsigned char * string, int mod)
 
 #define HASH_BUCKET(h, k) (_fdm_hashfunc((unsigned char *)k->data, h->size))
 
+/**
+ * fdm_hget - Gets an value from a hash.
+ * @h: the hash
+ * @k: the key
+ *
+ * Gets the value from the hash @h having @k as key, or
+ * NULL if the key does not exist.
+ */
 fdm_v fdm_hget(fdm_v h, fdm_v k)
 {
 	int n;
@@ -61,6 +69,16 @@ fdm_v fdm_hget(fdm_v h, fdm_v k)
 }
 
 
+/**
+ * fdm_hset - Sets a value in a hash.
+ * @h: the hash
+ * @k: the key
+ * @v: the value
+ *
+ * Sets the value @v to the key @k in the hash @h. Returns
+ * the previous value of the key, or NULL if the key was
+ * previously undefined.
+ */
 fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v)
 {
 	int n;
@@ -102,6 +120,14 @@ fdm_v fdm_hset(fdm_v h, fdm_v k, fdm_v v)
 }
 
 
+/**
+ * fdm_hdel - Deletes a key from a hash.
+ * @h: the hash
+ * @k: the key
+ *
+ * Deletes the key @k from the hash @h. Returns the previous
+ * value, or NULL if the key was not defined.
+ */
 fdm_v fdm_hdel(fdm_v h, fdm_v k)
 {
 	int n;

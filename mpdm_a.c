@@ -295,8 +295,7 @@ static int _fdm_asort_cmp(const void * s1, const void * s2)
  * @a: the array
  * @step: increment step
  *
- * Sorts the array. @step is the number of elements to group
- * together.
+ * Sorts the array. @step is the number of elements to group together.
  */
 void fdm_asort(fdm_v a, int step)
 {
