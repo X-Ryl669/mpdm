@@ -22,7 +22,7 @@ Filp main exec loop
 	else
 	for(n=0;ret == FILP_OK && n < v->size;n++)
 	{
-		c=fdm_hget(v, n);
+		c=fdm_aget(v, n);
 
 		if(FDM_TYPE(c) == FILP_BC_EXEC)
 			ret=filp_exec(fdm_aget(c, 0));
