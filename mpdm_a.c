@@ -105,15 +105,16 @@ mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
 	if(offset + num > a->size)
 		num=a->size - offset;
 
-	/* cleans the about-to-be-deleted space */
+	p=(mpdm_v *) a->data;
+
+	/* unrefs the about-to-be-deleted elements */
 	for(n=offset;n < offset + num;n++)
-		mpdm_aset(a, NULL, n);
+		mpdm_unref(p[n]);
 
 	/* array is now shorter */
 	a->size -= num;
 
 	/* moves down the elements */
-	p=(mpdm_v *) a->data;
 	for(n=offset;n < a->size;n++)
 		p[n]=p[n + num];
 
