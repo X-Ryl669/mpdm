@@ -402,7 +402,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
  * @s: the separator
  * @v: the value to be separated
  *
- * Separates the @v string value in an array of pieces, using @s
+ * Separates the @v string value in anto array of pieces, using @s
  * as a separator. If the string does not contain the separator,
  * an array holding the complete string is returned.
  */
