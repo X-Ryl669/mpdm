@@ -11,7 +11,7 @@ for a in $* ; do
 	[ "$a" = "--without-unix-glob" ] && WITHOUT_UNIX_GLOB=1
 	[ "$a" = "--without-regex" ] && WITHOUT_REGEX=1
 	[ "$a" = "--with-included-regex" ] && WITH_INCLUDED_REGEX=1
-	[ "$a" = "--without-pcre" ] && WITHOUT_PCRE=1
+	[ "$a" = "--with-pcre" ] && WITH_PCRE=1
 	[ "$a" = "--help" ] && CONFIG_HELP=1
 done
 
@@ -21,7 +21,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "--without-win32       Disable win32 interface detection."
 	echo "--without-unix-glob   Disable glob.h usage (use workaround)."
 	echo "--with-included-regex Use included regex code (gnu_regex.c)."
-	echo "--without-pcre        Disable PCRE library detection."
+	echo "--with-pcre           Enable PCRE library detection."
 
 	echo
 	echo "Environment variables:"
@@ -104,7 +104,7 @@ fi
 # regex
 echo -n "Testing for regular expressions... "
 
-if [ "$WITHOUT_PCRE" != 1 -a "$WITH_INCLUDED_REGEX" != 1 ] ; then
+if [ "$WITH_PCRE" = 1 ] ; then
 	# try first the pcre library
 	TMP_CFLAGS="-I/usr/local/include"
 	TMP_LDFLAGS="-L/usr/local/lib -lpcre -lpcreposix"
