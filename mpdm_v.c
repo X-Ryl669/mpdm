@@ -390,3 +390,24 @@ fdm_v fdm_splice(fdm_v v, int offset, int size, char * new)
 
 	return(w);
 }
+
+
+fdm_v fdm_dup(fdm_v v)
+{
+	fdm_v w;
+	int n;
+
+	/* if NULL or value is not multiple, return as is */
+	if(v == NULL || !(v->tag & FDM_MULTIPLE))
+		return(v);
+
+	/* create new */
+	w=fdm_new(v->tag, NULL, v->size);
+
+	/* fills each element with duplicates of the original */
+	for(n=0;n < v->size;n++)
+		fdm_aset(w, fdm_dup(fdm_aget(v, n)), n);
+
+	return(w);
+}
+
