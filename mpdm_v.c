@@ -91,7 +91,7 @@ static void _fdm_nref(fdm_v v[], int count, int ref)
  * Creates a new value. @tag is an or-ed set of flags and an optional
  * user-defined type, @data is a pointer to the data the value will
  * store and @size the size of these data. The flags in @tag define
- * how the data inside the value will be stored and its behaviour:
+ * how the data will be stored and its behaviour:
  *
  * If the FDM_COPY flag is set, the value will store a copy of the data
  * using an allocated block of memory. Otherwise, the @data pointer is
@@ -101,10 +101,11 @@ static void _fdm_nref(fdm_v v[], int count, int ref)
  * (i.e., operations like strcmp() or strlen() can be done on it).
  * Otherwise, @data is treated as an opaque value. For FDM_STRING
  * values, @size can be -1 to force a calculation using strlen().
+ * This flag is incompatible with FDM_MULTIPLE.
  *
- * IF FDM_MULTIPLE is set, it means the value is itself an array
- * of values. @Size indicates the size in number of elements and not
- * as a quantity of bytes. FDM_MULTIPLE implies FDM_COPY and not
+ * IF FDM_MULTIPLE is set, it means the value itself is an array
+ * of values. @Size indicates the number of elements instead of
+ * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
  * FDM_STRING. For FDM_MULTIPLE values, @data is usually NULL
  * (meaning to allocate a zero-initialized array of @size values),
  * but can also be the @data pointer of another multiple value;
