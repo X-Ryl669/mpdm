@@ -425,7 +425,7 @@ fdm_v fdm_root(void)
 {
 	if(_fdm.root == NULL)
 	{
-		_fdm.root=FDM_H();
+		_fdm.root=FDM_H(0);
 		fdm_ref(_fdm.root);
 	}
 
