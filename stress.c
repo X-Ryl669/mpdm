@@ -58,6 +58,9 @@ void test_basic(void)
 
 	_test("i == 65536", (i == 65536));
 	_test("v has FDM_INTEGER", (v->flags & FDM_INTEGER));
+
+	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
+	printf("fdm_string: %s\n", fdm_string(FDM_H(0)));
 }
 
 
