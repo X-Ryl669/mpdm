@@ -127,12 +127,12 @@ int mpsl_is_true(mpdm_v v)
 
 
 /**
- * mpsl_true_or_false - Returns mpsl values true or false
+ * mpsl_boolean - Returns mpsl values true or false
  * @b: boolean selector
  *
  * Returns mpsl's 'false' or 'true' values depending on the value in @b.
  */
-mpdm_v mpsl_true_or_false(int b)
+mpdm_v mpsl_boolean(int b)
 {
 	static mpdm_v _true=NULL;
 
@@ -575,7 +575,7 @@ static mpdm_v _mpsl_op_not(mpdm_v c, mpdm_v args)
 	mpdm_v v;
 
 	v=_mpsl_machine(mpdm_aget(c, 1), args);
-	return(mpsl_true_or_false(! mpsl_is_true(v)));
+	return(mpsl_boolean(! mpsl_is_true(v)));
 }
 
 
@@ -639,7 +639,7 @@ static mpdm_v _mpsl_op_nbool(mpdm_v c, mpdm_v args)
 
 	/* special case: NULL equality test */
 	if(op == MPSL_OP_NUMEQ && v1 == NULL && v2 == NULL)
-		return(mpsl_true_or_false(1));
+		return(mpsl_boolean(1));
 
 	r1=mpdm_rval(v1);
 	r2=mpdm_rval(v2);
@@ -654,7 +654,7 @@ static mpdm_v _mpsl_op_nbool(mpdm_v c, mpdm_v args)
 	default: i = 0; break;
 	}
 
-	return(mpsl_true_or_false(i));
+	return(mpsl_boolean(i));
 }
 
 
