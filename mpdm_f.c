@@ -150,8 +150,6 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 		cc=c;
 		r=mbrtowc(&wc, &cc, 1, &ps);
 
-		printf("r: %d\n", r);
-
 		/* bad char? store as '?' */
 		if(r == -1)
 			wc=L'?';
