@@ -70,6 +70,9 @@ mpdm_v mpdm_clone(mpdm_v v);
 mpdm_v mpdm_root(void);
 
 mpdm_v mpdm_exec(mpdm_v c, mpdm_v args);
+mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2);
+mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3);
+
 mpdm_v mpdm_get_tie(mpdm_v v, int tie_func);
 mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie);
 

@@ -85,15 +85,7 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 	mpdm_v v = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HGET)) != NULL)
-	{
-		mpdm_ndv w;
-		mpdm_v av[2];
-
-		MPDM_ND_A(w,av);
-		av[0]=h; av[1]=k;
-
-		v=mpdm_exec(b, &w);
-	}
+		v=mpdm_exec_2(b, h, k);
 	else
 	if(mpdm_size(h))
 	{
@@ -125,15 +117,7 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 	mpdm_v p = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HSET)) != NULL)
-	{
-		mpdm_ndv w;
-		mpdm_v av[3];
-
-		MPDM_ND_A(w,av);
-		av[0]=h; av[1]=k; av[2]=v;
-
-		return(mpdm_exec(b, &w));
-	}
+		return(mpdm_exec_3(b, h, k, v));
 
 	/* if hash is empty, create an optimal number of buckets */
 	if(mpdm_size(h) == 0)
@@ -192,15 +176,7 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 	mpdm_v v = NULL;
 
 	if((b=mpdm_get_tie(h, MPDM_TIE_HDEL)) != NULL)
-	{
-		mpdm_ndv w;
-		mpdm_v av[2];
-
-		MPDM_ND_A(w,av);
-		av[0]=h; av[1]=k;
-
-		v=mpdm_exec(b, &w);
-	}
+		v=mpdm_exec_2(b, h, k);
 	else
 	if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
 	{

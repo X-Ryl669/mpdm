@@ -302,6 +302,30 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 }
 
 
+mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
+{
+	mpdm_ndv a;
+	mpdm_v av[2];
+
+	MPDM_ND_A(a,av);
+	av[0]=a1; av[1]=a2;
+
+	return(mpdm_exec(c, &a));
+}
+
+
+mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
+{
+	mpdm_ndv a;
+	mpdm_v av[3];
+
+	MPDM_ND_A(a,av);
+	av[0]=a1; av[1]=a2; av[2]=a3;
+
+	return(mpdm_exec(c, &a));
+}
+
+
 /**
  * mpdm_get_tie - Gets a tied function from a value
  * @v: the value
