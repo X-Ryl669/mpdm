@@ -40,6 +40,7 @@ typedef struct _mpdm_v * mpdm_v;
 /* non-dynamic values */
 typedef struct _mpdm_v mpdm_ndv;
 
+/* a value */
 struct _mpdm_v
 {
 	int flags;	/* value flags */
@@ -50,6 +51,20 @@ struct _mpdm_v
 	mpdm_v tie;	/* array of commands */
 	mpdm_v next;	/* next in chain */
 };
+
+/* the main control structure */
+struct _mpdm_ctl
+{
+	mpdm_v root;		/* the root hash */
+	mpdm_v head;		/* head of values */
+	mpdm_v tail;		/* tail of values */
+	int count;		/* total count of values */
+	int lcount;		/* last count seen in mpdm_sweep() */
+	int low_threshold;	/* minimum number of values to sweep */
+	int high_threshold;	/* maximum number to trigger auto-sweep */
+};
+
+extern struct _mpdm_ctl * _mpdm;
 
 /* tie functions */
 #define MPDM_TIE_CREATE		0

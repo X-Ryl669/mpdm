@@ -38,17 +38,7 @@
 
 /* control structure */
 
-static struct
-{
-	mpdm_v root;		/* the root hash */
-	mpdm_v head;		/* head of values */
-	mpdm_v tail;		/* tail of values */
-	int count;		/* total count of values */
-	int lcount;		/* last count seen in mpdm_sweep() */
-	int low_threshold;	/* minimum number of values to sweep */
-	int high_threshold;	/* maximum number to trigger auto-sweep */
-} _mpdm;
-
+struct _mpdm_ctl * _mpdm=NULL;
 
 /*******************
 	Code
@@ -81,8 +71,8 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 
 	/* if high_threshold is overpassed, auto-sweep */
 	/* CAUTION: auto-sweep is extremely unsafe by now */
-	if(_mpdm.high_threshold && _mpdm.count > _mpdm.high_threshold)
-		mpdm_sweep(_mpdm.count - _mpdm.high_threshold);
+	if(_mpdm->high_threshold && _mpdm->count > _mpdm->high_threshold)
+		mpdm_sweep(_mpdm->count - _mpdm->high_threshold);
 
 	/* alloc new value and init */
 	if((v=_mpdm_alloc()) == NULL)
@@ -98,10 +88,10 @@ mpdm_v mpdm_new(int flags, void * data, int size, mpdm_v tie)
 	if((r=mpdm_tie(v, tie)) != NULL)
 	{
 		/* add to the value chain and count */
-		if(_mpdm.head == NULL) _mpdm.head=v;
-		if(_mpdm.tail != NULL) _mpdm.tail->next=v;
-		_mpdm.tail=v;
-		_mpdm.count ++;
+		if(_mpdm->head == NULL) _mpdm->head=v;
+		if(_mpdm->tail != NULL) _mpdm->tail->next=v;
+		_mpdm->tail=v;
+		_mpdm->count ++;
 	}
 	else
 	{
@@ -151,32 +141,32 @@ mpdm_v mpdm_unref(mpdm_v v)
  */
 void mpdm_sweep(int count)
 {
-	if(_mpdm.count > _mpdm.low_threshold)
+	if(_mpdm->count > _mpdm->low_threshold)
 	{
 		/* if count is -1, sweep all */
-		if(count == -1) count=_mpdm.count * 2;
+		if(count == -1) count=_mpdm->count * 2;
 
 		/* if count is zero, sweep 'some' values */
-		if(count == 0) count=_mpdm.count - _mpdm.lcount + 2;
+		if(count == 0) count=_mpdm->count - _mpdm->lcount + 2;
 
 		while(count > 0)
 		{
 			/* is the value referenced? */
-			if(_mpdm.head->ref)
+			if(_mpdm->head->ref)
 			{
 				/* yes; rotate to next */
-				_mpdm.tail->next=_mpdm.head;
-				_mpdm.head=_mpdm.head->next;
-				_mpdm.tail=_mpdm.tail->next;
-				_mpdm.tail->next=NULL;
+				_mpdm->tail->next=_mpdm->head;
+				_mpdm->head=_mpdm->head->next;
+				_mpdm->tail=_mpdm->tail->next;
+				_mpdm->tail->next=NULL;
 			}
 			else
 			{
 				mpdm_v v;
 
 				/* value is to be destroyed */
-				v=_mpdm.head;
-				_mpdm.head=_mpdm.head->next;
+				v=_mpdm->head;
+				_mpdm->head=_mpdm->head->next;
 
 				/* untie and destroy */
 				mpdm_tie(v, NULL);
@@ -185,14 +175,14 @@ void mpdm_sweep(int count)
 				_mpdm_free(v);
 
 				/* one value less */
-				_mpdm.count--;
+				_mpdm->count--;
 			}
 
 			count--;
 		}
 	}
 
-	_mpdm.lcount=_mpdm.count;
+	_mpdm->lcount=_mpdm->count;
 }
 
 
@@ -239,10 +229,10 @@ mpdm_v mpdm_clone(mpdm_v v)
  */
 mpdm_v mpdm_root(void)
 {
-	if(_mpdm.root == NULL)
-		_mpdm.root=mpdm_ref(MPDM_H(0));
+	if(_mpdm->root == NULL)
+		_mpdm->root=mpdm_ref(MPDM_H(0));
 
-	return(_mpdm.root);
+	return(_mpdm->root);
 }
 
 
@@ -380,7 +370,7 @@ static void _mpdm_atexit(void)
 	mpdm_v v;
 
 	/* travels the complete list of values */
-	for(v=_mpdm.head;v != NULL;v=v->next)
+	for(v=_mpdm->head;v != NULL;v=v->next)
 	{
 		/* destroys all values that need to be destroyed */
 		if(v->flags & MPDM_DESTROY)
@@ -391,12 +381,16 @@ static void _mpdm_atexit(void)
 
 int mpdm_startup(void)
 {
-	/* cleans the _mpdm structure */
-	memset(&_mpdm, '\0', sizeof(_mpdm));
+	/* alloc space for the control structure, unless already set up */
+	if(_mpdm == NULL)
+		_mpdm=malloc(sizeof(struct _mpdm_ctl));
+
+	/* cleans it */
+	memset(_mpdm, '\0', sizeof(struct _mpdm_ctl));
 
 	/* sets the defaults */
-	_mpdm.low_threshold=16;
-	_mpdm.high_threshold=0;
+	_mpdm->low_threshold=16;
+	_mpdm->high_threshold=0;
 
 	/* sets the locale */
 	if(setlocale(LC_ALL, "") == NULL)
