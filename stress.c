@@ -150,6 +150,7 @@ void test_hash(void)
 void test_splice(void)
 {
 	fdm_v w;
+	fdm_v v;
 
 	w=fdm_splice(FDM_LS("I'm agent Johnson"), FDM_LS("special "), 4, 0);
 	_test("splice insertion", 
@@ -168,6 +169,12 @@ void test_splice(void)
 		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm  dumb")) == 0);
 	_test("splice deletion (2)", 
 		fdm_cmp(fdm_aget(w, 1), FDM_LS("with")) == 0);
+	fdm_dump(w, 0);
+
+	v=FDM_LS("It doesn't matter");
+	w=fdm_splice(v, FDM_LS(" two"), v->size, 0);
+	_test("splice insertion at the end", 
+		fdm_cmp(fdm_aget(w, 0), FDM_LS("It doesn't matter two")) == 0);
 	fdm_dump(w, 0);
 }
 
