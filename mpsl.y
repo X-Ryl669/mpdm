@@ -56,7 +56,7 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %token <v> STRING
 %token <v> SYMBOL
 %token <v> LITERAL
-%token WHILE IF SUB FOREACH DUMP
+%token WHILE IF SUB FOREACH
 %nonassoc IFI
 %nonassoc ELSE
 
@@ -82,7 +82,6 @@ stmt:
 	';'			{ $$ = INS0(MPDM_LS(L";")); }
 	| expr ';'		{ $$ = $1; }
 	| compsym '=' expr ';'	{ $$ = INS2(MPDM_LS(L"="), $1, $3); }
-	| DUMP expr ';'		{ $$ = INS1(MPDM_LS(L"DUMP"), $2); }
 	| WHILE '(' expr ')' stmt
 				{ $$ = INS2(MPDM_LS(L"WHILE"), $3, $5); }
 	| IF '(' expr ')' stmt %prec IFI
