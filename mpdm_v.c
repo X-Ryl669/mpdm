@@ -350,50 +350,6 @@ void fdm_poke(fdm_v v, char c, int offset)
 
 
 /**
- * fdm_splice - Creates a new string value from another.
- * @v: the original value
- * @offset: offset where the substring is to be inserted
- * @size: number of characters to substitute
- * @new: the new string to be inserted
- *
- * Creates a new string value from @v, deleting @size chars
- * at @offset and substituting them by @new.
- */
-fdm_v fdm_splice(fdm_v v, int offset, int size, char * new)
-{
-	int n, i;
-	fdm_v w;
-	char * ptr;
-
-	/* creates the new value */
-	w=fdm_new(v->tag | FDM_STRING | FDM_COPY, NULL, 0);
-
-	ptr=(char *)v->data;
-
-	/* copies source until offset */
-	for(n=0;n < offset && ptr[n];n++)
-		fdm_poke(w, ptr[n], n);
-
-	/* skips size characters */
-	i=n;
-	for(;n < offset + size && ptr[n];n++);
-
-	/* inserts new string */
-	for(;new != NULL && *new != '\0';new++,i++)
-		fdm_poke(w, *new, i);
-
-	/* continue adding */
-	for(;ptr[n];n++, i++)
-		fdm_poke(w, ptr[n], i);
-
-	/* null terminate */
-	fdm_poke(w, '\0', i);
-
-	return(w);
-}
-
-
-/**
  * fdm_dup - Duplicates a value
  * @v: the value
  *
