@@ -28,6 +28,7 @@
 #include <wchar.h>
 
 #include "mpdm.h"
+#include "mpsl.h"
 
 /* total number of tests and oks */
 int tests=0;

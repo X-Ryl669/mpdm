@@ -49,7 +49,7 @@ extern wchar_t * _mpsl_next_char;
 #define INS2(o,a1,a2)		_ins(o, 2, a1, a2, NULL)
 #define INS3(o,a1,a2,a3)	_ins(o, 3, a1, a2, a3)
 
-mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
+static mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 
 /* defined in mpsl_c.c */
 mpdm_v _mpsl_op(mpsl_op opcode);
@@ -393,7 +393,7 @@ void yyerror(char * s)
 }
 
 
-mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
+static mpdm_v _ins(mpsl_op opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 /* adds an instruction */
 {
 	mpdm_v v;

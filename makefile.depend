@@ -9,5 +9,5 @@ mpdm_r.o: mpdm_r.c config.h mpdm.h
 mpdm_s.o: mpdm_s.c config.h mpdm.h
 mpdm_v.o: mpdm_v.c config.h mpdm.h
 mpsl_c.o: mpsl_c.c mpdm.h mpsl.h
-stress.o: stress.c mpdm.h
+stress.o: stress.c mpdm.h mpsl.h
 y.tab.o: y.tab.c mpdm.h mpsl.h
