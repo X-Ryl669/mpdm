@@ -939,10 +939,10 @@ void test_mpsl2(void)
 	_test("boolean and 1", mpdm_ival(v) == 3);
 	v=_test_mpsl("1 && 0;");
 	v=mpdm_exec(v, NULL);
-	_test("boolean and 2", v == NULL);
+	_test("boolean and 2", !mpsl_is_true(v));
 	v=_test_mpsl("0 && 1;");
 	v=mpdm_exec(v, NULL);
-	_test("boolean and 3", v == NULL);
+	_test("boolean and 3", !mpsl_is_true(v));
 
 	v=_test_mpsl("1 || 3;");
 	v=mpdm_exec(v, NULL);
