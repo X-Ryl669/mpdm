@@ -41,6 +41,19 @@ int yy_input_for_flex(char * buf, int max);
 /* internal pointer to next character in code */
 wchar_t * _mpsl_next_char=NULL;
 
+/* string being parsed */
+static wchar_t * _mpsl_string=NULL;
+static int _mpsl_string_i=0;
+
+static void _mpsl_add_string(wchar_t c)
+/* dynamic string */
+{
+	_mpsl_string=realloc(_mpsl_string,
+		(_mpsl_string_i + 1) * sizeof(wchar_t));
+	_mpsl_string[_mpsl_string_i++]=c;
+}
+
+
 %}
 
 DIGIT		[0-9]
@@ -53,6 +66,7 @@ REAL		{DIGIT}*[\.]?{DIGIT}+
 SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 %x REM
+%x STR
 
 %%
 
@@ -68,8 +82,8 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 			return(REAL);
 		}
 
-\"[^"]*\"	{
-			/* string includes quotes; strip them */
+\'[^']*\'	{
+			/* single quoted string; return as is */
 			yytext[yyleng - 1]='\0';
 			yylval.v=MPDM_MBS(yytext + 1);
 			return(STRING);
@@ -116,11 +130,30 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 
 {WSPACE}	;	/* ignore spaces */
 
-.		{ return(*yytext); }
-
 \/\*		{ BEGIN REM; /* C-like comments */ }
 <REM>\*\/	{ BEGIN 0; }
 <REM>.		;
+
+\"		{ BEGIN STR; _mpsl_string=NULL; _mpsl_string_i=0; }
+<STR>\\n	{ _mpsl_add_string(L'\n'); }
+<STR>\\t	{ _mpsl_add_string(L'\t'); }
+<STR>\\r	{ _mpsl_add_string(L'\r'); }
+<STR>\\e	{ _mpsl_add_string((wchar_t) 27); }
+<STR>\\\"	{ _mpsl_add_string(L'\"'); }
+<STR>\"		{
+			_mpsl_add_string(L'\0');
+			yylval.v=_mpdm_new_wcs(MPDM_STRING, _mpsl_string,
+				_mpsl_string_i - 1, _mpdm_tie_fre());
+			BEGIN 0;
+			return(STRING);
+		}
+<STR>.		{
+			wchar_t wc;
+			mbtowc(&wc, yytext, 1);
+			_mpsl_add_string(wc);
+		}
+
+.		{ return(*yytext); }
 
 %%
 

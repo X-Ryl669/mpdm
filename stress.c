@@ -834,7 +834,7 @@ void test_mpsl(void)
 	_test_mpsl("2 + 3 * 4;");
 	_test_mpsl("2 * 3 + 4;");
 
-	_test_mpsl("/* hash */ y={ \"enero\" => \"january\", \"febrero\" => \"february\" };");
+	_test_mpsl("/* hash */ y={ 'enero' => 'january', 'febrero' => 'february' };");
 	_test_mpsl("/* array */ a=[\"this\", \"one\", \"is\", 666, \"cool\"];");
 
 	_test_mpsl("/* greatest common divisor (Euclid's algorithm) */ sub gcd(m, n) { while (m > 0) { if(n > m) { local t = m; m = n; n = t; } m -= n; } n; }");
@@ -1240,6 +1240,14 @@ void test_mpsl3(void)
 
 	v=_test_mpsl("print(\"print: \", 1, 2, [1, 2, 3], func(), 4);");
 	v=mpdm_exec(v, NULL);
+
+	v=_test_mpsl("'This is\\na string.';");
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+
+	v=_test_mpsl("\"This is\\na string.\";");
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
 
 /*	mpdm_dump(mpdm_root());*/
 }
