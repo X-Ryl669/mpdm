@@ -1082,6 +1082,9 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("local 1", mpdm_ival(v) == 1);
 
+	v=_test_mpsl("66 * -1;");
+	v=mpdm_exec(v, NULL);
+	_test("uminus", mpdm_ival(v) == -66);
 
 	mpdm_dump(mpdm_root());
 }
