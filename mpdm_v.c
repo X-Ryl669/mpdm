@@ -208,7 +208,7 @@ fdm_v fdm_new(int tag, void * data, int size)
 }
 
 
-fdm_v fdm_inew(int ival)
+fdm_v _fdm_inew(int ival)
 {
 	fdm_v v;
 	char tmp[32];
@@ -311,65 +311,6 @@ void fdm_sweep(int count)
 	}
 
 	_fdm.lcount=_fdm.count;
-}
-
-
-/**
- * fdm_cmp - Compares two values.
- * @v1: the first value
- * @v2: the second value
- *
- * Compares two values. If both has the FDM_STRING flag set,
- * a comparison using strcmp() is returned; otherwise, a
- * simple pointer comparison is done.
- */
-int fdm_cmp(fdm_v v1, fdm_v v2)
-{
-	/* special treatment to NULL values */
-	if(v1 == NULL)
-		return(-1);
-	if(v2 == NULL)
-		return(1);
-
-	/* if both values are strings, compare as such */
-	if((v1->flags & FDM_STRING) && (v2->flags & FDM_STRING))
-		return(strcmp((char *)v1->data, (char *)v2->data));
-
-	/* in any other case, compare just pointers */
-	return(v1->data - v2->data);
-}
-
-
-/**
- * fdm_ival - Returns a value's data as an integer
- * @v: the value
- *
- * Returns a value's data as an integer. If the value is a string,
- * it's converted via sscanf and returned; non-string values have all
- * an ival of 0. The converted integer is cached, so costly string
- * conversions are only done once. Values created with the FDM_INTEGER
- * flag set have its ival cached from the beginning.
- */
-int fdm_ival(fdm_v v)
-{
-	if(v == NULL)
-		return(0);
-
-	/* if there is no cached integer, calculate it */
-	if(!(v->flags & FDM_INTEGER))
-	{
-		int i=0;
-
-		/* if it's a string, calculate it; other
-		   values will have an ival of 0 */
-		if(v->flags & FDM_STRING)
-			sscanf((char *)v->data, "%i", &i);
-
-		v->ival=i;
-		v->flags |= FDM_INTEGER;
-	}
-
-	return(v->ival);
 }
 
 
