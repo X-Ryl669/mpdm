@@ -4,10 +4,6 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1023: Implement the 'break' directive in mpsl.
- * 1050: Document the virtual machine.
- * 1051: Document the scripting language.
- * 1052: Implement the 'return' directive in mpsl.
  * 1054: Add a main() function, similar to the filp one.
 
 Open Bugs
@@ -41,7 +37,6 @@ Pending Enhancements
    not be necessary on normal shutdown, as memory will be freed by
    the operating system anyway.
  * 1029: Store the regex cache in the main control structure.
- * 1024: Implement the 'continue' directive in mpsl.
 
 Closed
 ------
@@ -93,49 +88,18 @@ Closed
    (Wed, 08 Dec 2004 22:12:57 +0100).
  * 1033: Create a new mpdm_hexists() function
    (Thu, 09 Dec 2004 11:19:03 +0100).
- * 1021: Merge mpsl (the scripting language) lex and yacc files from
-   CVS project filp2 (Thu, 09 Dec 2004 11:55:42 +0100).
  * 1037: Add caching support in values for real numbers (like ival).
    (Sun, 12 Dec 2004 17:54:34 +0100).
- * 1034: Implement ++ and -- (Tue, 14 Dec 2004 12:15:25 +0100).
- * 1035: Implement +=, -=, *=, /= (Tue, 14 Dec 2004 12:15:28 +0100).
- * 1036: Implement the 'local' variable creation in mpsl.
-   (Tue, 14 Dec 2004 13:06:53 +0100).
- * 1038: Implement the '&&' and '||' boolean operands
-   (Wed, 15 Dec 2004 17:02:12 +0100).
- * 1039: SUB_PREFIX and SUB_POSTFIX should be only one instruction,
-   that create the prefix / execute things / destroy the prefix,
-   instead of two (Thu, 16 Dec 2004 09:08:38 +0100).
- * 1040: MPSL_OP_SYMNAM (SYMBOL) should not exist; it should just
-   be a MPSL_OP_LIST (Fri, 17 Dec 2004 07:49:10 +0100).
  * 1043: Change mpdm_write() so that it doesn't use printf(), but
    wcstombs() and an small local buffer (Mon, 20 Dec 2004 08:41:20 -0800).
  * 1045: mpdm_dump() should not use printf() for mpdm_string(), but
    convert by hand using wcstombs() (Mon, 20 Dec 2004 08:44:52 -0800).
  * 1044: mpdm_write() should include a 3rd argument, a separator
    for the end of line (Mon, 20 Dec 2004 08:54:39 -0800).
- * 1041: MPSL_OP_SYMLIST (SYMLIST) should not exist, and be just
-   a MPSL_OP_LIST. Also, it should have only one argument
-   with the list of symbols, and not an undefined number or arguments.
-   (Fri, 24 Dec 2004 18:26:26 +0100).
- * 1042: The local t = v instruction is very buggy; it should be
-   implemented as a ';' instruction with the local and the assignation
-   part and the arguments to LOCAL and to '=' should be instructions and
-   not values (Fri, 24 Dec 2004 18:49:29 +0100).
- * 1046: Subroutine definitions are using MPSL_OP_SUB that is
-   really the substract opcode (Sun, 26 Dec 2004 19:26:32 +0100).
  * 1048: mpdm_rval() breaks locales (Wed, 05 Jan 2005 16:05:52 +0100).
- * 1022: Implement return values for mpsl functions (Closed by #1052;
-   Sat, 08 Jan 2005 21:30:37 +0100).
  * 1047: Change _mpdm_sym() to force the creation of all intermediate
    arrays or hashes in the way. Also, it does not make much sense to
    be in plain mpdm; it should be part of mpsl (Discarded;
    Sat, 08 Jan 2005 21:30:55 +0100).
- * 1049: Multiple instructions are buggy; they should always have
-   two arguments (Though the parser now spits 18 shift/reduce conflicts,
-   everything seems to be fine; Sat, 08 Jan 2005 21:32:57 +0100).
- * 1055: Implement the 'FOREACH' opcode (Sun, 06 Feb 2005 17:31:55 +0100).
- * 1053: Implement the 'RANGE' opcode (Sun, 06 Feb 2005 17:55:04 +0100).
- * 1056: Add c-style strings (\n, \t, etc) (Mon, 07 Feb 2005 19:22:50 +0100).
 
 Email bugs to angel@triptico.com

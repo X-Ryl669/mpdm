@@ -1,5 +1,4 @@
 gnu_regex.o: gnu_regex.c config.h
-lex.yy.o: lex.yy.c mpdm.h y.tab.h
 mpdm_a.o: mpdm_a.c config.h mpdm.h
 mpdm_d.o: mpdm_d.c config.h mpdm.h
 mpdm_dh.o: mpdm_dh.c config.h mpdm.h
@@ -11,4 +10,3 @@ mpdm_v.o: mpdm_v.c config.h mpdm.h
 mpsl_c.o: mpsl_c.c config.h mpdm.h mpsl.h
 mpsl_f.o: mpsl_f.c config.h mpdm.h mpsl.h
 stress.o: stress.c mpdm.h mpsl.h
-y.tab.o: y.tab.c mpdm.h mpsl.h
