@@ -178,6 +178,7 @@ void mpdm_sweep(int count)
 {
 	if(_mpdm->count > _mpdm->low_threshold)
 	{
+		mpdm_v v;
 		int rf=0;
 		int uf=0;
 
@@ -189,25 +190,23 @@ void mpdm_sweep(int count)
 
 		while(count > 0)
 		{
+			/* take head and rotate */
+			v=_mpdm->head;
+			_mpdm->head=v->next;
+
 			/* is the value referenced? */
-			if(_mpdm->head->ref)
+			if(v->ref)
 			{
-				/* yes; rotate to next */
-				_mpdm->tail->next=_mpdm->head;
-				_mpdm->head=_mpdm->head->next;
-				_mpdm->tail=_mpdm->tail->next;
-				_mpdm->tail->next=NULL;
+				/* yes; move to tail */
+				_mpdm->tail=_mpdm->tail->next=v;
+				v->next=NULL;
 
 				rf++;
 				count--;
 			}
 			else
 			{
-				mpdm_v v;
-
 				/* value is to be destroyed */
-				v=_mpdm->head;
-				_mpdm->head=_mpdm->head->next;
 
 				/* untie and destroy */
 				mpdm_tie(v, NULL);
