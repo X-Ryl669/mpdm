@@ -137,7 +137,7 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 
 	/* if the array is shorter than offset, expand to make room for it */
 	if(offset >= mpdm_size(a))
-		mpdm_aexpand(a, mpdm_size(a), offset - mpdm_size(a));
+		mpdm_aexpand(a, mpdm_size(a), offset - mpdm_size(a) + 1);
 
 	p=(mpdm_v *)a->data;
 

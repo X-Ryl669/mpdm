@@ -153,6 +153,12 @@ void test_array(void)
 
 	_test("queue size should be 5", a->size == 5);
 	_test("last taken value should be 8", mpdm_ival(v) == 8);
+
+	a=MPDM_A(4);
+	mpdm_aset(a, MPDM_I(666), 6000);
+
+	_test("array should have been automatically expanded",
+		mpdm_size(a) == 6001);
 }
 
 
