@@ -476,6 +476,7 @@ static mpdm_v _tie_mul_c(mpdm_v v) { return(mpdm_aexpand(v, 0, v->size)); }
 static mpdm_v _tie_mul_d(mpdm_v v) { return(mpdm_acollapse(v, 0, v->size)); }
 
 static mpdm_v _tie_mul_clo(mpdm_v v)
+/* clone function for standard multiple values */
 {
 	mpdm_v w;
 	int n;
@@ -491,7 +492,25 @@ static mpdm_v _tie_mul_clo(mpdm_v v)
 }
 
 
+static mpdm_v _tie_nd_mul_clo(mpdm_v v)
+/* clone tie function for nondyn values */
+{
+	mpdm_v w;
+	int n;
+
+	/* creates a standard (dynamic) array with the same size */
+	w=MPDM_A(v->size);
+
+	/* fills each element with duplicates of the original */
+	for(n=0;n < w->size;n++)
+		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+
+	return(w);
+}
+
+
 mpdm_v _mpdm_tie_mul(void)
+/* tie for standard multiple values */
 {
 	static mpdm_v _tie=NULL;
 
@@ -502,6 +521,22 @@ mpdm_v _mpdm_tie_mul(void)
 		mpdm_aset(_tie, MPDM_X(_tie_mul_c), MPDM_TIE_CREATE);
 		mpdm_aset(_tie, MPDM_X(_tie_mul_d), MPDM_TIE_DESTROY);
 		mpdm_aset(_tie, MPDM_X(_tie_mul_clo), MPDM_TIE_CLONE);
+	}
+
+	return(_tie);
+}
+
+
+mpdm_v _mpdm_tie_nd_mul(void)
+/* tie for nondyn multiple values */
+{
+	static mpdm_v _tie=NULL;
+
+	if(_tie == NULL)
+	{
+		/* only the clone function is used */
+		_tie=mpdm_ref(MPDM_A(0));
+		mpdm_aset(_tie, MPDM_X(_tie_nd_mul_clo), MPDM_TIE_CLONE);
 	}
 
 	return(_tie);
