@@ -30,7 +30,7 @@ mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %nonassoc IFI
 %nonassoc ELSE
 
-%left STREQ NUMEQ STRNE NUMNE HASHPAIR '>''<'
+%left STREQ NUMEQ STRNE NUMNE HASHPAIR RANGE '>''<'
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -128,6 +128,7 @@ expr:
 
 	| '[' ']'		{ $$ = _ins(MPDM_LS(L"LIST"), NULL, NULL, NULL); }
 	| '[' list ']'		{ $$ = $2; }
+	| '[' expr RANGE expr ']' { $$ = _ins(MPDM_LS(L"RANGE"), $2, $4, NULL); }
 
 	| '{' '}'		{ $$ = _ins(MPDM_LS(L"HASH"), NULL, NULL, NULL); }
 	| '{' hash '}'		{ $$ = $2; }

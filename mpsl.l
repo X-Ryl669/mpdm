@@ -56,6 +56,7 @@ SYMBOL		{LETTER}({LETTER}|{DIGIT})*
 "eq"		return STREQ;
 "ne"		return STRNE;
 "=>"		return HASHPAIR;
+".."		return RANGE;
 
 {SYMBOL}	{
 			/* symbol name */
