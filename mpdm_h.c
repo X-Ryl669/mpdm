@@ -150,3 +150,30 @@ fdm_v fdm_hdel(fdm_v h, fdm_v k)
 
 	return(p);
 }
+
+
+/**
+ * fdm_hkeys - Returns the keys of a hash.
+ * @h: the hash
+ *
+ * Returns an array containing all the keys of the @h hash.
+ */
+fdm_v fdm_hkeys(fdm_v h)
+{
+	int n,m;
+	fdm_v a;
+	fdm_v b;
+
+	a=fdm_new(FDM_MULTIPLE, NULL, 0);
+
+	for(n=0;n < h->size;n++)
+	{
+		if((b=fdm_aget(h, n)) != NULL)
+		{
+			for(m=0;m < b->size;m+=2)
+				fdm_apush(a, fdm_aget(b, m));
+		}
+	}
+
+	return(a);
+}
