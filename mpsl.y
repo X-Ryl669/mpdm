@@ -60,14 +60,8 @@ mpdm_v _mpsl_op(mpsl_op opcode);
 
 static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
 {
-	mpdm_v v;
-
-	if(a2 == NULL)
-		v=INS1(MPSL_OP_SUBFRAME, a1);
-	else
-		v=INS2(MPSL_OP_SUBFRAME, a1, a2);
-
-	return(MPDM_X2(_mpsl_machine, v));
+	return(MPDM_X2(_mpsl_machine,
+		_ins(MPSL_OP_SUBFRAME, a2 == NULL ? 1 : 2, a1, a2, NULL)));
 }
 
 
