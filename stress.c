@@ -911,6 +911,12 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	mpdm_dump(v);
 	_test("mpsl array", mpdm_ival(mpdm_aget(v, 3)) == 666);
+
+	v=_test_mpsl("/* hash */ { \"enero\" => \"january\", \"febrero\" => \"february\" };");
+	v=mpdm_exec(v, NULL);
+	mpdm_dump(v);
+	_test("mpsl hash", mpdm_cmp(mpdm_hget(v,
+		MPDM_LS(L"febrero")), MPDM_LS(L"february")) == 0);
 }
 
 

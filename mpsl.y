@@ -523,10 +523,26 @@ static mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 		/* build list from instructions */
 		ret=MPDM_A(mpdm_size(c) - 1);
 
-		for(n=0;n < mpdm_size(ret);n++)
+		for(n=1;n < mpdm_size(c);n++)
 		{
+			mpdm_v v = mpdm_aget(c, n);
+			mpdm_aset(ret, _mpsl_machine(v, args), n - 1);
+		}
+
+		break;
+
+	case MPSL_OP_HASH:
+
+		/* build hash from instructions */
+		ret=MPDM_H(0);
+
+		for(n=1;n < mpdm_size(c);n += 2)
+		{
+			mpdm_v k = mpdm_aget(c, n);
 			mpdm_v v = mpdm_aget(c, n + 1);
-			mpdm_aset(ret, _mpsl_machine(v, args), n);
+
+			mpdm_hset(ret, _mpsl_machine(k, NULL),
+				_mpsl_machine(v, NULL));
 		}
 
 		break;
