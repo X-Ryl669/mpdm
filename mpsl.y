@@ -94,7 +94,8 @@ compsym:
 expr:
 	INTEGER			{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
 	| STRING		{ $$ = _ins(FDM_LS("LITERAL"), $1, NULL, NULL); }
-	| compsym		{ $$ = $1; }
+/*	| compsym		{ $$ = _ins(FDM_LS("SYMVAL"), $1, NULL, NULL); } */
+	| compsym		{ fdm_aset($1, FDM_LS("SYMVAL"), 0); $$ = $1; }
 
 	| '-' expr %prec UMINUS	{ $$ = _ins(FDM_LS("UMINUS"), $2, NULL, NULL); }
 
