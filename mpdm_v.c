@@ -48,6 +48,45 @@ struct _mpdm_ctl * _mpdm=NULL;
 #define _mpdm_free(v) free(v)
 
 
+mpdm_v mpdm_alloc(int flags, int count)
+{
+	mpdm_v v=NULL;
+
+	if(flags & MPDM_NONDYN)
+	{
+		if(count == 1)
+		{
+			/* just one value; return next free one */
+			v=_mpdm->nd_pool[_mpdm->nd_index];
+		}
+		else
+		{
+		}
+
+		/* skip to next and wrap */
+		_mpdm->nd_index += count;
+		_mpdm->nd_index %= _mpdm->nd_size;
+	}
+	else
+	{
+		/* if it's dynamic, just alloc */
+		v=malloc(sizeof(struct _mpdm_v) * count);
+	}
+
+	return(v);
+}
+
+
+void mpdm_free(mpdm_v v, int count)
+{
+	if(v->flags & MPDM_NONDYN)
+	{
+	}
+	else
+		free(v);
+}
+
+
 /**
  * mpdm_new - Creates a new value.
  * @flags: flags
