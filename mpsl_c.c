@@ -137,7 +137,7 @@ mpdm_v mpsl_true_or_false(int b)
 	static mpdm_v _true=NULL;
 
 	if(_true == NULL)
-		_true=MPDM_I(1);
+		_true=mpdm_ref(MPDM_I(1));
 
 	return(b ? _true : NULL);
 }
