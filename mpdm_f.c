@@ -186,8 +186,7 @@ void _mpdm_write_wcs(FILE * f, wchar_t * str)
 		{
 			/* if char couldn't be converted,
 			   write a question mark instead */
-			l=1;
-			tmp[0]='?';
+			l=wctomb(tmp, L'?');
 		}
 
 		for(n=0;n < l;n++)
