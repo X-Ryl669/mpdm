@@ -178,18 +178,18 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
  */
 mpdm_v mpdm_hkeys(mpdm_v h)
 {
-	int n,m;
+	int n,m,i;
 	mpdm_v a;
 	mpdm_v b;
 
-	a=MPDM_A(0);
+	a=MPDM_A(mpdm_ival(h));
 
-	for(n=0;n < mpdm_size(h);n++)
+	for(n=i=0;n < mpdm_size(h);n++)
 	{
 		if((b=mpdm_aget(h, n)) != NULL)
 		{
-			for(m=0;m < mpdm_size(b);m+=2)
-				mpdm_apush(a, mpdm_aget(b, m));
+			for(m=0;m < mpdm_size(b);m += 2)
+				mpdm_aset(a, mpdm_aget(b, m), i++);
 		}
 	}
 
