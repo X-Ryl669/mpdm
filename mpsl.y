@@ -58,6 +58,19 @@ mpdm_v _mpsl_op(mpsl_op opcode);
 	Code
 ********************/
 
+static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
+{
+	mpdm_v v;
+
+	if(a2 == NULL)
+		v=INS1(MPSL_OP_SUBFRAME, a1);
+	else
+		v=INS2(MPSL_OP_SUBFRAME, a1, a2);
+
+	return(MPDM_X2(_mpsl_machine, v));
+}
+
+
 %}
 
 %union {
@@ -129,7 +142,7 @@ stmt:
 					   without arguments */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
 						INS1(MPSL_OP_LITERAL,
-							INS1(MPSL_OP_SUBFRAME, $4)));
+							_mpsl_x($4, NULL)));
 				}
 
 	| SUB compsym '(' ')' '{' stmt_list '}'
@@ -139,7 +152,7 @@ stmt:
 					   syntax, including parens) */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
 						INS1(MPSL_OP_LITERAL,
-							INS1(MPSL_OP_SUBFRAME, $6)));
+							_mpsl_x($6, NULL)));
 				}
 
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
@@ -148,7 +161,7 @@ stmt:
 					   with arguments */
 					$$ = INS2(MPSL_OP_ASSIGN, $2,
 						INS1(MPSL_OP_LITERAL,
-							INS2(MPSL_OP_SUBFRAME, $7, $4)));
+							_mpsl_x($7, $4)));
 				}
 
 	| FOREACH '(' compsym ',' expr ')' stmt
@@ -419,7 +432,7 @@ mpdm_v mpsl_compile(mpdm_v code)
 
 	/* compile! */
 	if(yyparse() == 0)
-		x=MPDM_X2(_mpsl_machine, _mpsl_bytecode);
+		x=_mpsl_x(_mpsl_bytecode, NULL);
 
 	mpdm_unref(code);
 
