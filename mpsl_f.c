@@ -54,14 +54,18 @@ mpdm_v _mpsl_dump(mpdm_v args)
 void _mpsl_lib(void)
 /* inits the mpsl library */
 {
+	mpdm_v r;
+
+	r=mpdm_root();
+
 	/* already done? */
-	if(MPDM_SGET(NULL, L"MPSL_LIB") != NULL)
+	if(mpdm_hget_s(r, L"MPSL_LIB") != NULL)
 		return;
 
 	/* creates all the symbols */
 
-	MPDM_SSET(NULL, L"MPSL_LIB", mpsl_true_or_false(1));
+	mpdm_hset_s(r, L"MPSL_LIB", mpsl_true_or_false(1));
 
-	MPDM_SSET(NULL, L"size", MPDM_X(_mpsl_size));
-	MPDM_SSET(NULL, L"dump", MPDM_X(_mpsl_dump));
+	mpdm_hset_s(r, L"size", MPDM_X(_mpsl_size));
+	mpdm_hset_s(r, L"dump", MPDM_X(_mpsl_dump));
 }

@@ -132,8 +132,10 @@ mpdm_v _mpdm_new_mbs(char * s, int n, mpdm_v tie);
 
 int mpdm_hsize(mpdm_v h);
 mpdm_v mpdm_hget(mpdm_v h, mpdm_v k);
+mpdm_v mpdm_hget_s(mpdm_v h, wchar_t * k);
 int mpdm_hexists(mpdm_v h, mpdm_v k);
 mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v);
+mpdm_v mpdm_hset_s(mpdm_v h, wchar_t * k, mpdm_v v);
 mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k);
 mpdm_v mpdm_hkeys(mpdm_v h);
 
