@@ -60,7 +60,6 @@ if [ "$CC" = "" ] ; then
 
 	if [ $? = 0 ] ; then
 		CC=gcc
-		echo "#define _GNU_SOURCE 1" >> config.h
 	fi
 fi
 
