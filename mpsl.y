@@ -55,6 +55,7 @@ typedef enum
 	MPSL_OP_BLKPRE,		/* block prefix */
 	MPSL_OP_BLKPOST,	/* block postfix */
 	MPSL_OP_ARGS,		/* argument list */
+	MPSL_OP_LOCAL,		/* create local variables */
 
 	MPSL_OP_UMINUS,		/* unary minus */
 	MPSL_OP_ADD,		/* math add */
@@ -103,7 +104,7 @@ mpdm_v _ins(mpdm_v opcode, int args, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 };
 
 %token <v> NULLV INTEGER REAL STRING SYMBOL LITERAL
-%token WHILE IF SUB FOREACH
+%token WHILE IF SUB FOREACH LOCAL
 %nonassoc IFI
 %nonassoc ELSE
 
@@ -167,6 +168,14 @@ stmt:
 				mpdm_aset(w, $2, 1);
 				mpdm_aset(w, INS0(MPDM_LS(L"BLK_POSTFIX")), 2);
 				$$ = w; }
+
+	| LOCAL sym_list ';'	{ $$ = INS1(MPDM_LS(L"LOCAL"), $2); }
+	| LOCAL SYMBOL '=' expr	';'
+				{ mpdm_v w=MPDM_A(2);
+				mpdm_aset(w, INS1(MPDM_LS(L"LOCAL"), $2), 0);
+				mpdm_aset(w, INS2(MPDM_LS(L"="), $2, $4), 1);
+				$$ = w; }
+
 	;
 
 stmt_list:
