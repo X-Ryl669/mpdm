@@ -60,7 +60,7 @@ mpdm_v _mpsl_op(wchar_t * opcode);
 
 static mpdm_v _mpsl_x(mpdm_v a1, mpdm_v a2)
 {
-	return(MPDM_X2(_mpsl_machine,
+	return(MPDM_X2(_mpsl_exec,
 		_ins(L"SUBFRAME", a2 == NULL ? 1 : 2, a1, a2, NULL)));
 }
 
