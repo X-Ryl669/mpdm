@@ -32,7 +32,6 @@ Pending Enhancements
  * 1017: Add optional gettext support.
  * 1018: Support for optional features (like gdbm) should be stored
    in an mpdm array or hash to easily ask for capabilities.
- * 1020: Set errno on errors.
 
 Closed
 ------
@@ -53,5 +52,6 @@ Closed
    values) (Thu, 26 Aug 2004 20:26:21 +0200).
  * 1019: Rework mpdm_dump() to avoid using dynamic values
    (Wed, 08 Sep 2004 21:52:39 +0200).
+ * 1020: Set errno on errors (not done) (Thu, 07 Oct 2004 17:11:52 +0200).
 
 Email bugs to angel@triptico.com
