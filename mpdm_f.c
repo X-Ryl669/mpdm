@@ -225,10 +225,15 @@ mpdm_v mpdm_glob(mpdm_v spec)
 	mpdm_v s=NULL;
 
 	/* convert to mbs */
-	spec=MPDM_2MBS(spec->data);
+	if(spec != NULL)
+		spec=MPDM_2MBS(spec->data);
+	else
+		spec=MPDM_2MBS(L"*.*");
+
+	ptr=(char *)spec->data;
 
 	/* convert MSDOS dir separators into Unix ones */
-	for(ptr=(char *)spec->data;*ptr != '\0';ptr++)
+	for(;*ptr != '\0';ptr++)
 	{
 		if(*ptr == '\\')
 			*ptr='/';
@@ -236,7 +241,7 @@ mpdm_v mpdm_glob(mpdm_v spec)
 
 	v=MPDM_A(0);
 
-	if((h=FindFirstFile((char *) spec->data,&f)) != INVALID_HANDLE_VALUE)
+	if((h=FindFirstFile((char *)spec->data, &f)) != INVALID_HANDLE_VALUE)
 	{
 		/* if spec includes a directory, store in s */
 		if((ptr=strrchr((char *)spec->data, '/')) != NULL)
