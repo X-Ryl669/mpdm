@@ -4,9 +4,6 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1055: Iconv support works, but is nearly useless; iconverters
-   should be associated to file descriptors, which are the only
-   place where iconv will really be used.
  * 1017: Add optional gettext support.
  * 1056: Document internals.
  * 1008: bread().
@@ -111,5 +108,8 @@ Closed
  * 1057: Iconv objects can't be reused for different files, so
    current implementation is faulty. Each iconv_t variable should
    be stored inside the file value (Fri, 25 Mar 2005 02:24:10 +0100).
+ * 1055: Iconv support works, but is nearly useless; iconverters
+   should be associated to file descriptors, which are the only
+   place where iconv will really be used (Fri, 25 Mar 2005 03:04:26 +0100).
 
 Email bugs to angel@triptico.com

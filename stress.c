@@ -840,22 +840,11 @@ void test_encoding(void)
 	mpdm_write(f, MPDM_LS(L"¡España!\n"));
 	mpdm_close(f);
 
-/*	mpdm_v v;
-
-	v=mpdm_iconv_from(MPDM_LS(L"ISO-8859-1"),
-		MPDM_2MBS(L"¡España! (non-ASCII string, as ISO-8859-1 char *)"));
-	mpdm_dump(v);
-	printf("[%ls]\n", (wchar_t *)v->data);
-
-	_test("iconv from ISO-8859-1", v != NULL);
-
-	v=mpdm_iconv_from(MPDM_LS(L"UTF-8"),
-		MPDM_2MBS(L"Â¡EspaÃ±a! (non-ASCII string, as UTF-8 char *)"));
-	mpdm_dump(v);
-	printf("[%ls]\n", (wchar_t *)v->data);
-
-	_test("iconv from UTF-8", v != NULL);
-*/
+	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
+	w=mpdm_read(f);
+	mpdm_dump(w);
+	_test("iconv encoding", mpdm_cmp(w, v) == 0);
+	mpdm_close(f);
 }
 
 
