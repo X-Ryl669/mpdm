@@ -36,26 +36,85 @@
 	Code
 ********************/
 
-void fdm_aexpand(fdm_v v, int offset, int num)
+int _fdm_wrap_offset(fdm_v a, int offset)
 {
-	int n;
-	fdm_v * a;
-
 	/* negative offset means expand from the end */
 	if(offset < 0)
-		offset=v->size + 1 - offset;
+		offset=a->size + 1 - offset;
+
+	return(offset);
+}
+
+
+void fdm_aexpand(fdm_v a, int offset, int num)
+{
+	int n;
+	fdm_v * p;
 
 	/* array is now longer */
-	v->size += num;
-	a=realloc(v->data, v->size * sizeof(struct _fdm_v));
+	a->size += num;
+	p=(fdm_v *) realloc(a->data, a->size * sizeof(struct _fdm_v *));
 
 	/* moves up from top of the array */
-	for(n=v->size - 1;v >= offset + num;n--)
-		a[n]=a[n - num];
+	for(n=a->size - 1;n >= offset + num;n--)
+		p[n]=p[n - num];
 
 	/* fills the new space with blanks */
 	for(;n >= offset;n--)
-		a[n]=NULL;
+		p[n]=NULL;
 
-	v->data=a;
+	a->data=p;
+}
+
+
+void fdm_acollapse(fdm_v a, int offset, int num)
+{
+	int n;
+	fdm_v * p;
+
+	/* don't try to delete beyond the limit */
+/*	if(offset + num > a->size)
+		num=a->size - offset; */
+
+	/* array is now shorter */
+	a->size -= num;
+
+	/* moves down the elements */
+	p=(fdm_v *) a->data;
+	for(n=offset;n < a->size;n++)
+		p[n]=p[n + num];
+
+	/* finally shrinks the memory block */
+	a->data=realloc(p, a->size * sizeof(struct _fdm_v *));
+}
+
+
+fdm_v fdm_aset(fdm_v a, fdm_v e, int offset)
+{
+	fdm_v v;
+	fdm_v * p;
+
+/*	if(offset >= a->size)
+		return(NULL); */
+
+	p=(fdm_v *)a->data;
+	v=p[offset];
+	p[offset]=e;
+
+	if(v != NULL) fdm_unref(v);
+	if(e != NULL) fdm_ref(v);
+
+	return(v);
+}
+
+
+fdm_v fdm_aget(fdm_v a, int offset)
+{
+	fdm_v * va;
+
+/*	if(offset >= a->size)
+		return(NULL); */
+
+	va=(fdm_v *)a->data;
+	return(va[offset]);
 }
