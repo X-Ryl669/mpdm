@@ -123,5 +123,3 @@ fdm_v fdm_strcat(fdm_v s1, fdm_v s2)
 
 	return(v);
 }
-
-
