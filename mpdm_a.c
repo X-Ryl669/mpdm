@@ -39,7 +39,7 @@ int _mpdm_wrap_offset(mpdm_v a, int offset)
 {
 	/* negative offset means expand from the end */
 	if(offset < 0)
-		offset=a->size + 1 - offset;
+		offset=mpdm_size(a) + 1 - offset;
 
 	return(offset);
 }
@@ -125,7 +125,7 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 	mpdm_v * p;
 
 	/* boundary checks */
-	if(offset < 0 || offset >= a->size)
+	if(offset < 0 || offset >= mpdm_size(a))
 		return(NULL);
 
 	/* gets the pointer to the element and the old element */
@@ -152,7 +152,7 @@ mpdm_v mpdm_aget(mpdm_v a, int offset)
 	mpdm_v * p;
 
 	/* boundary checks */
-	if(offset < 0 || offset >= a->size)
+	if(offset < 0 || offset >= mpdm_size(a))
 		return(NULL);
 
 	p=(mpdm_v *)a->data;
@@ -213,7 +213,7 @@ mpdm_v mpdm_adel(mpdm_v a, int offset)
 void mpdm_apush(mpdm_v a, mpdm_v e)
 {
 	/* inserts at the end */
-	mpdm_ains(a, e, a->size);
+	mpdm_ains(a, e, mpdm_size(a));
 }
 
 
@@ -227,7 +227,7 @@ void mpdm_apush(mpdm_v a, mpdm_v e)
 mpdm_v mpdm_apop(mpdm_v a)
 {
 	/* deletes from the end */
-	return(mpdm_adel(a, a->size - 1));
+	return(mpdm_adel(a, mpdm_size(a) - 1));
 }
 
 
@@ -253,7 +253,7 @@ mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size)
 		return(NULL);
 
 	/* loop until a has the desired size */
-	while(a->size > size - 1)
+	while(mpdm_size(a) > size - 1)
 		v=mpdm_adel(a, 0);
 
 	mpdm_apush(a, e);
@@ -275,7 +275,7 @@ int mpdm_aseek(mpdm_v a, mpdm_v k, int step)
 {
 	int n;
 
-	for(n=0;n < a->size;n+=step)
+	for(n=0;n < mpdm_size(a);n+=step)
 	{
 		mpdm_v v=mpdm_aget(a, n);
 
@@ -307,7 +307,7 @@ int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos)
 {
 	int b, t, n, c;
 
-	b=0; t=(a->size - 1) / step;
+	b=0; t=(mpdm_size(a) - 1) / step;
 
 	while(t >= b)
 	{
@@ -348,7 +348,7 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
  */
 void mpdm_asort(mpdm_v a, int step)
 {
-	qsort(a->data, a->size / step,
+	qsort(a->data, mpdm_size(a) / step,
 		sizeof(mpdm_v) * step, _mpdm_asort_cmp);
 }
 
@@ -373,7 +373,7 @@ mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
 	/* travels the string finding separators and creating new values */
 	for(ptr=v->data;
 		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
-		ptr=sptr + s->size)
+		ptr=sptr + mpdm_size(s))
 		mpdm_apush(w, mpdm_new(MPDM_COPY|MPDM_STRING, ptr, sptr - ptr));
 
 	/* add last part */
@@ -398,39 +398,39 @@ mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 	int n, t;
 
 	/* special case optimization: only one element */
-	if(a->size == 1)
+	if(mpdm_size(a) == 1)
 		return(mpdm_aget(a, 0));
 
 	/* first counts the total size */
 	v=mpdm_aget(a, 0);
-	for(t=v->size,n=1;n < a->size;n++)
+	for(t=mpdm_size(v),n=1;n < mpdm_size(a);n++)
 	{
 		v=mpdm_aget(a, n);
-		t+=v->size;
+		t+=mpdm_size(v);
 	}
 
 	/* if there is a separator, update total size */
 	if(s != NULL)
-		t += s->size * (a->size - 1);
+		t += mpdm_size(s) * (mpdm_size(a) - 1);
 
 	/* create the value */
 	w=mpdm_new(MPDM_STRING | MPDM_COPY, NULL, t);
 
 	/* copy now */
 	v=mpdm_aget(a, 0);
-	memcpy(w->data, v->data, v->size);
-	for(t=v->size,n=1;n < a->size;n++)
+	memcpy(w->data, v->data, mpdm_size(v));
+	for(t=mpdm_size(v),n=1;n < mpdm_size(a);n++)
 	{
 		v=mpdm_aget(a, n);
 
 		if(s != NULL)
 		{
-			memcpy(w->data + t, s->data, s->size);
-			t+=s->size;
+			memcpy(w->data + t, s->data, mpdm_size(s));
+			t += mpdm_size(s);
 		}
 
-		memcpy(w->data + t, v->data, v->size);
-		t+=v->size;
+		memcpy(w->data + t, v->data, mpdm_size(v));
+		t+=mpdm_size(v);
 	}
 
 	*((char *)(w->data + t))='\0';
@@ -442,7 +442,7 @@ mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
 	/* unoptimized, but intelligible join */
 	v=mpdm_aget(a, 0);
 
-	for(n=1;n < a->size;n++)
+	for(n=1;n < mpdm_size(a);n++)
 	{
 		/* add separator */
 		if(s != NULL)

@@ -140,7 +140,7 @@ int mpdm_write(mpdm_v fd, mpdm_v v)
 	{
 		int n;
 
-		for(n=0;n < v->size;n++)
+		for(n=0;n < mpdm_size(v);n++)
 			mpdm_write(fd, mpdm_aget(v, n));
 	}
 	else

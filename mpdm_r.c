@@ -187,7 +187,7 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags)
 
 				/* move on */
 				offset+=rm.rm_so;
-				if(s != NULL) offset+=s->size;
+				if(s != NULL) offset += mpdm_size(s);
 			}
 
 		} while(f && g);

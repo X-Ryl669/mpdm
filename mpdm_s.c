@@ -112,19 +112,21 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 	mpdm_v w;
 	mpdm_v n=NULL;
 	mpdm_v d=NULL;
-	int ns, r;
+	int os, ns, r;
 	int ins=0;
 
 	if(v != NULL)
 	{
+		os=mpdm_size(v);
+
 		/* negative offsets start from the end */
-		if(offset < 0) offset=v->size + 1 - offset;
+		if(offset < 0) offset=os + 1 - offset;
 
 		/* never add further the end */
-		if(offset > v->size) offset=v->size;
+		if(offset > os) offset=os;
 
 		/* never delete further the end */
-		if(offset + del > v->size) del=v->size - offset;
+		if(offset + del > os) del=os - offset;
 
 		/* deleted space */
 		if(del > 0)
@@ -132,11 +134,10 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 				v->data + offset, del);
 
 		/* something to insert? */
-		if(i != NULL)
-			ins=i->size;
+		ins=mpdm_size(i);
 
 		/* new size and remainder */
-		ns=v->size + ins - del;
+		ns=os + ins - del;
 		r=offset + del;
 
 		if((n=mpdm_new(MPDM_COPY | MPDM_STRING, NULL, ns)) == NULL)
@@ -151,9 +152,9 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
 			memcpy(n->data + offset, i->data, ins);
 
 		/* copy the remaining */
-		if(v->size - r > 0)
+		if(os - r > 0)
 			memcpy(n->data + offset + ins,
-				v->data + r, v->size - r);
+				v->data + r, os - r);
 
 		/* null terminate */
 		((char *)(n->data))[ns]='\0';

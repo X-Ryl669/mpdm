@@ -7,8 +7,6 @@ TODO
  * Create some versions of functions that avoid doing boundary checks
    when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).
  * Use the ival in hashes to store the number of elements???
- * Create a new mpdm_size() function that returns the size, to help using
-   a 'deferred' strlen() calculation for non-MPDM_COPY strings.
  * Each value should have a 'destroy' pointer to a function or scripting code
    that destroys v->data. For example, a call to regfree() in compiled
    regular expressions. So, normal MPDM_FREE values could include a standard

@@ -93,13 +93,12 @@ mpdm_v mpdm_new(int flags, void * data, int size)
 	mpdm_v v;
 
 	/* a size of -1 means 'calculate it' */
-	if(size == -1)
+	if(size == -1 && (flags & MPDM_STRING))
 	{
-		/* only calculate size for string values; others get 0 */
-		if((flags & MPDM_STRING) && data != NULL)
+		/* only calculate size for new copies of string values;
+		   literal string value's size is deferred */
+		if((flags & MPDM_COPY) && data != NULL)
 			size=strlen((char *) data);
-		else
-			size=0;
 	}
 
 	/* alloc new value and init */
@@ -226,7 +225,7 @@ void mpdm_sweep(int count)
 
 			/* destroy */
 			if(v->flags & MPDM_MULTIPLE)
-				mpdm_acollapse(v, 0, v->size);
+				mpdm_acollapse(v, 0, mpdm_size(v));
 			else
 			if(v->flags & MPDM_FREE)
 				free(v->data);
@@ -253,7 +252,7 @@ void mpdm_sweep(int count)
  */
 int mpdm_size(mpdm_v v)
 {
-	/* NULL values has no size */
+	/* NULL values have no size */
 	if(v == NULL) return(0);
 
 	/* deferred strlen calculation */
@@ -282,10 +281,10 @@ mpdm_v mpdm_clone(mpdm_v v)
 		return(v);
 
 	/* create new */
-	w=mpdm_new(v->flags, NULL, v->size);
+	w=mpdm_new(v->flags, NULL, mpdm_size(v));
 
 	/* fills each element with duplicates of the original */
-	for(n=0;n < v->size;n++)
+	for(n=0;n < mpdm_size(v);n++)
 		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
 	return(w);
