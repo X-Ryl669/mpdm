@@ -273,8 +273,7 @@ expr:
 				}
 	| compsym		{
 					/* compound symbol */
-					mpdm_aset($1, _mpsl_op(MPSL_OP_SYMVAL), 0);
-					$$ = $1;
+					$$ = INS1(MPSL_OP_SYMVAL, $1);
 				}
 	| NULLV			{
 					/* NULL value */
