@@ -1014,6 +1014,7 @@ void test_mpsl2(void)
 	_test("modulo", mpdm_ival(v) == 5);
 
 	v=_test_mpsl("variable=16384;");
+	mpdm_dump(v);
 	v=mpdm_exec(v, NULL);
 	_test("assign 1", mpdm_ival(v) == 16384);
 

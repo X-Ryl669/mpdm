@@ -87,7 +87,7 @@ program:
 	;
 
 function:
-	function stmt		{
+	function stmt_list		{
 					mpdm_apush(_mpsl_bytecode, $2);
 				}
 	| /* NULL */
