@@ -11,6 +11,9 @@ Release Critical Bugs
  * 1056: Document internals.
  * 1008: bread().
  * 1009: bwrite().
+ * 1057: Iconv objects can't be reused for different files, so
+   current implementation is faulty. Each iconv_t variable should
+   be stored inside the file value.
 
 Open Bugs
 ---------
