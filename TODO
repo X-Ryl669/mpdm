@@ -4,8 +4,6 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1021: Merge mpsl (the scripting language) lex and yacc files from
-   CVS project filp2.
  * 1022: Implement return values for mpsl functions.
  * 1023: Implement the 'break' directive in mpsl.
  * 1024: Implement the 'continue' directive in mpsl.
@@ -92,5 +90,7 @@ Closed
    (Wed, 08 Dec 2004 22:12:57 +0100).
  * 1033: Create a new mpdm_hexists() function
    (Thu, 09 Dec 2004 11:19:03 +0100).
+ * 1021: Merge mpsl (the scripting language) lex and yacc files from
+   CVS project filp2 (Thu, 09 Dec 2004 11:55:42 +0100).
 
 Email bugs to angel@triptico.com
