@@ -350,6 +350,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	fdm_v n=NULL;
 	fdm_v d=NULL;
 	int ns, r;
+	int ins=0;
 
 	/* adjustments */
 	if(offset > v->size) offset=v->size;
@@ -364,8 +365,12 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 		((char *)(d->data))[del]='\0';
 	}
 
+	/* something to insert? */
+	if(i != NULL)
+		ins=i->size;
+
 	/* new size and remainder */
-	ns=v->size + i->size - del;
+	ns=v->size + ins - del;
 	r=offset + del;
 
 	if((n=fdm_new(FDM_COPY | FDM_STRING, NULL, ns)) == NULL)
@@ -374,11 +379,11 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 	if(offset > 0)
 		memcpy(n->data, v->data, offset);
 
-	if(i->size > 0)
-		memcpy(n->data + offset, i->data, i->size);
+	if(ins > 0)
+		memcpy(n->data + offset, i->data, ins);
 
 	if(v->size - r > 0)
-		memcpy(n->data + offset + i->size, v->data + r, v->size - r);
+		memcpy(n->data + offset + ins, v->data + r, v->size - r);
 
 	((char *)(n->data))[ns]='\0';
 
