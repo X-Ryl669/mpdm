@@ -10,7 +10,7 @@ CFLAGS=-g -Wall
 DOCS=
 PREFIX=/usr/local
 
-OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o gnu_regex.o
+OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o mpdm_r.o gnu_regex.o
 
 ##################################################################
 
