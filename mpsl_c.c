@@ -523,6 +523,14 @@ static mpdm_v _mpsl_op_nbool(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_streq(mpdm_v c, mpdm_v args)
+/* string comparison */
+{
+	return(MPDM_I(mpdm_cmp(_mpsl_machine(mpdm_aget(c, 1), args),
+		_mpsl_machine(mpdm_aget(c, 2), args))));
+}
+
+
 /**
  * _mpsl_machine - The mpsl virtual machine
  * @c: Multiple value containing the bytecode
@@ -568,6 +576,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_NUMLE: /* falls */
 	case MPSL_OP_NUMGT: /* falls */
 	case MPSL_OP_NUMGE: ret=_mpsl_op_nbool(c, args); break;
+	case MPSL_OP_STREQ: ret=_mpsl_op_streq(c, args); break;
 	}
 
 	return(ret);

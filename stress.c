@@ -1086,6 +1086,14 @@ void test_mpsl2(void)
 	v=mpdm_exec(v, NULL);
 	_test("uminus", mpdm_ival(v) == -66);
 
+	v=_test_mpsl("\"test\" eq \"test\";");
+	v=mpdm_exec(v, NULL);
+	_test("streq 1", mpdm_ival(v) == 0);
+
+	v=_test_mpsl("\"test\" eq \"prueba\";");
+	v=mpdm_exec(v, NULL);
+	_test("streq 1", mpdm_ival(v) > 0);
+
 	mpdm_dump(mpdm_root());
 }
 
