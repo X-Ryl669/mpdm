@@ -159,6 +159,9 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset);
 
 mpdm_v mpdm_gdbm(mpdm_v filename);
 
+mpdm_v mpdm_iconv_from(mpdm_v enc, mpdm_v s);
+mpdm_v mpdm_iconv_to(mpdm_v enc, mpdm_v s);
+
 mpdm_v _mpdm_tie_mul(void);
 mpdm_v _mpdm_tie_nd_mul(void);
 mpdm_v _mpdm_tie_cpy(void);
@@ -195,8 +198,6 @@ mpdm_v _mpdm_tie_hash(void);
 #define MPDM_ND_LS(s)	_mpdm_new_wcs(MPDM_NONDYN,s,-1,_mpdm_tie_nd_ls())
 #define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\
 			v,(sizeof(v) / sizeof(mpdm_v)),_mpdm_tie_nd_mul())
-
-mpdm_v mpsl_compile(mpdm_v code);
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
