@@ -87,8 +87,8 @@ program:
 	;
 
 function:
-	function stmt_list		{
-					mpdm_apush(_mpsl_bytecode, $2);
+	function stmt_list	{
+					_mpsl_bytecode=$2;
 				}
 	| /* NULL */
 	;
@@ -412,9 +412,6 @@ mpdm_v mpsl_compile(mpdm_v code)
 {
 	mpdm_v x=NULL;
 
-	/* create a new holder for the bytecode */
-	_mpsl_bytecode=MPDM_A(1);
-
 	/* point to code */
 	_mpsl_next_char=(wchar_t *) code->data;
 
@@ -422,13 +419,9 @@ mpdm_v mpsl_compile(mpdm_v code)
 
 	/* compile! */
 	if(yyparse() == 0)
-	{
-		mpdm_aset(_mpsl_bytecode, _mpsl_op(MPSL_OP_SUBFRAME), 0);
 		x=MPDM_X2(_mpsl_machine, _mpsl_bytecode);
-	}
 
 	mpdm_unref(code);
-	_mpsl_bytecode=NULL;
 
 	return(x);
 }
