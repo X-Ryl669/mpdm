@@ -364,21 +364,6 @@ mpdm_v mpdm_tie(mpdm_v v, mpdm_v tie)
 }
 
 
-static void _mpdm_atexit(void)
-/* atexit callback */
-{
-	mpdm_v v;
-
-	/* travels the complete list of values */
-	for(v=_mpdm->head;v != NULL;v=v->next)
-	{
-		/* destroys all values that need to be destroyed */
-		if(v->flags & MPDM_DESTROY)
-			mpdm_tie(v, NULL);
-	}
-}
-
-
 int mpdm_startup(void)
 {
 	/* alloc space for the control structure, unless already set up */
@@ -396,9 +381,6 @@ int mpdm_startup(void)
 	if(setlocale(LC_ALL, "") == NULL)
 		setlocale(LC_ALL, "C");
 
-	/* sets the atexit function */
-	atexit(_mpdm_atexit);
-
 	/* everything went OK */
 	return(0);
 }
@@ -406,4 +388,13 @@ int mpdm_startup(void)
 
 void mpdm_shutdown(void)
 {
+	mpdm_v v;
+
+	/* travels the complete list of values */
+	for(v=_mpdm->head;v != NULL;v=v->next)
+	{
+		/* destroys all values that need to be destroyed */
+		if(v->flags & MPDM_DESTROY)
+			mpdm_tie(v, NULL);
+	}
 }
