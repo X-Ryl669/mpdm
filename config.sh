@@ -26,6 +26,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo
 	echo "Environment variables:"
 	echo "CC                    C Compiler."
+	echo "AR                    Library Archiver."
 
 	exit 1
 fi
