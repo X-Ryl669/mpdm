@@ -63,15 +63,13 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
 	mpdm_v b;
 	mpdm_v v = NULL;
 
-	/* if hash is empty, nothing can be found */
-	if(mpdm_size(h) == 0)
-		return(v);
-
-	n=HASH_BUCKET(h, k);
-	if((b=mpdm_aget(h, n)) != NULL)
+	if(mpdm_size(h))
 	{
-		if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
-			v=mpdm_aget(b, n + 1);
+		if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
+		{
+			if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
+				v=mpdm_aget(b, n + 1);
+		}
 	}
 
 	return(v);
@@ -99,6 +97,7 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
 		mpdm_aexpand(h, 0, 31);
 
 	n=HASH_BUCKET(h, k);
+
 	if((b=mpdm_aget(h, n)) != NULL)
 	{
 		if((n=mpdm_abseek(b, k, 2, &pos)) < 0)
@@ -149,8 +148,7 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
 	mpdm_v b;
 	mpdm_v p = NULL;
 
-	n=HASH_BUCKET(h, k);
-	if((b=mpdm_aget(h, n)) != NULL)
+	if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
 	{
 		if((n=mpdm_abseek(b, k, 2, NULL)) >= 0)
 		{
