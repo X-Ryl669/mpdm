@@ -88,6 +88,8 @@ void test_basic(void)
 	v=MPDM_MBS("This is (was) a multibyte string");
 	mpdm_dump(v);
 
+	/* greek omega is 03a9 */
+
 	v=MPDM_LS(L"¡España! (non-ASCII string, as wchar_t *)");
 	mpdm_dump(v);
 
@@ -97,6 +99,10 @@ void test_basic(void)
 
 	v=MPDM_2MBS(L"¡España! (should be correcly seen in any locale)");
 	printf("%s\n", (char *)v->data);
+
+	v=MPDM_LS(L"A capital greek omega between brackets [\x03a9]");
+	mpdm_dump(v);
+	printf("(Previous value will only show on an Unicode terminal)\n");
 }
 
 mpdm_v _asort_cb(mpdm_v args)
