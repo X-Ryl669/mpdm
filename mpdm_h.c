@@ -58,10 +58,14 @@ fdm_v fdm_hget(fdm_v h, fdm_v k)
 	fdm_v b;
 	fdm_v v = NULL;
 
+	/* if hash is empty, nothing can be found */
+	if(h->size == 0)
+		return(v);
+
 	n=HASH_BUCKET(h, k);
 	if((b=fdm_aget(h, n)) != NULL)
 	{
-		if((n=fdm_abseek(b, k, 2)) > 0)
+		if((n=fdm_abseek(b, k, 2)) >= 0)
 			v=fdm_aget(b, n + 1);
 	}
 
@@ -176,4 +180,41 @@ fdm_v fdm_hkeys(fdm_v h)
 	}
 
 	return(a);
+}
+
+
+static fdm_v _fdm_sym(fdm_v r, fdm_v k, fdm_v v, int s)
+{
+	int n;
+	fdm_v p;
+
+	if(r == NULL)
+		r=fdm_root();
+
+	/* splits the path */
+	p=fdm_asplit(FDM_LS("."), k);
+
+	for(n=0;n < p->size - s;n++)
+	{
+		if((r=fdm_hget(r, fdm_aget(p, n))) == NULL)
+			break;
+	}
+
+	/* if want to set, do it */
+	if(s && r != NULL)
+		r=fdm_hset(r, fdm_aget(p, n), v);
+
+	return(r);
+}
+
+
+fdm_v fdm_sget(fdm_v r, fdm_v k)
+{
+	return(_fdm_sym(r, k, NULL, 0));
+}
+
+
+fdm_v fdm_sset(fdm_v r, fdm_v k, fdm_v v)
+{
+	return(_fdm_sym(r, k, v, 1));
 }

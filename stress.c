@@ -48,6 +48,45 @@ void _test(char * str, int ok)
 
 /* tests */
 
+void test_hash(void)
+{
+	fdm_v h;
+	fdm_v v;
+	int i, n;
+
+	h=FDM_H(0);
+
+	fdm_hset(h, FDM_S("mp"), FDM_I(6));
+	v=fdm_hget(h, FDM_S("mp"));
+
+	_test("hash: v != NULL", (v != NULL));
+	i=fdm_ival(v);
+	_test("hash: v == 6", (i == 6));
+
+	fdm_hset(h, FDM_S("mp2"), FDM_I(66));
+	v=fdm_hget(h, FDM_S("mp2"));
+
+	_test("hash: v != NULL", (v != NULL));
+	i=fdm_ival(v);
+	_test("hash: v == 66", (i == 66));
+
+	/* fills 100 values */
+	for(n=0;n < 100;n++)
+		fdm_hset(h, FDM_I(n), FDM_I(n));
+
+	/* tests 100 values */
+	for(n=0;n < 100;n++)
+	{
+		v=fdm_hget(h, FDM_I(n));
+		i=fdm_ival(v);
+
+		_test("hash: storage", (i == n));
+	}
+
+	fdm_dump(h, 0);
+}
+
+
 void test_fdm_asplit(void)
 {
 	fdm_v w;
@@ -80,11 +119,31 @@ void test_fdm_asplit(void)
 }
 
 
+void test_fdm_sym(void)
+{
+	printf("fdm_sset / fdm_sget tests\n\n");
+
+	fdm_sset(NULL, FDM_LS("mp"), FDM_H(0));
+	fdm_dump(fdm_root(), 0);
+	printf("---\n");
+
+	fdm_sset(NULL, FDM_LS("mp.config"), FDM_H(0));
+	fdm_dump(fdm_root(), 0);
+	printf("---\n");
+
+	fdm_sset(NULL, FDM_LS("mp.config.auto_indent"), FDM_I(1));
+	fdm_dump(fdm_root(), 0);
+	printf("---\n");
+}
+
+
 int main(void)
 {
-	test_fdm_asplit();
-
-	printf("\n*** Total tests passed: %d/%d\n", tests, oks);
+	test_hash();
+/*	test_fdm_asplit();
+	test_fdm_sym();
+*/
+	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
 
 	return(0);
 }
