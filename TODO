@@ -10,6 +10,7 @@ Release Critical Bugs
  * 1034: Implement ++ and --.
  * 1035: Implement +=, -=, *=, /=.
  * 1036: Implement the 'local' variable creation in mpsl.
+ * 1037: Add caching support in values for real numbers (like ival).
 
 Open Bugs
 ---------
