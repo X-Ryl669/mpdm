@@ -163,11 +163,7 @@ fdm_v fdm_splice(fdm_v v, fdm_v i, int offset, int del)
 		((char *)(n->data))[ns]='\0';
 	}
 	else
-	{
-		/* if i is not NULL, it will become the new string */
-		if(i != NULL)
-			n=i;
-	}
+		n=i;
 
 	/* creates the output array */
 	w=FDM_A(2);
