@@ -84,50 +84,55 @@ static mpdm_v _tie_regex(void)
 }
 
 
-mpdm_v _mpdm_regcomp(mpdm_v r, char * flags)
+static char * _regex_flags(mpdm_v r)
 {
-	static mpdm_v _regex_cache=NULL;
-	static mpdm_v _iregex_cache=NULL;
-	mpdm_v cr;
+	return(strrchr((char *)r->data, *(char *)r->data));
+}
+
+
+mpdm_v _mpdm_regcomp(mpdm_v r)
+{
+	static mpdm_v _regex=NULL;
 	mpdm_v c;
-	int f;
 
 	/* if cache does not exist, create it */
-	if(_regex_cache == NULL)
-	{
-		_regex_cache=mpdm_ref(MPDM_H(0));
-		_iregex_cache=mpdm_ref(MPDM_H(0));
-	}
-
-	/* flags */
-	if(flags != NULL && strchr(flags, 'i') != NULL)
-	{
-		c=_iregex_cache;
-		f=REG_ICASE;
-	}
-	else
-	{
-		c=_regex_cache;
-		f=0;
-	}
+	if(_regex == NULL)
+		_regex=mpdm_ref(MPDM_H(0));
 
 	/* search the regex in the cache */
-	if((cr=mpdm_hget(c, r)) == NULL)
+	if((c=mpdm_hget(_regex, r)) == NULL)
 	{
+		mpdm_v t;
 		regex_t re;
+		char * regex;
+		char * flags;
+		int f=REG_EXTENDED;
 
 		/* not found; regex must be compiled */
-		if(!regcomp(&re, (char *)r->data, REG_EXTENDED | f))
+
+		regex=(char *)r->data;
+		if((flags=strrchr(regex, *regex)) == NULL)
+			return(NULL);
+
+		if(strchr(flags, 'i') != NULL)
+			f |= REG_ICASE;
+		regex++;
+
+		/* creates a duplicate, skipping the first
+		   and last characters */
+		t=mpdm_new(r->flags, regex, flags - regex, _mpdm_tie_str());
+
+		if(!regcomp(&re, (char *)t->data, f))
 		{
 			/* correctly compiled; create value */
-			cr=mpdm_new(0, &re, sizeof(regex_t), _tie_regex());
+			c=mpdm_new(0, &re, sizeof(regex_t), _tie_regex());
 
 			/* stores */
-			mpdm_hset(c, r, cr);
+			mpdm_hset(_regex, r, c);
 		}
 	}
 
-	return(cr);
+	return(c);
 }
 
 
@@ -136,22 +141,20 @@ mpdm_v _mpdm_regcomp(mpdm_v r, char * flags)
  * @r: the regular expression
  * @v: the value to be matched
  * @offset: offset from the start of v->data
- * @flags: flags
  *
- * Matches a regular expression against a value. @flags is a char *
- * that can contain an 'i' for case-insensitive matches, or NULL.
+ * Matches a regular expression against a value.
  *
  * If the regex is matched, returns a two value array containing
  * the offset and size of the matched string, or NULL otherwise.
  */
-mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset, char * flags)
+mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 {
 	mpdm_v cr;
 	mpdm_v w=NULL;
 	regmatch_t rm;
 
 	/* compile the regex */
-	if((cr=_mpdm_regcomp(r, flags)) != NULL)
+	if((cr=_mpdm_regcomp(r)) != NULL)
 	{
 		/* match? */
 		if(regexec((regex_t *) cr->data,
@@ -176,30 +179,27 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset, char * flags)
  * @v: the value to be matched
  * @s: the string that will substitute the matched string
  * @offset: offset from the start of v->data
- * @flags: flags
  *
  * Matches a regular expression against a value, and substitutes the
- * found substring with @s. @flags is a char * that can contain an 'i'
- * for case-insensitive matches, a 'g' for a global substitution
- * (substitute all ocurrences of the regex, not only the first one), or NULL.
+ * found substring with @s.
  *
  * Returns the modified string, or the original one if no substitutions
  * were done.
  */
-mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags)
+mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset)
 {
 	mpdm_v cr;
 	char * ptr;
 	regmatch_t rm;
 	int f, i;
-	int g=0;
+	char * global;
 
-	/* flags */
-	if(flags != NULL)
-		g=strchr(flags, 'g') != NULL ? 1 : 0;
+	/* takes pointer to global flag */
+	if((global=_regex_flags(r)) != NULL)
+		global=strchr(global, 'g');
 
 	/* compile the regex */
-	if((cr=_mpdm_regcomp(r, flags)) != NULL)
+	if((cr=_mpdm_regcomp(r)) != NULL)
 	{
 		do
 		{
@@ -219,11 +219,11 @@ mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset, char * flags)
 				v=mpdm_aget(v, 0);
 
 				/* move on */
-				offset+=rm.rm_so;
+				offset += rm.rm_so;
 				if(s != NULL) offset += mpdm_size(s);
 			}
 
-		} while(f && g);
+		} while(f && global);
 	}
 
 	return(v);

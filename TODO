@@ -9,10 +9,6 @@ TODO
    A value will be assumed multiple when having a tie function _AEXPAND
    (or _AGET, or so). Code will become incidentally clean (no more "if
    flags & MPDM_" scattered through the code). Risky change!
- * Rewrite regexes to be like those of php: instead of having two
-   arguments (regex and flags), be both the same, using / as first
-   character and as a separator from flags. As a side effect, the regex
-   cache will no longer be two hashes, but only one.
  * Create a tie function for mpdm_dump().
  * Create some versions of functions that avoid doing boundary checks
    when redundant (example: calls to mpdm_aset() in mpdm_acollapse()).

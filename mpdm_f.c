@@ -217,8 +217,13 @@ mpdm_v mpdm_glob(mpdm_v spec)
 	mpdm_v w;
 	mpdm_v s=NULL;
 
-	/* convert MSDOS dir separators into Unix ones */
-	spec=mpdm_sregex(MPDM_LS("\\\\"), spec, MPDM_LS("/"), 0, "g");
+	/* duplicate and convert MSDOS dir separators into Unix ones */
+	spec=MPDM_S(spec->data);
+	for(ptr=(char *)spec->data;*ptr != '\0';ptr++)
+	{
+		if(*ptr == '\\')
+			*ptr='/';
+	}
 
 	v=MPDM_A(0);
 
