@@ -36,7 +36,7 @@
 
 char * fdm_printable(fdm_v v)
 {
-	static char tmp[10];
+	static char tmp[32];
 
 	/* if it's NULL, return a constant */
 	if(v == NULL)
