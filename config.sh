@@ -219,12 +219,6 @@ else
 	echo "No"
 fi
 
-echo "#ifdef CONFOPT_WIN32" >> config.h
-echo "#define SWPRINTF _snwprintf" >> config.h
-echo "#else" >> config.h
-echo "#define SWPRINTF swprintf" >> config.h
-echo "#endif" >> config.h
-
 #########################################################
 
 # final setup
