@@ -811,7 +811,15 @@ void test_nondyn(void)
 
 void test_iconv(void)
 {
+	mpdm_v f;
+
 	mpdm_encoding(MPDM_LS(L"UTF-8"));
+
+	/* new open file will use the specified encoding */
+	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
+
+	mpdm_write(f, MPDM_LS(L"¡España!\n"));
+	mpdm_close(f);
 
 /*	mpdm_v v;
 
