@@ -71,7 +71,7 @@ int mpdm_hsize(mpdm_v h)
 #define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
 
 /**
- * mpdm_hget - Gets an value from a hash.
+ * mpdm_hget - Gets a value from a hash.
  * @h: the hash
  * @k: the key
  *
