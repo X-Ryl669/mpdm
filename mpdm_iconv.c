@@ -79,7 +79,7 @@ static mpdm_v _mpdm_iconv_open(int from, mpdm_v enc)
 	mpdm_v e;
 	char * enc_from;
 	char * enc_to;
-	iconv_t * ic;
+	iconv_t ic;
 
 	/* converts encoding to char * */
 	e=MPDM_2MBS(enc->data);
@@ -92,7 +92,7 @@ static mpdm_v _mpdm_iconv_open(int from, mpdm_v enc)
 
 		h=_iconv_from;
 
-		enc_from=e->data;
+		enc_from=(char *)e->data;
 		enc_to="WCHAR_T";
 	}
 	else
@@ -103,28 +103,20 @@ static mpdm_v _mpdm_iconv_open(int from, mpdm_v enc)
 		h=_iconv_to;
 
 		enc_from="WCHAR_T";
-		enc_to=e->data;
+		enc_to=(char *)e->data;
 	}
 
 	if((e=mpdm_hget(h, enc)) == NULL)
 	{
 		/* creates the converter */
-		if((*ic=iconv_open(enc_to, enc_from)) != NULL)
+		if((ic=iconv_open(enc_to, enc_from)) != NULL)
 		{
 			/* create value */
-			e=mpdm_new(0, ic, sizeof(iconv_t), _tie_iconv());
+			e=mpdm_new(0, &ic, sizeof(iconv_t), _tie_iconv());
 
 			/* stores */
 			mpdm_hset(h, enc, e);
 		}
-	}
-	else
-	{
-		/* gets the iconv structure */
-		ic=(iconv_t *) e->data;
-
-		/* sets it to initial state */
-		iconv(*ic, NULL, NULL, NULL, NULL);
 	}
 
 	return(e);
@@ -165,6 +157,9 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 		n=o;
 		np=op;
 
+		/* reset converter */
+		iconv(*ic, NULL, NULL, NULL, NULL);
+
 		/* do the (possibly partial) conversion */
 		if(iconv(*ic, &ip, &i, &np, &n) == -1)
 		{
@@ -177,9 +172,6 @@ static mpdm_v _mpdm_iconv(int from, mpdm_v enc, mpdm_v s)
 
 			/* try again, using more space */
 			o=i;
-
-			/* reset converter */
-			iconv(*ic, NULL, NULL, NULL, NULL);
 		}
 		else
 			break;
