@@ -63,11 +63,11 @@ fdm_v _fdm_new(int flags, void * data, int size)
 	/* a size of -1 means 'calculate it' */
 	if(size == -1)
 	{
-		/* only size of string values can be calculated */
-		if(data == NULL || !(flags & FDM_STRING))
-			return(NULL);
-
-		size=strlen((char *) data);
+		/* only calculate size for string values; others get 0 */
+		if((flags & FDM_STRING) && data != NULL)
+			size=strlen((char *) data);
+		else
+			size=0;
 	}
 
 	/* alloc new value and init */
