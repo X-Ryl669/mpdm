@@ -364,6 +364,7 @@ fdm_v fdm_asplit(fdm_v s, fdm_v v)
 
 	w=FDM_A(0);
 
+	/* travels the string finding separators and creating new values */
 	for(ptr=v->data;
 		*ptr != '\0' && (sptr=strstr(ptr, s->data)) != NULL;
 		ptr=sptr + s->size)
