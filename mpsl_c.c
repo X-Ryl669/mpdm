@@ -524,6 +524,9 @@ _O_TYPE _mpsl_exec_i(_O_ARGS)
 	if(_mpsl_trace)
 		printf("** %ls: %ls\n", mpdm_string(C0), mpdm_string(ret));
 
+	/* sweep some values */
+	mpdm_sweep(0);
+
 	return(ret);
 }
 
@@ -538,9 +541,6 @@ mpdm_v _mpsl_exec(mpdm_v c, mpdm_v a)
 
 	/* execute first instruction */
 	v=_mpsl_exec_i(c, a, &f);
-
-	/* sweep values */
-	mpdm_sweep(0);
 
 	/* unreference */
 	mpdm_unref(a); mpdm_unref(c);
