@@ -184,7 +184,8 @@ mpdm_v _mpdm_tie_hash(void);
 #define MPDM_ND_END()	_mpdm->nd_index=_mpdm_nd_save
 
 #define MPDM_ND_LS(s)	_mpdm_new_wcs(MPDM_NONDYN,s,-1,_mpdm_tie_nd_ls())
-#define MPDM_ND_A(n,v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,v,n,_mpdm_tie_nd_mul())
+#define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\
+			v,(sizeof(v) / sizeof(mpdm_v)),_mpdm_tie_nd_mul())
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);

@@ -757,7 +757,7 @@ void test_nondyn(void)
 	_test("ND_LS values should have been cloned on mpdm_aset",
 		w != v);
 
-	v=MPDM_ND_A(2,av);
+	v=MPDM_ND_A(av);
 	mpdm_dump(v);
 
 	/* test auto-cloning when storing nondyn values to arrays */
