@@ -156,7 +156,7 @@ mpdm_v _op(mpsl_op opcode)
 %left '!'
 %left STREQ NUMEQ STRNE NUMNE NUMGE NUMLE HASHPAIR RANGE '>''<'
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' MODULO
 %nonassoc UMINUS
 
 %type <ins> stmt expr sym_list stmt_list list hash compsym
@@ -362,22 +362,12 @@ expr:
 					$$ = INS1(MPSL_OP_UMINUS, $2);
 				}
 
-	| expr '+' expr		{
-					/* math add */
-					$$ = INS2(MPSL_OP_ADD, $1, $3);
-				}
-	| expr '-' expr		{
-					/* math substract */
-					$$ = INS2(MPSL_OP_SUB, $1, $3);
-				}
-	| expr '*' expr		{
-					/* math multiply */
-					$$ = INS2(MPSL_OP_MUL, $1, $3);
-				}
-	| expr '/' expr		{
-					/* math division */
-					$$ = INS2(MPSL_OP_DIV, $1, $3);
-				}
+				/* math operations */
+	| expr '+' expr		{ $$ = INS2(MPSL_OP_ADD, $1, $3); }
+	| expr '-' expr		{ $$ = INS2(MPSL_OP_SUB, $1, $3); }
+	| expr '*' expr		{ $$ = INS2(MPSL_OP_MUL, $1, $3); }
+	| expr '/' expr		{ $$ = INS2(MPSL_OP_DIV, $1, $3); }
+	| expr MODULO expr	{ $$ = INS2(MPSL_OP_MOD, $1, $3); }
 
 /*	| compsym INC		{ $$ = INS1(MPDM_LS(L"++"), $1); }
 	| compsym DEC		{ $$ = INS1(MPDM_LS(L"--"), $1); }
