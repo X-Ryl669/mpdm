@@ -329,12 +329,12 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 
 mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
 {
-	mpdm_v av[2] = { a1, a2 };
+	mpdm_v av[] = { a1, a2 };
 	mpdm_v r;
 
 	MPDM_ND_BEGIN();
 
-	r=mpdm_exec(c, MPDM_ND_A(2, av));
+	r=mpdm_exec(c, MPDM_ND_A(av));
 
 	MPDM_ND_END();
 
@@ -344,12 +344,12 @@ mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
 
 mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 {
-	mpdm_v av[3] = { a1, a2, a3 };
+	mpdm_v av[] = { a1, a2, a3 };
 	mpdm_v r;
 
 	MPDM_ND_BEGIN();
 
-	r=mpdm_exec(c, MPDM_ND_A(3, av));
+	r=mpdm_exec(c, MPDM_ND_A(av));
 
 	MPDM_ND_END();
 

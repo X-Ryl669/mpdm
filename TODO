@@ -18,7 +18,8 @@ Open Bugs
    autosweep-safe.
  * 1018: Support for optional features (like gdbm) should be stored
    in an mpdm array or hash to easily ask for capabilities.
- * 1031: Size in MPDM_ND_A() is superfluous, as it can be calculated.
+ * 1032: Nondyn arrays must be protected in mpdm_aexpand(),
+   mpdm_acollapse(), etc.
 
 Pending Enhancements
 --------------------
@@ -87,5 +88,7 @@ Closed
  * 1030: non-dyn array values are completely broken; the creation
    should include the array of values and not take it from mpdm_alloc().
    (Wed, 08 Dec 2004 19:16:05 +0100).
+ * 1031: Size in MPDM_ND_A() is superfluous, as it can be calculated
+   (Wed, 08 Dec 2004 22:12:57 +0100).
 
 Email bugs to angel@triptico.com
