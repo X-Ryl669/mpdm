@@ -246,6 +246,25 @@ void mpdm_sweep(int count)
 
 
 /**
+ * mpdm_size - Returns the size of an element
+ * @v: the element
+ *
+ * Returns the size of an element.
+ */
+int mpdm_size(mpdm_v v)
+{
+	/* NULL values has no size */
+	if(v == NULL) return(0);
+
+	/* deferred strlen calculation */
+	if(v->size == -1 && v->flags & MPDM_STRING)
+		v->size=strlen((char *)v->data);
+
+	return(v->size);
+}
+
+
+/**
  * mpdm_clone - Creates a clone of a value
  * @v: the value
  *
