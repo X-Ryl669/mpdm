@@ -48,6 +48,60 @@ void _test(char * str, int ok)
 
 /* tests */
 
+void test_basic(void)
+{
+	int i;
+	fdm_v v;
+
+	v=FDM_S("65536");
+	i=fdm_ival(v);
+
+	_test("i == 65536", (i == 65536));
+	_test("v has FDM_INTEGER", (v->flags & FDM_INTEGER));
+}
+
+
+void test_array(void)
+{
+	fdm_v a;
+	fdm_v v;
+
+	a=FDM_A(0);
+	_test("a->size == 0", (a->size == 0));
+
+	fdm_apush(a, FDM_LS("sunday"));
+	fdm_apush(a, FDM_LS("monday"));
+	fdm_apush(a, FDM_LS("tuesday"));
+	fdm_apush(a, FDM_LS("wednesday"));
+	fdm_apush(a, FDM_LS("thursday"));
+	fdm_apush(a, FDM_LS("friday"));
+	fdm_apush(a, FDM_LS("saturday"));
+	fdm_dump(a, 0);
+	_test("a->size == 7", (a->size == 7));
+
+	v=fdm_aset(a, NULL, 3);
+	_test("v->ref == 0", (v->ref == 0));
+	fdm_dump(a, 0);
+
+	fdm_asort(a, 1);
+	_test("NULLs are sorted on top", (fdm_aget(a, 0) == NULL));
+
+	fdm_aset(a, v, 0);
+	v=fdm_aget(a, 3);
+	_test("v is referenced again", (v->ref > 0));
+
+	fdm_asort(a, 1);
+	_test("fdm_asort() works (1)",
+		fdm_cmp(fdm_aget(a,0), FDM_LS("friday")) == 0);
+	_test("fdm_asort() works (2)",
+		fdm_cmp(fdm_aget(a,6), FDM_LS("wednesday")) == 0);
+
+	v=fdm_aget(a, 3);
+	fdm_acollapse(a, 3, 1);
+	_test("acollapse unrefs values", (v->ref == 0));
+}
+
+
 void test_hash(void)
 {
 	fdm_v h;
@@ -93,7 +147,32 @@ void test_hash(void)
 }
 
 
-void test_fdm_asplit(void)
+void test_splice(void)
+{
+	fdm_v w;
+
+	w=fdm_splice(FDM_LS("I'm agent Johnson"), FDM_LS("special "), 4, 0);
+	_test("splice insertion", 
+		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm special agent Johnson")) == 0);
+	fdm_dump(w, 0);
+
+	w=fdm_splice(FDM_LS("Life is a shit"), FDM_LS("cheat"), 10, 4);
+	_test("splice insertion and deletion (1)", 
+		fdm_cmp(fdm_aget(w, 0), FDM_LS("Life is a cheat")) == 0);
+	_test("splice insertion and deletion (2)", 
+		fdm_cmp(fdm_aget(w, 1), FDM_LS("shit")) == 0);
+	fdm_dump(w, 0);
+
+	w=fdm_splice(FDM_LS("I'm with dumb"), NULL, 4, 4);
+	_test("splice deletion (1)", 
+		fdm_cmp(fdm_aget(w, 0), FDM_LS("I'm  dumb")) == 0);
+	_test("splice deletion (2)", 
+		fdm_cmp(fdm_aget(w, 1), FDM_LS("with")) == 0);
+	fdm_dump(w, 0);
+}
+
+
+void test_asplit(void)
 {
 	fdm_v w;
 
@@ -125,7 +204,7 @@ void test_fdm_asplit(void)
 }
 
 
-void test_fdm_sym(void)
+void test_sym(void)
 {
 	fdm_v v;
 	int i;
@@ -148,11 +227,15 @@ void test_fdm_sym(void)
 
 int main(void)
 {
+	test_basic();
+	test_array();
 	test_hash();
-	test_fdm_asplit();
-	test_fdm_sym();
+	test_splice();
+	test_asplit();
+	test_sym();
 
 	printf("\n*** Total tests passed: %d/%d\n", oks, tests);
+	printf("*** %s\n", oks == tests ? "ALL TESTS PASSED" : "SOME TESTS FAILED");
 
 	return(0);
 }

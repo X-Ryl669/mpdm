@@ -356,6 +356,12 @@ void fdm_sweep(int count)
  */
 int fdm_cmp(fdm_v v1, fdm_v v2)
 {
+	/* special treatment to NULL values */
+	if(v1 == NULL)
+		return(-1);
+	if(v2 == NULL)
+		return(1);
+
 	/* if both values are strings, compare as such */
 	if((v1->flags & FDM_STRING) && (v2->flags & FDM_STRING))
 		return(strcmp((char *)v1->data, (char *)v2->data));
