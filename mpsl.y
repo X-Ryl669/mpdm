@@ -26,7 +26,7 @@ mpdm_v _ins(mpdm_v opcode, mpdm_v a1, mpdm_v a2, mpdm_v a3);
 %token <v> STRING
 %token <v> SYMBOL
 %token <v> LITERAL
-%token WHILE IF SUB DUMP
+%token WHILE IF SUB FOREACH DUMP
 %nonassoc IFI
 %nonassoc ELSE
 
@@ -65,6 +65,8 @@ stmt:
 				{ $$ = _ins(MPDM_LS(L"SUB"), $2, NULL, $6); }
 	| SUB compsym '(' sym_list ')' '{' stmt_list '}'
 				{ $$ = _ins(MPDM_LS(L"SUB"), $2, $4, $7); }
+	| FOREACH compsym '(' list ')' stmt
+				{ $$ = _ins(MPDM_LS(L"FOREACH"), $2, $4, $6); }
 	| '{' stmt_list '}'	{ $$ = $2; }
 	;
 
