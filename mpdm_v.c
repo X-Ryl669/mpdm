@@ -79,6 +79,12 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
  * values, @size can be -1 to force a calculation using strlen().
  * This flag is incompatible with FDM_MULTIPLE.
  *
+ * If FDM_INTEGER is set, it means @data holds an integer instead of
+ * a pointer to void. The integer value will be converted to string
+ * and stored as the value's data and cached internally for future
+ * use. FDM_INTEGER implies FDM_COPY and FDM_STRING, and is incompatible
+ * with FDM_MULTIPLE.
+ *
  * IF FDM_MULTIPLE is set, it means the value itself is an array
  * of values. @Size indicates the number of elements instead of
  * a quantity in bytes. FDM_MULTIPLE implies FDM_COPY and not
@@ -93,13 +99,32 @@ static void _fdm_nref(fdm_v v[], int count, int iref)
 fdm_v fdm_new(int tag, void * data, int size)
 {
 	fdm_v v;
+	char tmp[32];
+
+	/* alloc new value and init */
+	if((v=(fdm_v) malloc(sizeof(struct _fdm_v))) == NULL)
+		return(NULL);
+
+	memset(v, '\0', sizeof(struct _fdm_v));
 
 	/* sanity checks */
 	if(tag & FDM_MULTIPLE)
 	{
 		/* multiple values are always copies and never strings */
 		tag |= FDM_COPY;
-		tag &= ~ FDM_STRING;
+		tag &= ~ (FDM_STRING | FDM_INTEGER);
+	}
+
+	/* is data an integer? */
+	if(tag & FDM_INTEGER)
+	{
+		v->ival=(int) data;
+		sprintf(tmp, "%d", v->ival);
+		data=tmp;
+
+		/* force copy and calculation */
+		tag |= (FDM_COPY | FDM_STRING);
+		size=-1;
 	}
 
 	/* a size of -1 means 'calculate it' */
@@ -107,16 +132,14 @@ fdm_v fdm_new(int tag, void * data, int size)
 	{
 		/* only size of string values can be calculated */
 		if(data == NULL || !(tag & FDM_STRING))
+		{
+			free(v);
 			return(NULL);
+		}
 
 		size=strlen((char *) data);
 	}
 
-	/* alloc new value */
-	if((v=(fdm_v) malloc(sizeof(struct _fdm_v))) == NULL)
-		return(NULL);
-
-	memset(v, '\0', sizeof(struct _fdm_v));
 	v->tag=tag;
 	v->size=size;
 
@@ -264,6 +287,36 @@ int fdm_cmp(fdm_v v1, fdm_v v2)
 
 	/* in any other case, compare just pointers */
 	return(v1->data - v2->data);
+}
+
+
+/**
+ * fdm_ival - Returns a value's data as an integer
+ * @v: the value
+ *
+ * Returns a value's data as an integer. If the value is a string,
+ * it's converted via sscanf and returned; non-string values have all
+ * an ival of 0. The converted integer is cached, so costly string
+ * conversions are only done once. Values created with the FDM_INTEGER
+ * flag set have its ival cached from the beginning.
+ */
+int fdm_ival(fdm_v v)
+{
+	/* if there is no cached integer, calculate it */
+	if(!(v->tag & FDM_INTEGER))
+	{
+		int i=0;
+
+		/* if it's a string, calculate it; other
+		   values will have an ival of 0 */
+		if(v->tag & FDM_STRING)
+			sscanf((char *)v->data, "%i", &i);
+
+		v->ival=i;
+		v->tag |= FDM_INTEGER;
+	}
+
+	return(v->ival);
 }
 
 

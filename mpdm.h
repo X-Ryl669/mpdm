@@ -26,6 +26,7 @@
 #define FDM_COPY	0x00010000	/* data is a private copy */
 #define FDM_STRING	0x00020000	/* data can be compared */
 #define FDM_MULTIPLE	0x00040000	/* data is multiple */
+#define FDM_INTEGER	0x00080000	/* integer value cached in .ival */
 
 #define FDM_FLAGS_MASK  0xffff0000
 #define FDM_FLAGS(t)	((t) & FDM_FLAGS_MASK)
@@ -39,6 +40,7 @@ struct _fdm_v
 	int ref;	/* reference count */
 	int size;	/* data size */
 	void * data;	/* the real data */
+	int ival;	/* cached integer value */
 	fdm_v next;	/* next in chain */
 };
 
@@ -47,6 +49,8 @@ int fdm_ref(fdm_v v);
 int fdm_unref(fdm_v v);
 void fdm_sweep(int count);
 int fdm_cmp(fdm_v v1, fdm_v v2);
+int fdm_ival(fdm_v v);
+
 void fdm_poke(fdm_v v, char c, int offset);
 fdm_v fdm_splice(fdm_v v, int offset, int size, char * new);
 
