@@ -1,7 +1,7 @@
 /*
 
     fdm - Filp Data Manager
-    Copyright (C) 2003 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2004 Angel Ortega <angel@triptico.com>
 
     fdm_v.c - Basic value management
 
