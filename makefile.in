@@ -9,7 +9,7 @@ PROJ=mpdm
 DOCS=
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
-	mpdm_r.o mpdm_dh.o gnu_regex.o
+	mpdm_r.o mpdm_dh.o mpdm_iconv.o gnu_regex.o
 
 ##################################################################
 
