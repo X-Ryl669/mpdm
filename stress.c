@@ -28,9 +28,9 @@
 
 #include "fdm.h"
 
-/* total number of tests and errors */
+/* total number of tests and oks */
 int tests=0;
-int errors=0;
+int oks=0;
 
 
 /*******************
@@ -39,10 +39,10 @@ int errors=0;
 
 void _test(char * str, int ok)
 {
-	printf("%s: %s\n", str, ok ? "OK!" : "Failed");
+	printf("%s: %s\n", str, ok ? "OK!" : "*** Failed ***");
 
 	tests++;
-	if(!ok) errors++;
+	if(ok) oks++;
 }
 
 
@@ -56,18 +56,23 @@ void test_fdm_asplit(void)
 
 	w=fdm_asplit(FDM_S("."), FDM_S("four.elems.in.string"));
 	fdm_dump(w, 0);
+	_test("4 elems: ", (w->size == 4));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("unseparated string"));
 	fdm_dump(w, 0);
+	_test("1 elem: ", (w->size == 1));
 
 	w=fdm_asplit(FDM_S("."), FDM_S(".dot.at start"));
 	fdm_dump(w, 0);
+	_test("3 elems: ", (w->size == 3));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("dot.at end."));
 	fdm_dump(w, 0);
+	_test("3 elems: ", (w->size == 3));
 
 	w=fdm_asplit(FDM_S("."), FDM_S("three...dots (two empty elements)"));
 	fdm_dump(w, 0);
+	_test("4 elems: ", (w->size == 4));
 }
 
 
@@ -75,7 +80,7 @@ int main(void)
 {
 	test_fdm_asplit();
 
-	printf("\n*** Total tests / errors: %d/%d\n", tests, errors);
+	printf("\n*** Total tests passed: %d/%d\n", tests, oks);
 
 	return(0);
 }
