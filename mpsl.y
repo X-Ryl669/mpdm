@@ -365,12 +365,20 @@ expr:
 					/* bool numeric equal */
 					$$ = INS2(MPSL_OP_NUMEQ, $1, $3);
 				}
-/*	| expr NUMNE expr       { $$ = INS2(MPDM_LS(L"NUMNE"), $1, $3); }*/
+	| expr NUMNE expr	{
+					/* bool numeric non-equal */
+					$$ = INS1(MPSL_OP_NOT,
+						INS2(MPSL_OP_NUMEQ, $1, $3));
+				}
 	| expr STREQ expr       {
 					/* bool string equal */
 					$$ = INS2(MPSL_OP_STREQ, $1, $3);
 				}
-/*	| expr STRNE expr       { $$ = INS2(MPDM_LS(L"STRNE"), $1, $3); }*/
+	| expr STRNE expr	{
+					/* bool string non-equal */
+					$$ = INS1(MPSL_OP_NOT,
+						INS2(MPSL_OP_STREQ, $1, $3));
+				}
 	| expr BOOLAND expr	{
 					/* boolean and */
 					$$ = INS2(MPSL_OP_AND, $1, $3);
