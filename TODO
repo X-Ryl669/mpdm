@@ -17,8 +17,6 @@ Open Bugs
    autosweep-safe.
  * 1018: Support for optional features (like gdbm) should be stored
    in an mpdm array or hash to easily ask for capabilities.
- * 1032: Nondyn arrays must be protected in mpdm_aexpand(),
-   mpdm_acollapse(), etc.
 
 Pending Enhancements
 --------------------
@@ -106,5 +104,7 @@ Closed
    (Closed by #1055; Thu, 10 Mar 2005 13:26:54 +0100).
  * 1054: Add a main() function, similar to the filp one
    (Not applicable; Fri, 18 Mar 2005 06:46:06 +0100).
+ * 1032: Nondyn arrays must be protected in mpdm_aexpand(),
+   mpdm_acollapse(), etc (Fri, 18 Mar 2005 08:00:28 +0100).
 
 Email bugs to angel@triptico.com
