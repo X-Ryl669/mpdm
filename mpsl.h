@@ -68,6 +68,8 @@ typedef enum
 	MPSL_OP_NUMLE,		/* numerical less or equal than */
 	MPSL_OP_NUMGT,		/* numerical greater than */
 	MPSL_OP_NUMGE,		/* numerical greater or equal than */
+
+	MPSL_OP_STRCAT,		/* string concatenation */
 	MPSL_OP_STREQ		/* string equal */
 } mpsl_op;
 

@@ -90,6 +90,7 @@ mpdm_v _mpsl_op(mpsl_op opcode)
 		OP(MPSL_OP_NUMLE);
 		OP(MPSL_OP_NUMGT);
 		OP(MPSL_OP_NUMGE);
+		OP(MPSL_OP_STRCAT);
 		OP(MPSL_OP_STREQ);
 	}
 
@@ -619,6 +620,14 @@ static mpdm_v _mpsl_op_nbool(mpdm_v c, mpdm_v args)
 }
 
 
+static mpdm_v _mpsl_op_strcat(mpdm_v c, mpdm_v args)
+/* string concatenation */
+{
+	return(mpdm_strcat(_mpsl_machine(mpdm_aget(c, 1), args),
+		_mpsl_machine(mpdm_aget(c, 2), args)));
+}
+
+
 static mpdm_v _mpsl_op_streq(mpdm_v c, mpdm_v args)
 /* string comparison */
 {
@@ -682,6 +691,7 @@ mpdm_v _mpsl_machine(mpdm_v c, mpdm_v args)
 	case MPSL_OP_NUMLE: /* falls */
 	case MPSL_OP_NUMGT: /* falls */
 	case MPSL_OP_NUMGE: ret=_mpsl_op_nbool(c, args); break;
+	case MPSL_OP_STRCAT: ret=_mpsl_op_strcat(c, args); break;
 	case MPSL_OP_STREQ: ret=_mpsl_op_streq(c, args); break;
 	}
 

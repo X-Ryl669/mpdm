@@ -1160,6 +1160,13 @@ void test_mpsl2(void)
 	mpdm_aset(w, MPDM_I(75), 1);
 	_test("gcd() 2", mpdm_ival(mpdm_exec(v, w)) == 25);
 
+	/* string concatenation */
+	v=_test_mpsl("\"big\" ~ \" lebowski\";");
+	_test("~ (strcat 1)", mpdm_cmp(mpdm_exec(v, NULL), MPDM_LS(L"big lebowski")) == 0);
+
+	v=_test_mpsl("\"big\" ~ \" \" ~ \"lebowski\";");
+	_test("~ (strcat 2)", mpdm_cmp(mpdm_exec(v, NULL), MPDM_LS(L"big lebowski")) == 0);
+
 	mpdm_dump(mpdm_root());
 }
 
