@@ -38,6 +38,9 @@
 	Code
 ********************/
 
+#define A(n) mpdm_aget(args, n)
+#define IA(n) mpdm_ival(A(n))
+
 mpdm_v _mpsl_size(mpdm_v args)
 {
 	return(MPDM_I(mpdm_size(mpdm_aget(args, 0))));
@@ -70,78 +73,50 @@ mpdm_v _mpsl_is_hash(mpdm_v args)
 
 mpdm_v _mpsl_dump(mpdm_v args)
 {
-	mpdm_dump(mpdm_aget(args, 0));
+	mpdm_dump(A(0));
 	return(NULL);
 }
 
 
 mpdm_v _mpsl_splice(mpdm_v args)
 {
-	mpdm_v v;
-	mpdm_v i;
-	int offset;
-	int del;
-
-	v=mpdm_aget(args, 0);
-	i=mpdm_aget(args, 1);
-	offset=mpdm_ival(mpdm_aget(args, 2));
-	del=mpdm_ival(mpdm_aget(args, 3));
-
-	return(mpdm_splice(v, i, offset, del));
+	return(mpdm_splice(A(0),A(1),IA(2),IA(3)));
 }
 
 
 mpdm_v _mpsl_aexpand(mpdm_v args)
 {
-	mpdm_v a;
-	int offset;
-	int num;
-
-	a=mpdm_aget(args, 0);
-	offset=mpdm_ival(mpdm_aget(args, 1));
-	num=mpdm_ival(mpdm_aget(args, 2));
-
-	return(mpdm_aexpand(a, offset, num));
+	return(mpdm_aexpand(A(0),IA(1),IA(2)));
 }
 
 
 mpdm_v _mpsl_acollapse(mpdm_v args)
 {
-	mpdm_v a;
-	int offset;
-	int num;
-
-	a=mpdm_aget(args, 0);
-	offset=mpdm_ival(mpdm_aget(args, 1));
-	num=mpdm_ival(mpdm_aget(args, 2));
-
-	return(mpdm_acollapse(a, offset, num));
+	return(mpdm_acollapse(A(0),IA(1),IA(2)));
 }
 
 
 mpdm_v _mpsl_ains(mpdm_v args)
 {
-	mpdm_v a;
-	mpdm_v e;
-	int offset;
-
-	a=mpdm_aget(args, 0);
-	e=mpdm_aget(args, 1);
-	offset=mpdm_ival(mpdm_aget(args, 2));
-
-	return(mpdm_ains(a, e, offset));
+	return(mpdm_ains(A(0),A(1),IA(2)));
 }
 
 
 mpdm_v _mpsl_adel(mpdm_v args)
 {
-	mpdm_v a;
-	int offset;
+	return(mpdm_adel(A(0),IA(1)));
+}
 
-	a=mpdm_aget(args, 0);
-	offset=mpdm_ival(mpdm_aget(args, 1));
 
-	return(mpdm_adel(a, offset));
+mpdm_v _mpsl_apush(mpdm_v args)
+{
+	return(mpdm_apush(A(0),A(1)));
+}
+
+
+mpdm_v _mpsl_apop(mpdm_v args)
+{
+	return(mpdm_apop(A(0)));
 }
 
 
