@@ -11,9 +11,6 @@ Release Critical Bugs
  * 1056: Document internals.
  * 1008: bread().
  * 1009: bwrite().
- * 1057: Iconv objects can't be reused for different files, so
-   current implementation is faulty. Each iconv_t variable should
-   be stored inside the file value.
 
 Open Bugs
 ---------
@@ -111,5 +108,8 @@ Closed
    mpdm_acollapse(), etc (Fri, 18 Mar 2005 08:00:28 +0100).
  * 1004: Create a tie function for mpdm_dump()
    (No; Fri, 18 Mar 2005 08:04:19 +0100).
+ * 1057: Iconv objects can't be reused for different files, so
+   current implementation is faulty. Each iconv_t variable should
+   be stored inside the file value (Fri, 25 Mar 2005 02:24:10 +0100).
 
 Email bugs to angel@triptico.com
