@@ -31,13 +31,14 @@ Pending Enhancements
  * 1017: Add optional gettext support.
  * 1027: Store all static _tie... values in ties in the main
    control structure.
- * 1028: With the closing of bugs #1026 and #1027, it should be
+ * 1028: With the closing of bugs #1026, #1027 and #1029, it should be
    easy to have multiple mpdm engines, just by commuting the _mpdm
    pointer. So, there should exist an mpdm_cleanup() function,
    that would, after destroying values by calling mpdm_shutdown(),
    free the rest of values stored inside. This kind of cleanup should
    not be necessary on normal shutdown, as memory will be freed by
    the operating system anyway.
+ * 1029: Store the regex cache in the main control structure.
 
 Closed
 ------
