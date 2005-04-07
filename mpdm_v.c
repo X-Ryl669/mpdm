@@ -212,10 +212,11 @@ void mpdm_sweep(int count)
 			/* one value less */
 			_mpdm->count--;
 		}
+		else
+			_mpdm->cur=v;
 
 		/* move to next */
 		count --;
-		_mpdm->cur=_mpdm->cur->next;
 	}
 }
 
