@@ -189,11 +189,11 @@ void mpdm_sweep(int count)
 {
 	mpdm_v v;
 
-	/* if count is -1, sweep all */
-	if(count == -1) count=_mpdm->count;
-
 	/* if count is zero, sweep 'some' values */
 	if(count == 0) count=_mpdm->default_sweep;
+
+	/* if count is -1, sweep all */
+	if(count == -1) count=_mpdm->count;
 
 	while(count > 0 && _mpdm->count > _mpdm->low_threshold)
 	{
