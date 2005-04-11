@@ -24,7 +24,7 @@ Pending Enhancements
  * 1007: chmod().
  * 1008: bread().
  * 1009: bwrite().
- * 1062: sprintf().
+ * 1063: Implement copy-on-write on array cloning.
 
 Closed
 ------
@@ -127,5 +127,7 @@ Closed
    not be necessary on normal shutdown, as memory will be freed by
    the operating system anyway (Doesn't seem necessary nor useful;
    Mon, 04 Apr 2005 18:51:48 +0200).
+ * 1062: sprintf() (Not applicable, it should be implemented on mpsl instead;
+   Mon, 11 Apr 2005 17:52:38 +0200).
 
 Email bugs to angel@triptico.com
