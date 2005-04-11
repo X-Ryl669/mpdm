@@ -72,24 +72,56 @@ struct _mpdm_file
 ********************/
 
 
+wchar_t _mpdm_mbrtowc(int c)
+/* converts c into an wchar_t */
+{
+	wchar_t wc=L'?';
+
+#ifdef CONFOPT_MBRTOWC
+	static mbstate_t ps;
+
+	/* special case; reset state */
+	if(c == -1)
+		memset(&ps, '\0', sizeof(ps));
+	else
+	{
+		char cc=c;
+
+		/* a value of -2 means incomplete character;
+		   trigger 'retry' by returning \0 */
+		if(mbrtowc(&wc, &cc, 1, &ps) == -2)
+			wc=L'\0';
+	}
+
+#else /* CONFOPT_MBRTOWC */
+
+	/* no mbrtowc(); implement similar functionality
+	   with defective mbtowc() */
+	if(c != -1)
+		mbtowc(&wc, &c, 1);
+
+#endif /* CONFOPT_MBRTOWC */
+
+	return(wc);
+}
+
+
 wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
 	wchar_t * ptr=NULL;
 	int c;
-	mbstate_t ps;
 
 	*s=0;
 
-	memset(&ps, '\0', sizeof(ps));
+	_mpdm_mbrtowc(-1);
 
 	while((c = fgetc(f)) != EOF)
 	{
-		char cc=c;
-		wchar_t wc=L'?';
+		wchar_t wc;
 
-		/* convert char */
-		if(mbrtowc(&wc, &cc, 1, &ps) == -2)
+		/* convert char, and retry if incomplete */
+		if((wc=_mpdm_mbrtowc(c)) == L'\0')
 			continue;
 
 		/* alloc space */
