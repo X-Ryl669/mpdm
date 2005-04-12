@@ -76,6 +76,8 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
 	wchar_t * ptr=NULL;
+
+#ifdef CONFOPT_MBRTOWC_
 	int c;
 	mbstate_t ps;
 
@@ -103,6 +105,62 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 		if(wc == L'\n')
 			break;
 	}
+
+#else /* CONFOPT_MBRTOWC */
+
+	char * cptr=NULL;
+	char tmp[MB_CUR_MAX + 1];
+	wchar_t wc;
+	int c,i,n;
+
+	for(n=0;(c = fgetc(f)) != EOF;n++)
+	{
+		/* alloc space */
+		cptr=realloc(cptr, n + 2);
+
+		cptr[n]=c; cptr[n + 1]='\0';
+
+		/* if it's an end of line, finish */
+		if(c == '\n')
+			break;
+	}
+
+	/* now loop cptr converting each character */
+	for(n=i=0;cptr != NULL && (c = cptr[n + i]) != '\0';)
+	{
+		tmp[i++]=c; tmp[i]='\0';
+
+		if(mbstowcs(&wc, tmp, i) == -1)
+		{
+			if(i <= MB_CUR_MAX)
+				continue;
+			else
+			{
+				/* too much failing chars; back to 1 */
+				wc=L'?';
+				i=1;
+			}
+		}
+
+		n += i;
+		i=0;
+
+		/* alloc space */
+		ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t));
+
+		/* store new char and null-terminate */
+		ptr[*s]=wc; ptr[*s + 1]=L'\0';
+		(*s)++;
+
+		/* if it's an end of line, finish */
+		if(wc == L'\n')
+			break;
+	}
+
+	if(cptr != NULL)
+		free(cptr);
+
+#endif /* CONFOPT_MBRTOWC */
 
 	return(ptr);
 }
