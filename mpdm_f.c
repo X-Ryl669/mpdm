@@ -113,6 +113,8 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 	wchar_t wc;
 	int c,i,n;
 
+	*s=0;
+
 	for(n=0;(c = fgetc(f)) != EOF;n++)
 	{
 		/* alloc space */
