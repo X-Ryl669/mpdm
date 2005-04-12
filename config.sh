@@ -264,20 +264,6 @@ else
 	fi
 fi
 
-# mbrtowc() detection
-echo -n "Testing for mbrtowc()... "
-echo "#include <wchar.h>" > .tmp.c
-echo "int main(void) { wchar_t wc; mbstate_t s; char c='?'; mbrtowc(&wc, &c, 1, &s); return(0); }" >> .tmp.c
-
-$CC .tmp.c -o .tmp.o 2>> .config.log
-
-if [ $? = 0 ] ; then
-	echo "#define CONFOPT_MBRTOWC 1" >> config.h
-	echo "OK"
-else
-	echo "No"
-fi
-
 #########################################################
 
 # final setup

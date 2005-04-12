@@ -6,8 +6,6 @@ Release Critical Bugs
 
  * 1017: Add optional gettext support.
  * 1056: Document internals.
- * 1060: Some old Unix systems (for example, IRIX) and mingw32
-   don't have the mbrtowc() function (they do have mbtowc(), though).
 
 Open Bugs
 ---------
@@ -129,5 +127,8 @@ Closed
    Mon, 04 Apr 2005 18:51:48 +0200).
  * 1062: sprintf() (Not applicable, it should be implemented on mpsl instead;
    Mon, 11 Apr 2005 17:52:38 +0200).
+ * 1060: Some old Unix systems (for example, IRIX) and mingw32
+   don't have the mbrtowc() function (they do have mbtowc(), though)
+   (Tue, 12 Apr 2005 18:55:42 +0200).
 
 Email bugs to angel@triptico.com
