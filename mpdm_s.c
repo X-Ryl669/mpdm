@@ -37,6 +37,54 @@
 	Code
 ********************/
 
+wchar_t * _mpdm_mbstowcs(char * str, int * s)
+/* converts an mbs to a wcs, but filling invalid chars
+   with question marks instead of just failing */
+{
+	wchar_t * ptr=NULL;
+	char tmp[MB_CUR_MAX + 1];
+	wchar_t wc;
+	int n, i, c;
+
+	/* zero size */
+	*s=0;
+
+	/* now loop cptr converting each character */
+	for(n=i=0;(c = str[n + i]) != '\0';)
+	{
+		tmp[i++]=c; tmp[i]='\0';
+
+		/* try to convert */
+		if(mbstowcs(&wc, tmp, 1) == -1)
+		{
+			/* can still be an incomplete multibyte char? */
+			if(i <= MB_CUR_MAX)
+				continue;
+			else
+			{
+				/* too many failing bytes; skip 1 byte */
+				wc=L'?';
+				i=1;
+			}
+		}
+
+		/* skip used bytes and back again */
+		n += i;
+		i=0;
+
+		/* alloc space */
+		if((ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t))) == NULL)
+			return(NULL);
+
+		/* store new char and null-terminate */
+		ptr[*s]=wc; ptr[*s + 1]=L'\0';
+		(*s)++;
+	}
+
+	return(ptr);
+}
+
+
 mpdm_v _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
@@ -81,18 +129,8 @@ mpdm_v _mpdm_new_mbstowcs(int flags, char * str)
 	wchar_t * ptr;
 	int size;
 
-	/* calculate needed space */
-	size=mbstowcs(NULL, str, 0);
-
-	/* this can occur in case of invalid encodings */
-	if(size < 0)
+	if((ptr=_mpdm_mbstowcs(str, &size)) == NULL)
 		return(NULL);
-
-	if((ptr=malloc((size + 1) * sizeof(wchar_t))) == NULL)
-		return(NULL);
-
-	mbstowcs(ptr, str, size);
-	ptr[size]=L'\0';
 
 	/* it's a string */
 	flags |= (MPDM_STRING|MPDM_FREE);

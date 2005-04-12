@@ -102,6 +102,7 @@ mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb);
 mpdm_v mpdm_asplit(mpdm_v s, mpdm_v a);
 mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a);
 
+wchar_t * _mpdm_mbstowcs(char * str, int * s);
 mpdm_v _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy);
 mpdm_v _mpdm_new_mbstowcs(int flags, char * str);
 mpdm_v _mpdm_new_wcstombs(int flags, wchar_t * str);
