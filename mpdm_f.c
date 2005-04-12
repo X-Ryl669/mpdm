@@ -132,7 +132,7 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 	{
 		tmp[i++]=c; tmp[i]='\0';
 
-		if(mbstowcs(&wc, tmp, i) == -1)
+		if(mbstowcs(&wc, tmp, 1) == -1)
 		{
 			if(i <= MB_CUR_MAX)
 				continue;
