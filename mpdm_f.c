@@ -77,15 +77,15 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 {
 	wchar_t * ptr=NULL;
 	char * cptr=NULL;
-	int c,n;
+	int c, n=0;
 
-	for(n=0;(c = fgetc(f)) != EOF;n++)
+	while((c = fgetc(f)) != EOF)
 	{
 		/* alloc space */
 		if((cptr=realloc(cptr, n + 2)) == NULL)
 			break;
 
-		cptr[n]=c; cptr[n + 1]='\0';
+		cptr[n++]=c;
 
 		/* if it's an end of line, finish */
 		if(c == '\n')
@@ -94,6 +94,8 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 
 	if(cptr != NULL)
 	{
+		cptr[n]='\0';
+
 		/* do the conversion */
 		ptr=_mpdm_mbstowcs(cptr, s);
 
