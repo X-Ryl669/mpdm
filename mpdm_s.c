@@ -76,10 +76,12 @@ wchar_t * _mpdm_mbstowcs(char * str, int * s)
 		if((ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t))) == NULL)
 			return(NULL);
 
-		/* store new char and null-terminate */
-		ptr[*s]=wc; ptr[*s + 1]=L'\0';
-		(*s)++;
+		/* store new char */
+		ptr[(*s)++]=wc;
 	}
+
+	if(ptr != NULL)
+		ptr[*s]=L'\0';
 
 	return(ptr);
 }
