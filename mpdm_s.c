@@ -46,19 +46,23 @@ wchar_t * _mpdm_mbstowcs(char * str, int * s)
 	wchar_t wc;
 	int n, i, c;
 
-	/* zero size */
-	*s=0;
+	/* zero everything */
+	*s=n=i=0;
 
 	/* now loop cptr converting each character */
-	for(n=i=0;(c = str[n + i]) != '\0';)
+	for(;;)
 	{
+		/* no more characters to process? */
+		if((c = str[n + i]) == '\0' && i == 0)
+			break;
+
 		tmp[i++]=c; tmp[i]='\0';
 
 		/* try to convert */
 		if(mbstowcs(&wc, tmp, 1) == -1)
 		{
 			/* can still be an incomplete multibyte char? */
-			if(i <= MB_CUR_MAX)
+			if(c != '\0' && i <= MB_CUR_MAX)
 				continue;
 			else
 			{
