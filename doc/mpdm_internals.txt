@@ -23,5 +23,11 @@ The 'garbage collector'
 Executable values
 -----------------
 
+Regular expressions
+-------------------
+
+File I/O
+--------
+
 ----
 Angel Ortega - http://www.triptico.com
