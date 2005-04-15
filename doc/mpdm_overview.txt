@@ -1,9 +1,10 @@
-Mpdm internals
-==============
+Mpdm overview
+=============
 
  Angel Ortega <angel@triptico.com>
 
-This document describes the internal details of the mpdm implementation.
+Description
+-----------
 
 Values
 ------
