@@ -505,12 +505,13 @@ double mpdm_rval(mpdm_v v)
 mpdm_v mpdm_gettext(mpdm_v str)
 {
 	mpdm_v v;
-	char * s;
 
 	/* try first the cache */
 	if((v=mpdm_hget(_cache_i18n, str)) == NULL)
 	{
 #ifdef CONFOPT_GETTEXT
+		char * s;
+
 		/* convert to mbs */
 		v=MPDM_2MBS(str->data);
 
@@ -537,26 +538,36 @@ mpdm_v mpdm_gettext(mpdm_v str)
 /**
  * mpdm_gettext_domain - Sets domain and data directory for translations
  * @dom: the domain (application name)
- * @dir: data were the .mo files live
+ * @data: translation data
  *
- * Sets the domain (application name) and data directory for translating
- * strings. If real gettext support exists, @dir must point to a directory
- * containing the .mo (compiled .po) files.
+ * Sets the domain (application name) and translation data for translating
+ * strings that will be returned by mpdm_gettext(). If @data is a hash, it
+ * is directly used as a translation hash for future translations; if it's
+ * a scalar string, @data must point to a directory containing the
+ * .mo (compiled .po) files (gettext support must exist for this to work).
  */
-void mpdm_gettext_domain(mpdm_v dom, mpdm_v dir)
+void mpdm_gettext_domain(mpdm_v dom, mpdm_v data)
 {
+	mpdm_unref(_cache_i18n);
+
+	if(data->flags & MPDM_HASH)
+		_cache_i18n=data;
+	else
+	{
+		_cache_i18n=MPDM_H(0);
+
 #ifdef CONFOPT_GETTEXT
 
-	/* convert both to mbs,s */
-	dom=MPDM_2MBS(dom->data);
-	dir=MPDM_2MBS(dir->data);
+		/* convert both to mbs,s */
+		dom=MPDM_2MBS(dom->data);
+		data=MPDM_2MBS(data->data);
 
-	/* bind and set domain */
-	bindtextdomain((char *)dom->data, (char *)dir->data);
-	textdomain((char *)dom->data);
+		/* bind and set domain */
+		bindtextdomain((char *)dom->data, (char *)data->data);
+		textdomain((char *)dom->data);
 
 #endif /* CONFOPT_GETTEXT */
+	}
 
-	mpdm_unref(_cache_i18n);
-	_cache_i18n=mpdm_ref(MPDM_H(0));
+	mpdm_ref(_cache_i18n);
 }

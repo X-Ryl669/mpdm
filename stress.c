@@ -818,6 +818,7 @@ void test_encoding(void)
 void test_gettext(void)
 {
 	mpdm_v v;
+	mpdm_v h;
 
 	printf("\nTesting gettext...\n");
 
@@ -832,6 +833,14 @@ void test_gettext(void)
 	mpdm_dump(v);
 
 	v=mpdm_gettext(MPDM_LS(L"This string is not translated"));
+	mpdm_dump(v);
+
+	printf("Ad-hoc translation hash:\n");
+	h=MPDM_H(0);
+	mpdm_hset(h, MPDM_LS(L"test string"), MPDM_LS(L"cadena de prueba"));
+
+	mpdm_gettext_domain(MPDM_LS(L"stress"), h);
+	v=mpdm_gettext(MPDM_LS(L"test string"));
 	mpdm_dump(v);
 }
 
