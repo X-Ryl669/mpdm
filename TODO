@@ -4,8 +4,9 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1017: Add optional gettext support.
  * 1056: Fill the overview document.
+ * 1064: There should exist some way to detect the lack of gettext
+   support and set a translation hash.
 
 Open Bugs
 ---------
@@ -130,5 +131,6 @@ Closed
  * 1060: Some old Unix systems (for example, IRIX) and mingw32
    don't have the mbrtowc() function (they do have mbtowc(), though)
    (Tue, 12 Apr 2005 18:55:42 +0200).
+ * 1017: Add optional gettext support (Sat, 16 Apr 2005 11:05:31 +0200).
 
 Email bugs to angel@triptico.com
