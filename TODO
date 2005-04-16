@@ -23,6 +23,11 @@ Pending Enhancements
  * 1008: bread().
  * 1009: bwrite().
  * 1063: Implement copy-on-write on array cloning.
+ * 1066: Implement a minimum time-to-live for values; never referenced values
+   younger than that will never be swept. Values under explicit [un]ref()
+   control won't have this, as they (should) never be used after being
+   unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
+   as this could mask possible sweeping errors, it has not been implemented yet.
 
 Closed
 ------
