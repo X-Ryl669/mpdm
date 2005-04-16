@@ -819,10 +819,19 @@ void test_gettext(void)
 {
 	mpdm_v v;
 
-	printf("Testing gettext...\n");
+	printf("\nTesting gettext...\n");
 
 	mpdm_gettext_domain(MPDM_LS(L"stress"), MPDM_LS(L"./po"));
-	v=mpdm_gettext(MPDM_LS(L"This a test string"));
+
+	printf("Should follow a translated string of 'This is a test string':\n");
+	v=mpdm_gettext(MPDM_LS(L"This is a test string"));
+	mpdm_dump(v);
+
+	printf("The same, but cached:\n");
+	v=mpdm_gettext(MPDM_LS(L"This is a test string"));
+	mpdm_dump(v);
+
+	v=mpdm_gettext(MPDM_LS(L"This string is not translated"));
 	mpdm_dump(v);
 }
 

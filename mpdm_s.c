@@ -555,7 +555,7 @@ void mpdm_gettext_domain(mpdm_v dom, mpdm_v dir)
 	bindtextdomain((char *)dom->data, (char *)dir->data);
 	textdomain((char *)dom->data);
 
-#endif
+#endif /* CONFOPT_GETTEXT */
 
 	mpdm_unref(_cache_i18n);
 	_cache_i18n=mpdm_ref(MPDM_H(0));
