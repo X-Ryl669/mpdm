@@ -148,7 +148,7 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset);
 mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset);
 
 mpdm_v mpdm_gettext(mpdm_v str);
-void mpdm_gettext_domain(mpdm_v dom, mpdm_v dir);
+void mpdm_gettext_domain(mpdm_v dom, mpdm_v data);
 
 /* value creation utility macros */
 

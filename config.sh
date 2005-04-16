@@ -17,6 +17,7 @@ while [ $# -gt 0 ] ; do
 	--without-regex)	WITHOUT_REGEX=1 ;;
 	--with-included-regex)	WITH_INCLUDED_REGEX=1 ;;
 	--with-pcre)		WITH_PCRE=1 ;;
+	--without-gettext)	WITHOUT_GETTEXT=1 ;;
 	--without-iconv)	WITHOUT_ICONV=1 ;;
 	--help)			CONFIG_HELP=1 ;;
 
@@ -35,6 +36,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "--without-unix-glob   Disable glob.h usage (use workaround)."
 	echo "--with-included-regex Use included regex code (gnu_regex.c)."
 	echo "--with-pcre           Enable PCRE library detection."
+	echo "--without-gettext     Disable gettext usage."
 	echo "--without-iconv       Disable iconv usage."
 
 	echo
