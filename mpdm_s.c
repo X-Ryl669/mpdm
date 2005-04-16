@@ -31,7 +31,20 @@
 #include <wchar.h>
 #include <locale.h>
 
+#ifdef CONFOPT_GETTEXT
+#include <libintl.h>
+#endif
+
 #include "mpdm.h"
+
+
+/*******************
+	Data
+********************/
+
+/* translated string cache */
+static mpdm_v _cache_i18n=NULL;
+
 
 /*******************
 	Code
@@ -476,4 +489,74 @@ double mpdm_rval(mpdm_v v)
 	}
 
 	return(v->rval);
+}
+
+
+/**
+ * mpdm_gettext - Translates a string to the current language
+ * @str: the string
+ *
+ * Translates the @str string to the current language. The active language
+ * and data directory is set by a call to mpdm_gettext_domain().
+ *
+ * If the string is found in the current table, the translation is
+ * returned; otherwise, the same @str value is returned.
+ */
+mpdm_v mpdm_gettext(mpdm_v str)
+{
+	mpdm_v v;
+	char * s;
+
+	/* try first the cache */
+	if((v=mpdm_hget(_cache_i18n, str)) == NULL)
+	{
+#ifdef CONFOPT_GETTEXT
+		/* convert to mbs */
+		v=MPDM_2MBS(str->data);
+
+		/* ask gettext for it */
+		s=gettext((char *)v->data);
+
+		/* create new value only if it's different */
+		if(s != v->data)
+			v=MPDM_MBS(s);
+		else
+
+#endif /* CONFOPT_GETTEXT */
+
+			v=str;
+
+		/* store in the cache */
+		mpdm_hset(_cache_i18n, str, v);
+	}
+
+	return(v);
+}
+
+
+/**
+ * mpdm_gettext_domain - Sets domain and data directory for translations
+ * @dom: the domain (application name)
+ * @dir: data were the .mo files live
+ *
+ * Sets the domain (application name) and data directory for translating
+ * strings. If real gettext support exists, @dir must point to a directory
+ * containing the .mo (compiled .po) files.
+ */
+void mpdm_gettext_domain(mpdm_v dom, mpdm_v dir)
+{
+#ifdef CONFOPT_GETTEXT
+
+	/* convert both to mbs,s */
+	dom=MPDM_2MBS(dom->data);
+	dir=MPDM_2MBS(dir->data);
+
+	/* bind and set domain */
+	bindtextdomain((char *)dom->data, (char *)dir->data);
+	textdomain((char *)dom->data);
+
+#endif
+
+	mpdm_unref(_cache_i18n);
+	_cache_i18n=mpdm_ref(MPDM_H(0));
 }

@@ -53,3 +53,12 @@ install:
 	mkdir -p $(PREFIX)/share/doc/$(PROJ)
 	cp $(DOCS) $(PREFIX)/share/doc/$(PROJ)
 
+.po.mo:
+	msgfmt -o $@ $<
+
+build-mo:
+	for a in po/*.po ; do \
+		B=`basename $$a .po` ; \
+		mkdir -p po/$$B/LC_MESSAGES ; \
+		msgfmt -o po/$$B/LC_MESSAGES/stress.mo $$a ; \
+	done
