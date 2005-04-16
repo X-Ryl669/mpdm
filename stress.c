@@ -815,6 +815,18 @@ void test_encoding(void)
 }
 
 
+void test_gettext(void)
+{
+	mpdm_v v;
+
+	printf("Testing gettext...\n");
+
+	mpdm_gettext_domain(MPDM_LS(L"stress"), MPDM_LS(L"./po"));
+	v=mpdm_gettext(MPDM_LS(L"This a test string"));
+	mpdm_dump(v);
+}
+
+
 void _timer(int secs)
 {
 	static clock_t clks=0;
@@ -916,6 +928,7 @@ int main(int argc, char * argv[])
 	test_exec();
 	test_nondyn();
 	test_encoding();
+	test_gettext();
 	benchmark();
 
 	printf("memory: %d\n", _mpdm->memory_usage);
