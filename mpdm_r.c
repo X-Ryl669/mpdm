@@ -55,13 +55,13 @@ static regmatch_t rm;
 	Code
 ********************/
 
-static wchar_t * _regex_flags(mpdm_t r)
+static wchar_t * regex_flags(mpdm_t r)
 {
 	return(wcsrchr((wchar_t *)r->data, *(wchar_t *)r->data));
 }
 
 
-mpdm_t _mpdm_regcomp(mpdm_t r)
+mpdm_t mpdm_regcomp(mpdm_t r)
 {
 	mpdm_t c=NULL;
 
@@ -169,7 +169,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		/* single value; really do the regex */
 
 		/* compile the regex */
-		if((cr=_mpdm_regcomp(r)) != NULL)
+		if((cr=mpdm_regcomp(r)) != NULL)
 		{
 			mpdm_t vmb;
 
@@ -181,7 +181,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				(char *) vmb->data + offset, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
-				wchar_t * ptr=_regex_flags(r);
+				wchar_t * ptr=regex_flags(r);
 
 				/* found; test if coordinates wanted */
 				if(wcschr(ptr, 'c') != NULL)
@@ -234,10 +234,10 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 	int woffset=offset;
 
 	/* compile the regex */
-	if((cr=_mpdm_regcomp(r)) != NULL)
+	if((cr=mpdm_regcomp(r)) != NULL)
 	{
 		/* takes pointer to global flag */
-		if((global=_regex_flags(r)) != NULL)
+		if((global=regex_flags(r)) != NULL)
 			global=wcschr(global, 'g');
 
 		/* convert to mbs */

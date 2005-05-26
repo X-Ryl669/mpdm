@@ -45,7 +45,7 @@ static mpdm_t asort_cb=NULL;
 	Code
 ********************/
 
-mpdm_t _mpdm_new_a(int flags, int size)
+mpdm_t mpdm_new_a(int flags, int size)
 /* creates a new array value */
 {
 	mpdm_t v;
@@ -61,7 +61,7 @@ mpdm_t _mpdm_new_a(int flags, int size)
 }
 
 
-static int _wrap_offset(mpdm_t a, int offset)
+static int wrap_offset(mpdm_t a, int offset)
 /* manages negative offsets */
 {
 	if(offset < 0) offset=mpdm_size(a) + offset;
@@ -70,14 +70,14 @@ static int _wrap_offset(mpdm_t a, int offset)
 }
 
 
-mpdm_t _mpdm_aclone(mpdm_t v)
+mpdm_t mpdm_aclone(mpdm_t v)
 /* clones a multiple value */
 {
 	mpdm_t w;
 	int n;
 
 	/* creates a similar value */
-	w=_mpdm_new_a(v->flags, v->size);
+	w=mpdm_new_a(v->flags, v->size);
 
 	/* fills each element with duplicates of the original */
 	for(n=0;n < w->size;n++)
@@ -182,7 +182,7 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 	mpdm_t v;
 	mpdm_t * p;
 
-	offset=_wrap_offset(a, offset);
+	offset=wrap_offset(a, offset);
 
 	/* boundary checks */
 	if(offset < 0)
@@ -225,7 +225,7 @@ mpdm_t mpdm_aget(mpdm_t a, int offset)
 {
 	mpdm_t * p;
 
-	offset=_wrap_offset(a, offset);
+	offset=wrap_offset(a, offset);
 
 	/* boundary checks */
 	if(offset < 0 || offset >= mpdm_size(a))
@@ -248,7 +248,7 @@ mpdm_t mpdm_aget(mpdm_t a, int offset)
  */
 mpdm_t mpdm_ains(mpdm_t a, mpdm_t e, int offset)
 {
-	offset=_wrap_offset(a, offset);
+	offset=wrap_offset(a, offset);
 
 	/* open room and set value */
 	if(mpdm_aexpand(a, offset, 1))
@@ -271,7 +271,7 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
 	mpdm_t v;
 
-	offset=_wrap_offset(a, offset);
+	offset=wrap_offset(a, offset);
 
 	/* gets current value */
 	v=mpdm_aget(a, offset);
@@ -413,7 +413,7 @@ int mpdm_abseek(mpdm_t a, mpdm_t k, int step, int * pos)
 }
 
 
-static int _mpdm_asort_cmp(const void * s1, const void * s2)
+static int mpdm_asort_cmp(const void * s1, const void * s2)
 /* qsort help function */
 {
 	int ret=0;
@@ -475,7 +475,7 @@ mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t cb)
 	mpdm_ref(asort_cb);
 
 	qsort(a->data, mpdm_size(a) / step,
-		sizeof(mpdm_t) * step, _mpdm_asort_cmp);
+		sizeof(mpdm_t) * step, mpdm_asort_cmp);
 
 	/* unreferences */
 	mpdm_unref(asort_cb);

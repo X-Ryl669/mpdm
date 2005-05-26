@@ -68,7 +68,7 @@ static void dump_1(mpdm_t v, int l)
 	}
 
 	/* add the visual representation of the value */
-	_mpdm_write_wcs(stdout, mpdm_string(v));
+	mpdm_write_wcs(stdout, mpdm_string(v));
 	printf("\n");
 
 	if(v != NULL)

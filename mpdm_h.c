@@ -36,7 +36,7 @@
 	Code
 ********************/
 
-static int _mpdm_hash_func(wchar_t * string, int mod)
+static int mpdm_hash_func(wchar_t * string, int mod)
 /* computes a hashing function on string */
 {
 	int c;
@@ -48,7 +48,7 @@ static int _mpdm_hash_func(wchar_t * string, int mod)
 }
 
 
-#define HASH_BUCKET(h, k) (_mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
+#define HASH_BUCKET(h, k) (mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
 
 
 /* interface */
@@ -286,7 +286,7 @@ mpdm_t mpdm_hkeys(mpdm_t h)
 }
 
 
-static mpdm_t _mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
+static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 {
 	int n;
 	mpdm_t p;
@@ -340,11 +340,11 @@ static mpdm_t _mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k)
 {
-	return(_mpdm_sym(r, k, NULL, 0));
+	return(mpdm_sym(r, k, NULL, 0));
 }
 
 
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v)
 {
-	return(_mpdm_sym(r, k, v, 1));
+	return(mpdm_sym(r, k, v, 1));
 }

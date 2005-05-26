@@ -44,7 +44,7 @@ struct mpdm_control * mpdm=NULL;
 	Code
 ********************/
 
-static mpdm_t _mpdm_alloc(int flags)
+static mpdm_t mpdm_alloc(int flags)
 {
 	mpdm_t v=NULL;
 
@@ -72,7 +72,7 @@ static mpdm_t _mpdm_alloc(int flags)
 }
 
 
-static void _mpdm_free(mpdm_t v)
+static void mpdm_destroy(mpdm_t v)
 {
 	if(v->flags & MPDM_NONDYN)
 	{
@@ -116,7 +116,7 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 	mpdm_t v;
 
 	/* alloc new value */
-	if((v=_mpdm_alloc(flags)) == NULL)
+	if((v=mpdm_alloc(flags)) == NULL)
 		return(NULL);
 
 	memset(v, '\0', sizeof(struct mpdm_val));
@@ -207,7 +207,7 @@ void mpdm_sweep(int count)
 			mpdm->cur->next=v->next;
 
 			/* free the value itself */
-			_mpdm_free(v);
+			mpdm_destroy(v);
 
 			/* one value less */
 			mpdm->count--;
@@ -249,7 +249,7 @@ mpdm_t mpdm_clone(mpdm_t v)
 	if(v != NULL)
 	{
 		if(v->flags & MPDM_MULTIPLE)
-			v=_mpdm_aclone(v);
+			v=mpdm_aclone(v);
 		else
 		if(v->flags & MPDM_NONDYN)
 			v=MPDM_S(v->data);
@@ -361,7 +361,7 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 }
 
 
-mpdm_t _mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
+mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 {
 	mpdm_t x;
 

@@ -72,7 +72,7 @@ struct mpdm_file
 ********************/
 
 
-wchar_t * _mpdm_read_mbs(FILE * f, int * s)
+wchar_t * mpdm_read_mbs(FILE * f, int * s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
 	wchar_t * ptr=NULL;
@@ -97,7 +97,7 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 		cptr[n]='\0';
 
 		/* do the conversion */
-		ptr=_mpdm_mbstowcs(cptr, s);
+		ptr=mpdm_mbstowcs(cptr, s);
 
 		free(cptr);
 	}
@@ -106,7 +106,7 @@ wchar_t * _mpdm_read_mbs(FILE * f, int * s)
 }
 
 
-void _mpdm_write_wcs(FILE * f, wchar_t * str)
+void mpdm_write_wcs(FILE * f, wchar_t * str)
 /* writes a wide string to a stream, converting */
 {
 	char tmp[MB_CUR_MAX + 1];
@@ -133,7 +133,7 @@ void _mpdm_write_wcs(FILE * f, wchar_t * str)
 
 extern int errno;
 
-wchar_t * _mpdm_read_dec(FILE * f, iconv_t ic, int * s)
+wchar_t * mpdm_read_dec(FILE * f, iconv_t ic, int * s)
 /* reads a multibyte string from a stream into a dynamic string, using dec as decoder */
 {
 	char tmp[128];
@@ -189,7 +189,7 @@ wchar_t * _mpdm_read_dec(FILE * f, iconv_t ic, int * s)
 }
 
 
-void _mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
+void mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
 /* writes a wide string to a stream, using enc as encoder */
 {
 	char tmp[128];
@@ -328,12 +328,12 @@ mpdm_t mpdm_read(mpdm_t fd)
 #ifdef CONFOPT_ICONV
 
 	if(fs->has_iconv)
-		ptr=_mpdm_read_dec(fs->fd, fs->ic_dec, &s);
+		ptr=mpdm_read_dec(fs->fd, fs->ic_dec, &s);
 	else
 
 #endif /* CONFOPT_ICONV */
 
-		ptr=_mpdm_read_mbs(fs->fd, &s);
+		ptr=mpdm_read_mbs(fs->fd, &s);
 
 	if(ptr != NULL)
 		v=mpdm_new(MPDM_STRING|MPDM_FREE, ptr, s);
@@ -359,12 +359,12 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 #ifdef CONFOPT_ICONV
 
 	if(fs->has_iconv)
-		_mpdm_write_enc(fs->fd, fs->ic_enc, mpdm_string(v));
+		mpdm_write_enc(fs->fd, fs->ic_enc, mpdm_string(v));
 	else
 
 #endif /* CONFOPT_ICONV */
 
-		_mpdm_write_wcs(fs->fd, mpdm_string(v));
+		mpdm_write_wcs(fs->fd, mpdm_string(v));
 
 	return(0);
 }
