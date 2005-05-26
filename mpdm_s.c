@@ -503,7 +503,7 @@ mpdm_t mpdm_gettext(mpdm_t str)
 	mpdm_t v;
 
 	/* try first the cache */
-	if((v=mpdm_hget(_mpdm->i18n, str)) == NULL)
+	if((v=mpdm_hget(mpdm->i18n, str)) == NULL)
 	{
 #ifdef CONFOPT_GETTEXT
 		char * s;
@@ -524,7 +524,7 @@ mpdm_t mpdm_gettext(mpdm_t str)
 			v=str;
 
 		/* store in the cache */
-		mpdm_hset(_mpdm->i18n, str, v);
+		mpdm_hset(mpdm->i18n, str, v);
 	}
 
 	return(v);
@@ -544,13 +544,13 @@ mpdm_t mpdm_gettext(mpdm_t str)
  */
 void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 {
-	mpdm_unref(_mpdm->i18n);
+	mpdm_unref(mpdm->i18n);
 
 	if(data->flags & MPDM_HASH)
-		_mpdm->i18n=data;
+		mpdm->i18n=data;
 	else
 	{
-		_mpdm->i18n=MPDM_H(0);
+		mpdm->i18n=MPDM_H(0);
 
 #ifdef CONFOPT_GETTEXT
 
@@ -565,5 +565,5 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 #endif /* CONFOPT_GETTEXT */
 	}
 
-	mpdm_ref(_mpdm->i18n);
+	mpdm_ref(mpdm->i18n);
 }

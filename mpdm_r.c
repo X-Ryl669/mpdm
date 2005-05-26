@@ -66,11 +66,11 @@ mpdm_t _mpdm_regcomp(mpdm_t r)
 	mpdm_t c=NULL;
 
 	/* if cache does not exist, create it */
-	if(_mpdm->regex == NULL)
-		_mpdm->regex=mpdm_ref(MPDM_H(0));
+	if(mpdm->regex == NULL)
+		mpdm->regex=mpdm_ref(MPDM_H(0));
 
 	/* search the regex in the cache */
-	if((c=mpdm_hget(_mpdm->regex, r)) == NULL)
+	if((c=mpdm_hget(mpdm->regex, r)) == NULL)
 	{
 		mpdm_t rmb;
 		regex_t re;
@@ -106,7 +106,7 @@ mpdm_t _mpdm_regcomp(mpdm_t r)
 				c=mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
 
 				/* stores */
-				mpdm_hset(_mpdm->regex, r, c);
+				mpdm_hset(mpdm->regex, r, c);
 			}
 		}
 	}

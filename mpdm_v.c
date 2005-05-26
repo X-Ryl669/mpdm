@@ -38,7 +38,7 @@
 
 /* control structure */
 
-struct mpdm_control * _mpdm=NULL;
+struct mpdm_control * mpdm=NULL;
 
 /*******************
 	Code
@@ -50,17 +50,17 @@ static mpdm_t _mpdm_alloc(int flags)
 
 	if(flags & MPDM_NONDYN)
 	{
-		if(_mpdm->nd_size <= _mpdm->nd_index)
+		if(mpdm->nd_size <= mpdm->nd_index)
 		{
 			/* if not enough, create more nondyn values */
-			_mpdm->nd_size ++;
+			mpdm->nd_size ++;
 
-			_mpdm->nd_pool=realloc(_mpdm->nd_pool,
-				sizeof(struct mpdm_val) * _mpdm->nd_size);
+			mpdm->nd_pool=realloc(mpdm->nd_pool,
+				sizeof(struct mpdm_val) * mpdm->nd_size);
 		}
 
 		/* return next one */
-		v=&_mpdm->nd_pool[_mpdm->nd_index++];
+		v=&mpdm->nd_pool[mpdm->nd_index++];
 	}
 	else
 	{
@@ -77,7 +77,7 @@ static void _mpdm_free(mpdm_t v)
 	if(v->flags & MPDM_NONDYN)
 	{
 		/* count back */
-		_mpdm->nd_index--;
+		mpdm->nd_index--;
 	}
 	else
 	{
@@ -88,7 +88,7 @@ static void _mpdm_free(mpdm_t v)
 		/* free data if needed */
 		if(v->data != NULL && v->flags & MPDM_FREE)
 		{
-			_mpdm->memory_usage -= v->size;
+			mpdm->memory_usage -= v->size;
 			free(v->data);
 		}
 
@@ -128,21 +128,21 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 	if(! (flags & MPDM_NONDYN))
 	{
 		/* add to the circular list and count */
-		if(_mpdm->cur == NULL)
+		if(mpdm->cur == NULL)
 			v->next=v;
 		else
 		{
-			v->next=_mpdm->cur->next;
-			_mpdm->cur->next=v;
+			v->next=mpdm->cur->next;
+			mpdm->cur->next=v;
 		}
 
-		_mpdm->cur=v;
+		mpdm->cur=v;
 
-		_mpdm->count ++;
+		mpdm->count ++;
 
 		/* count memory if data is dynamic */
 		if(flags & MPDM_FREE)
-			_mpdm->memory_usage += size;
+			mpdm->memory_usage += size;
 	}
 
 	return(v);
@@ -190,30 +190,30 @@ void mpdm_sweep(int count)
 	mpdm_t v;
 
 	/* if count is zero, sweep 'some' values */
-	if(count == 0) count=_mpdm->default_sweep;
+	if(count == 0) count=mpdm->default_sweep;
 
 	/* if count is -1, sweep all */
-	if(count == -1) count=_mpdm->count;
+	if(count == -1) count=mpdm->count;
 
-	while(count > 0 && _mpdm->count > _mpdm->low_threshold)
+	while(count > 0 && mpdm->count > mpdm->low_threshold)
 	{
 		/* takes next value */
-		v=_mpdm->cur->next;
+		v=mpdm->cur->next;
 
 		/* is the value referenced? */
 		if(! v->ref)
 		{
 			/* dequeue */
-			_mpdm->cur->next=v->next;
+			mpdm->cur->next=v->next;
 
 			/* free the value itself */
 			_mpdm_free(v);
 
 			/* one value less */
-			_mpdm->count--;
+			mpdm->count--;
 		}
 		else
-			_mpdm->cur=v;
+			mpdm->cur=v;
 
 		/* move to next */
 		count --;
@@ -267,10 +267,10 @@ mpdm_t mpdm_clone(mpdm_t v)
  */
 mpdm_t mpdm_root(void)
 {
-	if(_mpdm->root == NULL)
-		_mpdm->root=mpdm_ref(MPDM_H(0));
+	if(mpdm->root == NULL)
+		mpdm->root=mpdm_ref(MPDM_H(0));
 
-	return(_mpdm->root);
+	return(mpdm->root);
 }
 
 
@@ -378,17 +378,17 @@ mpdm_t _mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 int mpdm_startup(void)
 {
 	/* do the startup only unless done beforehand */
-	if(_mpdm == NULL)
+	if(mpdm == NULL)
 	{
 		/* alloc space */
-		_mpdm=malloc(sizeof(struct mpdm_control));
+		mpdm=malloc(sizeof(struct mpdm_control));
 
 		/* cleans it */
-		memset(_mpdm, '\0', sizeof(struct mpdm_control));
+		memset(mpdm, '\0', sizeof(struct mpdm_control));
 
 		/* sets the defaults */
-		_mpdm->low_threshold=16;
-		_mpdm->default_sweep=16;
+		mpdm->low_threshold=16;
+		mpdm->default_sweep=16;
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
