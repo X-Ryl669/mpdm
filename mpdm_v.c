@@ -44,35 +44,6 @@ struct mpdm_control * mpdm=NULL;
 	Code
 ********************/
 
-static mpdm_t mpdm_alloc(int flags)
-/* allocs a dynamic or non-dynamic value */
-{
-	mpdm_t v=NULL;
-
-	if(flags & MPDM_NONDYN)
-	{
-		if(mpdm->nd_size <= mpdm->nd_index)
-		{
-			/* if not enough, create more nondyn values */
-			mpdm->nd_size ++;
-
-			mpdm->nd_pool=realloc(mpdm->nd_pool,
-				sizeof(struct mpdm_val) * mpdm->nd_size);
-		}
-
-		/* return next one */
-		v=&mpdm->nd_pool[mpdm->nd_index++];
-	}
-	else
-	{
-		/* if it's dynamic, just alloc */
-		v=malloc(sizeof(struct mpdm_val));
-	}
-
-	return(v);
-}
-
-
 static int mpdm_destroy(mpdm_t v)
 /* destroys a value */
 {
@@ -133,23 +104,36 @@ static int mpdm_destroy(mpdm_t v)
  */
 mpdm_t mpdm_new(int flags, void * data, int size)
 {
-	mpdm_t v;
+	mpdm_t v=NULL;
 
-	/* alloc new value */
-	if((v=mpdm_alloc(flags)) == NULL)
-		return(NULL);
-
-	memset(v, '\0', sizeof(struct mpdm_val));
-
-	v->flags=flags;
-	v->data=data;
-	v->size=size;
-
-	if(! (flags & MPDM_NONDYN))
+	if(flags & MPDM_NONDYN)
 	{
-		/* add to the circular list and count */
+		/* non-dynamic; take from nd_pool */
+		if(mpdm->nd_size <= mpdm->nd_index)
+		{
+			/* if not enough, create more nondyn values */
+			mpdm->nd_size ++;
+
+			mpdm->nd_pool=realloc(mpdm->nd_pool,
+				sizeof(struct mpdm_val) * mpdm->nd_size);
+		}
+
+		/* return next one */
+		v=&mpdm->nd_pool[mpdm->nd_index++];
+
+		memset(v, '\0', sizeof(struct mpdm_val));
+	}
+	else
+	{
+		/* dynamic; alloc */
+		if((v=malloc(sizeof(struct mpdm_val))) == NULL)
+			return(NULL);
+
+		memset(v, '\0', sizeof(struct mpdm_val));
+
+		/* add to the circular list */
 		if(mpdm->cur == NULL)
-			v->next=v;
+			v->next=v->prev=v;
 		else
 		{
 			v->prev=mpdm->cur;
@@ -160,12 +144,17 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 
 		mpdm->cur=v;
 
+		/* account one value more */
 		mpdm->count ++;
 
 		/* count memory if data is dynamic */
 		if(flags & MPDM_FREE)
 			mpdm->memory_usage += size;
 	}
+
+	v->flags=flags;
+	v->data=data;
+	v->size=size;
 
 	return(v);
 }
