@@ -39,8 +39,6 @@ Pending Enhancements
    mpdm_unref().
  * 1070: Modify mpdm_unref() to optionally destroy a value when its
    reference count gets to 0 (needs #1068 and #1069 closed).
- * 1071: The _cache_18n hash in mpdm_s.c has be moved to the main control
-   structure.
 
 Closed
 ------
@@ -152,5 +150,7 @@ Closed
  * 1064: There should exist some way to detect the lack of gettext
    support and set a translation hash (Closed by #1065;
    Sat, 16 Apr 2005 11:32:11 +0200).
+ * 1071: The _cache_18n hash in mpdm_s.c has be moved to the main control
+   structure (Thu, 26 May 2005 14:01:17 +0200).
 
 Email bugs to angel@triptico.com

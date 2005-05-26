@@ -65,6 +65,7 @@ struct _mpdm_ctl
 	mpdm_v nd_pool;		/* pool of non-dyn values */
 	mpdm_v encoding;	/* file encoding charset */
 	mpdm_v regex;		/* regular expression cache */
+	mpdm_v i18n;		/* translated strings cache */
 };
 
 extern struct _mpdm_ctl * _mpdm;
