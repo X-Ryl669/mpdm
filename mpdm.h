@@ -68,7 +68,7 @@ struct mpdm_control
 	mpdm_t i18n;		/* translated strings cache */
 };
 
-extern struct mpdm_control * _mpdm;
+extern struct mpdm_control * mpdm;
 
 mpdm_t mpdm_new(int flags, void * data, int size);
 mpdm_t mpdm_ref(mpdm_t v);
@@ -168,8 +168,8 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
 #define MPDM_X2(f,b)	_mpdm_xnew(f,b)
 
-#define MPDM_ND_BEGIN()	unsigned int _mpdm_nd_save=_mpdm->nd_index
-#define MPDM_ND_END()	_mpdm->nd_index=_mpdm_nd_save
+#define MPDM_ND_BEGIN()	unsigned int _mpdm_nd_save=mpdm->nd_index
+#define MPDM_ND_END()	mpdm->nd_index=_mpdm_nd_save
 
 #define MPDM_ND_LS(s)	_mpdm_new_wcs(MPDM_NONDYN, s, -1, 0)
 #define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\

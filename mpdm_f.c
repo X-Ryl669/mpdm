@@ -258,9 +258,9 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 
 #ifdef CONFOPT_ICONV
 
-	if(_mpdm->encoding)
+	if(mpdm->encoding)
 	{
-		mpdm_t cs=MPDM_2MBS(_mpdm->encoding->data);
+		mpdm_t cs=MPDM_2MBS(mpdm->encoding->data);
 
 		fs->ic_enc=iconv_open((char *)cs->data, "WCHAR_T");
 		fs->ic_dec=iconv_open("WCHAR_T", (char *)cs->data);
@@ -418,8 +418,8 @@ int mpdm_encoding(mpdm_t charset)
 
 	/* can create; store and exit */
 
-	mpdm_unref(_mpdm->encoding);
-	_mpdm->encoding=mpdm_ref(charset);
+	mpdm_unref(mpdm->encoding);
+	mpdm->encoding=mpdm_ref(charset);
 
 	ret=0;
 
