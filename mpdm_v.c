@@ -56,7 +56,7 @@ static mpdm_t _mpdm_alloc(int flags)
 			_mpdm->nd_size ++;
 
 			_mpdm->nd_pool=realloc(_mpdm->nd_pool,
-				sizeof(struct _mpdm_v) * _mpdm->nd_size);
+				sizeof(struct mpdm_val) * _mpdm->nd_size);
 		}
 
 		/* return next one */
@@ -65,7 +65,7 @@ static mpdm_t _mpdm_alloc(int flags)
 	else
 	{
 		/* if it's dynamic, just alloc */
-		v=malloc(sizeof(struct _mpdm_v));
+		v=malloc(sizeof(struct mpdm_val));
 	}
 
 	return(v);
@@ -119,7 +119,7 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 	if((v=_mpdm_alloc(flags)) == NULL)
 		return(NULL);
 
-	memset(v, '\0', sizeof(struct _mpdm_v));
+	memset(v, '\0', sizeof(struct mpdm_val));
 
 	v->flags=flags;
 	v->data=data;

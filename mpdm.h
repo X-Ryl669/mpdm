@@ -36,10 +36,10 @@
 #define MPDM_EXEC	0x00040000	/* data is 'executable' */
 
 /* mpdm values */
-typedef struct _mpdm_v * mpdm_t;
+typedef struct mpdm_val * mpdm_t;
 
 /* a value */
-struct _mpdm_v
+struct mpdm_val
 {
 	int flags;	/* value flags */
 	int ref;	/* reference count */
