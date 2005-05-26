@@ -67,8 +67,8 @@ void test_basic(void)
 {
 	int i;
 	double r;
-	mpdm_v v;
-	mpdm_v w;
+	mpdm_t v;
+	mpdm_t w;
 
 	v=MPDM_S(L"65536");
 	mpdm_dump(v);
@@ -162,7 +162,7 @@ void test_basic(void)
 	_test("_mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
 }
 
-mpdm_v _asort_cb(mpdm_v args)
+mpdm_t _asort_cb(mpdm_t args)
 {
 	int d;
 
@@ -175,8 +175,8 @@ mpdm_v _asort_cb(mpdm_v args)
 void test_array(void)
 {
 	int n;
-	mpdm_v a;
-	mpdm_v v;
+	mpdm_t a;
+	mpdm_t v;
 
 	a=MPDM_A(0);
 	_test("a->size == 0", (a->size == 0));
@@ -271,8 +271,8 @@ void test_array(void)
 
 void test_hash(void)
 {
-	mpdm_v h;
-	mpdm_v v;
+	mpdm_t h;
+	mpdm_t v;
 	int i, n;
 
 	h=MPDM_H(0);
@@ -342,8 +342,8 @@ void test_hash(void)
 
 void test_splice(void)
 {
-	mpdm_v w;
-	mpdm_v v;
+	mpdm_t w;
+	mpdm_t v;
 
 	w=mpdm_splice(MPDM_LS(L"I'm agent Johnson"),
 		MPDM_LS(L"special "), 4, 0);
@@ -388,7 +388,7 @@ void test_splice(void)
 
 void test_asplit(void)
 {
-	mpdm_v w;
+	mpdm_t w;
 
 	printf("mpdm_asplit test\n\n");
 
@@ -420,9 +420,9 @@ void test_asplit(void)
 
 void test_ajoin(void)
 {
-	mpdm_v v;
-	mpdm_v s;
-	mpdm_v w;
+	mpdm_t v;
+	mpdm_t s;
+	mpdm_t w;
 
 	printf("mpdm_ajoin test\n\n");
 
@@ -453,7 +453,7 @@ void test_ajoin(void)
 
 void test_sym(void)
 {
-	mpdm_v v;
+	mpdm_t v;
 	int i;
 
 	printf("mpdm_sset / mpdm_sget tests\n\n");
@@ -479,10 +479,10 @@ void test_sym(void)
 
 void test_file(void)
 {
-	mpdm_v f;
-	mpdm_v v;
-	mpdm_v w;
-	mpdm_v eol=MPDM_LS(L"\n");
+	mpdm_t f;
+	mpdm_t v;
+	mpdm_t w;
+	mpdm_t eol=MPDM_LS(L"\n");
 
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 
@@ -525,8 +525,8 @@ void test_file(void)
 
 void test_regex(void)
 {
-	mpdm_v v;
-	mpdm_v w;
+	mpdm_t v;
+	mpdm_t w;
 
 	v=mpdm_regex(MPDM_LS(L"/[0-9]+/"), MPDM_LS(L"123456"), 0);
 	_test("regex 0", v != NULL);
@@ -626,7 +626,7 @@ void test_regex(void)
 }
 
 
-static mpdm_v _dumper(mpdm_v args)
+static mpdm_t _dumper(mpdm_t args)
 /* executable value */
 {
 	mpdm_dump(args);
@@ -634,7 +634,7 @@ static mpdm_v _dumper(mpdm_v args)
 }
 
 
-static mpdm_v _sum(mpdm_v args)
+static mpdm_t _sum(mpdm_t args)
 /* executable value: sum all args */
 {
 	int n,t=0;
@@ -649,14 +649,14 @@ static mpdm_v _sum(mpdm_v args)
 }
 
 
-static mpdm_v _calculator(mpdm_v c, mpdm_v args)
+static mpdm_t _calculator(mpdm_t c, mpdm_t args)
 /* 2 argument version: calculator. c contains a 'script' to
    do things with the arguments */
 {
 	int n,t;
-	mpdm_v v;
-	mpdm_v a;
-	mpdm_v o;
+	mpdm_t v;
+	mpdm_t a;
+	mpdm_t o;
 
 	/* to avoid destroying args */
 	a=mpdm_clone(args);
@@ -688,9 +688,9 @@ static mpdm_v _calculator(mpdm_v c, mpdm_v args)
 
 void test_exec(void)
 {
-	mpdm_v x;
-	mpdm_v w;
-	mpdm_v p;
+	mpdm_t x;
+	mpdm_t w;
+	mpdm_t p;
 
 	x=MPDM_X(_dumper);
 
@@ -739,10 +739,10 @@ void test_exec(void)
 
 void test_nondyn(void)
 {
-	mpdm_v v;
-	mpdm_v w;
-	mpdm_v a;
-	mpdm_v av[2] = { NULL, NULL };
+	mpdm_t v;
+	mpdm_t w;
+	mpdm_t a;
+	mpdm_t av[2] = { NULL, NULL };
 
 	a=MPDM_A(1);
 
@@ -774,9 +774,9 @@ void test_nondyn(void)
 
 void test_encoding(void)
 {
-	mpdm_v f;
-	mpdm_v v;
-	mpdm_v w;
+	mpdm_t f;
+	mpdm_t v;
+	mpdm_t w;
 
 #ifdef WIN32
 	v=MPDM_MBS("¡España!\n");
@@ -817,8 +817,8 @@ void test_encoding(void)
 
 void test_gettext(void)
 {
-	mpdm_v v;
-	mpdm_v h;
+	mpdm_t v;
+	mpdm_t h;
 
 	printf("\nTesting gettext...\n");
 
@@ -863,10 +863,10 @@ void _timer(int secs)
 }
 
 
-void bench_hash(int i, mpdm_v l, int buckets)
+void bench_hash(int i, mpdm_t l, int buckets)
 {
-	mpdm_v h;
-	mpdm_v v;
+	mpdm_t h;
+	mpdm_t v;
 	int n;
 
 	printf("Hash of %d buckets: \n", buckets);
@@ -890,7 +890,7 @@ void bench_hash(int i, mpdm_v l, int buckets)
 
 void benchmark(void)
 {
-	mpdm_v l;
+	mpdm_t l;
 	int i,n;
 	char tmp[64];
 

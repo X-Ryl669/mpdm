@@ -38,17 +38,17 @@
 ********************/
 
 /* sorting callback code */
-static mpdm_v _mpdm_asort_cb=NULL;
+static mpdm_t _mpdm_asort_cb=NULL;
 
 
 /*******************
 	Code
 ********************/
 
-mpdm_v _mpdm_new_a(int flags, int size)
+mpdm_t _mpdm_new_a(int flags, int size)
 /* creates a new array value */
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	/* standard arrays can't be nondyn */
 	flags &= ~ MPDM_NONDYN;
@@ -61,7 +61,7 @@ mpdm_v _mpdm_new_a(int flags, int size)
 }
 
 
-static int _wrap_offset(mpdm_v a, int offset)
+static int _wrap_offset(mpdm_t a, int offset)
 /* manages negative offsets */
 {
 	if(offset < 0) offset=mpdm_size(a) + offset;
@@ -70,10 +70,10 @@ static int _wrap_offset(mpdm_v a, int offset)
 }
 
 
-mpdm_v _mpdm_aclone(mpdm_v v)
+mpdm_t _mpdm_aclone(mpdm_t v)
 /* clones a multiple value */
 {
-	mpdm_v w;
+	mpdm_t w;
 	int n;
 
 	/* creates a similar value */
@@ -98,10 +98,10 @@ mpdm_v _mpdm_aclone(mpdm_v v)
  * Expands an array value, inserting @num elements (initialized
  * to NULL) at the specified @offset.
  */
-mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num)
+mpdm_t mpdm_aexpand(mpdm_t a, int offset, int num)
 {
 	int n;
-	mpdm_v * p;
+	mpdm_t * p;
 
 	/* avoid expanding non-dyn arrays */
 	if(a->flags & MPDM_NONDYN)
@@ -110,7 +110,7 @@ mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num)
 	/* add size */
 	a->size += num;
 
-	p=(mpdm_v *) realloc(a->data, a->size * sizeof(mpdm_v));
+	p=(mpdm_t *) realloc(a->data, a->size * sizeof(mpdm_t));
 
 	/* moves up from top of the array */
 	for(n=a->size - 1;n >= offset + num;n--)
@@ -135,10 +135,10 @@ mpdm_v mpdm_aexpand(mpdm_v a, int offset, int num)
  * Collapses an array value, deleting @num elements at
  * the specified @offset.
  */
-mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
+mpdm_t mpdm_acollapse(mpdm_t a, int offset, int num)
 {
 	int n;
-	mpdm_v * p;
+	mpdm_t * p;
 
 	/* avoid collapsing non-dyn arrays */
 	if(a->flags & MPDM_NONDYN)
@@ -148,7 +148,7 @@ mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
 	if(offset + num > a->size)
 		num=a->size - offset;
 
-	p=(mpdm_v *) a->data;
+	p=(mpdm_t *) a->data;
 
 	/* unrefs the about-to-be-deleted elements */
 	for(n=offset;n < offset + num;n++)
@@ -162,7 +162,7 @@ mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
 		p[n]=p[n + num];
 
 	/* finally shrinks the memory block */
-	a->data=realloc(p, a->size * sizeof(mpdm_v));
+	a->data=realloc(p, a->size * sizeof(mpdm_t));
 
 	return(a);
 }
@@ -177,10 +177,10 @@ mpdm_v mpdm_acollapse(mpdm_v a, int offset, int num)
  * Sets the element of the array @a at @offset to be the @e value.
  * Returns the previous element.
  */
-mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
+mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 {
-	mpdm_v v;
-	mpdm_v * p;
+	mpdm_t v;
+	mpdm_t * p;
 
 	offset=_wrap_offset(a, offset);
 
@@ -193,7 +193,7 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
 		if(mpdm_aexpand(a, mpdm_size(a), offset - mpdm_size(a) + 1) == NULL)
 			return(NULL);
 
-	p=(mpdm_v *)a->data;
+	p=(mpdm_t *)a->data;
 
 	/* if e is nondyn, store a clone and not the value itself */
 	if(e != NULL && e->flags & MPDM_NONDYN)
@@ -221,9 +221,9 @@ mpdm_v mpdm_aset(mpdm_v a, mpdm_v e, int offset)
  *
  * Returns the element at @offset of the array @a.
  */
-mpdm_v mpdm_aget(mpdm_v a, int offset)
+mpdm_t mpdm_aget(mpdm_t a, int offset)
 {
-	mpdm_v * p;
+	mpdm_t * p;
 
 	offset=_wrap_offset(a, offset);
 
@@ -231,7 +231,7 @@ mpdm_v mpdm_aget(mpdm_v a, int offset)
 	if(offset < 0 || offset >= mpdm_size(a))
 		return(NULL);
 
-	p=(mpdm_v *)a->data;
+	p=(mpdm_t *)a->data;
 	return(p[offset]);
 }
 
@@ -246,7 +246,7 @@ mpdm_v mpdm_aget(mpdm_v a, int offset)
  * Further elements are pushed up, so the array increases its size
  * by one. Returns the inserted element.
  */
-mpdm_v mpdm_ains(mpdm_v a, mpdm_v e, int offset)
+mpdm_t mpdm_ains(mpdm_t a, mpdm_t e, int offset)
 {
 	offset=_wrap_offset(a, offset);
 
@@ -267,9 +267,9 @@ mpdm_v mpdm_ains(mpdm_v a, mpdm_v e, int offset)
  * is shrinked by one.
  * Returns the deleted element.
  */
-mpdm_v mpdm_adel(mpdm_v a, int offset)
+mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	offset=_wrap_offset(a, offset);
 
@@ -290,7 +290,7 @@ mpdm_v mpdm_adel(mpdm_v a, int offset)
  *
  * Pushes a value into an array (i.e. inserts at the end).
  */
-mpdm_v mpdm_apush(mpdm_v a, mpdm_v e)
+mpdm_t mpdm_apush(mpdm_t a, mpdm_t e)
 {
 	/* inserts at the end */
 	return(mpdm_ains(a, e, mpdm_size(a)));
@@ -304,7 +304,7 @@ mpdm_v mpdm_apush(mpdm_v a, mpdm_v e)
  * Pops a value from the array (i.e. deletes from the end
  * and returns it).
  */
-mpdm_v mpdm_apop(mpdm_v a)
+mpdm_t mpdm_apop(mpdm_t a)
 {
 	/* deletes from the end */
 	return(mpdm_adel(a, -1));
@@ -324,9 +324,9 @@ mpdm_v mpdm_apop(mpdm_v a)
  * Returns the deleted element, or NULL if the array doesn't have
  * @size elements yet.
  */
-mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size)
+mpdm_t mpdm_aqueue(mpdm_t a, mpdm_t e, int size)
 {
-	mpdm_v v=NULL;
+	mpdm_t v=NULL;
 
 	/* zero size or non-dyn queues are nonsense */
 	if(size == 0 || a->flags & MPDM_NONDYN)
@@ -351,13 +351,13 @@ mpdm_v mpdm_aqueue(mpdm_v a, mpdm_v e, int size)
  * increments of @step. A complete search should use a step of 1.
  * Returns the offset of the element if found, or -1 otherwise.
  */
-int mpdm_aseek(mpdm_v a, mpdm_v k, int step)
+int mpdm_aseek(mpdm_t a, mpdm_t k, int step)
 {
 	int n;
 
 	for(n=0;n < mpdm_size(a);n+=step)
 	{
-		mpdm_v v=mpdm_aget(a, n);
+		mpdm_t v=mpdm_aget(a, n);
 
 		if(mpdm_cmp(v, k) == 0)
 			return(n);
@@ -383,7 +383,7 @@ int mpdm_aseek(mpdm_v a, mpdm_v k, int step)
  * where the element should be is stored in @pos. You can set @pos
  * to NULL if you don't mind.
  */
-int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos)
+int mpdm_abseek(mpdm_t a, mpdm_t k, int step, int * pos)
 {
 	int b, t, n, c;
 
@@ -391,7 +391,7 @@ int mpdm_abseek(mpdm_v a, mpdm_v k, int step, int * pos)
 
 	while(t >= b)
 	{
-		mpdm_v v;
+		mpdm_t v;
 
 		n=(b + t) / 2;
 		if((v=mpdm_aget(a, n * step)) == NULL)
@@ -420,13 +420,13 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
 
 	/* if callback is NULL, use basic value comparisons */
 	if(_mpdm_asort_cb == NULL)
-		ret=mpdm_cmp(*(mpdm_v *)s1, *(mpdm_v *)s2);
+		ret=mpdm_cmp(*(mpdm_t *)s1, *(mpdm_t *)s2);
 	else
 	{
 		/* executes the callback and converts to integer */
 		ret=mpdm_ival(mpdm_exec_2(_mpdm_asort_cb,
-			(mpdm_v) * ((mpdm_v *)s1),
-			(mpdm_v) * ((mpdm_v *)s2)));
+			(mpdm_t) * ((mpdm_t *)s1),
+			(mpdm_t) * ((mpdm_t *)s2)));
 	}
 
 	return(ret);
@@ -442,7 +442,7 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
  *
  * Returns the sorted array (the original one is left untouched).
  */
-mpdm_v mpdm_asort(mpdm_v a, int step)
+mpdm_t mpdm_asort(mpdm_t a, int step)
 {
 	return(mpdm_asort_cb(a, step, NULL));
 }
@@ -455,14 +455,14 @@ mpdm_v mpdm_asort(mpdm_v a, int step)
  * @asort_cb: sorting function
  *
  * Sorts the array. @step is the number of elements to group together.
- * For each pair of elements being sorted, the executable mpdm_v value
+ * For each pair of elements being sorted, the executable mpdm_t value
  * @sort_cb is called with an array containing the two elements as
- * argument. It must return a signed numerical mpdm_v value indicating
+ * argument. It must return a signed numerical mpdm_t value indicating
  * the sorting order.
  *
  * Returns the sorted array (the original one is left untouched).
  */
-mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
+mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t asort_cb)
 {
 	/* creates a copy to be sorted */
 	a=mpdm_clone(a);
@@ -475,7 +475,7 @@ mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
 	mpdm_ref(_mpdm_asort_cb);
 
 	qsort(a->data, mpdm_size(a) / step,
-		sizeof(mpdm_v) * step, _mpdm_asort_cmp);
+		sizeof(mpdm_t) * step, _mpdm_asort_cmp);
 
 	/* unreferences */
 	mpdm_unref(_mpdm_asort_cb);
@@ -496,9 +496,9 @@ mpdm_v mpdm_asort_cb(mpdm_v a, int step, mpdm_v asort_cb)
  * as a separator. If the string does not contain the separator,
  * an array holding the complete string is returned.
  */
-mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
+mpdm_t mpdm_asplit(mpdm_t s, mpdm_t v)
 {
-	mpdm_v w;
+	mpdm_t w;
 	wchar_t * ptr;
 	wchar_t * sptr;
 
@@ -524,9 +524,9 @@ mpdm_v mpdm_asplit(mpdm_v s, mpdm_v v)
  *
  * Joins all elements from @a into one string, using @s as a glue.
  */
-mpdm_v mpdm_ajoin(mpdm_v s, mpdm_v a)
+mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a)
 {
-	mpdm_v v;
+	mpdm_t v;
 	int n;
 
 	/* unoptimized, but intelligible join */

@@ -3,7 +3,7 @@
     mpdm - Minimum Profit Data Manager
     Copyright (C) 2003/2005 Angel Ortega <angel@triptico.com>
 
-    mpdm_v.c - Basic value management
+    mpdm_t.c - Basic value management
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -44,9 +44,9 @@ struct _mpdm_ctl * _mpdm=NULL;
 	Code
 ********************/
 
-static mpdm_v _mpdm_alloc(int flags)
+static mpdm_t _mpdm_alloc(int flags)
 {
-	mpdm_v v=NULL;
+	mpdm_t v=NULL;
 
 	if(flags & MPDM_NONDYN)
 	{
@@ -72,7 +72,7 @@ static mpdm_v _mpdm_alloc(int flags)
 }
 
 
-static void _mpdm_free(mpdm_v v)
+static void _mpdm_free(mpdm_t v)
 {
 	if(v->flags & MPDM_NONDYN)
 	{
@@ -111,9 +111,9 @@ static void _mpdm_free(mpdm_v v)
  * This function is normally not directly used; use any of the type
  * creation macros instead.
  */
-mpdm_v mpdm_new(int flags, void * data, int size)
+mpdm_t mpdm_new(int flags, void * data, int size)
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	/* alloc new value */
 	if((v=_mpdm_alloc(flags)) == NULL)
@@ -155,7 +155,7 @@ mpdm_v mpdm_new(int flags, void * data, int size)
  *
  * Increments the reference count of a value.
  */
-mpdm_v mpdm_ref(mpdm_v v)
+mpdm_t mpdm_ref(mpdm_t v)
 {
 	if(v != NULL) v->ref++;
 	return(v);
@@ -168,7 +168,7 @@ mpdm_v mpdm_ref(mpdm_v v)
  *
  * Decrements the reference count of a value.
  */
-mpdm_v mpdm_unref(mpdm_v v)
+mpdm_t mpdm_unref(mpdm_t v)
 {
 	if(v != NULL) v->ref--;
 	return(v);
@@ -187,7 +187,7 @@ mpdm_v mpdm_unref(mpdm_v v)
  */
 void mpdm_sweep(int count)
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	/* if count is zero, sweep 'some' values */
 	if(count == 0) count=_mpdm->default_sweep;
@@ -227,7 +227,7 @@ void mpdm_sweep(int count)
  *
  * Returns the size of an element.
  */
-int mpdm_size(mpdm_v v)
+int mpdm_size(mpdm_t v)
 {
 	/* NULL values have no size */
 	if(v == NULL) return(0);
@@ -244,7 +244,7 @@ int mpdm_size(mpdm_v v)
  * be created containing clones of all its elements; otherwise,
  * the same unchanged value is returned.
  */
-mpdm_v mpdm_clone(mpdm_v v)
+mpdm_t mpdm_clone(mpdm_t v)
 {
 	if(v != NULL)
 	{
@@ -265,7 +265,7 @@ mpdm_v mpdm_clone(mpdm_v v)
  * Returns the root hash. This hash is stored internally and can be used
  * as a kind of global symbol table.
  */
-mpdm_v mpdm_root(void)
+mpdm_t mpdm_root(void)
 {
 	if(_mpdm->root == NULL)
 		_mpdm->root=mpdm_ref(MPDM_H(0));
@@ -281,18 +281,18 @@ mpdm_v mpdm_root(void)
  *
  * Executes an executable value. If @c is a scalar value, its data
  * should be a pointer to a directly executable C function with a
- * prototype of mpdm_v func(mpdm_v args); if it's a multiple one,
+ * prototype of mpdm_t func(mpdm_t args); if it's a multiple one,
  * the first value should be a pointer to a directly executable C
- * function with a prototype of mpdm_v func(mpdm_v c, mpdm_v args).
+ * function with a prototype of mpdm_t func(mpdm_t c, mpdm_t args).
  * The rest of the elements of @c can be any data, and are used to
  * store bytecode or so when implementing virtual machines or compilers.
  *
  * Returns the return value of the code. If @c is NULL or not executable,
  * returns NULL.
  */
-mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
+mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 {
-	mpdm_v r=NULL;
+	mpdm_t r=NULL;
 
 	if(c != NULL && (c->flags & MPDM_EXEC))
 	{
@@ -301,8 +301,8 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 
 		if(c->flags & MPDM_MULTIPLE)
 		{
-			mpdm_v x;
-			mpdm_v (* func)(mpdm_v, mpdm_v);
+			mpdm_t x;
+			mpdm_t (* func)(mpdm_t, mpdm_t);
 
 			/* value is multiple; first element is the
 			   2 argument version of the executable function,
@@ -310,16 +310,16 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 			   finally the arguments */
 			x=mpdm_aget(c, 0);
 
-			if((func=(mpdm_v (*)(mpdm_v, mpdm_v))(x->data)) != NULL)
+			if((func=(mpdm_t (*)(mpdm_t, mpdm_t))(x->data)) != NULL)
 				r=func(mpdm_aget(c, 1), args);
 		}
 		else
 		{
-			mpdm_v (* func)(mpdm_v);
+			mpdm_t (* func)(mpdm_t);
 
 			/* value is scalar; c is the 1 argument
 			   version of the executable function */
-			if((func=(mpdm_v (*)(mpdm_v))(c->data)) != NULL)
+			if((func=(mpdm_t (*)(mpdm_t))(c->data)) != NULL)
 				r=func(args);
 		}
 
@@ -331,10 +331,10 @@ mpdm_v mpdm_exec(mpdm_v c, mpdm_v args)
 }
 
 
-mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
+mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 {
-	mpdm_v av[] = { a1, a2 };
-	mpdm_v r;
+	mpdm_t av[] = { a1, a2 };
+	mpdm_t r;
 
 	MPDM_ND_BEGIN();
 
@@ -346,10 +346,10 @@ mpdm_v mpdm_exec_2(mpdm_v c, mpdm_v a1, mpdm_v a2)
 }
 
 
-mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
+mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 {
-	mpdm_v av[] = { a1, a2, a3 };
-	mpdm_v r;
+	mpdm_t av[] = { a1, a2, a3 };
+	mpdm_t r;
 
 	MPDM_ND_BEGIN();
 
@@ -361,9 +361,9 @@ mpdm_v mpdm_exec_3(mpdm_v c, mpdm_v a1, mpdm_v a2, mpdm_v a3)
 }
 
 
-mpdm_v _mpdm_xnew(mpdm_v (* a1)(mpdm_v, mpdm_v), mpdm_v a2)
+mpdm_t _mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 {
-	mpdm_v x;
+	mpdm_t x;
 
 	x=MPDM_A(2);
 	x->flags |= MPDM_EXEC;

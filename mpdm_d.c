@@ -39,7 +39,7 @@
 	Code
 ********************/
 
-void _mpdm_dump(mpdm_v v, int l)
+void _mpdm_dump(mpdm_t v, int l)
 {
 	int n;
 
@@ -77,8 +77,8 @@ void _mpdm_dump(mpdm_v v, int l)
 		   (and not assuming a hash is an array) */
 		if(v->flags & MPDM_HASH)
 		{
-			mpdm_v w;
-			mpdm_v t;
+			mpdm_t w;
+			mpdm_t t;
 
 			w=mpdm_hkeys(v);
 
@@ -100,7 +100,7 @@ void _mpdm_dump(mpdm_v v, int l)
 }
 
 
-void mpdm_dump(mpdm_v v)
+void mpdm_dump(mpdm_t v)
 {
 	_mpdm_dump(v, 0);
 }
