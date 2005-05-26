@@ -100,7 +100,7 @@ wchar_t * _mpdm_mbstowcs(char * str, int * s)
 }
 
 
-mpdm_v _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
+mpdm_t _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
 	wchar_t * ptr;
@@ -138,7 +138,7 @@ mpdm_v _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 }
 
 
-mpdm_v _mpdm_new_mbstowcs(int flags, char * str)
+mpdm_t _mpdm_new_mbstowcs(int flags, char * str)
 /* creates a new string value from an mbs */
 {
 	wchar_t * ptr;
@@ -154,7 +154,7 @@ mpdm_v _mpdm_new_mbstowcs(int flags, char * str)
 }
 
 
-mpdm_v _mpdm_new_wcstombs(int flags, wchar_t * str)
+mpdm_t _mpdm_new_wcstombs(int flags, wchar_t * str)
 /* creates a new mbs value from a wbs */
 {
 	char * ptr;
@@ -178,10 +178,10 @@ mpdm_v _mpdm_new_wcstombs(int flags, wchar_t * str)
 }
 
 
-mpdm_v _mpdm_new_i(int ival)
+mpdm_t _mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
-	mpdm_v v;
+	mpdm_t v;
 	char tmp[32];
 
 	/* creates the visual representation */
@@ -195,10 +195,10 @@ mpdm_v _mpdm_new_i(int ival)
 }
 
 
-mpdm_v _mpdm_new_r(double rval)
+mpdm_t _mpdm_new_r(double rval)
 /* creates a new string value from a real number */
 {
-	mpdm_v v;
+	mpdm_t v;
 	char tmp[128];
 
 	/* creates the visual representation */
@@ -236,7 +236,7 @@ mpdm_v _mpdm_new_r(double rval)
  * is returned instead. This value should be used immediately, as it
  * can be a pointer to a static buffer.
  */
-wchar_t * mpdm_string(mpdm_v v)
+wchar_t * mpdm_string(mpdm_t v)
 {
 	static wchar_t wtmp[32];
 	char tmp[32];
@@ -267,7 +267,7 @@ wchar_t * mpdm_string(mpdm_v v)
  * a comparison using strcmp() is returned; otherwise, a
  * simple pointer comparison is done.
  */
-int mpdm_cmp(mpdm_v v1, mpdm_v v2)
+int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 {
 	/* special treatment to NULL values */
 	if(v1 == NULL)
@@ -303,11 +303,11 @@ int mpdm_cmp(mpdm_v v1, mpdm_v v2)
  * element and the deleted string in the second (with a NULL value
  * if @del is 0).
  */
-mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
+mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 {
-	mpdm_v w;
-	mpdm_v n=NULL;
-	mpdm_v d=NULL;
+	mpdm_t w;
+	mpdm_t n=NULL;
+	mpdm_t d=NULL;
 	int os, ns, r;
 	int ins=0;
 	wchar_t * ptr;
@@ -389,9 +389,9 @@ mpdm_v mpdm_splice(mpdm_v v, mpdm_v i, int offset, int del)
  *
  * Returns a new string formed by the concatenation of @s1 and @s2.
  */
-mpdm_v mpdm_strcat(mpdm_v s1, mpdm_v s2)
+mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	v=mpdm_splice(s1, s2, -1, 0);
 	v=mpdm_aget(v, 0);
@@ -410,7 +410,7 @@ mpdm_v mpdm_strcat(mpdm_v s1, mpdm_v s2)
  * conversions are only done once. Values created with the MPDM_IVAL
  * flag set have its ival cached from the beginning.
  */
-int mpdm_ival(mpdm_v v)
+int mpdm_ival(mpdm_t v)
 {
 	if(v == NULL)
 		return(0);
@@ -449,7 +449,7 @@ int mpdm_ival(mpdm_v v)
  * conversions are only done once. Values created with the MPDM_RVAL
  * flag set have its rval cached from the beginning.
  */
-double mpdm_rval(mpdm_v v)
+double mpdm_rval(mpdm_t v)
 {
 	if(v == NULL)
 		return(0);
@@ -498,9 +498,9 @@ double mpdm_rval(mpdm_v v)
  * If the string is found in the current table, the translation is
  * returned; otherwise, the same @str value is returned.
  */
-mpdm_v mpdm_gettext(mpdm_v str)
+mpdm_t mpdm_gettext(mpdm_t str)
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	/* try first the cache */
 	if((v=mpdm_hget(_mpdm->i18n, str)) == NULL)
@@ -542,7 +542,7 @@ mpdm_v mpdm_gettext(mpdm_v str)
  * a scalar string, @data must point to a directory containing the
  * .mo (compiled .po) files (gettext support must exist for this to work).
  */
-void mpdm_gettext_domain(mpdm_v dom, mpdm_v data)
+void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 {
 	mpdm_unref(_mpdm->i18n);
 

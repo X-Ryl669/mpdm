@@ -59,7 +59,7 @@ static int _mpdm_hash_func(wchar_t * string, int mod)
  *
  * Returns the number of key-value pairs of a hash.
  */
-int mpdm_hsize(mpdm_v h)
+int mpdm_hsize(mpdm_t h)
 {
 	return(h->ival);
 }
@@ -73,10 +73,10 @@ int mpdm_hsize(mpdm_v h)
  * Gets the value from the hash @h having @k as key, or
  * NULL if the key does not exist.
  */
-mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
+mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
 {
-	mpdm_v b;
-	mpdm_v v=NULL;
+	mpdm_t b;
+	mpdm_t v=NULL;
 	int n;
 
 	if(mpdm_size(h))
@@ -102,9 +102,9 @@ mpdm_v mpdm_hget(mpdm_v h, mpdm_v k)
  * Gets the value from the hash @h having @k as key, or
  * NULL if the key does not exist.
  */
-mpdm_v mpdm_hget_s(mpdm_v h, wchar_t * k)
+mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
 {
-	mpdm_v v;
+	mpdm_t v;
 
 	MPDM_ND_BEGIN();
 	v=mpdm_hget(h, MPDM_ND_LS(k));
@@ -121,9 +121,9 @@ mpdm_v mpdm_hget_s(mpdm_v h, wchar_t * k)
  *
  * Returns 1 if @k is defined in @h, or 0 othersize.
  */
-int mpdm_hexists(mpdm_v h, mpdm_v k)
+int mpdm_hexists(mpdm_t h, mpdm_t k)
 {
-	mpdm_v b;
+	mpdm_t b;
 	int n;
 	int ret=0;
 
@@ -152,10 +152,10 @@ int mpdm_hexists(mpdm_v h, mpdm_v k)
  * the previous value of the key, or NULL if the key was
  * previously undefined.
  */
-mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
+mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 {
-	mpdm_v b;
-	mpdm_v p=NULL;
+	mpdm_t b;
+	mpdm_t p=NULL;
 	int n;
 	int pos;
 
@@ -212,7 +212,7 @@ mpdm_v mpdm_hset(mpdm_v h, mpdm_v k, mpdm_v v)
  * the previous value of the key, or NULL if the key was
  * previously undefined.
  */
-mpdm_v mpdm_hset_s(mpdm_v h, wchar_t * k, mpdm_v v)
+mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
 {
 	MPDM_ND_BEGIN();
 	v=mpdm_hset(h, MPDM_ND_LS(k), v);
@@ -230,10 +230,10 @@ mpdm_v mpdm_hset_s(mpdm_v h, wchar_t * k, mpdm_v v)
  * Deletes the key @k from the hash @h. Returns the previous
  * value, or NULL if the key was not defined.
  */
-mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
+mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k)
 {
-	mpdm_v v=NULL;
-	mpdm_v b;
+	mpdm_t v=NULL;
+	mpdm_t b;
 	int n;
 
 	if((b=mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
@@ -263,11 +263,11 @@ mpdm_v mpdm_hdel(mpdm_v h, mpdm_v k)
  *
  * Returns an array containing all the keys of the @h hash.
  */
-mpdm_v mpdm_hkeys(mpdm_v h)
+mpdm_t mpdm_hkeys(mpdm_t h)
 {
 	int n,m,i;
-	mpdm_v b;
-	mpdm_v a;
+	mpdm_t b;
+	mpdm_t a;
 
 	/* create an array with the same number of elements */
 	a=MPDM_A(mpdm_hsize(h));
@@ -286,10 +286,10 @@ mpdm_v mpdm_hkeys(mpdm_v h)
 }
 
 
-static mpdm_v _mpdm_sym(mpdm_v r, mpdm_v k, mpdm_v v, int s)
+static mpdm_t _mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 {
 	int n;
-	mpdm_v p;
+	mpdm_t p;
 
 	if(r == NULL)
 		r=mpdm_root();
@@ -338,13 +338,13 @@ static mpdm_v _mpdm_sym(mpdm_v r, mpdm_v k, mpdm_v v, int s)
 }
 
 
-mpdm_v mpdm_sget(mpdm_v r, mpdm_v k)
+mpdm_t mpdm_sget(mpdm_t r, mpdm_t k)
 {
 	return(_mpdm_sym(r, k, NULL, 0));
 }
 
 
-mpdm_v mpdm_sset(mpdm_v r, mpdm_v k, mpdm_v v)
+mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v)
 {
 	return(_mpdm_sym(r, k, v, 1));
 }

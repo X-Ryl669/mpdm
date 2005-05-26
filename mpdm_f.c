@@ -231,10 +231,10 @@ void _mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
  * @mode: an fopen-like mode string
  *
  * Opens a file. If @filename can be open in the specified @mode, an
- * mpdm_v value will be returned containing the file descriptor, or NULL
+ * mpdm_t value will be returned containing the file descriptor, or NULL
  * otherwise.
  */
-mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
+mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 {
 	FILE * f;
 	struct _mpdm_file * fs;
@@ -260,7 +260,7 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
 
 	if(_mpdm->encoding)
 	{
-		mpdm_v cs=MPDM_2MBS(_mpdm->encoding->data);
+		mpdm_t cs=MPDM_2MBS(_mpdm->encoding->data);
 
 		fs->ic_enc=iconv_open((char *)cs->data, "WCHAR_T");
 		fs->ic_dec=iconv_open("WCHAR_T", (char *)cs->data);
@@ -281,7 +281,7 @@ mpdm_v mpdm_open(mpdm_v filename, mpdm_v mode)
  *
  * Closes the file descriptor.
  */
-mpdm_v mpdm_close(mpdm_v fd)
+mpdm_t mpdm_close(mpdm_t fd)
 {
 	struct _mpdm_file * fs=fd->data;
 
@@ -315,9 +315,9 @@ mpdm_v mpdm_close(mpdm_v fd)
  *
  * Reads a line from @fd. Returns the line, or NULL on EOF.
  */
-mpdm_v mpdm_read(mpdm_v fd)
+mpdm_t mpdm_read(mpdm_t fd)
 {
-	mpdm_v v=NULL;
+	mpdm_t v=NULL;
 	wchar_t * ptr;
 	int s;
 	struct _mpdm_file * fs=fd->data;
@@ -349,7 +349,7 @@ mpdm_v mpdm_read(mpdm_v fd)
  *
  * Writes the @v string value into @fd, using the current encoding.
  */
-int mpdm_write(mpdm_v fd, mpdm_v v)
+int mpdm_write(mpdm_t fd, mpdm_t v)
 {
 	struct _mpdm_file * fs=fd->data;
 
@@ -371,12 +371,12 @@ int mpdm_write(mpdm_v fd, mpdm_v v)
 
 
 /*
-mpdm_v mpdm_bread(mpdm_v fd, int size)
+mpdm_t mpdm_bread(mpdm_t fd, int size)
 {
 }
 
 
-int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
+int mpdm_bwrite(mpdm_tfd, mpdm_t v, int size)
 {
 }
 */
@@ -395,14 +395,14 @@ int mpdm_bwrite(mpdm_vfd, mpdm_v v, int size)
  * Returns a negative number if @charset is unsupported, or zero
  * if no errors were found.
  */
-int mpdm_encoding(mpdm_v charset)
+int mpdm_encoding(mpdm_t charset)
 {
 	int ret = -1;
 
 #ifdef CONFOPT_ICONV
 
 	iconv_t ic;
-	mpdm_v cs=MPDM_2MBS(charset->data);
+	mpdm_t cs=MPDM_2MBS(charset->data);
 
 	/* tries to create an encoder and a decoder for this charset */
 
@@ -435,7 +435,7 @@ int mpdm_encoding(mpdm_v charset)
  *
  * Deletes a file.
  */
-int mpdm_unlink(mpdm_v filename)
+int mpdm_unlink(mpdm_t filename)
 {
 	/* convert to mbs */
 	filename=MPDM_2MBS(filename->data);
@@ -457,17 +457,17 @@ int mpdm_unlink(mpdm_v filename)
  * Returns an array of files that match the globbing (can be an empty
  * array if no file matches), or NULL if globbing is unsupported.
  */
-mpdm_v mpdm_glob(mpdm_v spec)
+mpdm_t mpdm_glob(mpdm_t spec)
 {
-	mpdm_v v=NULL;
+	mpdm_t v=NULL;
 
 #ifdef CONFOPT_WIN32
 
 	WIN32_FIND_DATA f;
 	HANDLE h;
 	char * ptr;
-	mpdm_v w;
-	mpdm_v s=NULL;
+	mpdm_t w;
+	mpdm_t s=NULL;
 
 	/* convert to mbs */
 	if(spec != NULL)

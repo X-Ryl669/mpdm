@@ -55,15 +55,15 @@ static regmatch_t rm;
 	Code
 ********************/
 
-static wchar_t * _regex_flags(mpdm_v r)
+static wchar_t * _regex_flags(mpdm_t r)
 {
 	return(wcsrchr((wchar_t *)r->data, *(wchar_t *)r->data));
 }
 
 
-mpdm_v _mpdm_regcomp(mpdm_v r)
+mpdm_t _mpdm_regcomp(mpdm_t r)
 {
-	mpdm_v c=NULL;
+	mpdm_t c=NULL;
 
 	/* if cache does not exist, create it */
 	if(_mpdm->regex == NULL)
@@ -72,7 +72,7 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
 	/* search the regex in the cache */
 	if((c=mpdm_hget(_mpdm->regex, r)) == NULL)
 	{
-		mpdm_v rmb;
+		mpdm_t rmb;
 		regex_t re;
 		char * regex;
 		char * flags;
@@ -132,14 +132,14 @@ mpdm_v _mpdm_regcomp(mpdm_v r)
  * case, a two element array is returned, with the offset as the
  * first one and the size as the second.
  */
-mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
+mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 {
-	mpdm_v w=NULL;
+	mpdm_t w=NULL;
 
 	if(r->flags & MPDM_MULTIPLE)
 	{
 		int n;
-		mpdm_v t;
+		mpdm_t t;
 
 		/* multiple value; try sequentially all regexes,
 		   moving the offset forward */
@@ -164,14 +164,14 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
 	}
 	else
 	{
-		mpdm_v cr;
+		mpdm_t cr;
 
 		/* single value; really do the regex */
 
 		/* compile the regex */
 		if((cr=_mpdm_regcomp(r)) != NULL)
 		{
-			mpdm_v vmb;
+			mpdm_t vmb;
 
 			/* convert to mbs */
 			vmb=MPDM_2MBS(v->data);
@@ -224,13 +224,13 @@ mpdm_v mpdm_regex(mpdm_v r, mpdm_v v, int offset)
  * Returns the modified string, or the original one if no substitutions
  * were done.
  */
-mpdm_v mpdm_sregex(mpdm_v r, mpdm_v v, mpdm_v s, int offset)
+mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 {
-	mpdm_v cr;
+	mpdm_t cr;
 	char * ptr;
 	int f, i;
 	wchar_t * global;
-	mpdm_v t;
+	mpdm_t t;
 	int woffset=offset;
 
 	/* compile the regex */
