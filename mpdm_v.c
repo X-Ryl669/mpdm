@@ -38,7 +38,7 @@
 
 /* control structure */
 
-struct _mpdm_ctl * _mpdm=NULL;
+struct mpdm_control * _mpdm=NULL;
 
 /*******************
 	Code
@@ -381,10 +381,10 @@ int mpdm_startup(void)
 	if(_mpdm == NULL)
 	{
 		/* alloc space */
-		_mpdm=malloc(sizeof(struct _mpdm_ctl));
+		_mpdm=malloc(sizeof(struct mpdm_control));
 
 		/* cleans it */
-		memset(_mpdm, '\0', sizeof(struct _mpdm_ctl));
+		memset(_mpdm, '\0', sizeof(struct mpdm_control));
 
 		/* sets the defaults */
 		_mpdm->low_threshold=16;

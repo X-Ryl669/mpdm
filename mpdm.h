@@ -52,7 +52,7 @@ struct mpdm_val
 
 
 /* the main control structure */
-struct _mpdm_ctl
+struct mpdm_control
 {
 	mpdm_t root;		/* the root hash */
 	mpdm_t cur;		/* current value (circular list) */
@@ -68,7 +68,7 @@ struct _mpdm_ctl
 	mpdm_t i18n;		/* translated strings cache */
 };
 
-extern struct _mpdm_ctl * _mpdm;
+extern struct mpdm_control * _mpdm;
 
 mpdm_t mpdm_new(int flags, void * data, int size);
 mpdm_t mpdm_ref(mpdm_t v);
