@@ -31,8 +31,6 @@ Pending Enhancements
    control won't have this, as they (should) never be used after being
    unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
    as this could mask possible sweeping errors, it has not been implemented yet.
- * 1070: Modify mpdm_unref() to optionally destroy a value when its
-   reference count gets to 0 (needs #1068 and #1069 closed).
 
 Closed
 ------
@@ -153,5 +151,11 @@ Closed
  * 1069: The mpdm_free() function should dequeue the value about to be
    destroyed; this way, it could be called from other functions, like
    mpdm_unref() (Thu, 26 May 2005 18:48:56 +0200).
+ * 1070: Modify mpdm_unref() to optionally destroy a value when its
+   reference count gets to 0 (needs #1068 and #1069 closed) (No. This is not
+   that a good idea, as there are many places where values are referenced to
+   zero and later used, as in mpdm_asort(), or where semantics change, for
+   example, when mpdm_aset() returns the previous value;
+   Thu, 26 May 2005 20:28:33 +0200).
 
 Email bugs to angel@triptico.com
