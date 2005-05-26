@@ -42,10 +42,6 @@
 	Data
 ********************/
 
-/* translated string cache */
-static mpdm_v _cache_i18n=NULL;
-
-
 /*******************
 	Code
 ********************/
@@ -507,7 +503,7 @@ mpdm_v mpdm_gettext(mpdm_v str)
 	mpdm_v v;
 
 	/* try first the cache */
-	if((v=mpdm_hget(_cache_i18n, str)) == NULL)
+	if((v=mpdm_hget(_mpdm->i18n, str)) == NULL)
 	{
 #ifdef CONFOPT_GETTEXT
 		char * s;
@@ -528,7 +524,7 @@ mpdm_v mpdm_gettext(mpdm_v str)
 			v=str;
 
 		/* store in the cache */
-		mpdm_hset(_cache_i18n, str, v);
+		mpdm_hset(_mpdm->i18n, str, v);
 	}
 
 	return(v);
@@ -548,13 +544,13 @@ mpdm_v mpdm_gettext(mpdm_v str)
  */
 void mpdm_gettext_domain(mpdm_v dom, mpdm_v data)
 {
-	mpdm_unref(_cache_i18n);
+	mpdm_unref(_mpdm->i18n);
 
 	if(data->flags & MPDM_HASH)
-		_cache_i18n=data;
+		_mpdm->i18n=data;
 	else
 	{
-		_cache_i18n=MPDM_H(0);
+		_mpdm->i18n=MPDM_H(0);
 
 #ifdef CONFOPT_GETTEXT
 
@@ -569,5 +565,5 @@ void mpdm_gettext_domain(mpdm_v dom, mpdm_v data)
 #endif /* CONFOPT_GETTEXT */
 	}
 
-	mpdm_ref(_cache_i18n);
+	mpdm_ref(_mpdm->i18n);
 }
