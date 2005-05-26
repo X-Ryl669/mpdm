@@ -46,7 +46,7 @@
 	Code
 ********************/
 
-wchar_t * _mpdm_mbstowcs(char * str, int * s)
+wchar_t * mpdm_mbstowcs(char * str, int * s)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
@@ -100,7 +100,7 @@ wchar_t * _mpdm_mbstowcs(char * str, int * s)
 }
 
 
-mpdm_t _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
+mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
 	wchar_t * ptr;
@@ -138,13 +138,13 @@ mpdm_t _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 }
 
 
-mpdm_t _mpdm_new_mbstowcs(int flags, char * str)
+mpdm_t mpdm_new_mbstowcs(int flags, char * str)
 /* creates a new string value from an mbs */
 {
 	wchar_t * ptr;
 	int size;
 
-	if((ptr=_mpdm_mbstowcs(str, &size)) == NULL)
+	if((ptr=mpdm_mbstowcs(str, &size)) == NULL)
 		return(NULL);
 
 	/* it's a string */
@@ -154,7 +154,7 @@ mpdm_t _mpdm_new_mbstowcs(int flags, char * str)
 }
 
 
-mpdm_t _mpdm_new_wcstombs(int flags, wchar_t * str)
+mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 /* creates a new mbs value from a wbs */
 {
 	char * ptr;
@@ -178,7 +178,7 @@ mpdm_t _mpdm_new_wcstombs(int flags, wchar_t * str)
 }
 
 
-mpdm_t _mpdm_new_i(int ival)
+mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
 	mpdm_t v;
@@ -195,7 +195,7 @@ mpdm_t _mpdm_new_i(int ival)
 }
 
 
-mpdm_t _mpdm_new_r(double rval)
+mpdm_t mpdm_new_r(double rval)
 /* creates a new string value from a real number */
 {
 	mpdm_t v;

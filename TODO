@@ -5,7 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1067: Get rid of symbols prefixed with _ .
 
 Open Bugs
 ---------
@@ -153,5 +152,6 @@ Closed
  * 1071: The _cache_18n hash in mpdm_s.c has be moved to the main control
    structure (Thu, 26 May 2005 14:01:17 +0200).
  * 1072: mpdm_v should be renamed to mpdm_t (Thu, 26 May 2005 17:34:27 +0200).
+ * 1067: Get rid of symbols prefixed with _ (Thu, 26 May 2005 17:59:17 +0200).
 
 Email bugs to angel@triptico.com

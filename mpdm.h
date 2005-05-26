@@ -83,8 +83,8 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args);
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2);
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3);
 
-mpdm_t _mpdm_new_a(int flags, int size);
-mpdm_t _mpdm_aclone(mpdm_t v);
+mpdm_t mpdm_new_a(int flags, int size);
+mpdm_t mpdm_aclone(mpdm_t v);
 
 mpdm_t mpdm_aexpand(mpdm_t a, int offset, int num);
 mpdm_t mpdm_acollapse(mpdm_t a, int offset, int num);
@@ -103,12 +103,12 @@ mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 mpdm_t mpdm_asplit(mpdm_t s, mpdm_t a);
 mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a);
 
-wchar_t * _mpdm_mbstowcs(char * str, int * s);
-mpdm_t _mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy);
-mpdm_t _mpdm_new_mbstowcs(int flags, char * str);
-mpdm_t _mpdm_new_wcstombs(int flags, wchar_t * str);
-mpdm_t _mpdm_new_i(int ival);
-mpdm_t _mpdm_new_r(double rval);
+wchar_t * mpdm_mbstowcs(char * str, int * s);
+mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy);
+mpdm_t mpdm_new_mbstowcs(int flags, char * str);
+mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str);
+mpdm_t mpdm_new_i(int ival);
+mpdm_t mpdm_new_r(double rval);
 
 wchar_t * mpdm_string(mpdm_t v);
 mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del);
@@ -117,7 +117,7 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2);
 int mpdm_ival(mpdm_t v);
 double mpdm_rval(mpdm_t v);
 
-mpdm_t _mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2);
+mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2);
 
 int mpdm_hsize(mpdm_t h);
 mpdm_t mpdm_hget(mpdm_t h, mpdm_t k);
@@ -136,7 +136,7 @@ void mpdm_dump(mpdm_t v);
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k);
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v);
 
-void _mpdm_write_wcs(FILE * f, wchar_t * str);
+void mpdm_write_wcs(FILE * f, wchar_t * str);
 mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode);
 mpdm_t mpdm_close(mpdm_t fd);
 mpdm_t mpdm_read(mpdm_t fd);
@@ -153,25 +153,25 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
 /* value creation utility macros */
 
-#define MPDM_A(n)	_mpdm_new_a(0,n)
-#define MPDM_H(n)	_mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
-#define MPDM_LS(s)	_mpdm_new_wcs(0, s, -1, 0)
-#define MPDM_S(s)	_mpdm_new_wcs(0, s, -1, 1)
-#define MPDM_NS(s,n)	_mpdm_new_wcs(0, s, n, 1)
+#define MPDM_A(n)	mpdm_new_a(0,n)
+#define MPDM_H(n)	mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
+#define MPDM_LS(s)	mpdm_new_wcs(0, s, -1, 0)
+#define MPDM_S(s)	mpdm_new_wcs(0, s, -1, 1)
+#define MPDM_NS(s,n)	mpdm_new_wcs(0, s, n, 1)
 
-#define MPDM_I(i)	_mpdm_new_i((i))
-#define MPDM_R(r)	_mpdm_new_r((r))
+#define MPDM_I(i)	mpdm_new_i((i))
+#define MPDM_R(r)	mpdm_new_r((r))
 #define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
-#define MPDM_MBS(s)	_mpdm_new_mbstowcs(0,s)
-#define MPDM_2MBS(s)	_mpdm_new_wcstombs(0,s)
+#define MPDM_MBS(s)	mpdm_new_mbstowcs(0,s)
+#define MPDM_2MBS(s)	mpdm_new_wcstombs(0,s)
 
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
-#define MPDM_X2(f,b)	_mpdm_xnew(f,b)
+#define MPDM_X2(f,b)	mpdm_xnew(f,b)
 
 #define MPDM_ND_BEGIN()	unsigned int nd_save=mpdm->nd_index
 #define MPDM_ND_END()	mpdm->nd_index=nd_save
 
-#define MPDM_ND_LS(s)	_mpdm_new_wcs(MPDM_NONDYN, s, -1, 0)
+#define MPDM_ND_LS(s)	mpdm_new_wcs(MPDM_NONDYN, s, -1, 0)
 #define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\
 				v,(sizeof(v) / sizeof(mpdm_t)))
 

@@ -36,16 +36,16 @@ int tests=0;
 int oks=0;
 
 /* failed tests messages */
-char * _failed_msgs[5000];
-int _i_failed_msgs=0;
+char * failed_msgs[5000];
+int i_failed_msgs=0;
 
-int _do_benchmarks=0;
+int do_benchmarks=0;
 
 /*******************
 	Code
 ********************/
 
-void _test(char * str, int ok)
+void do_test(char * str, int ok)
 {
 	char tmp[1024];
 
@@ -57,7 +57,7 @@ void _test(char * str, int ok)
 	if(ok)
 		oks++;
 	else
-		_failed_msgs[_i_failed_msgs ++]=strdup(tmp);
+		failed_msgs[i_failed_msgs ++]=strdup(tmp);
 }
 
 
@@ -74,12 +74,12 @@ void test_basic(void)
 	mpdm_dump(v);
 	i=mpdm_ival(v);
 
-	_test("i == 65536", (i == 65536));
-	_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
+	do_test("i == 65536", (i == 65536));
+	do_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
 
 	r=mpdm_rval(v);
-	_test("r == 65536", (r == 65536.0));
-	_test("v has MPDM_RVAL", (v->flags & MPDM_RVAL));
+	do_test("r == 65536", (r == 65536.0));
+	do_test("v has MPDM_RVAL", (v->flags & MPDM_RVAL));
 
 	printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
 	printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
@@ -88,21 +88,21 @@ void test_basic(void)
 	v=MPDM_LS(L"this is not America");
 	v=MPDM_NS((wchar_t *)v->data + 4, 4);
 
-	_test("Partial string values", mpdm_cmp(v, MPDM_LS(L" is ")) == 0);
+	do_test("Partial string values", mpdm_cmp(v, MPDM_LS(L" is ")) == 0);
 
 	v=MPDM_S(L"MUAHAHAHA!");
-	_test("Testing mpdm_clone semantics 1", mpdm_clone(v) == v);
+	do_test("Testing mpdm_clone semantics 1", mpdm_clone(v) == v);
 
 	v=MPDM_A(2);
 	mpdm_aset(v, MPDM_S(L"evil"), 0);
 	mpdm_aset(v, MPDM_S(L"dead"), 1);
 	w=mpdm_clone(v);
 
-	_test("Testing mpdm_clone semantics 2.1", w != v);
+	do_test("Testing mpdm_clone semantics 2.1", w != v);
 
 	v=mpdm_aget(v, 0);
-	_test("Testing mpdm_clone semantics 2.2", v->ref > 1);
-	_test("Testing mpdm_clone semantics 2.3", mpdm_aget(w, 0) == v);
+	do_test("Testing mpdm_clone semantics 2.2", v->ref > 1);
+	do_test("Testing mpdm_clone semantics 2.3", mpdm_aget(w, 0) == v);
 
 	/* mbs / wcs tests */
 	v=MPDM_MBS("This is (was) a multibyte string");
@@ -130,39 +130,39 @@ void test_basic(void)
 
 	v=MPDM_R(3.1416);
 	mpdm_dump(v);
-	_test("rval 1", mpdm_rval(v) == 3.1416);
-	_test("ival 1", mpdm_ival(v) == 3);
+	do_test("rval 1", mpdm_rval(v) == 3.1416);
+	do_test("ival 1", mpdm_ival(v) == 3);
 
 	v=MPDM_R(777777.0 / 2.0);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 1", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
+	do_test("mpdm_rnew 1", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
 
 	v=MPDM_R(388888.500);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 2", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
+	do_test("mpdm_rnew 2", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
 
 	v=MPDM_R(388888.412);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 3", mpdm_cmp(v, MPDM_LS(L"388888.412")) == 0);
+	do_test("mpdm_rnew 3", mpdm_cmp(v, MPDM_LS(L"388888.412")) == 0);
 
 	v=MPDM_R(388888.6543);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 4", mpdm_cmp(v, MPDM_LS(L"388888.6543")) == 0);
+	do_test("mpdm_rnew 4", mpdm_cmp(v, MPDM_LS(L"388888.6543")) == 0);
 
 	v=MPDM_R(388888.0);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 5", mpdm_cmp(v, MPDM_LS(L"388888")) == 0);
+	do_test("mpdm_rnew 5", mpdm_cmp(v, MPDM_LS(L"388888")) == 0);
 
 	v=MPDM_R(0.050000);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 6", mpdm_cmp(v, MPDM_LS(L"0.05")) == 0);
+	do_test("mpdm_rnew 6", mpdm_cmp(v, MPDM_LS(L"0.05")) == 0);
 
 	v=MPDM_R(0.000);
 	mpdm_dump(v);
-	_test("_mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
+	do_test("mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
 }
 
-mpdm_t _asort_cb(mpdm_t args)
+mpdm_t asort_cb(mpdm_t args)
 {
 	int d;
 
@@ -179,7 +179,7 @@ void test_array(void)
 	mpdm_t v;
 
 	a=MPDM_A(0);
-	_test("a->size == 0", (a->size == 0));
+	do_test("a->size == 0", (a->size == 0));
 
 	mpdm_apush(a, MPDM_LS(L"sunday"));
 	mpdm_apush(a, MPDM_LS(L"monday"));
@@ -189,37 +189,37 @@ void test_array(void)
 	mpdm_apush(a, MPDM_LS(L"friday"));
 	mpdm_apush(a, MPDM_LS(L"saturday"));
 	mpdm_dump(a);
-	_test("a->size == 7", (a->size == 7));
+	do_test("a->size == 7", (a->size == 7));
 
 	v=mpdm_aset(a, NULL, 3);
-	_test("v->ref == 0", (v->ref == 0));
+	do_test("v->ref == 0", (v->ref == 0));
 	mpdm_dump(a);
 
 	a=mpdm_asort(a, 1);
-	_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
+	do_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
 
 	mpdm_aset(a, v, 0);
 	v=mpdm_aget(a, 3);
-	_test("v is referenced again", (v != NULL && v->ref > 0));
+	do_test("v is referenced again", (v != NULL && v->ref > 0));
 
 	a=mpdm_asort(a, 1);
-	_test("mpdm_asort() works (1)",
+	do_test("mpdm_asort() works (1)",
 		mpdm_cmp(mpdm_aget(a,0), MPDM_LS(L"friday")) == 0);
-	_test("mpdm_asort() works (2)",
+	do_test("mpdm_asort() works (2)",
 		mpdm_cmp(mpdm_aget(a,6), MPDM_LS(L"wednesday")) == 0);
 
-	/* _asort_cb sorts reversely */
-	a=mpdm_asort_cb(a, 1, MPDM_X(_asort_cb));
+	/* asort_cb sorts reversely */
+	a=mpdm_asort_cb(a, 1, MPDM_X(asort_cb));
 
-	_test("mpdm_asort_cb() works (1)",
+	do_test("mpdm_asort_cb() works (1)",
 		mpdm_cmp(mpdm_aget(a,6), MPDM_LS(L"friday")) == 0);
-	_test("mpdm_asort_cb() works (2)",
+	do_test("mpdm_asort_cb() works (2)",
 		mpdm_cmp(mpdm_aget(a,0), MPDM_LS(L"wednesday")) == 0);
 
 	n=v->ref;
 	v=mpdm_aget(a, 3);
 	mpdm_acollapse(a, 3, 1);
-	_test("acollapse unrefs values", (v->ref < n));
+	do_test("acollapse unrefs values", (v->ref < n));
 
 	/* test queues */
 	a=MPDM_A(0);
@@ -228,40 +228,40 @@ void test_array(void)
 	for(n=0;n < 10;n++)
 		v=mpdm_aqueue(a, MPDM_I(n), 10);
 
-	_test("aqueue should still output NULL", (v == NULL));
+	do_test("aqueue should still output NULL", (v == NULL));
 
 	v=mpdm_aqueue(a, MPDM_I(11), 10);
-	_test("aqueue should no longer output NULL", (v != NULL));
+	do_test("aqueue should no longer output NULL", (v != NULL));
 
 	v=mpdm_aqueue(a, MPDM_I(12), 10);
-	_test("aqueue should return 1", mpdm_ival(v) == 1);
+	do_test("aqueue should return 1", mpdm_ival(v) == 1);
 	v=mpdm_aqueue(a, MPDM_I(13), 10);
-	_test("aqueue should return 2", mpdm_ival(v) == 2);
-	_test("queue size should be 10", a->size == 10);
+	do_test("aqueue should return 2", mpdm_ival(v) == 2);
+	do_test("queue size should be 10", a->size == 10);
 
 	mpdm_dump(a);
 	v=mpdm_aqueue(a, MPDM_I(14), 5);
 	mpdm_dump(a);
 
-	_test("queue size should be 5", a->size == 5);
-	_test("last taken value should be 8", mpdm_ival(v) == 8);
+	do_test("queue size should be 5", a->size == 5);
+	do_test("last taken value should be 8", mpdm_ival(v) == 8);
 
 	a=MPDM_A(4);
 	mpdm_aset(a, MPDM_I(666), 6000);
 
-	_test("array should have been automatically expanded",
+	do_test("array should have been automatically expanded",
 		mpdm_size(a) == 6001);
 
 	v=mpdm_aget(a, -1);
-	_test("negative offsets in arrays 1", mpdm_ival(v) == 666);
+	do_test("negative offsets in arrays 1", mpdm_ival(v) == 666);
 
 	mpdm_aset(a, MPDM_I(777), -2);
 	v=mpdm_aget(a, 5999);
-	_test("negative offsets in arrays 2", mpdm_ival(v) == 777);
+	do_test("negative offsets in arrays 2", mpdm_ival(v) == 777);
 
 	mpdm_apush(a, MPDM_I(888));
 	v=mpdm_aget(a, -1);
-	_test("negative offsets in arrays 3", mpdm_ival(v) == 888);
+	do_test("negative offsets in arrays 3", mpdm_ival(v) == 888);
 
 	v=MPDM_A(0);
 	mpdm_apush(v, MPDM_I(100));
@@ -280,16 +280,16 @@ void test_hash(void)
 	mpdm_hset(h, MPDM_S(L"mp"), MPDM_I(6));
 	v=mpdm_hget(h, MPDM_S(L"mp"));
 
-	_test("hash: v != NULL", (v != NULL));
+	do_test("hash: v != NULL", (v != NULL));
 	i=mpdm_ival(v);
-	_test("hash: v == 6", (i == 6));
+	do_test("hash: v == 6", (i == 6));
 
 	mpdm_hset(h, MPDM_S(L"mp2"), MPDM_I(66));
 	v=mpdm_hget(h, MPDM_S(L"mp2"));
 
-	_test("hash: v != NULL", (v != NULL));
+	do_test("hash: v != NULL", (v != NULL));
 	i=mpdm_ival(v);
-	_test("hash: v == 66", (i == 66));
+	do_test("hash: v == 66", (i == 66));
 
 	/* fills 100 values */
 	for(n=0;n < 50;n++)
@@ -301,12 +301,12 @@ void test_hash(void)
 	for(n=0;n < 100;n++)
 	{
 		v=mpdm_hget(h, MPDM_I(n));
-		_test("hash: hget", (v != NULL));
+		do_test("hash: hget", (v != NULL));
 
 		if(v != NULL)
 		{
 			i=mpdm_ival(v);
-			_test("hash: ival", (i == n * 10));
+			do_test("hash: ival", (i == n * 10));
 		}
 	}
 
@@ -331,12 +331,12 @@ void test_hash(void)
 	i=mpdm_ival(mpdm_hget(h, v));
 
 	mpdm_dump(h);
-	_test("hash: using non-strings as hash keys", (i == 6543));
+	do_test("hash: using non-strings as hash keys", (i == 6543));
 
 	mpdm_hset(h, MPDM_LS(L"ok"), MPDM_I(666));
 
-	_test("hexists 1", mpdm_hexists(h, MPDM_LS(L"ok")));
-	_test("hexists 2", ! mpdm_hexists(h, MPDM_LS(L"notok")));
+	do_test("hexists 1", mpdm_hexists(h, MPDM_LS(L"ok")));
+	do_test("hexists 2", ! mpdm_hexists(h, MPDM_LS(L"notok")));
 }
 
 
@@ -347,41 +347,41 @@ void test_splice(void)
 
 	w=mpdm_splice(MPDM_LS(L"I'm agent Johnson"),
 		MPDM_LS(L"special "), 4, 0);
-	_test("splice insertion", 
+	do_test("splice insertion", 
 		mpdm_cmp(mpdm_aget(w, 0),
 		MPDM_LS(L"I'm special agent Johnson")) == 0);
 	mpdm_dump(w);
 
 	w=mpdm_splice(MPDM_LS(L"Life is a shit"), MPDM_LS(L"cheat"), 10, 4);
-	_test("splice insertion and deletion (1)", 
+	do_test("splice insertion and deletion (1)", 
 		mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"Life is a cheat")) == 0);
-	_test("splice insertion and deletion (2)", 
+	do_test("splice insertion and deletion (2)", 
 		mpdm_cmp(mpdm_aget(w, 1), MPDM_LS(L"shit")) == 0);
 	mpdm_dump(w);
 
 	w=mpdm_splice(MPDM_LS(L"I'm with dumb"), NULL, 4, 4);
-	_test("splice deletion (1)", 
+	do_test("splice deletion (1)", 
 		mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm  dumb")) == 0);
-	_test("splice deletion (2)", 
+	do_test("splice deletion (2)", 
 		mpdm_cmp(mpdm_aget(w, 1), MPDM_LS(L"with")) == 0);
 	mpdm_dump(w);
 
 	v=MPDM_LS(L"It doesn't matter");
 	w=mpdm_splice(v, MPDM_LS(L" two"), v->size, 0);
-	_test("splice insertion at the end", 
+	do_test("splice insertion at the end", 
 		mpdm_cmp(mpdm_aget(w, 0),
 		MPDM_LS(L"It doesn't matter two")) == 0);
 	mpdm_dump(w);
 
 	w=mpdm_splice(NULL, NULL, 0, 0);
-	_test("splice with two NULLS", (mpdm_aget(w, 0) == NULL));
+	do_test("splice with two NULLS", (mpdm_aget(w, 0) == NULL));
 
 	w=mpdm_splice(NULL, MPDM_LS(L"foo"), 0, 0);
-	_test("splice with first value NULL",
+	do_test("splice with first value NULL",
 		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"foo")) == 0));
 
 	w=mpdm_splice(MPDM_LS(L"foo"), NULL, 0, 0);
-	_test("splice with second value NULL",
+	do_test("splice with second value NULL",
 		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"foo")) == 0));
 }
 
@@ -394,27 +394,27 @@ void test_asplit(void)
 
 	w=mpdm_asplit(MPDM_S(L"."), MPDM_S(L"four.elems.in.string"));
 	mpdm_dump(w);
-	_test("4 elems: ", (w->size == 4));
+	do_test("4 elems: ", (w->size == 4));
 
 	w=mpdm_asplit(MPDM_S(L"."), MPDM_S(L"unseparated string"));
 	mpdm_dump(w);
-	_test("1 elem: ", (w->size == 1));
+	do_test("1 elem: ", (w->size == 1));
 
 	w=mpdm_asplit(MPDM_S(L"."), MPDM_S(L".dot.at start"));
 	mpdm_dump(w);
-	_test("3 elems: ", (w->size == 3));
+	do_test("3 elems: ", (w->size == 3));
 
 	w=mpdm_asplit(MPDM_S(L"."), MPDM_S(L"dot.at end."));
 	mpdm_dump(w);
-	_test("3 elems: ", (w->size == 3));
+	do_test("3 elems: ", (w->size == 3));
 
 	w=mpdm_asplit(MPDM_S(L"."), MPDM_S(L"three...dots (two empty elements)"));
 	mpdm_dump(w);
-	_test("4 elems: ", (w->size == 4));
+	do_test("4 elems: ", (w->size == 4));
 
 	w=mpdm_asplit(MPDM_S(L"."), MPDM_S(L"."));
 	mpdm_dump(w);
-	_test("2 elems: ", (w->size == 2));
+	do_test("2 elems: ", (w->size == 2));
 }
 
 
@@ -433,21 +433,21 @@ void test_ajoin(void)
 	mpdm_aset(w, MPDM_S(L"ce"), 0);
 
 	v=mpdm_ajoin(NULL, w);
-	_test("1 elem, no separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
+	do_test("1 elem, no separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
 
 	v=mpdm_ajoin(s, w);
-	_test("1 elem, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
+	do_test("1 elem, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
 
 	mpdm_apush(w, MPDM_LS(L"n'est"));
 	v=mpdm_ajoin(s, w);
-	_test("2 elems, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce--n'est")) == 0));
+	do_test("2 elems, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce--n'est")) == 0));
 
 	mpdm_apush(w, MPDM_LS(L"pas"));
 	v=mpdm_ajoin(s, w);
-	_test("3 elems, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce--n'est--pas")) == 0));
+	do_test("3 elems, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce--n'est--pas")) == 0));
 
 	v=mpdm_ajoin(NULL, w);
-	_test("3 elems, no separator", (mpdm_cmp(v, MPDM_LS(L"cen'estpas")) == 0));
+	do_test("3 elems, no separator", (mpdm_cmp(v, MPDM_LS(L"cen'estpas")) == 0));
 }
 
 
@@ -471,7 +471,7 @@ void test_sym(void)
 	v=mpdm_sget(NULL, MPDM_LS(L"mp.config.auto_indent"));
 	i=mpdm_ival(v);
 
-	_test("auto_indent == 16384", (i == 16384));
+	do_test("auto_indent == 16384", (i == 16384));
 
 	mpdm_sweep(-1);
 }
@@ -492,7 +492,7 @@ void test_file(void)
 		return;
 	}
 
-	_test("Create test.txt", f != NULL);
+	do_test("Create test.txt", f != NULL);
 
 	mpdm_write(f, MPDM_LS(L"0"));
 	mpdm_write(f, eol);
@@ -506,15 +506,15 @@ void test_file(void)
 
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
 
-	_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0\n")) == 0);
-	_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1\n")) == 0);
-	_test("test written file 2", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2")) == 0);
-	_test("test written file 3", mpdm_read(f) == NULL);
+	do_test("test written file 0", mpdm_cmp(mpdm_read(f), MPDM_LS(L"0\n")) == 0);
+	do_test("test written file 1", mpdm_cmp(mpdm_read(f), MPDM_LS(L"1\n")) == 0);
+	do_test("test written file 2", mpdm_cmp(mpdm_read(f), MPDM_LS(L"2")) == 0);
+	do_test("test written file 3", mpdm_read(f) == NULL);
 
 	mpdm_close(f);
 
 	mpdm_unlink(MPDM_LS(L"test.txt"));
-	_test("unlink", mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r")) == NULL);
+	do_test("unlink", mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r")) == NULL);
 
 /*	v=mpdm_glob(MPDM_LS(L"*"));*/
 	printf("Glob:\n");
@@ -529,76 +529,76 @@ void test_regex(void)
 	mpdm_t w;
 
 	v=mpdm_regex(MPDM_LS(L"/[0-9]+/"), MPDM_LS(L"123456"), 0);
-	_test("regex 0", v != NULL);
+	do_test("regex 0", v != NULL);
 
 	v=mpdm_regex(MPDM_LS(L"/[0-9]+/"), MPDM_I(65536), 0);
-	_test("regex 1", v != NULL);
+	do_test("regex 1", v != NULL);
 
 	v=mpdm_regex(MPDM_LS(L"/^[0-9]+$/"), MPDM_LS(L"12345678"), 0);
-	_test("regex 2", v != NULL);
+	do_test("regex 2", v != NULL);
 
 	v=mpdm_regex(MPDM_LS(L"/^[0-9]+$/"), MPDM_I(1), 0);
-	_test("regex 3", v != NULL);
+	do_test("regex 3", v != NULL);
 
 	v=mpdm_regex(MPDM_LS(L"/^[0-9]+$/"), MPDM_LS(L"A12345-678"), 0);
-	_test("regex 4", v == NULL);
+	do_test("regex 4", v == NULL);
 
 	w=MPDM_LS(L"Hell street, 666");
 	v=mpdm_regex(MPDM_LS(L"/[0-9]+/"), w, 0);
-	_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
+	do_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
 
 	mpdm_dump(v);
 
 	v=mpdm_regex(MPDM_LS(L"/regex/i"), MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
-	_test("regex 6", v != NULL);
+	do_test("regex 6", v != NULL);
 
 	v=mpdm_regex(MPDM_LS(L"/^\\s*/"), MPDM_LS(L"123456"), 0);
-	_test("regex 7", v != NULL);
+	do_test("regex 7", v != NULL);
 
 	v=mpdm_regex(MPDM_LS(L"/^\\s+/"), MPDM_LS(L"123456"), 0);
-	_test("regex 8", v == NULL);
+	do_test("regex 8", v == NULL);
 
 	/* sregex */
 
 	v=mpdm_sregex(MPDM_LS(L"/A/"),MPDM_LS(L"change all A to A"),
 		MPDM_LS(L"E"),0);
-	_test("sregex 0", mpdm_cmp(v, MPDM_LS(L"change all E to A")) == 0);
+	do_test("sregex 0", mpdm_cmp(v, MPDM_LS(L"change all E to A")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/A/g"),MPDM_LS(L"change all A to A"),
 		MPDM_LS(L"E"),0);
-	_test("sregex 1", mpdm_cmp(v, MPDM_LS(L"change all E to E")) == 0);
+	do_test("sregex 1", mpdm_cmp(v, MPDM_LS(L"change all E to E")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/A+/g"),MPDM_LS(L"change all AAAAAA to E"),
 		MPDM_LS(L"E"),0);
-	_test("sregex 2", mpdm_cmp(v, MPDM_LS(L"change all E to E")) == 0);
+	do_test("sregex 2", mpdm_cmp(v, MPDM_LS(L"change all E to E")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/A+/g"),MPDM_LS(L"change all A A A A A A to E"),
 		MPDM_LS(L"E"),0);
-	_test("sregex 3", mpdm_cmp(v, MPDM_LS(L"change all E E E E E E to E")) == 0);
+	do_test("sregex 3", mpdm_cmp(v, MPDM_LS(L"change all E E E E E E to E")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/A+/g"),MPDM_LS(L"change all AAA A AA AAAAA A AAA to E"),
 		MPDM_LS(L"E"),0);
-	_test("sregex 3.2", mpdm_cmp(v, MPDM_LS(L"change all E E E E E E to E")) == 0);
+	do_test("sregex 3.2", mpdm_cmp(v, MPDM_LS(L"change all E E E E E E to E")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/[0-9]+/g"),MPDM_LS(L"1, 20, 333, 40 all are numbers"),
 		MPDM_LS(L"numbers"),0);
-	_test("sregex 4", mpdm_cmp(v, MPDM_LS(L"numbers, numbers, numbers, numbers all are numbers")) == 0);
+	do_test("sregex 4", mpdm_cmp(v, MPDM_LS(L"numbers, numbers, numbers, numbers all are numbers")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/[a-zA-Z_]+/g"),MPDM_LS(L"regex, mpdm_regex, TexMex"),
 		MPDM_LS(L"sex"),0);
-	_test("sregex 5", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
+	do_test("sregex 5", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/[a-zA-Z]+/g"),MPDM_LS(L"regex, mpdm_regex, TexMex"),
 		NULL,0);
-	_test("sregex 6", mpdm_cmp(v, MPDM_LS(L", _, ")) == 0);
+	do_test("sregex 6", mpdm_cmp(v, MPDM_LS(L", _, ")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/\\\\/g"),MPDM_LS(L"\\MSDOS\\style\\path"),
 		MPDM_LS(L"/"),0);
-	_test("sregex 7", mpdm_cmp(v, MPDM_LS(L"/MSDOS/style/path")) == 0);
+	do_test("sregex 7", mpdm_cmp(v, MPDM_LS(L"/MSDOS/style/path")) == 0);
 
 	v=mpdm_sregex(MPDM_LS(L"/regex/gi"),MPDM_LS(L"regex, Regex, REGEX"),
 		MPDM_LS(L"sex"),0);
-	_test("sregex 8", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
+	do_test("sregex 8", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
 
 	/* multiple regex tests */
 	w=MPDM_A(0);
@@ -610,23 +610,23 @@ void test_regex(void)
 	mpdm_apush(w, MPDM_LS(L"/[ \t]*$/"));
 
 	v=mpdm_regex(w, MPDM_LS(L"key=value"), 0);
-	_test("multi-regex 1.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
-	_test("multi-regex 1.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
+	do_test("multi-regex 1.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
+	do_test("multi-regex 1.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
 
 	v=mpdm_regex(w, MPDM_LS(L" key = value"), 0);
-	_test("multi-regex 2.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
-	_test("multi-regex 2.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
+	do_test("multi-regex 2.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
+	do_test("multi-regex 2.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
 
 	v=mpdm_regex(w, MPDM_LS(L"\t\tkey\t=\tvalue  "), 0);
-	_test("multi-regex 3.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
-	_test("multi-regex 3.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
+	do_test("multi-regex 3.1", mpdm_cmp(mpdm_aget(v, 1),MPDM_LS(L"key")) == 0);
+	do_test("multi-regex 3.2", mpdm_cmp(mpdm_aget(v, 3),MPDM_LS(L"value")) == 0);
 
 	v=mpdm_regex(w, MPDM_LS(L"key= "), 0);
-	_test("multi-regex 4", v == NULL);
+	do_test("multi-regex 4", v == NULL);
 }
 
 
-static mpdm_t _dumper(mpdm_t args)
+static mpdm_t dumper(mpdm_t args)
 /* executable value */
 {
 	mpdm_dump(args);
@@ -634,7 +634,7 @@ static mpdm_t _dumper(mpdm_t args)
 }
 
 
-static mpdm_t _sum(mpdm_t args)
+static mpdm_t sum(mpdm_t args)
 /* executable value: sum all args */
 {
 	int n,t=0;
@@ -649,7 +649,7 @@ static mpdm_t _sum(mpdm_t args)
 }
 
 
-static mpdm_t _calculator(mpdm_t c, mpdm_t args)
+static mpdm_t calculator(mpdm_t c, mpdm_t args)
 /* 2 argument version: calculator. c contains a 'script' to
    do things with the arguments */
 {
@@ -692,19 +692,19 @@ void test_exec(void)
 	mpdm_t w;
 	mpdm_t p;
 
-	x=MPDM_X(_dumper);
+	x=MPDM_X(dumper);
 
 	/* a simple value */
 	mpdm_exec(x, NULL);
 	mpdm_exec(x, x);
 
-	x=MPDM_X(_sum);
+	x=MPDM_X(sum);
 	w=MPDM_A(3);
 	mpdm_aset(w, MPDM_I(100), 0);
 	mpdm_aset(w, MPDM_I(220), 1);
 	mpdm_aset(w, MPDM_I(333), 2);
 
-	_test("exec 0", mpdm_ival(mpdm_exec(x, w)) == 653);
+	do_test("exec 0", mpdm_ival(mpdm_exec(x, w)) == 653);
 
 	mpdm_apush(w, MPDM_I(1));
 
@@ -720,10 +720,10 @@ void test_exec(void)
 	x=MPDM_A(2);
 	x->flags |= MPDM_EXEC;
 
-	mpdm_aset(x, MPDM_X(_calculator), 0);
+	mpdm_aset(x, MPDM_X(calculator), 0);
 	mpdm_aset(x, p, 1);
 
-	_test("exec 1", mpdm_ival(mpdm_exec(x, w)) == -12);
+	do_test("exec 1", mpdm_ival(mpdm_exec(x, w)) == -12);
 
 	/* another 'script', different operations with the same values */
 	p=MPDM_A(0);
@@ -733,7 +733,7 @@ void test_exec(void)
 
 	mpdm_aset(x, p, 1);
 
-	_test("exec 2", mpdm_ival(mpdm_exec(x, w)) == 67);
+	do_test("exec 2", mpdm_ival(mpdm_exec(x, w)) == 67);
 }
 
 
@@ -751,13 +751,13 @@ void test_nondyn(void)
 	v=MPDM_ND_LS(L"This is a non-dynamic value");
 	mpdm_dump(v);
 
-	_test("Non-dynamic literal value size", mpdm_size(v) == 27);
+	do_test("Non-dynamic literal value size", mpdm_size(v) == 27);
 
 	/* test auto-cloning when storing nondyn values to arrays */
 	mpdm_aset(a, v, 0);
 	w=mpdm_aget(a, 0);
 
-	_test("ND_LS values should have been cloned on mpdm_aset",
+	do_test("ND_LS values should have been cloned on mpdm_aset",
 		w != v);
 
 	v=MPDM_ND_A(av);
@@ -767,7 +767,7 @@ void test_nondyn(void)
 	mpdm_aset(a, v, 0);
 	w=mpdm_aget(a, 0);
 
-	_test("ND_A values should have been cloned on mpdm_aset",
+	do_test("ND_A values should have been cloned on mpdm_aset",
 		w != v);
 }
 
@@ -793,7 +793,7 @@ void test_encoding(void)
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
 	w=mpdm_read(f);
 	mpdm_dump(w);
-	_test("Locale encoding", mpdm_cmp(w, v) == 0);
+	do_test("Locale encoding", mpdm_cmp(w, v) == 0);
 	mpdm_close(f);
 
 	if(mpdm_encoding(MPDM_LS(L"UTF-8")) < 0)
@@ -810,7 +810,7 @@ void test_encoding(void)
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
 	w=mpdm_read(f);
 	mpdm_dump(w);
-	_test("iconv encoding", mpdm_cmp(w, v) == 0);
+	do_test("iconv encoding", mpdm_cmp(w, v) == 0);
 	mpdm_close(f);
 }
 
@@ -845,7 +845,7 @@ void test_gettext(void)
 }
 
 
-void _timer(int secs)
+void timer(int secs)
 {
 	static clock_t clks=0;
 
@@ -872,13 +872,13 @@ void bench_hash(int i, mpdm_t l, int buckets)
 	printf("Hash of %d buckets: \n", buckets);
 	h=MPDM_H(buckets);
 
-	_timer(0);
+	timer(0);
 	for(n=0;n < i;n++)
 	{
 		v=mpdm_aget(l, n);
 		mpdm_hset(h, v, v);
 	}
-	_timer(-1);
+	timer(-1);
 /*
 	printf("Bucket usage:\n");
 	for(n=0;n < mpdm_size(h);n++)
@@ -896,7 +896,7 @@ void benchmark(void)
 
 	printf("\n");
 
-	if(!_do_benchmarks)
+	if(!do_benchmarks)
 	{
 		printf("Skipping benchmarks\nRun them with 'stress -b'\n");
 		return;
@@ -930,7 +930,7 @@ void benchmark(void)
 int main(int argc, char * argv[])
 {
 	if(argc > 1 && strcmp(argv[1], "-b") == 0)
-		_do_benchmarks=1;
+		do_benchmarks=1;
 
 	mpdm_startup();
 
@@ -974,8 +974,8 @@ int main(int argc, char * argv[])
 		printf("*** %d %s\n", tests - oks, "TESTS ---FAILED---");
 
 		printf("\nFailed tests:\n\n");
-		for(n=0;n < _i_failed_msgs;n++)
-			printf("%s", _failed_msgs[n]);
+		for(n=0;n < i_failed_msgs;n++)
+			printf("%s", failed_msgs[n]);
 	}
 
 	return(0);
