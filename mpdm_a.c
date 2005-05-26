@@ -38,7 +38,7 @@
 ********************/
 
 /* sorting callback code */
-static mpdm_t _mpdm_asort_cb=NULL;
+static mpdm_t asort_cb=NULL;
 
 
 /*******************
@@ -419,12 +419,12 @@ static int _mpdm_asort_cmp(const void * s1, const void * s2)
 	int ret=0;
 
 	/* if callback is NULL, use basic value comparisons */
-	if(_mpdm_asort_cb == NULL)
+	if(asort_cb == NULL)
 		ret=mpdm_cmp(*(mpdm_t *)s1, *(mpdm_t *)s2);
 	else
 	{
 		/* executes the callback and converts to integer */
-		ret=mpdm_ival(mpdm_exec_2(_mpdm_asort_cb,
+		ret=mpdm_ival(mpdm_exec_2(asort_cb,
 			(mpdm_t) * ((mpdm_t *)s1),
 			(mpdm_t) * ((mpdm_t *)s2)));
 	}
@@ -462,26 +462,26 @@ mpdm_t mpdm_asort(mpdm_t a, int step)
  *
  * Returns the sorted array (the original one is left untouched).
  */
-mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t asort_cb)
+mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t cb)
 {
 	/* creates a copy to be sorted */
 	a=mpdm_clone(a);
 
-	_mpdm_asort_cb=asort_cb;
+	asort_cb=cb;
 
 	/* references the array and the code, as the latter
 	   can include anything (including sweeping) */
 	mpdm_ref(a);
-	mpdm_ref(_mpdm_asort_cb);
+	mpdm_ref(asort_cb);
 
 	qsort(a->data, mpdm_size(a) / step,
 		sizeof(mpdm_t) * step, _mpdm_asort_cmp);
 
 	/* unreferences */
-	mpdm_unref(_mpdm_asort_cb);
+	mpdm_unref(asort_cb);
 	mpdm_unref(a);
 
-	_mpdm_asort_cb=NULL;
+	asort_cb=NULL;
 
 	return(a);
 }

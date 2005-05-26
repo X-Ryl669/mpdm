@@ -53,7 +53,7 @@
 #endif
 
 /* file structure */
-struct _mpdm_file
+struct mpdm_file
 {
 	FILE * fd;
 
@@ -237,7 +237,7 @@ void _mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
 mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 {
 	FILE * f;
-	struct _mpdm_file * fs;
+	struct mpdm_file * fs;
 
 	/* convert to mbs,s */
 	filename=MPDM_2MBS(filename->data);
@@ -246,13 +246,13 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 	if((f=fopen((char *)filename->data, (char *)mode->data)) == NULL)
 		return(NULL);
 
-	if((fs=malloc(sizeof(struct _mpdm_file))) == NULL)
+	if((fs=malloc(sizeof(struct mpdm_file))) == NULL)
 	{
 		fclose(f);
 		return(NULL);
 	}
 
-	memset(fs, '\0', sizeof(struct _mpdm_file));
+	memset(fs, '\0', sizeof(struct mpdm_file));
 
 	fs->fd=f;
 
@@ -271,7 +271,7 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 #endif
 
 	return(mpdm_new(MPDM_FILE|MPDM_FREE, fs,
-		sizeof(struct _mpdm_file)));
+		sizeof(struct mpdm_file)));
 }
 
 
@@ -283,7 +283,7 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
  */
 mpdm_t mpdm_close(mpdm_t fd)
 {
-	struct _mpdm_file * fs=fd->data;
+	struct mpdm_file * fs=fd->data;
 
 	if((fd->flags & MPDM_FILE) && fs != NULL)
 	{
@@ -320,7 +320,7 @@ mpdm_t mpdm_read(mpdm_t fd)
 	mpdm_t v=NULL;
 	wchar_t * ptr;
 	int s;
-	struct _mpdm_file * fs=fd->data;
+	struct mpdm_file * fs=fd->data;
 
 	if(fs == NULL)
 		return(NULL);
@@ -351,7 +351,7 @@ mpdm_t mpdm_read(mpdm_t fd)
  */
 int mpdm_write(mpdm_t fd, mpdm_t v)
 {
-	struct _mpdm_file * fs=fd->data;
+	struct mpdm_file * fs=fd->data;
 
 	if(fs == NULL)
 		return(-1);
