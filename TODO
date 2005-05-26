@@ -5,6 +5,8 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
+ * 1067: Get rid of symbols prefixed with _ .
+ * 1072: mpdm_v should be renamed to mpdm_t.
 
 Open Bugs
 ---------
@@ -31,7 +33,6 @@ Pending Enhancements
    control won't have this, as they (should) never be used after being
    unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
    as this could mask possible sweeping errors, it has not been implemented yet.
- * 1067: Get rid of symbols prefixed with _ .
  * 1068: Rewrite the circular list of values as a double-list (i.e., with
    links to previous).
  * 1069: The mpdm_free() function should dequeue the value about to be
