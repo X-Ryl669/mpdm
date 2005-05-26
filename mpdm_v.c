@@ -45,6 +45,7 @@ struct mpdm_control * mpdm=NULL;
 ********************/
 
 static mpdm_t mpdm_alloc(int flags)
+/* allocs a dynamic or non-dynamic value */
 {
 	mpdm_t v=NULL;
 
@@ -72,8 +73,13 @@ static mpdm_t mpdm_alloc(int flags)
 }
 
 
-static void mpdm_destroy(mpdm_t v)
+static int mpdm_destroy(mpdm_t v)
+/* destroys a value */
 {
+	/* if still referenced, don't do it */
+	if(v->ref)
+		return(0);
+
 	if(v->flags & MPDM_NONDYN)
 	{
 		/* count back */
@@ -92,8 +98,22 @@ static void mpdm_destroy(mpdm_t v)
 			free(v->data);
 		}
 
+		/* dequeue */
+		v->next->prev=v->prev;
+		v->prev->next=v->next;
+
+		/* if it's the current one, move to next */
+		if(mpdm->cur == v)
+			mpdm->cur=v->next;
+
+		/* account one value less */
+		mpdm->count--;
+
+		/* finally free */
 		free(v);
 	}
+
+	return(1);
 }
 
 
@@ -132,8 +152,10 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 			v->next=v;
 		else
 		{
+			v->prev=mpdm->cur;
 			v->next=mpdm->cur->next;
-			mpdm->cur->next=v;
+
+			v->prev->next=v->next->prev=v;
 		}
 
 		mpdm->cur=v;
@@ -187,36 +209,17 @@ mpdm_t mpdm_unref(mpdm_t v)
  */
 void mpdm_sweep(int count)
 {
-	mpdm_t v;
-
 	/* if count is zero, sweep 'some' values */
 	if(count == 0) count=mpdm->default_sweep;
 
 	/* if count is -1, sweep all */
 	if(count == -1) count=mpdm->count;
 
-	while(count > 0 && mpdm->count > mpdm->low_threshold)
+	for(;count > 0 && mpdm->count > mpdm->low_threshold;count --)
 	{
-		/* takes next value */
-		v=mpdm->cur->next;
-
-		/* is the value referenced? */
-		if(! v->ref)
-		{
-			/* dequeue */
-			mpdm->cur->next=v->next;
-
-			/* free the value itself */
-			mpdm_destroy(v);
-
-			/* one value less */
-			mpdm->count--;
-		}
-		else
-			mpdm->cur=v;
-
-		/* move to next */
-		count --;
+		/* destroy it or skip it */
+		if(!mpdm_destroy(mpdm->cur))
+			mpdm->cur=mpdm->cur->next;
 	}
 }
 
