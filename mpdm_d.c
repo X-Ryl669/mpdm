@@ -39,7 +39,7 @@
 	Code
 ********************/
 
-void _mpdm_dump(mpdm_t v, int l)
+static void dump_1(mpdm_t v, int l)
 {
 	int n;
 
@@ -86,15 +86,15 @@ void _mpdm_dump(mpdm_t v, int l)
 			{
 				t=mpdm_aget(w, n);
 
-				_mpdm_dump(t, l + 1);
-				_mpdm_dump(mpdm_hget(v, t), l + 2);
+				dump_1(t, l + 1);
+				dump_1(mpdm_hget(v, t), l + 2);
 			}
 		}
 		else
 		if(v->flags & MPDM_MULTIPLE)
 		{
 			for(n=0;n < mpdm_size(v);n++)
-				_mpdm_dump(mpdm_aget(v, n), l + 1);
+				dump_1(mpdm_aget(v, n), l + 1);
 		}
 	}
 }
@@ -102,5 +102,5 @@ void _mpdm_dump(mpdm_t v, int l)
 
 void mpdm_dump(mpdm_t v)
 {
-	_mpdm_dump(v, 0);
+	dump_1(v, 0);
 }
