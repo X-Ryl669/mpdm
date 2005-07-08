@@ -768,7 +768,7 @@ void test_encoding(void)
 
 	v=MPDM_MBS("¡España!\n");
 
-	printf("\nLocale encoding tests\n\n");
+	printf("\nLocale encoding tests (will look bad if terminal is not ISO-8859-1)\n\n");
 
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 	mpdm_write(f, v);
@@ -795,6 +795,15 @@ void test_encoding(void)
 	w=mpdm_read(f);
 	mpdm_dump(w);
 	do_test("iconv encoding", mpdm_cmp(w, v) == 0);
+	mpdm_close(f);
+
+	mpdm_encoding(NULL);
+
+	printf("\nutf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
+
+	f=mpdm_open(MPDM_LS(L"utf8.txt"), MPDM_LS(L"r"));
+	w=mpdm_read(f);
+	mpdm_dump(w);
 	mpdm_close(f);
 }
 
