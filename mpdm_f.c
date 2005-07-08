@@ -401,20 +401,23 @@ int mpdm_encoding(mpdm_t charset)
 
 #ifdef CONFOPT_ICONV
 
-	iconv_t ic;
-	mpdm_t cs=MPDM_2MBS(charset->data);
+	if(charset != NULL)
+	{
+		iconv_t ic;
+		mpdm_t cs=MPDM_2MBS(charset->data);
 
-	/* tries to create an encoder and a decoder for this charset */
+		/* tries to create an encoder and a decoder for this charset */
 
-	if((ic=iconv_open("WCHAR_T", (char *)cs->data)) == (iconv_t) -1)
-		return(-1);
+		if((ic=iconv_open("WCHAR_T", (char *)cs->data)) == (iconv_t) -1)
+			return(-1);
 
-	iconv_close(ic);
+		iconv_close(ic);
 
-	if((ic=iconv_open((char *)cs->data, "WCHAR_T")) == (iconv_t) -1)
-		return(-2);
+		if((ic=iconv_open((char *)cs->data, "WCHAR_T")) == (iconv_t) -1)
+			return(-2);
 
-	iconv_close(ic);
+		iconv_close(ic);
+	}
 
 	/* can create; store and exit */
 
