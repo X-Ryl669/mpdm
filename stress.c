@@ -109,21 +109,10 @@ void test_basic(void)
 	mpdm_dump(v);
 
 	/* greek omega is 03a9 */
-#ifndef WIN32
-	v=MPDM_LS(L"¡España! (non-ASCII string, as wchar_t *)");
-	mpdm_dump(v);
-#endif
 	v=MPDM_MBS("¡España! (non-ASCII string, as ISO-8859-1 char *)");
 	mpdm_dump(v);
 	printf("(Previous value will be NULL if locale doesn't match stress.c encoding)\n");
-#ifndef WIN32
-	v=MPDM_2MBS(L"¡España! (should be correcly seen in any locale)");
 
-	if(v == NULL)
-		printf("Warning: can't convert to current locale. Broken locales?\n");
-	else
-		printf("%s\n", (char *)v->data);
-#endif
 	v=MPDM_LS(L"A capital greek omega between brackets [\x03a9]");
 	mpdm_dump(v);
 	printf("(Previous value will only show on an Unicode terminal)\n");
@@ -481,7 +470,6 @@ void test_file(void)
 {
 	mpdm_t f;
 	mpdm_t v;
-	mpdm_t w;
 	mpdm_t eol=MPDM_LS(L"\n");
 
 	f=mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
@@ -778,11 +766,7 @@ void test_encoding(void)
 	mpdm_t v;
 	mpdm_t w;
 
-#ifdef WIN32
 	v=MPDM_MBS("¡España!\n");
-#else
-	v=MPDM_LS(L"¡España!\n");
-#endif
 
 	printf("\nLocale encoding tests\n\n");
 
