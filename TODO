@@ -5,6 +5,8 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
+ * 1073: Add a wcwidth() implementation for systems lacking it (for
+   example, mingw32).
 
 Open Bugs
 ---------
