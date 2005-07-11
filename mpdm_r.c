@@ -87,8 +87,8 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 		if((flags=strrchr(regex, *regex)) == NULL)
 			return(NULL);
 
-		if(strchr(flags, 'i') != NULL)
-			f |= REG_ICASE;
+		if(strchr(flags, 'i') != NULL) f |= REG_ICASE;
+		if(strchr(flags, 'm') != NULL) f |= REG_NEWLINE;
 
 		regex++;
 		*flags='\0';
@@ -122,9 +122,12 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value. Valid flags are 'i',
- * for case-insensitive matching, and 'c', to return the coordinates
+ * for case-insensitive matching, 'c', to return the coordinates
  * where the match has been found (offset and size) instead of the
- * found substring.
+ * found substring, or 'm', to treat the string as a multiline string
+ * (i.e., one containing newline characters), so that ^ and $ match
+ * the boundaries of each line instead of the whole string.
+ *
  * FIXME: Document @r as a multiple value case.
  *
  * If the regex is not matched, returns NULL. If it's matched, the
