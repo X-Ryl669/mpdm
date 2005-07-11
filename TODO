@@ -5,8 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1073: Add a wcwidth() implementation for systems lacking it (for
-   example, mingw32).
 
 Open Bugs
 ---------
@@ -159,5 +157,7 @@ Closed
    zero and later used, as in mpdm_asort(), or where semantics change, for
    example, when mpdm_aset() returns the previous value;
    Thu, 26 May 2005 20:28:33 +0200).
+ * 1073: Add a wcwidth() implementation for systems lacking it (for
+   example, mingw32) (Mon, 11 Jul 2005 07:55:31 +0200).
 
 Email bugs to angel@triptico.com
