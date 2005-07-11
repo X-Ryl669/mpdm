@@ -783,6 +783,17 @@ void test_encoding(void)
 	do_test("Locale encoding", mpdm_cmp(w, v) == 0);
 	mpdm_close(f);
 
+	printf("\nutf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
+
+	f=mpdm_open(MPDM_LS(L"utf8.txt"), MPDM_LS(L"r"));
+	w=mpdm_read(f);
+	mpdm_dump(w);
+	mpdm_close(f);
+
+	for(ptr=w->data;*ptr != L'\0';ptr++)
+		printf("%d", wcwidth(*ptr));
+	printf("\n");
+
 	if(mpdm_encoding(MPDM_LS(L"UTF-8")) < 0)
 	{
 		printf("No multiple encoding (iconv) support; no more tests possible.\n");
@@ -801,17 +812,6 @@ void test_encoding(void)
 	mpdm_close(f);
 
 	mpdm_encoding(NULL);
-
-	printf("\nutf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
-
-	f=mpdm_open(MPDM_LS(L"utf8.txt"), MPDM_LS(L"r"));
-	w=mpdm_read(f);
-	mpdm_dump(w);
-	mpdm_close(f);
-
-	for(ptr=w->data;*ptr != L'\0';ptr++)
-		printf("%d", wcwidth(*ptr));
-	printf("\n");
 }
 
 
