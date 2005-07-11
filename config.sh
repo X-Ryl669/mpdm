@@ -131,7 +131,7 @@ if [ "$WITHOUT_UNIX_GLOB" != 1 ] ; then
 		echo "#define CONFOPT_GLOB_H 1" >> config.h
 		echo "OK"
 	else
-		echo "No; activated workaround"
+		echo "No; activating workaround"
 	fi
 fi
 
@@ -265,6 +265,22 @@ else
 		fi
 	fi
 fi
+
+# wcwidth() existence
+echo -n "Testing for wcwidth()... "
+
+echo "#include <wchar.h>" > .tmp.c
+echo "int main(void) { wcwidth(L'a'); return 0; }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "OK"
+	echo "#define CONFOPT_WCWIDTH 1" >> config.h
+else
+	echo "No; activating workaround"
+fi
+
 
 #########################################################
 
