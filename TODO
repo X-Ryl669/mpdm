@@ -159,5 +159,6 @@ Closed
    Thu, 26 May 2005 20:28:33 +0200).
  * 1073: Add a wcwidth() implementation for systems lacking it (for
    example, mingw32) (Mon, 11 Jul 2005 07:55:31 +0200).
+ * 1074: Add multiline regex strings (Mon, 11 Jul 2005 15:57:06 +0200).
 
 Email bugs to angel@triptico.com

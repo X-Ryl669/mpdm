@@ -611,6 +611,17 @@ void test_regex(void)
 
 	v=mpdm_regex(w, MPDM_LS(L"key= "), 0);
 	do_test("multi-regex 4", v == NULL);
+
+	printf("Multiple line regexes\n");
+	w=MPDM_LS(L"/* this is\na C-like comment */");
+	v=mpdm_regex(MPDM_LS(L"|/\\*.+\\*/|"), w, 0);
+	do_test("Multiline regex 1", mpdm_cmp(v, w) == 0);
+
+	v=mpdm_regex(MPDM_LS(L"/is$/"), w, 0);
+	do_test("Multiline regex 2", v == NULL);
+
+	v=mpdm_regex(MPDM_LS(L"/is$/m"), w, 0);
+	do_test("Multiline regex 3", mpdm_cmp(v, MPDM_LS(L"is")) == 0);
 }
 
 
@@ -679,6 +690,8 @@ void test_exec(void)
 	mpdm_t x;
 	mpdm_t w;
 	mpdm_t p;
+
+	printf("test_exec\n");
 
 	x=MPDM_X(dumper);
 
