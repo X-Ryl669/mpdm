@@ -19,6 +19,7 @@ while [ $# -gt 0 ] ; do
 	--with-pcre)		WITH_PCRE=1 ;;
 	--without-gettext)	WITHOUT_GETTEXT=1 ;;
 	--without-iconv)	WITHOUT_ICONV=1 ;;
+	--without-wcwidth)	WITHOUT_WCWIDTH=1 ;;
 	--help)			CONFIG_HELP=1 ;;
 
 	--prefix)		PREFIX=$2 ; shift ;;
@@ -269,18 +270,21 @@ fi
 # wcwidth() existence
 echo -n "Testing for wcwidth()... "
 
-echo "#include <wchar.h>" > .tmp.c
-echo "int main(void) { wcwidth(L'a'); return 0; }" >> .tmp.c
-
-$CC .tmp.c -o .tmp.o 2>> .config.log
-
-if [ $? = 0 ] ; then
-	echo "OK"
-	echo "#define CONFOPT_WCWIDTH 1" >> config.h
+if [ "$WITHOUT_WCWIDTH" = "1" ] ; then
+	echo "Disabled by user"
 else
-	echo "No; activating workaround"
-fi
+	echo "#include <wchar.h>" > .tmp.c
+	echo "int main(void) { wcwidth(L'a'); return 0; }" >> .tmp.c
 
+	$CC .tmp.c -o .tmp.o 2>> .config.log
+
+	if [ $? = 0 ] ; then
+		echo "OK"
+		echo "#define CONFOPT_WCWIDTH 1" >> config.h
+	else
+		echo "No; activating workaround"
+	fi
+fi
 
 #########################################################
 
