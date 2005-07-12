@@ -122,22 +122,29 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value. Valid flags are 'i',
- * for case-insensitive matching, 'c', to return the coordinates
- * where the match has been found (offset and size) instead of the
- * found substring, or 'm', to treat the string as a multiline string
- * (i.e., one containing newline characters), so that ^ and $ match
- * the boundaries of each line instead of the whole string.
+ * for case-insensitive matching, or 'm', to treat the string as a
+ * multiline string (i.e., one containing newline characters), so
+ * that ^ and $ match the boundaries of each line instead of the
+ * whole string.
+ *
+ * If @r or @v are NULL, the result of the previous regex matching
+ * is returned as a two element array. The first element will contain
+ * the character offset of the matching and the second the number of
+ * characters matched.
  *
  * FIXME: Document @r as a multiple value case.
  *
- * If the regex is not matched, returns NULL. If it's matched, the
- * matched string is returned unless the 'c' flag is used; in that
- * case, a two element array is returned, with the offset as the
- * first one and the size as the second.
+ * If @r and @v are defined, the matching string is returned or NULL
+ * if no string could be matched; otherwise, the previous match
+ * coordinates are returned.
  */
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 {
 	mpdm_t w=NULL;
+
+	/* special case: return previous match */
+	if(r == NULL || v == NULL)
+		return(mpdm_hget_s(mpdm->regex, L"MATCH"));
 
 	if(r->flags & MPDM_MULTIPLE)
 	{
@@ -184,26 +191,21 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				(char *) vmb->data + offset, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
-				wchar_t * ptr=regex_flags(r);
+				wchar_t * ptr;
 
-				/* found; test if coordinates wanted */
-				if(wcschr(ptr, 'c') != NULL)
-				{
-					w=MPDM_A(2);
+				/* found; store matching */
+				w=MPDM_A(2);
 
-					mpdm_aset(w,
-						MPDM_I(offset + rm.rm_so), 0);
-					mpdm_aset(w,
-						MPDM_I(rm.rm_eo - rm.rm_so), 1);
-				}
-				else
-				{
-					/* just the found string wanted */
-					ptr=v->data;
+				mpdm_aset(w, MPDM_I(offset + rm.rm_so), 0);
+				mpdm_aset(w, MPDM_I(rm.rm_eo - rm.rm_so), 1);
 
-					w=MPDM_NS(ptr + offset + rm.rm_so,
-						rm.rm_eo - rm.rm_so);
-				}
+				mpdm_hset_s(mpdm->regex, L"MATCH", w);
+
+				/* build the found string */
+				ptr=v->data;
+
+				w=MPDM_NS(ptr + offset + rm.rm_so,
+					rm.rm_eo - rm.rm_so);
 			}
 		}
 	}
