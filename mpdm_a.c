@@ -107,6 +107,9 @@ mpdm_t mpdm_aexpand(mpdm_t a, int offset, int num)
 	if(a->flags & MPDM_NONDYN)
 		return(NULL);
 
+	/* sanity checks */
+	if(num <= 0) return(a);
+
 	/* add size */
 	a->size += num;
 
@@ -143,6 +146,9 @@ mpdm_t mpdm_acollapse(mpdm_t a, int offset, int num)
 	/* avoid collapsing non-dyn arrays */
 	if(a->flags & MPDM_NONDYN)
 		return(NULL);
+
+	/* sanity checks */
+	if(num <= 0) return(a);
 
 	/* don't try to delete beyond the limit */
 	if(offset + num > a->size)
