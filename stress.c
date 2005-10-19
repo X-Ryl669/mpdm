@@ -372,6 +372,29 @@ void test_splice(void)
 	w=mpdm_splice(MPDM_LS(L"foo"), NULL, 0, 0);
 	do_test("splice with second value NULL",
 		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"foo")) == 0));
+
+	v=MPDM_LS(L"I'm testing");
+
+	w=mpdm_splice(v, NULL, 0, -1);
+	do_test("splice with negative del (1)",
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"")) == 0));
+
+	w=mpdm_splice(v, NULL, 4, -1);
+	do_test("splice with negative del (2)",
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm ")) == 0));
+
+	w=mpdm_splice(v, NULL, 4, -2);
+	do_test("splice with negative del (3)",
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm g")) == 0));
+
+	w=mpdm_splice(v, NULL, 0, -4);
+	do_test("splice with negative del (4)",
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"ing")) == 0));
+	mpdm_dump(mpdm_aget(w, 0));
+
+	w=mpdm_splice(v, NULL, 4, -20);
+	do_test("splice with out-of-bounds negative del",
+		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm testing")) == 0));
 }
 
 

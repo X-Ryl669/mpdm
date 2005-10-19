@@ -293,10 +293,10 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
  *
  * Creates a new string value from @v, deleting @del chars at @offset
  * and substituting them by @i. If @del is 0, no deletion is done.
- * If @offset is negative, is assumed as counting from the end of @v
- * (so -1 means append at the end). If @v is NULL, @i will become the
- * new string, and both @offset and @del will be ignored. If @v is not
- * NULL and @i is, no insertion process is done (only deletion, if
+ * both @offset and @del can be negative; if this is the case, it's
+ * assumed as counting from the end of @v. If @v is NULL, @i will become
+ * the new string, and both @offset and @del will be ignored. If @v is
+ * not NULL and @i is, no insertion process is done (only deletion, if
  * applicable).
  *
  * Returns a two element array, with the new string in the first
@@ -322,6 +322,9 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 		/* never add further the end */
 		if(offset > os) offset=os;
 
+		/* negative del counts as 'characters left' */
+		if(del < 0) del=os + 1 - offset + del;
+
 		/* something to delete? */
 		if(del > 0)
 		{
@@ -331,6 +334,8 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 			/* deleted string */
 			d=MPDM_NS(((wchar_t *) v->data) + offset, del);
 		}
+		else
+			del=0;
 
 		/* something to insert? */
 		ins=mpdm_size(i);
@@ -568,6 +573,8 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 	mpdm_ref(mpdm->i18n);
 }
 
+
+int wcwidth(wchar_t);
 
 int mpdm_wcwidth(wchar_t c)
 {
