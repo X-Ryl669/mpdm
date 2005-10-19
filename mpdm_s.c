@@ -569,12 +569,16 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 }
 
 
-#ifndef CONFOPT_WCWIDTH
-
-/* borrowed from mutt */
-
-int wcwidth(wchar_t c)
+int mpdm_wcwidth(wchar_t c)
 {
+#ifdef CONFOPT_WCWIDTH
+
+	return(wcwidth(c));
+
+#else
+
+	/* borrowed from mutt */
+
 	/* sorted list of non-overlapping intervals of non-spacing characters */
 	static const struct interval {
 		unsigned short first;
@@ -653,6 +657,7 @@ int wcwidth(wchar_t c)
 	(c >= 0xfe30 && c <= 0xfe6f) || /* CJK Compatibility Forms */
 	(c >= 0xff00 && c <= 0xff5f) || /* Fullwidth Forms */
 	(c >= 0xffe0 && c <= 0xffe6));
-}
 
 #endif /* CONFOPT_WCWIDTH */
+
+}

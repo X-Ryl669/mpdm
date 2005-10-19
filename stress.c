@@ -773,8 +773,6 @@ void test_nondyn(void)
 }
 
 
-int wcwidth(wchar_t c);
-
 void test_encoding(void)
 {
 	mpdm_t f;
@@ -804,7 +802,7 @@ void test_encoding(void)
 	mpdm_close(f);
 
 	for(ptr=w->data;*ptr != L'\0';ptr++)
-		printf("%d", wcwidth(*ptr));
+		printf("%d", mpdm_wcwidth(*ptr));
 	printf("\n");
 
 	if(mpdm_encoding(MPDM_LS(L"UTF-8")) < 0)
