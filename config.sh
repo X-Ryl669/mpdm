@@ -39,6 +39,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "--with-pcre           Enable PCRE library detection."
 	echo "--without-gettext     Disable gettext usage."
 	echo "--without-iconv       Disable iconv usage."
+	echo "--without-wcwidth     Disable system wcwidth() (use workaround)."
 
 	echo
 	echo "Environment variables:"
@@ -48,7 +49,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	exit 1
 fi
 
-echo "Configuring..."
+echo "Configuring mpdm..."
 
 echo "/* automatically created by config.sh - do not modify */" > config.h
 echo "# automatically created by config.sh - do not modify" > makefile.opts
@@ -271,7 +272,7 @@ fi
 echo -n "Testing for wcwidth()... "
 
 if [ "$WITHOUT_WCWIDTH" = "1" ] ; then
-	echo "Disabled by user"
+	echo "Disabled by user (using workaround)"
 else
 	echo "#include <wchar.h>" > .tmp.c
 	echo "int main(void) { wcwidth(L'a'); return 0; }" >> .tmp.c
