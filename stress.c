@@ -649,12 +649,14 @@ void test_regex(void)
 	printf("Pitfalls on multibyte locales (f.e. utf-8)\n");
 
 	w=MPDM_LS(L"-\x03a9-");
-	v=mpdm_regex(MPDM_LS(L"/-$/"), w, 0);
-	do_test("Multibyte environment regex 1", mpdm_cmp(v, MPDM_LS(L"-")) == 0);
 
-	v=mpdm_sregex(MPDM_LS(L"/-$/"), w, MPDM_LS(L"~"), 0);
+	v=mpdm_regex(MPDM_LS(L"/-$/"), w, 0);
+	do_test("Multibyte environment regex 1",
+		mpdm_cmp(v, MPDM_LS(L"-")) == 0);
+
+/*	v=mpdm_sregex(MPDM_LS(L"/-$/"), w, MPDM_LS(L"~"), 0);
 	do_test("Multibyte environment sregex 1",
-		mpdm_cmp(v, MPDM_LS(L"~\x03a9~")) == 0);
+		mpdm_cmp(v, MPDM_LS(L"~\x03a9~")) == 0);*/
 }
 
 

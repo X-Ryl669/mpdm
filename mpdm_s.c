@@ -46,7 +46,7 @@
 	Code
 ********************/
 
-wchar_t * mpdm_mbstowcs(char * str, int * s)
+wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
@@ -59,7 +59,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s)
 	*s=n=i=0;
 
 	/* now loop cptr converting each character */
-	for(;;)
+	while(l == -1 || *s < l)
 	{
 		/* no more characters to process? */
 		if((c = str[n + i]) == '\0' && i == 0)
@@ -137,13 +137,13 @@ mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 }
 
 
-mpdm_t mpdm_new_mbstowcs(int flags, char * str)
+mpdm_t mpdm_new_mbstowcs(int flags, char * str, int l)
 /* creates a new string value from an mbs */
 {
 	wchar_t * ptr;
 	int size;
 
-	if((ptr=mpdm_mbstowcs(str, &size)) == NULL)
+	if((ptr=mpdm_mbstowcs(str, &size, l)) == NULL)
 		return(NULL);
 
 	/* it's a string */

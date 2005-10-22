@@ -97,7 +97,7 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 		cptr[n]='\0';
 
 		/* do the conversion */
-		ptr=mpdm_mbstowcs(cptr, s);
+		ptr=mpdm_mbstowcs(cptr, s, -1);
 
 		free(cptr);
 	}

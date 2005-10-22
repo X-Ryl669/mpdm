@@ -104,9 +104,9 @@ mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 mpdm_t mpdm_asplit(mpdm_t s, mpdm_t a);
 mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a);
 
-wchar_t * mpdm_mbstowcs(char * str, int * s);
+wchar_t * mpdm_mbstowcs(char * str, int * s, int l);
 mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy);
-mpdm_t mpdm_new_mbstowcs(int flags, char * str);
+mpdm_t mpdm_new_mbstowcs(int flags, char * str, int l);
 mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
@@ -163,9 +163,9 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
 #define MPDM_I(i)	mpdm_new_i((i))
 #define MPDM_R(r)	mpdm_new_r((r))
-#define MPDM_P(p)	mpdm_new(0,(void *)p,0,NULL)
-#define MPDM_MBS(s)	mpdm_new_mbstowcs(0,s)
-#define MPDM_2MBS(s)	mpdm_new_wcstombs(0,s)
+#define MPDM_P(p)	mpdm_new(0,(void *)p, 0, NULL)
+#define MPDM_MBS(s)	mpdm_new_mbstowcs(0, s, -1)
+#define MPDM_2MBS(s)	mpdm_new_wcstombs(0, s)
 
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
 #define MPDM_X2(f,b)	mpdm_xnew(f,b)
