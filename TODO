@@ -5,9 +5,11 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1075: mpdm_regex() and mpdm_sregex() are broken in UTF-8 environments,
-   as they are assuming that the matching information returned by regexec()
+ * 1078: mpdm_sregex() is broken in UTF-8 environments,
+   as it's assuming that the matching information returned by regexec()
    (in byte count) can be directly used as wchar_t offsets.
+ * 1079: Previous match information for regexes contain wrong
+   values if the string to be matched is multibyte.
 
 Open Bugs
 ---------
@@ -167,5 +169,9 @@ Closed
    mpdm_regex() and mpdm_sregex() abort (Sat, 22 Oct 2005 13:59:12 +0200).
  * 1077: mpdm_mbstowcs() should return "" instead of NULL when converting
    an empty string (Sat, 22 Oct 2005 18:00:50 +0200).
+ * 1075: mpdm_regex() is broken in UTF-8 environments,
+   as it's assuming that the matching information returned by regexec()
+   (in byte count) can be directly used as wchar_t offsets
+   (Sat, 22 Oct 2005 18:12:20 +0200).
 
 Email bugs to angel@triptico.com

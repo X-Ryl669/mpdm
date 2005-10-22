@@ -184,15 +184,15 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			mpdm_t vmb;
 
 			/* convert to mbs */
-			if((vmb=MPDM_2MBS(v->data)) == NULL)
+			if((vmb=MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
 				return(NULL);
 
 			/* match? */
 			if(regexec((regex_t *) cr->data,
-				(char *) vmb->data + offset, 1,
+				(char *) vmb->data, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
-				wchar_t * ptr;
+				char * ptr;
 
 				/* found; store matching */
 				w=MPDM_A(2);
@@ -203,10 +203,9 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				mpdm_hset_s(mpdm->regex, L"MATCH", w);
 
 				/* build the found string */
-				ptr=v->data;
-
-				w=MPDM_NS(ptr + offset + rm.rm_so,
-					rm.rm_eo - rm.rm_so);
+				ptr=vmb->data;
+				ptr[rm.rm_eo] = '\0';
+				w=MPDM_MBS(ptr + rm.rm_so);
 			}
 		}
 	}
