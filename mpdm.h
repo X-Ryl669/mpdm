@@ -105,6 +105,7 @@ mpdm_t mpdm_asplit(mpdm_t s, mpdm_t a);
 mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a);
 
 wchar_t * mpdm_mbstowcs(char * str, int * s, int l);
+char * mpdm_wcstombs(wchar_t * str, int * s);
 mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy);
 mpdm_t mpdm_new_mbstowcs(int flags, char * str, int l);
 mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str);
