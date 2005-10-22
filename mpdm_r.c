@@ -141,15 +141,18 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 {
 	mpdm_t w=NULL;
+	mpdm_t t;
 
 	/* special case: return previous match */
 	if(r == NULL || v == NULL)
-		return(mpdm_hget_s(mpdm->regex, L"MATCH"));
+	{
+		/* FIXME */
+		return(NULL);
+	}
 
 	if(r->flags & MPDM_MULTIPLE)
 	{
 		int n;
-		mpdm_t t;
 
 		/* multiple value; try sequentially all regexes,
 		   moving the offset forward */
@@ -181,31 +184,18 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		/* compile the regex */
 		if((cr=mpdm_regcomp(r)) != NULL)
 		{
-			mpdm_t vmb;
+			char * ptr;
 
 			/* convert to mbs */
-			if((vmb=MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
+			if((t=MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
 				return(NULL);
 
+			ptr=t->data;
+
 			/* match? */
-			if(regexec((regex_t *) cr->data,
-				(char *) vmb->data, 1,
+			if(regexec((regex_t *) cr->data, ptr, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
-			{
-				char * ptr;
-
-				/* found; store matching */
-				w=MPDM_A(2);
-
-				mpdm_aset(w, MPDM_I(offset + rm.rm_so), 0);
-				mpdm_aset(w, MPDM_I(rm.rm_eo - rm.rm_so), 1);
-
-				mpdm_hset_s(mpdm->regex, L"MATCH", w);
-
-				/* build the found string */
-				ptr=vmb->data;
 				w=MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
-			}
 		}
 	}
 
