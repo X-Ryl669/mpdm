@@ -645,6 +645,14 @@ void test_regex(void)
 
 	v=mpdm_regex(MPDM_LS(L"/is$/m"), w, 0);
 	do_test("Multiline regex 3", mpdm_cmp(v, MPDM_LS(L"is")) == 0);
+
+	printf("The following tests can fail in multibyte locales (f.e. utf-8)\n");
+
+	w=MPDM_LS(L"[\x03a9]");
+	mpdm_dump(w);
+	v=mpdm_regex(MPDM_LS(L"/]$/"), w, 0);
+	do_test("Multibyte environment regex 1", mpdm_cmp(v, MPDM_LS(L"]")) == 0);
+
 }
 
 
