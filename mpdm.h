@@ -165,6 +165,7 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 #define MPDM_R(r)	mpdm_new_r((r))
 #define MPDM_P(p)	mpdm_new(0,(void *)p, 0, NULL)
 #define MPDM_MBS(s)	mpdm_new_mbstowcs(0, s, -1)
+#define MPDM_NMBS(s,n)	mpdm_new_mbstowcs(0, s, n)
 #define MPDM_2MBS(s)	mpdm_new_wcstombs(0, s)
 
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
