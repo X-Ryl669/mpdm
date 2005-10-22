@@ -58,8 +58,11 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	/* zero everything */
 	*s=n=i=0;
 
-	/* now loop cptr converting each character */
-	while(l == -1 || *s < l)
+	/* create a duplicate and optionally limit */
+	str=strdup(str);
+	if(l >= 0) str[l] = '\0';
+
+	for(;;)
 	{
 		/* no more characters to process? */
 		if((c = str[n + i]) == '\0' && i == 0)
@@ -94,6 +97,9 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	}
 
 	ptr[*s]=L'\0';
+
+	/* free the duplicate */
+	free(str);
 
 	return(ptr);
 }
