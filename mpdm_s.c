@@ -50,7 +50,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
-	wchar_t * ptr=NULL;
+	wchar_t * ptr=malloc(sizeof(wchar_t));
 	char tmp[MB_CUR_MAX + 1];
 	wchar_t wc;
 	int n, i, c;
@@ -93,8 +93,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s)
 		ptr[(*s)++]=wc;
 	}
 
-	if(ptr != NULL)
-		ptr[*s]=L'\0';
+	ptr[*s]=L'\0';
 
 	return(ptr);
 }
