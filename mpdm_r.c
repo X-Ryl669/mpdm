@@ -204,8 +204,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 				/* build the found string */
 				ptr=vmb->data;
-				ptr[rm.rm_eo] = '\0';
-				w=MPDM_MBS(ptr + rm.rm_so);
+				w=MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
 			}
 		}
 	}
