@@ -290,22 +290,24 @@ void test_hash(void)
 	for(n=0;n < 100;n++)
 	{
 		v=mpdm_hget(h, MPDM_I(n));
-		do_test("hash: hget", (v != NULL));
 
 		if(v != NULL)
 		{
 			i=mpdm_ival(v);
-			do_test("hash: ival", (i == n * 10));
+			if(!(i == n * 10))
+				do_test("hash: ival", (i == n * 10));
 		}
+		else
+			do_test("hash: hget", (v != NULL));
 	}
 
 	printf("h's size: %d\n", mpdm_hsize(h));
-
+/*
 	mpdm_dump(h);
 
 	v=mpdm_hkeys(h);
 	mpdm_dump(v);
-
+*/
 	/* use of non-strings as hashes */
 	h=MPDM_H(0);
 
