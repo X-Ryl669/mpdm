@@ -198,14 +198,7 @@ mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 	char * ptr;
 	int size;
 
-	/* calculate needed space */
-	size=wcstombs(NULL, str, 0);
-
-	if(size == -1 || (ptr=malloc(size + 1)) == NULL)
-		return(NULL);
-
-	wcstombs(ptr, str, size);
-	ptr[size]='\0';
+	ptr=mpdm_wcstombs(str, &size);
 
 	flags |= MPDM_FREE;
 
