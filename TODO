@@ -163,5 +163,7 @@ Closed
  * 1073: Add a wcwidth() implementation for systems lacking it (for
    example, mingw32) (Mon, 11 Jul 2005 07:55:31 +0200).
  * 1074: Add multiline regex strings (Mon, 11 Jul 2005 15:57:06 +0200).
+ * 1076: If the string to be matched cannot be converted to mbs, both
+   mpdm_regex() and mpdm_sregex() abort (Sat, 22 Oct 2005 13:59:12 +0200).
 
 Email bugs to angel@triptico.com

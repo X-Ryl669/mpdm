@@ -184,7 +184,8 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			mpdm_t vmb;
 
 			/* convert to mbs */
-			vmb=MPDM_2MBS(v->data);
+			if((vmb=MPDM_2MBS(v->data)) == NULL)
+				return(NULL);
 
 			/* match? */
 			if(regexec((regex_t *) cr->data,
@@ -272,7 +273,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				woffset += mpdm_size(s);
 			}
 
-		} while(f && global);
+		} while(t && f && global);
 	}
 
 	return(v);
