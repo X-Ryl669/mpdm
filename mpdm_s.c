@@ -105,6 +105,39 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 }
 
 
+char * mpdm_wcstombs(wchar_t * str, int * s)
+/* converts a wcs to an mbs, but filling invalid chars
+   with question marks instead of just failing */
+{
+	char * ptr=malloc(1);
+	char tmp[MB_CUR_MAX + 1];
+	int l, n;
+
+	*s = 0;
+
+	while(*str)
+	{
+		if((l = wctomb(tmp, *str)) <= 0)
+		{
+			/* if char couldn't be converted,
+			   write a question mark instead */
+			l=wctomb(tmp, L'?');
+		}
+
+		if((ptr = realloc(ptr, *s + l + 1)) == NULL)
+			return(NULL);
+
+		for(n = 0;n < l;n++, (*s)++)
+			ptr[*s] = tmp[n];
+
+		str++;
+	}
+
+	ptr[*s] = '\0';
+	return(ptr);
+}
+
+
 mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
