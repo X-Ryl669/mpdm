@@ -8,6 +8,8 @@ Release Critical Bugs
  * 1075: mpdm_regex() and mpdm_sregex() are broken in UTF-8 environments,
    as they are assuming that the matching information returned by regexec()
    (in byte count) can be directly used as wchar_t offsets.
+ * 1077: mpdm_mbstowcs() should return "" instead of NULL when converting
+   an empty string.
 
 Open Bugs
 ---------
