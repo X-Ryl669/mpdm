@@ -107,25 +107,17 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 
 
 void mpdm_write_wcs(FILE * f, wchar_t * str)
-/* writes a wide string to a stream, converting */
+/* writes a wide string to a stream */
 {
-	char tmp[MB_CUR_MAX + 1];
-	int l,n;
+	int s, n;
+	char * ptr;
 
-	while(*str != L'\0')
-	{
-		if((l=wctomb(tmp, *str)) <= 0)
-		{
-			/* if char couldn't be converted,
-			   write a question mark instead */
-			l=wctomb(tmp, L'?');
-		}
+	ptr=mpdm_wcstombs(str, &s);
 
-		for(n=0;n < l;n++)
-			fputc(tmp[n], f);
+	for(n = 0;n < s;n++)
+		fputc(ptr[n], f);
 
-		str++;
-	}
+	free(ptr);
 }
 
 
