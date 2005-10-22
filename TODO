@@ -5,9 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1078: mpdm_sregex() is broken in UTF-8 environments,
-   as it's assuming that the matching information returned by regexec()
-   (in byte count) can be directly used as wchar_t offsets.
  * 1079: Previous match information for regexes contain wrong
    values if the string to be matched is multibyte.
 
@@ -173,5 +170,9 @@ Closed
    as it's assuming that the matching information returned by regexec()
    (in byte count) can be directly used as wchar_t offsets
    (Sat, 22 Oct 2005 18:12:20 +0200).
+ * 1078: mpdm_sregex() is broken in UTF-8 environments,
+   as it's assuming that the matching information returned by regexec()
+   (in byte count) can be directly used as wchar_t offsets
+   (Sat, 22 Oct 2005 22:50:51 +0200).
 
 Email bugs to angel@triptico.com
