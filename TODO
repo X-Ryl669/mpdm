@@ -7,6 +7,9 @@ Release Critical Bugs
  * 1056: Fill the overview document.
  * 1079: Previous match information for regexes contain wrong
    values if the string to be matched is multibyte.
+ * 1080: Related to #1079, multiline regexes don't work in
+   multibyte locales, as it's also relying on rm containing
+   offsets in characters.
 
 Open Bugs
 ---------
