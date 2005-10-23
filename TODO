@@ -5,8 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1079: Previous match information for regexes contain wrong
-   values if the string to be matched is multibyte.
  * 1080: Related to #1079, multiline regexes don't work in
    multibyte locales, as it's also relying on rm containing
    offsets in characters.
@@ -177,5 +175,8 @@ Closed
    as it's assuming that the matching information returned by regexec()
    (in byte count) can be directly used as wchar_t offsets
    (Sat, 22 Oct 2005 22:50:51 +0200).
+ * 1079: Previous match information for regexes contain wrong
+   values if the string to be matched is multibyte
+   (Sun, 23 Oct 2005 21:21:43 +0200).
 
 Email bugs to angel@triptico.com
