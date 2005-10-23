@@ -49,7 +49,6 @@
 ********************/
 
 /* matching of the last regex */
-static regmatch_t rm;
 
 static int last_match_offset=0;
 static int last_match_size=0;
@@ -179,7 +178,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 			/* found; store and move forward */
 			mpdm_aset(w, t, n);
-			offset += rm.rm_eo;
+			offset = last_match_offset + last_match_size;
 		}
 	}
 	else
@@ -191,6 +190,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		/* compile the regex */
 		if((cr=mpdm_regcomp(r)) != NULL)
 		{
+			regmatch_t rm;
 			char * ptr;
 
 			/* convert to mbs */
@@ -263,6 +263,8 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 		do
 		{
+			regmatch_t rm;
+
 			/* try match */
 			f=!regexec((regex_t *) cr->data, ptr,
 				1, &rm, offset > 0 ? REG_NOTBOL : 0);
