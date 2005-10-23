@@ -51,6 +51,9 @@
 /* matching of the last regex */
 static regmatch_t rm;
 
+static int last_match_offset=0;
+static int last_match_size=0;
+
 /*******************
 	Code
 ********************/
@@ -146,8 +149,12 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 	/* special case: return previous match */
 	if(r == NULL || v == NULL)
 	{
-		/* FIXME */
-		return(NULL);
+		w = MPDM_A(2);
+
+		mpdm_aset(w, MPDM_I(last_match_offset), 0);
+		mpdm_aset(w, MPDM_I(last_match_size), 1);
+
+		return(w);
 	}
 
 	if(r->flags & MPDM_MULTIPLE)
@@ -195,7 +202,18 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			/* match? */
 			if(regexec((regex_t *) cr->data, ptr, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
+			{
+				/* create a string with the start, just
+				   to get the size */
+				w=MPDM_NMBS(ptr, rm.rm_so);
+				last_match_offset = offset + mpdm_size(w);
+
+				/* create now the matching string */
 				w=MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
+
+				/* and store the size */
+				last_match_size = mpdm_size(w);
+			}
 		}
 	}
 
