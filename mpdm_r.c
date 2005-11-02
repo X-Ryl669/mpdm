@@ -50,8 +50,8 @@
 
 /* matching of the last regex */
 
-static int last_match_offset=0;
-static int last_match_size=0;
+int mpdm_regex_offset=0;
+int mpdm_regex_size=0;
 
 /*******************
 	Code
@@ -150,8 +150,8 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 	{
 		w = MPDM_A(2);
 
-		mpdm_aset(w, MPDM_I(last_match_offset), 0);
-		mpdm_aset(w, MPDM_I(last_match_size), 1);
+		mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
+		mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
 
 		return(w);
 	}
@@ -178,7 +178,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 			/* found; store and move forward */
 			mpdm_aset(w, t, n);
-			offset = last_match_offset + last_match_size;
+			offset = mpdm_regex_offset + mpdm_regex_size;
 		}
 	}
 	else
@@ -206,13 +206,13 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				/* create a string with the start, just
 				   to get the size */
 				w=MPDM_NMBS(ptr, rm.rm_so);
-				last_match_offset = offset + mpdm_size(w);
+				mpdm_regex_offset = offset + mpdm_size(w);
 
 				/* create now the matching string */
 				w=MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
 
 				/* and store the size */
-				last_match_size = mpdm_size(w);
+				mpdm_regex_size = mpdm_size(w);
 			}
 		}
 	}
