@@ -148,6 +148,9 @@ int mpdm_encoding(mpdm_t charset);
 int mpdm_unlink(mpdm_t filename);
 mpdm_t mpdm_glob(mpdm_t spec);
 
+extern int mpdm_regex_offset;
+extern int mpdm_regex_size;
+
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset);
 mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset);
 
