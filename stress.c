@@ -149,6 +149,12 @@ void test_basic(void)
 	v=MPDM_R(0.000);
 	mpdm_dump(v);
 	do_test("mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
+
+	v=MPDM_LS(L"0177");
+	do_test("mpdm_ival() for octal numbers", mpdm_ival(v) == 0x7f);
+
+	v=MPDM_LS(L"0xFF");
+	do_test("mpdm_ival() for hexadecimal numbers", mpdm_ival(v) == 255);
 }
 
 mpdm_t asort_cb(mpdm_t args)
