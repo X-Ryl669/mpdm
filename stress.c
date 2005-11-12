@@ -155,6 +155,12 @@ void test_basic(void)
 
 	v=MPDM_LS(L"0xFF");
 	do_test("mpdm_ival() for hexadecimal numbers", mpdm_ival(v) == 255);
+
+	v=MPDM_LS(L"001");
+	do_test("mpdm_rval() for octal numbers", mpdm_rval(v) == 1.0);
+
+	v=MPDM_LS(L"0x7f");
+	do_test("mpdm_rval() for hexadecimal numbers", mpdm_ival(v) == 127.0);
 }
 
 mpdm_t asort_cb(mpdm_t args)
