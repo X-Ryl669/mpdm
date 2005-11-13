@@ -574,9 +574,15 @@ void test_regex(void)
 
 	mpdm_dump(v);
 
-	v=mpdm_regex(MPDM_LS(L"/regex/i"), MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
-	do_test("regex 6", v != NULL);
+	v=mpdm_regex(MPDM_LS(L"/regex/"), MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
+	do_test("regex 6.1 (case sensitive)", v == NULL);
 
+	v=mpdm_regex(MPDM_LS(L"/regex/i"), MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
+	do_test("regex 6.2 (case insensitive)", v != NULL);
+/*
+	v=mpdm_regex(MPDM_LS(L"/[A-Z]+/"), MPDM_LS(L"case SENSITIVE regex"), 0);
+	do_test("regex 6.3 (case sensitive)", mpdm_cmp(v, MPDM_LS(L"SENSITIVE")) == 0);
+*/
 	v=mpdm_regex(MPDM_LS(L"/^\\s*/"), MPDM_LS(L"123456"), 0);
 	do_test("regex 7", v != NULL);
 
