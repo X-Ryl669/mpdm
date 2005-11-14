@@ -123,8 +123,7 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 	if((*s = wcstombs(NULL, str, 0)) != -1)
 	{
 		/* direct conversion is possible; do it and return */
-		(*s)++;
-		ptr = malloc(*s);
+		ptr = malloc(*s + 1);
 		wcstombs(ptr, str, *s);
 		ptr[*s] = '\0';
 
