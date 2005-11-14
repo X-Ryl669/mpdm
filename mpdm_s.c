@@ -53,7 +53,10 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	wchar_t * ptr=malloc(sizeof(wchar_t));
 	char tmp[MB_CUR_MAX + 1];
 	wchar_t wc;
-	int n, i, c;
+	int n, i, c, t;
+
+	/* allow NULL values for s */
+	if(s == NULL) s = &t;
 
 	/* zero everything */
 	*s=n=i=0;
@@ -111,7 +114,10 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 {
 	char * ptr=malloc(1);
 	char tmp[MB_CUR_MAX + 1];
-	int l, n;
+	int l, n, t;
+
+	/* allow NULL values for s */
+	if(s == NULL) s = &t;
 
 	*s = 0;
 
