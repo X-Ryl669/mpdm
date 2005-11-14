@@ -112,13 +112,27 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
-	char * ptr=malloc(1);
+	char * ptr;
 	char tmp[MB_CUR_MAX + 1];
 	int l, n, t;
 
 	/* allow NULL values for s */
 	if(s == NULL) s = &t;
 
+	/* try first a direct conversion with wcstombs */
+	if((*s = wcstombs(NULL, str, 0)) != -1)
+	{
+		/* direct conversion is possible; do it and return */
+		(*s)++;
+		ptr = malloc(*s);
+		wcstombs(ptr, str, *s);
+		ptr[*s] = '\0';
+
+		return(ptr);
+	}
+
+	/* invalid encoding? convert characters one by one */
+	ptr = malloc(1);
 	*s = 0;
 
 	while(*str)
