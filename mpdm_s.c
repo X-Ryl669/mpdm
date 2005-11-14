@@ -461,10 +461,23 @@ int mpdm_ival(mpdm_t v)
 		if(v->flags & MPDM_STRING)
 		{
 			char tmp[32];
+			char * fmt = "%i";
 
 			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
 			tmp[sizeof(tmp) - 1]='\0';
-			sscanf(tmp, "%i", &i);
+
+			/* workaround for mingw32: as it doesn't
+			   correctly parse octal and hexadecimal
+			   numbers, they are tried as special cases */
+			if(tmp[0] == '0')
+			{
+				if(tmp[1] == 'x' || tmp[1] == 'X')
+					fmt = "%x";
+				else
+					fmt = "%o";
+			}
+
+			sscanf(tmp, fmt, &i);
 		}
 
 		v->ival=i;
