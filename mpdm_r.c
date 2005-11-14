@@ -194,19 +194,19 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			char * ptr;
 
 			/* convert to mbs */
-			if((t=MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
-				return(NULL);
-
-			ptr=t->data;
+			ptr = mpdm_wcstombs((wchar_t *)v->data + offset, NULL);
 
 			/* match? */
 			if(regexec((regex_t *) cr->data, ptr, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
-				/* create a string with the start, just
-				   to get the size */
-				w=MPDM_NMBS(ptr, rm.rm_so);
-				mpdm_regex_offset = offset + mpdm_size(w);
+				/* converts to mbs the string from the beginning
+				   to the start of the match, just to know
+				   the size (and immediately frees it) */
+				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
+
+				/* adds the offset */
+				mpdm_regex_offset += offset;
 
 				/* create now the matching string */
 				w=MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
@@ -214,6 +214,8 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				/* and store the size */
 				mpdm_regex_size = mpdm_size(w);
 			}
+
+			free(ptr);
 		}
 	}
 
