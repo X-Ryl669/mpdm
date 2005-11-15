@@ -52,7 +52,7 @@ void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
 	if(org != NULL && osize)
 	{
 		/* makes room for the new string */
-		dst = realloc(dst, (*dsize + osize) * esize);
+		dst = realloc(dst, (*dsize + osize + 1) * esize);
 
 		/* copies it */
 		memcpy(dst + (*dsize * esize), org, (osize + 1) * esize);
@@ -60,6 +60,17 @@ void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
 		/* adds to final size */
 		*dsize += osize;
 	}
+
+	return(dst);
+}
+
+
+wchar_t * mpdm_pokev(wchar_t * dst, int * dsize, mpdm_t v)
+/* adds the string in v to dst */
+{
+	if(v != NULL)
+		dst = mpdm_poke(dst, dsize, v->data,
+			mpdm_size(v), sizeof(wchar_t));
 
 	return(dst);
 }
@@ -479,12 +490,13 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
  */
 mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 {
-	mpdm_t v;
+	wchar_t * ptr = NULL;
+	int s = 0;
 
-	v=mpdm_splice(s1, s2, -1, 0);
-	v=mpdm_aget(v, 0);
+	ptr = mpdm_pokev(ptr, &s, s1);
+	ptr = mpdm_pokev(ptr, &s, s2);
 
-	return(v);
+	return(mpdm_new(MPDM_STRING|MPDM_FREE, ptr, s));
 }
 
 
