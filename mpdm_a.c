@@ -532,21 +532,21 @@ mpdm_t mpdm_asplit(mpdm_t s, mpdm_t v)
  */
 mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a)
 {
-	mpdm_t v;
 	int n;
+	wchar_t * ptr = NULL;
+	int l = 0;
 
-	/* unoptimized, but intelligible join */
-	v=mpdm_aget(a, 0);
+	/* adds the first string */
+	ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
 
 	for(n=1;n < mpdm_size(a);n++)
 	{
 		/* add separator */
-		if(s != NULL)
-			v=mpdm_strcat(v, s);
+		ptr = mpdm_pokev(ptr, &l, s);
 
 		/* add element */
-		v=mpdm_strcat(v, mpdm_aget(a, n));
+		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
 	}
 
-	return(v);
+	return(mpdm_new(MPDM_STRING|MPDM_FREE, ptr, l));
 }
