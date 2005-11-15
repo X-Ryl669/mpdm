@@ -46,6 +46,25 @@
 	Code
 ********************/
 
+void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
+/* pokes (adds) org into dst, which is a dynamic string, making it grow */
+{
+	if(org != NULL && osize)
+	{
+		/* makes room for the new string */
+		dst = realloc(dst, (*dsize + osize) * esize);
+
+		/* copies it */
+		memcpy(dst + (*dsize * esize), org, (osize + 1) * esize);
+
+		/* adds to final size */
+		*dsize += osize;
+	}
+
+	return(dst);
+}
+
+
 wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
