@@ -6,6 +6,7 @@ Release Critical Bugs
 
  * 1056: Fill the overview document.
  * 1081: Document all the MPDM_ macros.
+ * 1082: Add categories to mp_doccer documentation.
 
 Open Bugs
 ---------
