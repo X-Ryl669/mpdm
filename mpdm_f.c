@@ -75,17 +75,17 @@ struct mpdm_file
 wchar_t * mpdm_read_mbs(FILE * f, int * s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
-	wchar_t * ptr=NULL;
-	char * cptr=NULL;
-	int c, n=0;
+	wchar_t * ptr = NULL;
+	char * cptr = NULL;
+	char tmp[2];
+	int c, n = 0;
+
+	tmp[1] = '\0';
 
 	while((c = fgetc(f)) != EOF)
 	{
-		/* alloc space */
-		if((cptr=realloc(cptr, n + 2)) == NULL)
-			break;
-
-		cptr[n++]=c;
+		tmp[0] = c;
+		cptr = mpdm_poke(cptr, &n, tmp, 1, sizeof(char));
 
 		/* if it's an end of line, finish */
 		if(c == '\n')
@@ -94,8 +94,6 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 
 	if(cptr != NULL)
 	{
-		cptr[n]='\0';
-
 		/* do the conversion */
 		ptr=mpdm_mbstowcs(cptr, s, -1);
 
