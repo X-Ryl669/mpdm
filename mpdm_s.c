@@ -80,16 +80,16 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
-	wchar_t * ptr;
+	wchar_t * ptr = NULL;
 	char tmp[MB_CUR_MAX + 1];
-	wchar_t wc;
+	wchar_t wc[2];
 	int n, i, c, t;
 
 	/* allow NULL values for s */
 	if(s == NULL) s = &t;
 
 	/* create a duplicate and optionally limit */
-	str=strdup(str);
+	str = strdup(str);
 	if(l >= 0) str[l] = '\0';
 
 	/* try first a direct conversion with mbstowcs */
@@ -106,8 +106,8 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	}
 
 	/* zero everything */
-	*s=n=i=0;
-	ptr=malloc(sizeof(wchar_t));
+	*s = n = i = 0;
+	wc[1] = L'\0';
 
 	for(;;)
 	{
@@ -118,7 +118,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 		tmp[i++]=c; tmp[i]='\0';
 
 		/* try to convert */
-		if(mbstowcs(&wc, tmp, 1) == -1)
+		if(mbstowcs(wc, tmp, 1) == -1)
 		{
 			/* can still be an incomplete multibyte char? */
 			if(c != '\0' && i <= MB_CUR_MAX)
@@ -126,24 +126,18 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 			else
 			{
 				/* too many failing bytes; skip 1 byte */
-				wc=L'?';
-				i=1;
+				wc[0] = L'?';
+				i = 1;
 			}
 		}
 
 		/* skip used bytes and back again */
 		n += i;
-		i=0;
-
-		/* alloc space */
-		if((ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t))) == NULL)
-			return(NULL);
+		i = 0;
 
 		/* store new char */
-		ptr[(*s)++]=wc;
+		ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t));
 	}
-
-	ptr[*s]=L'\0';
 
 	/* free the duplicate */
 	free(str);
