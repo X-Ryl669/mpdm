@@ -395,3 +395,23 @@ int mpdm_startup(void)
 void mpdm_shutdown(void)
 {
 }
+
+/**
+ * MPDM_A - Creates an array value
+ * @n: Number of elements
+ *
+ * Creates a new array value with @n elements.
+ */
+/** mpdm_t MPDM_A(int n) */
+/* ; */
+
+/**
+ * MPDM_H - Creates a hash value
+ * @n: Number of buckets in the hash (0: use default)
+ *
+ * Creates a new hash value with @n buckets. The number
+ * of buckets must be a prime number. If @n is 0, an
+ * optimal number of buckets will be used.
+ */
+/** mpdm_t MPDM_H(int n) */
+/* ; */
