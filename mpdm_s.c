@@ -115,7 +115,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 		if((c = str[n + i]) == '\0' && i == 0)
 			break;
 
-		tmp[i++]=c; tmp[i]='\0';
+		tmp[i++] = c; tmp[i] = '\0';
 
 		/* try to convert */
 		if(mbstowcs(wc, tmp, 1) == -1)
@@ -150,7 +150,7 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
-	char * ptr;
+	char * ptr = NULL;
 	char tmp[MB_CUR_MAX + 1];
 	int l, n, t;
 
@@ -169,7 +169,6 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 	}
 
 	/* invalid encoding? convert characters one by one */
-	ptr = malloc(1);
 	*s = 0;
 
 	while(*str)
@@ -178,19 +177,15 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 		{
 			/* if char couldn't be converted,
 			   write a question mark instead */
-			l=wctomb(tmp, L'?');
+			l = wctomb(tmp, L'?');
 		}
 
-		if((ptr = realloc(ptr, *s + l + 1)) == NULL)
-			return(NULL);
-
-		for(n = 0;n < l;n++, (*s)++)
-			ptr[*s] = tmp[n];
+		tmp[l] = '\0';
+		ptr = mpdm_poke(ptr, s, tmp, l, 1);
 
 		str++;
 	}
 
-	ptr[*s] = '\0';
 	return(ptr);
 }
 
