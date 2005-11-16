@@ -124,31 +124,32 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 extern int errno;
 
 wchar_t * mpdm_read_dec(FILE * f, iconv_t ic, int * s)
-/* reads a multibyte string from a stream into a dynamic string, using dec as decoder */
+/* reads a multibyte string from a stream into a dynamic string */
 {
 	char tmp[128];
-	wchar_t * ptr=NULL;
+	wchar_t * ptr = NULL;
 	int c, i;
+	wchar_t wc[2];
 
-	*s=i=0;
+	*s = i = 0;
+	wc[1] = L'\0';
 
 	/* resets the decoder */
 	iconv(ic, NULL, NULL, NULL, NULL);
 
 	while((c = fgetc(f)) != EOF)
 	{
-		wchar_t wc;
 		size_t il, ol;
 		char * iptr, * optr;
 
-		tmp[i++]=c;
+		tmp[i++] = c;
 
 		/* too big? shouldn't happen */
 		if(i == sizeof(tmp))
 			break;
 
-		il=i; iptr=tmp;
-		ol=sizeof(wchar_t); optr=(char *)&wc;
+		il = i; iptr = tmp;
+		ol = sizeof(wchar_t); optr = (char *)wc;
 
 		/* write to file */
 		if(iconv(ic, &iptr, &il, &optr, &ol) == -1)
@@ -158,20 +159,15 @@ wchar_t * mpdm_read_dec(FILE * f, iconv_t ic, int * s)
 				continue;
 
 			/* otherwise, return '?' */
-			wc=L'?';
+			wc[0] = L'?';
 		}
 
-		i=0;
+		i = 0;
 
-		/* alloc space */
-		ptr=realloc(ptr, (*s + 2) * sizeof(wchar_t));
-
-		/* store new char and null-terminate */
-		ptr[*s]=wc; ptr[*s + 1]=L'\0';
-		(*s)++;
+		ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t));
 
 		/* if it's an end of line, finish */
-		if(wc == L'\n')
+		if(wc[0] == L'\n')
 			break;
 	}
 
