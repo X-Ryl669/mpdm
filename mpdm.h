@@ -166,6 +166,7 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 #define MPDM_LS(s)	mpdm_new_wcs(0, s, -1, 0)
 #define MPDM_S(s)	mpdm_new_wcs(0, s, -1, 1)
 #define MPDM_NS(s,n)	mpdm_new_wcs(0, s, n, 1)
+#define MPDM_ENS(s,n)	mpdm_new(MPDM_STRING|MPDM_FREE, s, n)
 
 #define MPDM_I(i)	mpdm_new_i((i))
 #define MPDM_R(r)	mpdm_new_r((r))

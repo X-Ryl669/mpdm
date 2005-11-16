@@ -485,7 +485,7 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 	ptr = mpdm_pokev(ptr, &s, s1);
 	ptr = mpdm_pokev(ptr, &s, s2);
 
-	return(mpdm_new(MPDM_STRING|MPDM_FREE, ptr, s));
+	return(MPDM_ENS(ptr, s));
 }
 
 

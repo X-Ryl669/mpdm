@@ -548,5 +548,5 @@ mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a)
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
 	}
 
-	return(mpdm_new(MPDM_STRING|MPDM_FREE, ptr, l));
+	return(MPDM_ENS(ptr, l));
 }
