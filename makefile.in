@@ -31,19 +31,22 @@ $(LIB): $(OBJS)
 stress: stress.c $(LIB)
 	$(CC) $(CFLAGS) `cat config.ldflags` stress.c -L. -lmpdm -o $@
 
-clean:
-	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
-
-realclean: clean
-	rm -f y.tab.c y.tab.h lex.yy.c
-
-distclean: realclean
-	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
-
 docs:
 	mkdir -p doc
+	-mp_doccer mpdm_*.c -o doc/mpdm_ref -f html1 \
+	-t "Minimum Profit Data Manager API ($(VERSION))" \
+	-a 'Angel Ortega - <em>angel@triptico.com</em>'
 
-dist: distclean ChangeLog y.tab.c y.tab.h lex.yy.c
+docsclean:
+	rm -f doc/mpdm_ref.html
+
+clean: docsclean
+	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
+
+distclean: clean
+	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
+
+dist: distclean ChangeLog
 	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
 	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=CVS $(PROJ)-$(VERSION)/* ; \
 	rm $(PROJ)-$(VERSION)
