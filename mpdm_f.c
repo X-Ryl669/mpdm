@@ -322,7 +322,7 @@ mpdm_t mpdm_read(mpdm_t fd)
 		ptr=mpdm_read_mbs(fs->fd, &s);
 
 	if(ptr != NULL)
-		v=mpdm_new(MPDM_STRING|MPDM_FREE, ptr, s);
+		v=MPDM_ENS(ptr, s);
 
 	return(v);
 }
