@@ -40,13 +40,13 @@ docs:
 docsclean:
 	rm -f doc/mpdm_ref.html
 
-clean: docsclean
+clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
 
-distclean: clean
+distclean: clean docsclean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
-dist: distclean ChangeLog
+dist: distclean ChangeLog docs
 	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
 	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=CVS $(PROJ)-$(VERSION)/* ; \
 	rm $(PROJ)-$(VERSION)
