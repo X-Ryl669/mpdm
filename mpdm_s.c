@@ -152,7 +152,7 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 {
 	char * ptr = NULL;
 	char tmp[MB_CUR_MAX + 1];
-	int l, n, t;
+	int l, t;
 
 	/* allow NULL values for s */
 	if(s == NULL) s = &t;
