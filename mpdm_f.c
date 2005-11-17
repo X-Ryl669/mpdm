@@ -303,6 +303,7 @@ mpdm_t mpdm_close(mpdm_t fd)
  *
  * Reads a line from @fd. Returns the line, or NULL on EOF.
  * [File Functions]
+ * [Character Set Conversion]
  */
 mpdm_t mpdm_read(mpdm_t fd)
 {
@@ -338,6 +339,7 @@ mpdm_t mpdm_read(mpdm_t fd)
  *
  * Writes the @v string value into @fd, using the current encoding.
  * [File Functions]
+ * [Character Set Conversion]
  */
 int mpdm_write(mpdm_t fd, mpdm_t v)
 {
@@ -385,6 +387,7 @@ int mpdm_bwrite(mpdm_tfd, mpdm_t v, int size)
  * Returns a negative number if @charset is unsupported, or zero
  * if no errors were found.
  * [File Functions]
+ * [Character Set Conversion]
  */
 int mpdm_encoding(mpdm_t charset)
 {
