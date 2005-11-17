@@ -97,7 +97,7 @@ mpdm_t mpdm_aclone(mpdm_t v)
  *
  * Expands an array value, inserting @num elements (initialized
  * to NULL) at the specified @offset.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_aexpand(mpdm_t a, int offset, int num)
 {
@@ -138,7 +138,7 @@ mpdm_t mpdm_aexpand(mpdm_t a, int offset, int num)
  *
  * Collapses an array value, deleting @num elements at
  * the specified @offset.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_acollapse(mpdm_t a, int offset, int num)
 {
@@ -184,7 +184,7 @@ mpdm_t mpdm_acollapse(mpdm_t a, int offset, int num)
  *
  * Sets the element of the array @a at @offset to be the @e value.
  * Returns the previous element.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 {
@@ -229,7 +229,7 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
  * @offset: the subscript of the element
  *
  * Returns the element at @offset of the array @a.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_aget(mpdm_t a, int offset)
 {
@@ -255,7 +255,7 @@ mpdm_t mpdm_aget(mpdm_t a, int offset)
  * Inserts the @e value in the @a array at @offset.
  * Further elements are pushed up, so the array increases its size
  * by one. Returns the inserted element.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_ains(mpdm_t a, mpdm_t e, int offset)
 {
@@ -277,7 +277,7 @@ mpdm_t mpdm_ains(mpdm_t a, mpdm_t e, int offset)
  * Deletes the element at @offset of the @a array. The array
  * is shrinked by one.
  * Returns the deleted element.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
@@ -301,7 +301,7 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
  * @e: the value
  *
  * Pushes a value into an array (i.e. inserts at the end).
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_apush(mpdm_t a, mpdm_t e)
 {
@@ -316,7 +316,7 @@ mpdm_t mpdm_apush(mpdm_t a, mpdm_t e)
  *
  * Pops a value from the array (i.e. deletes from the end
  * and returns it).
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_apop(mpdm_t a)
 {
@@ -337,7 +337,7 @@ mpdm_t mpdm_apop(mpdm_t a)
  *
  * Returns the deleted element, or NULL if the array doesn't have
  * @size elements yet.
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_aqueue(mpdm_t a, mpdm_t e, int size)
 {
@@ -365,7 +365,7 @@ mpdm_t mpdm_aqueue(mpdm_t a, mpdm_t e, int size)
  * Seeks sequentially the value @k in the @a array in
  * increments of @step. A complete search should use a step of 1.
  * Returns the offset of the element if found, or -1 otherwise.
- * [Array Functions]
+ * [Arrays]
  */
 int mpdm_aseek(mpdm_t a, mpdm_t k, int step)
 {
@@ -398,7 +398,7 @@ int mpdm_aseek(mpdm_t a, mpdm_t k, int step)
  * as a positive number; otherwise, -1 is returned and the position
  * where the element should be is stored in @pos. You can set @pos
  * to NULL if you don't mind.
- * [Array Functions]
+ * [Arrays]
  */
 int mpdm_abseek(mpdm_t a, mpdm_t k, int step, int * pos)
 {
@@ -458,7 +458,7 @@ static int mpdm_asort_cmp(const void * s1, const void * s2)
  * Sorts the array. @step is the number of elements to group together.
  *
  * Returns the sorted array (the original one is left untouched).
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_asort(mpdm_t a, int step)
 {
@@ -479,7 +479,7 @@ mpdm_t mpdm_asort(mpdm_t a, int step)
  * the sorting order.
  *
  * Returns the sorted array (the original one is left untouched).
- * [Array Functions]
+ * [Arrays]
  */
 mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t cb)
 {
@@ -514,8 +514,8 @@ mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t cb)
  * Separates the @v string value into an array of pieces, using @s
  * as a separator. If the string does not contain the separator,
  * an array holding the complete string is returned.
- * [Array Functions]
- * [String Functions]
+ * [Arrays]
+ * [Strings]
  */
 mpdm_t mpdm_asplit(mpdm_t s, mpdm_t v)
 {
@@ -544,8 +544,8 @@ mpdm_t mpdm_asplit(mpdm_t s, mpdm_t v)
  * @a: array to be joined
  *
  * Joins all elements from @a into one string, using @s as a glue.
- * [Array Functions]
- * [String Functions]
+ * [Arrays]
+ * [Strings]
  */
 mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a)
 {

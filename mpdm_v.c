@@ -102,6 +102,7 @@ static int mpdm_destroy(mpdm_t v)
  * This function is normally not directly used; use any of the type
  * creation macros instead.
  * [Basic Functions]
+ * [Value Creation]
  */
 mpdm_t mpdm_new(int flags, void * data, int size)
 {
@@ -409,7 +410,7 @@ void mpdm_shutdown(void)
  * @n: Number of elements
  *
  * Creates a new array value with @n elements.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_A(int n) */
 /* ; */
@@ -421,7 +422,7 @@ void mpdm_shutdown(void)
  * Creates a new hash value with @n buckets. The number
  * of buckets must be a prime number. If @n is 0, an
  * optimal number of buckets will be used.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_H(int n) */
 /* ; */
@@ -432,7 +433,7 @@ void mpdm_shutdown(void)
  *
  * Creates a new string value from a literal, wide character string.
  * A pointer to the string will be stored in the value (not a copy).
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_LS(wchar_t * wcs) */
 /* ; */
@@ -443,7 +444,7 @@ void mpdm_shutdown(void)
  *
  * Creates a new string value from a wide character string. The value
  * will store a copy of the string that will be freed on destruction.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_S(wchar_t * wcs) */
 /* ; */
@@ -455,7 +456,7 @@ void mpdm_shutdown(void)
  *
  * Creates a new string value with a copy of the first @s characters
  * from the @wcs string.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_NS(wchar_t * wcs, int s) */
 /* ; */
@@ -468,7 +469,7 @@ void mpdm_shutdown(void)
  * Creates a new string value with size @s. The @wcs string must be
  * a dynamic value (i.e. allocated by malloc()) that will be freed on
  * destruction.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_ENS(wchar_t * wcs, int s) */
 /* ; */
@@ -478,7 +479,7 @@ void mpdm_shutdown(void)
  * @i: the integer
  *
  * Creates a new integer value. Mpdm integers are strings.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_I(int i) */
 /* ; */
@@ -488,7 +489,7 @@ void mpdm_shutdown(void)
  * @r: the real number
  *
  * Creates a new real value. Mpdm integers are strings.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_R(double r) */
 /* ; */
@@ -499,7 +500,7 @@ void mpdm_shutdown(void)
  *
  * Creates a new string value from a multibyte string, that will be
  * converted to wcs by mpdm_mbstowcs().
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_MBS(char * mbs) */
 /* ; */
@@ -511,7 +512,7 @@ void mpdm_shutdown(void)
  *
  * Creates a new string value with the first @s characters from the @mbs
  * multibyte string, that will be converted to wcs by mpdm_mbstowcs().
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_NMBS(char * mbs, int s) */
 /* ; */
@@ -524,7 +525,7 @@ void mpdm_shutdown(void)
  * converting it by mpdm_wcstombs(). Take note that multibyte string values
  * are not properly strings, so they cannot be used for string comparison
  * and such.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_2MBS(wchar_t * wcs) */
 /* ; */
@@ -536,7 +537,7 @@ void mpdm_shutdown(void)
  * Creates a new executable value given a pointer to the @func C code function.
  * The function must receive an mpdm_t array value (that will hold their
  * arguments) and return another one.
- * [Value Creation Macros]
+ * [Value Creation]
  */
 /** mpdm_t MPDM_X(mpdm_t (* func)(mpdm_t args)) */
 /* ; */

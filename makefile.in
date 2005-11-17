@@ -34,7 +34,7 @@ docs:
 	mkdir -p doc
 	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
 	-t "Minimum Profit Data Manager API ($(VERSION))" \
-	-a 'Angel Ortega - <em>angel@triptico.com</em>'
+	-a 'Angel Ortega - angel@triptico.com'
 
 docsclean:
 	rm -f doc/mpdm_api.html
