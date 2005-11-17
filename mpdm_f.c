@@ -219,6 +219,7 @@ void mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
  * Opens a file. If @filename can be open in the specified @mode, an
  * mpdm_t value will be returned containing the file descriptor, or NULL
  * otherwise.
+ * [File Functions]
  */
 mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 {
@@ -266,6 +267,7 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
  * @fd: the value containing the file descriptor
  *
  * Closes the file descriptor.
+ * [File Functions]
  */
 mpdm_t mpdm_close(mpdm_t fd)
 {
@@ -300,6 +302,7 @@ mpdm_t mpdm_close(mpdm_t fd)
  * @fd: the value containing the file descriptor
  *
  * Reads a line from @fd. Returns the line, or NULL on EOF.
+ * [File Functions]
  */
 mpdm_t mpdm_read(mpdm_t fd)
 {
@@ -334,6 +337,7 @@ mpdm_t mpdm_read(mpdm_t fd)
  * @v: the value to be written.
  *
  * Writes the @v string value into @fd, using the current encoding.
+ * [File Functions]
  */
 int mpdm_write(mpdm_t fd, mpdm_t v)
 {
@@ -380,6 +384,7 @@ int mpdm_bwrite(mpdm_tfd, mpdm_t v, int size)
  * in the locale).
  * Returns a negative number if @charset is unsupported, or zero
  * if no errors were found.
+ * [File Functions]
  */
 int mpdm_encoding(mpdm_t charset)
 {
@@ -423,6 +428,7 @@ int mpdm_encoding(mpdm_t charset)
  * @filename: file name to be deleted
  *
  * Deletes a file.
+ * [File Functions]
  */
 int mpdm_unlink(mpdm_t filename)
 {
@@ -445,6 +451,7 @@ int mpdm_unlink(mpdm_t filename)
  *
  * Returns an array of files that match the globbing (can be an empty
  * array if no file matches), or NULL if globbing is unsupported.
+ * [File Functions]
  */
 mpdm_t mpdm_glob(mpdm_t spec)
 {

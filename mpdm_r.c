@@ -139,6 +139,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * If @r and @v are defined, the matching string is returned or NULL
  * if no string could be matched; otherwise, the previous match
  * coordinates are returned.
+ * [Regex Functions]
  */
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 {
@@ -237,6 +238,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
  *
  * Returns the modified string, or the original one if no substitutions
  * were done.
+ * [Regex Functions]
  */
 mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 {
