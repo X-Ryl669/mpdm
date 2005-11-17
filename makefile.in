@@ -6,7 +6,6 @@ LIB=$(TARGET)
 all: $(TARGET)
 
 PROJ=mpdm
-DOCS=
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
 	mpdm_r.o gnu_regex.o
@@ -33,12 +32,12 @@ stress: stress.c $(LIB)
 
 docs:
 	mkdir -p doc
-	-mp_doccer mpdm_*.c -o doc/mpdm_ref -f html1 \
+	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
 	-t "Minimum Profit Data Manager API ($(VERSION))" \
 	-a 'Angel Ortega - <em>angel@triptico.com</em>'
 
 docsclean:
-	rm -f doc/mpdm_ref.html
+	rm -f doc/mpdm_api.html
 
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
@@ -50,11 +49,6 @@ dist: distclean ChangeLog docs
 	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
 	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=CVS $(PROJ)-$(VERSION)/* ; \
 	rm $(PROJ)-$(VERSION)
-
-install:
-	install $(TARGET) $(PREFIX)/bin
-	mkdir -p $(PREFIX)/share/doc/$(PROJ)
-	cp $(DOCS) $(PREFIX)/share/doc/$(PROJ)
 
 .po.mo:
 	msgfmt -o $@ $<
