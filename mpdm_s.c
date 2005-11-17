@@ -318,6 +318,7 @@ mpdm_t mpdm_new_r(double rval)
  * the value data itself; for any other type, a conversion to string
  * is returned instead. This value should be used immediately, as it
  * can be a pointer to a static buffer.
+ * [String Functions]
  */
 wchar_t * mpdm_string(mpdm_t v)
 {
@@ -349,6 +350,7 @@ wchar_t * mpdm_string(mpdm_t v)
  * Compares two values. If both has the MPDM_STRING flag set,
  * a comparison using strcmp() is returned; otherwise, a
  * simple pointer comparison is done.
+ * [String Functions]
  */
 int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 {
@@ -385,6 +387,7 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
  * Returns a two element array, with the new string in the first
  * element and the deleted string in the second (with a NULL value
  * if @del is 0).
+ * [String Functions]
  */
 mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 {
@@ -476,6 +479,7 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
  * @s2: the second string
  *
  * Returns a new string formed by the concatenation of @s1 and @s2.
+ * [String Functions]
  */
 mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 {
@@ -498,6 +502,7 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
  * an ival of 0. The converted integer is cached, so costly string
  * conversions are only done once. Values created with the MPDM_IVAL
  * flag set have its ival cached from the beginning.
+ * [String Functions]
  */
 int mpdm_ival(mpdm_t v)
 {
@@ -550,6 +555,7 @@ int mpdm_ival(mpdm_t v)
  * have all an rval of 0. The converted double is cached, so costly string
  * conversions are only done once. Values created with the MPDM_RVAL
  * flag set have its rval cached from the beginning.
+ * [String Functions]
  */
 double mpdm_rval(mpdm_t v)
 {
@@ -607,6 +613,8 @@ double mpdm_rval(mpdm_t v)
  *
  * If the string is found in the current table, the translation is
  * returned; otherwise, the same @str value is returned.
+ * [String Functions]
+ * [Localization Functions]
  */
 mpdm_t mpdm_gettext(mpdm_t str)
 {
@@ -651,6 +659,8 @@ mpdm_t mpdm_gettext(mpdm_t str)
  * is directly used as a translation hash for future translations; if it's
  * a scalar string, @data must point to a directory containing the
  * .mo (compiled .po) files (gettext support must exist for this to work).
+ * [String Functions]
+ * [Localization Functions]
  */
 void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 {
