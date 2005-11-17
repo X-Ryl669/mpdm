@@ -58,6 +58,7 @@ static int mpdm_hash_func(wchar_t * string, int mod)
  * @h: the hash
  *
  * Returns the number of key-value pairs of a hash.
+ * [Hash Functions]
  */
 int mpdm_hsize(mpdm_t h)
 {
@@ -72,6 +73,7 @@ int mpdm_hsize(mpdm_t h)
  *
  * Gets the value from the hash @h having @k as key, or
  * NULL if the key does not exist.
+ * [Hash Functions]
  */
 mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
 {
@@ -101,6 +103,7 @@ mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
  *
  * Gets the value from the hash @h having @k as key, or
  * NULL if the key does not exist.
+ * [Hash Functions]
  */
 mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
 {
@@ -120,6 +123,7 @@ mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
  * @k: the key
  *
  * Returns 1 if @k is defined in @h, or 0 othersize.
+ * [Hash Functions]
  */
 int mpdm_hexists(mpdm_t h, mpdm_t k)
 {
@@ -151,6 +155,7 @@ int mpdm_hexists(mpdm_t h, mpdm_t k)
  * Sets the value @v to the key @k in the hash @h. Returns
  * the previous value of the key, or NULL if the key was
  * previously undefined.
+ * [Hash Functions]
  */
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 {
@@ -211,6 +216,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  * Sets the value @v to the key @k in the hash @h. Returns
  * the previous value of the key, or NULL if the key was
  * previously undefined.
+ * [Hash Functions]
  */
 mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
 {
@@ -229,6 +235,7 @@ mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
  *
  * Deletes the key @k from the hash @h. Returns the previous
  * value, or NULL if the key was not defined.
+ * [Hash Functions]
  */
 mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k)
 {
@@ -262,6 +269,8 @@ mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k)
  * @h: the hash
  *
  * Returns an array containing all the keys of the @h hash.
+ * [Hash Functions]
+ * [Array Functions]
  */
 mpdm_t mpdm_hkeys(mpdm_t h)
 {
