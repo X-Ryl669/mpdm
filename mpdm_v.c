@@ -101,7 +101,7 @@ static int mpdm_destroy(mpdm_t v)
  *
  * This function is normally not directly used; use any of the type
  * creation macros instead.
- * [Basic Functions]
+ * [Value Management]
  * [Value Creation]
  */
 mpdm_t mpdm_new(int flags, void * data, int size)
@@ -167,7 +167,7 @@ mpdm_t mpdm_new(int flags, void * data, int size)
  * @v: the value
  *
  * Increments the reference count of a value.
- * [Basic Functions]
+ * [Value Management]
  */
 mpdm_t mpdm_ref(mpdm_t v)
 {
@@ -181,7 +181,7 @@ mpdm_t mpdm_ref(mpdm_t v)
  * @v: the value
  *
  * Decrements the reference count of a value.
- * [Basic Functions]
+ * [Value Management]
  */
 mpdm_t mpdm_unref(mpdm_t v)
 {
@@ -199,7 +199,7 @@ mpdm_t mpdm_unref(mpdm_t v)
  * @count are -1, that forces a check of all currently known values
  * (can be time-consuming) and 0, which tells mpdm_sweep() to check a
  * small group of them on each call.
- * [Basic Functions]
+ * [Value Management]
  */
 void mpdm_sweep(int count)
 {
@@ -223,7 +223,7 @@ void mpdm_sweep(int count)
  * @v: the element
  *
  * Returns the size of an element.
- * [Basic Functions]
+ * [Value Management]
  */
 int mpdm_size(mpdm_t v)
 {
@@ -241,7 +241,7 @@ int mpdm_size(mpdm_t v)
  * Creates a clone of a value. If the value is multiple, a new value will
  * be created containing clones of all its elements; otherwise,
  * the same unchanged value is returned.
- * [Basic Functions]
+ * [Value Management]
  */
 mpdm_t mpdm_clone(mpdm_t v)
 {
@@ -263,7 +263,7 @@ mpdm_t mpdm_clone(mpdm_t v)
  *
  * Returns the root hash. This hash is stored internally and can be used
  * as a kind of global symbol table.
- * [Basic Functions]
+ * [Value Management]
  */
 mpdm_t mpdm_root(void)
 {
@@ -289,7 +289,7 @@ mpdm_t mpdm_root(void)
  *
  * Returns the return value of the code. If @c is NULL or not executable,
  * returns NULL.
- * [Basic Functions]
+ * [Value Management]
  */
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 {
