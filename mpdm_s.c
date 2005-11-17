@@ -503,6 +503,7 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
  * conversions are only done once. Values created with the MPDM_IVAL
  * flag set have its ival cached from the beginning.
  * [Strings]
+ * [Value Management]
  */
 int mpdm_ival(mpdm_t v)
 {
@@ -556,6 +557,7 @@ int mpdm_ival(mpdm_t v)
  * conversions are only done once. Values created with the MPDM_RVAL
  * flag set have its rval cached from the beginning.
  * [Strings]
+ * [Value Management]
  */
 double mpdm_rval(mpdm_t v)
 {

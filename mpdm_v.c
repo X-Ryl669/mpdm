@@ -101,7 +101,6 @@ static int mpdm_destroy(mpdm_t v)
  *
  * This function is normally not directly used; use any of the type
  * creation macros instead.
- * [Value Management]
  * [Value Creation]
  */
 mpdm_t mpdm_new(int flags, void * data, int size)
