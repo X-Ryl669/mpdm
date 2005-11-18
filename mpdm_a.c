@@ -275,13 +275,19 @@ mpdm_t mpdm_ains(mpdm_t a, mpdm_t e, int offset)
  * @offset: subscript of the element to be deleted
  *
  * Deletes the element at @offset of the @a array. The array
- * is shrinked by one.
+ * is shrinked by one. If @offset is negative, is counted from
+ * the end of the array (so a value of -1 means delete the
+ * last element of the array).
+ *
  * Returns the deleted element.
  * [Arrays]
  */
 mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
 	mpdm_t v;
+
+	if(a == NULL || mpdm_size(a) == 0)
+		return(NULL);
 
 	offset=wrap_offset(a, offset);
 
