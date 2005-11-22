@@ -146,8 +146,8 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 	mpdm_t w=NULL;
 	mpdm_t t;
 
-	/* special case: return previous match */
-	if(r == NULL || v == NULL)
+	/* special case: if r is NULL, return previous match */
+	if(r == NULL)
 	{
 		w = MPDM_A(2);
 
@@ -156,6 +156,10 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 		return(w);
 	}
+
+	/* if the string to be tested is NULL, return NULL */
+	if(v == NULL)
+		return(NULL);
 
 	if(r->flags & MPDM_MULTIPLE)
 	{
@@ -248,6 +252,9 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 	wchar_t * global;
 	mpdm_t t;
 	mpdm_t o=v;
+
+	if(r == NULL || v == NULL)
+		return(NULL);
 
 	/* compile the regex */
 	if((cr=mpdm_regcomp(r)) != NULL)
