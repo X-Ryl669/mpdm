@@ -435,6 +435,9 @@ void test_strcat(void)
 	v = mpdm_strcat(w, NULL);
 	do_test("mpdm_strcat(\"\", NULL) returns \"\"", mpdm_cmp(v, w) == 0);
 
+	v = mpdm_strcat(w, w);
+	do_test("mpdm_strcat(\"\", \"\") returns \"\"", mpdm_cmp(v, w) == 0);
+
 }
 
 
