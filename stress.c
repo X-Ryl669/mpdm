@@ -997,6 +997,18 @@ void benchmark(void)
 }
 
 
+void test_conversion(void)
+{
+	wchar_t * wptr = NULL;
+	char * ptr = NULL;
+	int size = 0;
+
+	ptr = mpdm_wcstombs(L"", &size);
+
+	do_test("mpdm_wcstombs converts an empty string", ptr != NULL);
+}
+
+
 int main(int argc, char * argv[])
 {
 	if(argc > 1 && strcmp(argv[1], "-b") == 0)
@@ -1017,6 +1029,7 @@ int main(int argc, char * argv[])
 	test_nondyn();
 	test_encoding();
 	test_gettext();
+	test_conversion();
 	benchmark();
 
 	printf("memory: %d\n", mpdm->memory_usage);
