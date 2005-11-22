@@ -618,6 +618,9 @@ void test_regex(void)
 	v=mpdm_regex(MPDM_LS(L"/^\\s+/"), MPDM_LS(L"123456"), 0);
 	do_test("regex 8", v == NULL);
 
+	v=mpdm_regex(MPDM_LS(L"/^\\s+/"), NULL, 0);
+	do_test("regex 9 (NULL string to match)", v == NULL);
+
 	/* sregex */
 
 	v=mpdm_sregex(MPDM_LS(L"/A/"),MPDM_LS(L"change all A to A"),
