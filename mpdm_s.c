@@ -474,7 +474,7 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 
 
 /**
- * mpdm_strcat - Concatenates two strings
+ * mpdm_strcat - Concatenates two strings.
  * @s1: the first string
  * @s2: the second string
  *
@@ -492,7 +492,7 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 	ptr = mpdm_pokev(ptr, &s, s1);
 	ptr = mpdm_pokev(ptr, &s, s2);
 
-	/* if no characters were added, return an empty string */
+	/* if no characters were added, returns an empty string */
 	if(ptr == NULL)
 		return(MPDM_LS(L""));
 
@@ -501,7 +501,7 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 
 
 /**
- * mpdm_ival - Returns a value's data as an integer
+ * mpdm_ival - Returns a value's data as an integer.
  * @v: the value
  *
  * Returns a value's data as an integer. If the value is a string,
@@ -555,7 +555,7 @@ int mpdm_ival(mpdm_t v)
 
 
 /**
- * mpdm_rval - Returns a value's data as an real number (double)
+ * mpdm_rval - Returns a value's data as a real number (double).
  * @v: the value
  *
  * Returns a value's data as a real number (double float). If the value
@@ -614,7 +614,7 @@ double mpdm_rval(mpdm_t v)
 
 
 /**
- * mpdm_gettext - Translates a string to the current language
+ * mpdm_gettext - Translates a string to the current language.
  * @str: the string
  *
  * Translates the @str string to the current language. The active language
@@ -659,7 +659,7 @@ mpdm_t mpdm_gettext(mpdm_t str)
 
 
 /**
- * mpdm_gettext_domain - Sets domain and data directory for translations
+ * mpdm_gettext_domain - Sets domain and data directory for translations.
  * @dom: the domain (application name)
  * @data: translation data
  *

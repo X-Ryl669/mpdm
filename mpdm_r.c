@@ -118,7 +118,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 
 
 /**
- * mpdm_regex - Matches a regular expression
+ * mpdm_regex - Matches a regular expression.
  * @r: the regular expression
  * @v: the value to be matched
  * @offset: offset from the start of v->data
@@ -229,7 +229,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 
 /**
- * mpdm_sregex - Matches and substitutes a regular expression
+ * mpdm_sregex - Matches and substitutes a regular expression.
  * @r: the regular expression
  * @v: the value to be matched
  * @s: the string that will substitute the matched string

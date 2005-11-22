@@ -100,6 +100,13 @@ static void dump_1(mpdm_t v, int l)
 }
 
 
+/**
+ * mpdm_dump - Dumps a value to stdin.
+ * @v: The value
+ *
+ * Dumps a value to stdin. The value can be complex. This function
+ * is for debugging purposes only.
+ */
 void mpdm_dump(mpdm_t v)
 {
 	dump_1(v, 0);
