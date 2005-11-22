@@ -54,7 +54,7 @@ static int mpdm_hash_func(wchar_t * string, int mod)
 /* interface */
 
 /**
- * mpdm_hsize - Returns the number of pairs of a hash
+ * mpdm_hsize - Returns the number of pairs of a hash.
  * @h: the hash
  *
  * Returns the number of key-value pairs of a hash.
@@ -118,7 +118,7 @@ mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
 
 
 /**
- * mpdm_hexists - Tests if a key exists
+ * mpdm_hexists - Tests if a key exists.
  * @h: the hash
  * @k: the key
  *
@@ -208,7 +208,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 
 
 /**
- * mpdm_hset_s - Sets a value in a hash (string version)
+ * mpdm_hset_s - Sets a value in a hash (string version).
  * @h: the hash
  * @k: the key
  * @v: the value

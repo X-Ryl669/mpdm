@@ -513,7 +513,7 @@ mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t cb)
 
 
 /**
- * mpdm_asplit - Separates a string into an array of pieces
+ * mpdm_asplit - Separates a string into an array of pieces.
  * @s: the separator
  * @v: the value to be separated
  *
@@ -545,7 +545,7 @@ mpdm_t mpdm_asplit(mpdm_t s, mpdm_t v)
 
 
 /**
- * mpdm_ajoin - Joins all elements of an array into one
+ * mpdm_ajoin - Joins all elements of an array into one.
  * @s: joiner string
  * @a: array to be joined
  *

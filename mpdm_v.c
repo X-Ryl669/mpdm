@@ -190,7 +190,7 @@ mpdm_t mpdm_unref(mpdm_t v)
 
 
 /**
- * mpdm_sweep - Sweeps unreferenced values
+ * mpdm_sweep - Sweeps unreferenced values.
  * @count: number of values to be swept
  *
  * Destroys values with a reference count of 0. @count is the
@@ -218,7 +218,7 @@ void mpdm_sweep(int count)
 
 
 /**
- * mpdm_size - Returns the size of an element
+ * mpdm_size - Returns the size of an element.
  * @v: the element
  *
  * Returns the size of an element.
@@ -234,7 +234,7 @@ int mpdm_size(mpdm_t v)
 
 
 /**
- * mpdm_clone - Creates a clone of a value
+ * mpdm_clone - Creates a clone of a value.
  * @v: the value
  *
  * Creates a clone of a value. If the value is multiple, a new value will
@@ -274,7 +274,7 @@ mpdm_t mpdm_root(void)
 
 
 /**
- * mpdm_exec - Executes an executable value
+ * mpdm_exec - Executes an executable value.
  * @c: the code value
  * @args: the arguments
  *
@@ -375,20 +375,26 @@ mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 }
 
 
+/**
+ * mpdm_startup - Initializes mpdm.
+ *
+ * Initializes the Minimum Profit Data Manager. Returns 0 if
+ * everything went OK.
+ */
 int mpdm_startup(void)
 {
 	/* do the startup only unless done beforehand */
 	if(mpdm == NULL)
 	{
 		/* alloc space */
-		mpdm=malloc(sizeof(struct mpdm_control));
+		mpdm = malloc(sizeof(struct mpdm_control));
 
 		/* cleans it */
 		memset(mpdm, '\0', sizeof(struct mpdm_control));
 
 		/* sets the defaults */
-		mpdm->low_threshold=16;
-		mpdm->default_sweep=16;
+		mpdm->low_threshold = 16;
+		mpdm->default_sweep = 16;
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
@@ -400,8 +406,14 @@ int mpdm_startup(void)
 }
 
 
+/**
+ * mpdm_shutdown - Shuts down mpdm.
+ *
+ * Shuts down mpdm. No mpdm functions should be used from now on.
+ */
 void mpdm_shutdown(void)
 {
+	/* dummy, by now */
 }
 
 /**
