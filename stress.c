@@ -1004,8 +1004,10 @@ void test_conversion(void)
 	int size = 0;
 
 	ptr = mpdm_wcstombs(L"", &size);
-
 	do_test("mpdm_wcstombs converts an empty string", ptr != NULL);
+
+	wptr = mpdm_mbstowcs("", &size, 0);
+	do_test("mpdm_mbstowcs converts an empty string", wptr != NULL);
 }
 
 
