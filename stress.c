@@ -412,6 +412,32 @@ void test_splice(void)
 }
 
 
+void test_strcat(void)
+{
+	mpdm_t v;
+	mpdm_t w;
+
+	w = MPDM_LS(L"something");
+
+	v = mpdm_strcat(NULL, NULL);
+	do_test("mpdm_strcat(NULL, NULL) returns NULL",	v == NULL);
+
+	v = mpdm_strcat(NULL, w);
+	do_test("mpdm_strcat(NULL, w) returns w", mpdm_cmp(v, w) == 0);
+
+	v = mpdm_strcat(w, NULL);
+	do_test("mpdm_strcat(w, NULL) returns w", mpdm_cmp(v, w) == 0);
+
+	w = MPDM_LS(L"");
+	v = mpdm_strcat(NULL, w);
+	do_test("mpdm_strcat(NULL, \"\") returns \"\"", mpdm_cmp(v, w) == 0);
+
+	v = mpdm_strcat(w, NULL);
+	do_test("mpdm_strcat(\"\", NULL) returns \"\"", mpdm_cmp(v, w) == 0);
+
+}
+
+
 void test_asplit(void)
 {
 	mpdm_t w;
@@ -1022,6 +1048,7 @@ int main(int argc, char * argv[])
 	test_array();
 	test_hash();
 	test_splice();
+	test_strcat();
 	test_asplit();
 	test_ajoin();
 	test_sym();
