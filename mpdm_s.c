@@ -486,8 +486,15 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 	wchar_t * ptr = NULL;
 	int s = 0;
 
+	if(s1 == NULL && s2 == NULL)
+		return(NULL);
+
 	ptr = mpdm_pokev(ptr, &s, s1);
 	ptr = mpdm_pokev(ptr, &s, s2);
+
+	/* if no characters were added, return an empty string */
+	if(ptr == NULL)
+		return(MPDM_LS(L""));
 
 	return(MPDM_ENS(ptr, s));
 }
