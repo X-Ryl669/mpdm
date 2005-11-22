@@ -5,8 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1081: Document all the MPDM_ macros.
- * 1082: Add categories to mp_doccer documentation.
 
 Open Bugs
 ---------
@@ -180,5 +178,8 @@ Closed
  * 1080: Related to #1079, multiline regexes don't work in
    multibyte locales, as it's also relying on rm containing
    offsets in characters (Sun, 23 Oct 2005 21:35:08 +0200).
+ * 1081: Document all the MPDM_ macros (Tue, 22 Nov 2005 17:03:40 +0100).
+ * 1082: Add categories to mp_doccer documentation
+   (Tue, 22 Nov 2005 17:03:45 +0100).
 
 Email bugs to angel@triptico.com
