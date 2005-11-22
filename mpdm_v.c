@@ -423,7 +423,7 @@ void mpdm_shutdown(void)
  * Creates a new array value with @n elements.
  * [Value Creation]
  */
-/** mpdm_t MPDM_A(int n) */
+/** mpdm_t MPDM_A(int n); */
 /* ; */
 
 /**
@@ -435,7 +435,7 @@ void mpdm_shutdown(void)
  * optimal number of buckets will be used.
  * [Value Creation]
  */
-/** mpdm_t MPDM_H(int n) */
+/** mpdm_t MPDM_H(int n); */
 /* ; */
 
 /**
@@ -446,7 +446,7 @@ void mpdm_shutdown(void)
  * A pointer to the string will be stored in the value (not a copy).
  * [Value Creation]
  */
-/** mpdm_t MPDM_LS(wchar_t * wcs) */
+/** mpdm_t MPDM_LS(wchar_t * wcs); */
 /* ; */
 
 /**
@@ -457,7 +457,7 @@ void mpdm_shutdown(void)
  * will store a copy of the string that will be freed on destruction.
  * [Value Creation]
  */
-/** mpdm_t MPDM_S(wchar_t * wcs) */
+/** mpdm_t MPDM_S(wchar_t * wcs); */
 /* ; */
 
 /**
@@ -469,7 +469,7 @@ void mpdm_shutdown(void)
  * from the @wcs string.
  * [Value Creation]
  */
-/** mpdm_t MPDM_NS(wchar_t * wcs, int s) */
+/** mpdm_t MPDM_NS(wchar_t * wcs, int s); */
 /* ; */
 
 /**
@@ -482,7 +482,7 @@ void mpdm_shutdown(void)
  * destruction.
  * [Value Creation]
  */
-/** mpdm_t MPDM_ENS(wchar_t * wcs, int s) */
+/** mpdm_t MPDM_ENS(wchar_t * wcs, int s); */
 /* ; */
 
 /**
@@ -492,7 +492,7 @@ void mpdm_shutdown(void)
  * Creates a new integer value. Mpdm integers are strings.
  * [Value Creation]
  */
-/** mpdm_t MPDM_I(int i) */
+/** mpdm_t MPDM_I(int i); */
 /* ; */
 
 /**
@@ -502,7 +502,7 @@ void mpdm_shutdown(void)
  * Creates a new real value. Mpdm integers are strings.
  * [Value Creation]
  */
-/** mpdm_t MPDM_R(double r) */
+/** mpdm_t MPDM_R(double r); */
 /* ; */
 
 /**
@@ -513,7 +513,7 @@ void mpdm_shutdown(void)
  * converted to wcs by mpdm_mbstowcs().
  * [Value Creation]
  */
-/** mpdm_t MPDM_MBS(char * mbs) */
+/** mpdm_t MPDM_MBS(char * mbs); */
 /* ; */
 
 /**
@@ -525,7 +525,7 @@ void mpdm_shutdown(void)
  * multibyte string, that will be converted to wcs by mpdm_mbstowcs().
  * [Value Creation]
  */
-/** mpdm_t MPDM_NMBS(char * mbs, int s) */
+/** mpdm_t MPDM_NMBS(char * mbs, int s); */
 /* ; */
 
 /**
@@ -538,7 +538,7 @@ void mpdm_shutdown(void)
  * and such.
  * [Value Creation]
  */
-/** mpdm_t MPDM_2MBS(wchar_t * wcs) */
+/** mpdm_t MPDM_2MBS(wchar_t * wcs); */
 /* ; */
 
 /**
@@ -550,6 +550,6 @@ void mpdm_shutdown(void)
  * arguments) and return another one.
  * [Value Creation]
  */
-/** mpdm_t MPDM_X(mpdm_t (* func)(mpdm_t args)) */
+/** mpdm_t MPDM_X(mpdm_t (* func)(mpdm_t args)); */
 /* ; */
 
