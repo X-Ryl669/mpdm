@@ -35,9 +35,10 @@ docs:
 	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
 	-t "Minimum Profit Data Manager API ($(VERSION))" \
 	-a 'Angel Ortega - angel@triptico.com'
+	-grutatxt -i doc/mpdm_overview.txt -o doc/mpdm_overview.html
 
 docsclean:
-	rm -f doc/mpdm_api.html
+	rm -f doc/*.html
 
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
