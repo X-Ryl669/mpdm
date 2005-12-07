@@ -1,13 +1,97 @@
-Minimum Profit Data Manager overview
-====================================
+Mpdm overview
+=============
 
  Angel Ortega <angel@triptico.com>
 
 Description
 -----------
 
+Mpdm (Minimum Profit Data Manager) is a lightweight library that provides C
+programs with a rich set of useful data types as scalars, dynamic arrays
+or hashes, similar to those of the Perl language. Also, it contains a
+rudimentary garbage collector that alleviates the need to keep track of
+data no longer useful, as well as help for operating system abstraction
+and portability, regular expressions, string manipulation, character set
+conversions, localization and file I/O access.
+
+Mpsl (Minimum Profit Scripting Language) is implemented on top of mpdm.
+
 Values
 ------
+
+The basic unit of information under mpdm is the _value_. It's declared
+inside the C code as a mpdm_t value:
+
+ /* a mpdm value, initialized as NULL */
+ mpdm_t v = NULL;
+
+Mpdm values can be single or multiple ones. A single value is a scalar and
+contains meaning by itself; a multiple one contains one or more mpdm
+values, that can be accessed by different means, depending on its nature.
+
+A value also has an internal reference count; when it's 0, the value is
+suitable for being swept by the garbage collector. The reference count of
+a value can be manipulated by calling mpdm_ref() and mpdm_unref() on it.
+Also, whenever a value is stored inside a multiple one, its reference count
+is automatically incremented.
+
+The simplest scalar is a string one:
+
+ /* a scalar string mpdm value */
+ mpdm_t v = MPDM_S(L"I'm a happy scalar");
+
+The MPDM_S() macro creates an mpdm value from a dinamically allocated
+copy of a wide-character string. Mpdm works internally with wide-character
+strings; though this can seem awkward, it's the only way to do character
+set manipulation (i.e. Unicode) correctly.
+
+A simpler, more memory-efficient way of creating a string scalar from a
+literal string is using the MPDM_LS() macro:
+
+ /* another scalar string, this time storing the string directly */
+ mpdm_t w = MPDM_LS(L"I'm also a happy scalar");
+
+Both are semantically the same. Many string manipulation functions,
+however, return values of the first kind.
+
+Creating values from integers and real numbers (doubles) is also easy:
+
+ /* a scalar value, from an integer */
+ mpdm_t i = MPDM_I(16384);
+ 
+ /* another scalar, this time from a double */
+ mpdm_t pi = MPDM_R(3.1416);
+
+Again, those new values are stored as dinamically allocated wide-char
+strings, so they are no different from the first one.
+
+Backwards, an mpdm value can always be converted to integer or real:
+
+ /* converts i to integer */
+ int n = mpdm_ival(i);
+ 
+ /* converts pi to real */
+ double d = mpdm_rval(pi);
+
+Sometimes you don't have a wide-char string available, but a multibyte
+one. The handy macro MPDM_MBS() does the conversion for you:
+
+ /* create a value with the value of the HOME environment variable
+    (no error condition checked) */
+ mpdm_t home = MPDM_MBS(getenv("HOME"));
+
+MPDM_MBS() converts to wide-char using the current locale information, so
+your system must have that correctly working.
+
+There are many more value creation macros for scalars; see the reference
+documentation for further details.
+
+An mpdm value always have size. For scalar values, the size is usually the
+length of its string representation. It's returned by the mpdm_size()
+function:
+
+ /* prints 6 */
+ printf("%d\n", mpdm_size(pi));
 
 Scalars
 ~~~~~~~
@@ -29,6 +113,12 @@ Regular expressions
 
 File I/O
 --------
+
+Charset conversions
+-------------------
+
+Localization
+------------
 
 ----
 Angel Ortega - http://www.triptico.com
