@@ -1,5 +1,5 @@
-Mpdm overview
-=============
+Minimum Profit Data Manager overview
+====================================
 
  Angel Ortega <angel@triptico.com>
 
