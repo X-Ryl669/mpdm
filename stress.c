@@ -663,6 +663,9 @@ void test_regex(void)
 		MPDM_LS(L"sex"),0);
 	do_test("sregex 8", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
 
+	v = mpdm_sregex(NULL, NULL, NULL, 0);
+	do_test("Previous sregex substitutions must be 3", mpdm_ival(v) == 3);
+
 	/* multiple regex tests */
 	w=MPDM_A(0);
 

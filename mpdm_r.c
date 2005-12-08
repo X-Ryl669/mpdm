@@ -50,8 +50,12 @@
 
 /* matching of the last regex */
 
-int mpdm_regex_offset=0;
-int mpdm_regex_size=0;
+int mpdm_regex_offset = 0;
+int mpdm_regex_size = 0;
+
+/* number of substitutions in last sregex */
+
+int mpdm_sregex_count = 0;
 
 /*******************
 	Code
@@ -129,7 +133,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * that ^ and $ match the boundaries of each line instead of the
  * whole string.
  *
- * If @r or @v are NULL, the result of the previous regex matching
+ * If @r is NULL, the result of the previous regex matching
  * is returned as a two element array. The first element will contain
  * the character offset of the matching and the second the number of
  * characters matched.
@@ -240,6 +244,9 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
  * matching, and 'g', for global replacements (all ocurrences in @v
  * will be replaced, instead of just the first found one).
  *
+ * If @r is NULL, returns the number of substitutions made in the
+ * previous call to mpdm_sregex() (can be zero if none was done).
+ *
  * Returns the modified string, or the original one if no substitutions
  * were done.
  * [Regular Expressions]
@@ -253,7 +260,13 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 	mpdm_t t;
 	mpdm_t o=v;
 
-	if(r == NULL || v == NULL)
+	if(r == NULL)
+	{
+		/* return last count */
+		return(MPDM_I(mpdm_sregex_count));
+	}
+
+	if(v == NULL)
 		return(NULL);
 
 	/* compile the regex */
@@ -271,6 +284,9 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 			return(v);
 
 		ptr=(char *) t->data;
+
+		/* reset count */
+		mpdm_sregex_count = 0;
 
 		do
 		{
@@ -291,6 +307,9 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				o=mpdm_strcat(o, s);
 
 				ptr += rm.rm_eo;
+
+				/* one more substitution */
+				mpdm_sregex_count ++;
 			}
 
 		} while(t && f && global);
