@@ -152,6 +152,7 @@ mpdm_t mpdm_glob(mpdm_t spec);
 
 extern int mpdm_regex_offset;
 extern int mpdm_regex_size;
+extern int mpdm_sregex_count;
 
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset);
 mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset);
