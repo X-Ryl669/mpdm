@@ -14,7 +14,6 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 	--without-win32)	WITHOUT_WIN32=1 ;;
 	--without-unix-glob)	WITHOUT_UNIX_GLOB=1 ;;
-	--without-regex)	WITHOUT_REGEX=1 ;;
 	--with-included-regex)	WITH_INCLUDED_REGEX=1 ;;
 	--with-pcre)		WITH_PCRE=1 ;;
 	--without-gettext)	WITHOUT_GETTEXT=1 ;;
@@ -186,6 +185,7 @@ if [ "$REGEX_YET" != 1 ] ; then
 	else
 		echo "#define CONFOPT_NO_REGEX 1" >> config.h
 		echo "No (No usable regex library)"
+		exit 1
 	fi
 fi
 
