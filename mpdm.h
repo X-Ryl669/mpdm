@@ -160,6 +160,12 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset);
 mpdm_t mpdm_gettext(mpdm_t str);
 void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
+/* value type testing macros */
+
+#define MPDM_IS_ARRAY(v) (((v)->flags) & MPDM_MULTIPLE)
+#define MPDM_IS_HASH(v) (((v)->flags) & MPDM_HASH)
+#define MPDM_IS_EXEC(v) (((v)->flags) & MPDM_EXEC)
+
 /* value creation utility macros */
 
 #define MPDM_A(n)	mpdm_new_a(0,n)
