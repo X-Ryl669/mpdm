@@ -44,7 +44,7 @@ static void dump_1(mpdm_t v, int l)
 	int n;
 
 	/* indent */
-	for(n=0;n < l;n++)
+	for(n = 0;n < l;n++)
 		printf("  ");
 
 	if(v != NULL)
@@ -80,11 +80,11 @@ static void dump_1(mpdm_t v, int l)
 			mpdm_t w;
 			mpdm_t t;
 
-			w=mpdm_hkeys(v);
+			w = mpdm_keys(v);
 
 			for(n=0;n < mpdm_size(w);n++)
 			{
-				t=mpdm_aget(w, n);
+				t = mpdm_aget(w, n);
 
 				dump_1(t, l + 1);
 				dump_1(mpdm_hget(v, t), l + 2);
@@ -93,7 +93,7 @@ static void dump_1(mpdm_t v, int l)
 		else
 		if(v->flags & MPDM_MULTIPLE)
 		{
-			for(n=0;n < mpdm_size(v);n++)
+			for(n = 0;n < mpdm_size(v);n++)
 				dump_1(mpdm_aget(v, n), l + 1);
 		}
 	}

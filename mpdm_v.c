@@ -38,7 +38,7 @@
 
 /* control structure */
 
-struct mpdm_control * mpdm=NULL;
+struct mpdm_control * mpdm = NULL;
 
 /*******************
 	Code
@@ -60,7 +60,7 @@ static int mpdm_destroy(mpdm_t v)
 	{
 		/* collapse multiple values */
 		if(v->flags & MPDM_MULTIPLE)
-			mpdm_acollapse(v, 0, v->size);
+			mpdm_collapse(v, 0, v->size);
 
 		/* free data if needed */
 		if(v->data != NULL && v->flags & MPDM_FREE)
@@ -70,12 +70,12 @@ static int mpdm_destroy(mpdm_t v)
 		}
 
 		/* dequeue */
-		v->next->prev=v->prev;
-		v->prev->next=v->next;
+		v->next->prev = v->prev;
+		v->prev->next = v->next;
 
 		/* if it's the current one, move to next */
 		if(mpdm->cur == v)
-			mpdm->cur=v->next;
+			mpdm->cur = v->next;
 
 		/* account one value less */
 		mpdm->count--;
@@ -105,7 +105,7 @@ static int mpdm_destroy(mpdm_t v)
  */
 mpdm_t mpdm_new(int flags, void * data, int size)
 {
-	mpdm_t v=NULL;
+	mpdm_t v = NULL;
 
 	if(flags & MPDM_NONDYN)
 	{
@@ -115,35 +115,35 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 			/* if not enough, create more nondyn values */
 			mpdm->nd_size ++;
 
-			mpdm->nd_pool=realloc(mpdm->nd_pool,
+			mpdm->nd_pool = realloc(mpdm->nd_pool,
 				sizeof(struct mpdm_val) * mpdm->nd_size);
 		}
 
 		/* return next one */
-		v=&mpdm->nd_pool[mpdm->nd_index++];
+		v = &mpdm->nd_pool[mpdm->nd_index++];
 
 		memset(v, '\0', sizeof(struct mpdm_val));
 	}
 	else
 	{
 		/* dynamic; alloc */
-		if((v=malloc(sizeof(struct mpdm_val))) == NULL)
+		if((v = malloc(sizeof(struct mpdm_val))) == NULL)
 			return(NULL);
 
 		memset(v, '\0', sizeof(struct mpdm_val));
 
 		/* add to the circular list */
 		if(mpdm->cur == NULL)
-			v->next=v->prev=v;
+			v->next = v->prev = v;
 		else
 		{
-			v->prev=mpdm->cur;
-			v->next=mpdm->cur->next;
+			v->prev = mpdm->cur;
+			v->next = mpdm->cur->next;
 
-			v->prev->next=v->next->prev=v;
+			v->prev->next = v->next->prev = v;
 		}
 
-		mpdm->cur=v->next;
+		mpdm->cur = v->next;
 
 		/* account one value more */
 		mpdm->count ++;
@@ -153,9 +153,9 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 			mpdm->memory_usage += size;
 	}
 
-	v->flags=flags;
-	v->data=data;
-	v->size=size;
+	v->flags = flags;
+	v->data = data;
+	v->size = size;
 
 	return(v);
 }
@@ -203,16 +203,16 @@ mpdm_t mpdm_unref(mpdm_t v)
 void mpdm_sweep(int count)
 {
 	/* if count is zero, sweep 'some' values */
-	if(count == 0) count=mpdm->default_sweep;
+	if(count == 0) count = mpdm->default_sweep;
 
 	/* if count is -1, sweep all */
-	if(count == -1) count=mpdm->count;
+	if(count == -1) count = mpdm->count;
 
 	for(;count > 0 && mpdm->count > mpdm->low_threshold;count --)
 	{
 		/* destroy it or skip it */
 		if(!mpdm_destroy(mpdm->cur))
-			mpdm->cur=mpdm->cur->next;
+			mpdm->cur = mpdm->cur->next;
 	}
 }
 
@@ -247,10 +247,10 @@ mpdm_t mpdm_clone(mpdm_t v)
 	if(v != NULL)
 	{
 		if(v->flags & MPDM_MULTIPLE)
-			v=mpdm_aclone(v);
+			v = mpdm_aclone(v);
 		else
 		if(v->flags & MPDM_NONDYN)
-			v=MPDM_S(v->data);
+			v = MPDM_S(v->data);
 	}
 
 	return(v);
@@ -267,7 +267,7 @@ mpdm_t mpdm_clone(mpdm_t v)
 mpdm_t mpdm_root(void)
 {
 	if(mpdm->root == NULL)
-		mpdm->root=mpdm_ref(MPDM_H(0));
+		mpdm->root = mpdm_ref(MPDM_H(0));
 
 	return(mpdm->root);
 }
@@ -292,7 +292,7 @@ mpdm_t mpdm_root(void)
  */
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 {
-	mpdm_t r=NULL;
+	mpdm_t r = NULL;
 
 	if(c != NULL && (c->flags & MPDM_EXEC))
 	{
@@ -308,10 +308,10 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 			   2 argument version of the executable function,
 			   next its optional additional information and
 			   finally the arguments */
-			x=mpdm_aget(c, 0);
+			x = mpdm_aget(c, 0);
 
-			if((func=(mpdm_t (*)(mpdm_t, mpdm_t))(x->data)) != NULL)
-				r=func(mpdm_aget(c, 1), args);
+			if((func = (mpdm_t (*)(mpdm_t, mpdm_t))(x->data)) != NULL)
+				r = func(mpdm_aget(c, 1), args);
 		}
 		else
 		{
@@ -319,8 +319,8 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 
 			/* value is scalar; c is the 1 argument
 			   version of the executable function */
-			if((func=(mpdm_t (*)(mpdm_t))(c->data)) != NULL)
-				r=func(args);
+			if((func = (mpdm_t (*)(mpdm_t))(c->data)) != NULL)
+				r = func(args);
 		}
 
 		mpdm_unref(args);
@@ -338,7 +338,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 
 	MPDM_ND_BEGIN();
 
-	r=mpdm_exec(c, MPDM_ND_A(av));
+	r = mpdm_exec(c, MPDM_ND_A(av));
 
 	MPDM_ND_END();
 
@@ -353,7 +353,7 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 
 	MPDM_ND_BEGIN();
 
-	r=mpdm_exec(c, MPDM_ND_A(av));
+	r = mpdm_exec(c, MPDM_ND_A(av));
 
 	MPDM_ND_END();
 
@@ -365,7 +365,7 @@ mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 {
 	mpdm_t x;
 
-	x=MPDM_A(2);
+	x = MPDM_A(2);
 	x->flags |= MPDM_EXEC;
 
 	mpdm_aset(x, MPDM_X(a1), 0);

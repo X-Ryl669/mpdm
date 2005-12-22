@@ -87,22 +87,22 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3);
 mpdm_t mpdm_new_a(int flags, int size);
 mpdm_t mpdm_aclone(mpdm_t v);
 
-mpdm_t mpdm_aexpand(mpdm_t a, int offset, int num);
-mpdm_t mpdm_acollapse(mpdm_t a, int offset, int num);
+mpdm_t mpdm_expand(mpdm_t a, int offset, int num);
+mpdm_t mpdm_collapse(mpdm_t a, int offset, int num);
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset);
 mpdm_t mpdm_aget(mpdm_t a, int offset);
-mpdm_t mpdm_ains(mpdm_t a, mpdm_t e, int offset);
+mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset);
 mpdm_t mpdm_adel(mpdm_t a, int offset);
-mpdm_t mpdm_apush(mpdm_t a, mpdm_t e);
-mpdm_t mpdm_apop(mpdm_t a);
-mpdm_t mpdm_aqueue(mpdm_t a, mpdm_t e, int size);
-int mpdm_aseek(mpdm_t a, mpdm_t k, int step);
-int mpdm_abseek(mpdm_t a, mpdm_t k, int step, int * pos);
-mpdm_t mpdm_asort(mpdm_t a, int step);
-mpdm_t mpdm_asort_cb(mpdm_t a, int step, mpdm_t asort_cb);
+mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
+mpdm_t mpdm_pop(mpdm_t a);
+mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size);
+int mpdm_seek(mpdm_t a, mpdm_t k, int step);
+int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos);
+mpdm_t mpdm_sort(mpdm_t a, int step);
+mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 
-mpdm_t mpdm_asplit(mpdm_t s, mpdm_t a);
-mpdm_t mpdm_ajoin(mpdm_t s, mpdm_t a);
+mpdm_t mpdm_split(mpdm_t s, mpdm_t a);
+mpdm_t mpdm_join(mpdm_t s, mpdm_t a);
 
 void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize);
 wchar_t * mpdm_pokev(wchar_t * dst, int * dsize, mpdm_t v);
@@ -127,11 +127,11 @@ mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2);
 int mpdm_hsize(mpdm_t h);
 mpdm_t mpdm_hget(mpdm_t h, mpdm_t k);
 mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k);
-int mpdm_hexists(mpdm_t h, mpdm_t k);
+int mpdm_exists(mpdm_t h, mpdm_t k);
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
 mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k);
-mpdm_t mpdm_hkeys(mpdm_t h);
+mpdm_t mpdm_keys(mpdm_t h);
 
 void mpdm_dump(mpdm_t v);
 

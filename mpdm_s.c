@@ -206,7 +206,7 @@ mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 		flags |= MPDM_FREE;
 
 		/* allocs */
-		if((ptr=malloc((size + 1) * sizeof(wchar_t))) == NULL)
+		if((ptr = malloc((size + 1) * sizeof(wchar_t))) == NULL)
 			return(NULL);
 
 		/* if no source, reset to zeroes; otherwise, copy */
@@ -215,10 +215,10 @@ mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 		else
 		{
 			wcsncpy(ptr, str, size);
-			ptr[size]=L'\0';
+			ptr[size] = L'\0';
 		}
 
-		str=ptr;
+		str = ptr;
 	}
 
 	/* it's a string */
@@ -234,7 +234,7 @@ mpdm_t mpdm_new_mbstowcs(int flags, char * str, int l)
 	wchar_t * ptr;
 	int size;
 
-	if((ptr=mpdm_mbstowcs(str, &size, l)) == NULL)
+	if((ptr = mpdm_mbstowcs(str, &size, l)) == NULL)
 		return(NULL);
 
 	/* it's a string */
@@ -250,7 +250,7 @@ mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 	char * ptr;
 	int size;
 
-	ptr=mpdm_wcstombs(str, &size);
+	ptr = mpdm_wcstombs(str, &size);
 
 	flags |= MPDM_FREE;
 
@@ -270,7 +270,7 @@ mpdm_t mpdm_new_i(int ival)
 	/* creates the visual representation */
 	snprintf(tmp, sizeof(tmp), "%d", ival);
 
-	v=MPDM_MBS(tmp);
+	v = MPDM_MBS(tmp);
 	v->flags |= MPDM_IVAL;
 	v->ival=ival;
 
@@ -292,17 +292,17 @@ mpdm_t mpdm_new_r(double rval)
 	{
 		char * ptr;
 
-		for(ptr=tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
+		for(ptr = tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
 
 		/* if it's over the ., strip it also */
 		if(*ptr != '.') ptr++;
 
-		*ptr='\0';
+		*ptr = '\0';
 	}
 
-	v=MPDM_MBS(tmp);
+	v = MPDM_MBS(tmp);
 	v->flags |= MPDM_RVAL;
-	v->rval=rval;
+	v->rval = rval;
 
 	return(v);
 }
@@ -336,7 +336,7 @@ wchar_t * mpdm_string(mpdm_t v)
 	/* otherwise, return a visual representation */
 	snprintf(tmp, sizeof(tmp), "%p", v);
 	mbstowcs(wtmp, tmp, sizeof(wtmp));
-	wtmp[sizeof(wtmp) - 1]=L'\0';
+	wtmp[sizeof(wtmp) - 1] = L'\0';
 
 	return(wtmp);
 }
@@ -392,48 +392,48 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 {
 	mpdm_t w;
-	mpdm_t n=NULL;
-	mpdm_t d=NULL;
+	mpdm_t n = NULL;
+	mpdm_t d = NULL;
 	int os, ns, r;
-	int ins=0;
+	int ins = 0;
 	wchar_t * ptr;
 
 	if(v != NULL)
 	{
-		os=mpdm_size(v);
+		os = mpdm_size(v);
 
 		/* negative offsets start from the end */
-		if(offset < 0) offset=os + 1 - offset;
+		if(offset < 0) offset = os + 1 - offset;
 
 		/* never add further the end */
-		if(offset > os) offset=os;
+		if(offset > os) offset = os;
 
 		/* negative del counts as 'characters left' */
-		if(del < 0) del=os + 1 - offset + del;
+		if(del < 0) del = os + 1 - offset + del;
 
 		/* something to delete? */
 		if(del > 0)
 		{
 			/* never delete further the end */
-			if(offset + del > os) del=os - offset;
+			if(offset + del > os) del = os - offset;
 
 			/* deleted string */
-			d=MPDM_NS(((wchar_t *) v->data) + offset, del);
+			d = MPDM_NS(((wchar_t *) v->data) + offset, del);
 		}
 		else
-			del=0;
+			del = 0;
 
 		/* something to insert? */
-		ins=mpdm_size(i);
+		ins = mpdm_size(i);
 
 		/* new size and remainder */
-		ns=os + ins - del;
-		r=offset + del;
+		ns = os + ins - del;
+		r = offset + del;
 
-		if((n=MPDM_NS(NULL, ns)) == NULL)
+		if((n = MPDM_NS(NULL, ns)) == NULL)
 			return(NULL);
 
-		ptr=n->data;
+		ptr = n->data;
 
 		/* copy the beginning */
 		if(offset > 0)
@@ -458,13 +458,13 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 		}
 
 		/* null terminate */
-		*ptr=L'\0';
+		*ptr = L'\0';
 	}
 	else
-		n=i;
+		n = i;
 
 	/* creates the output array */
-	w=MPDM_A(2);
+	w = MPDM_A(2);
 
 	mpdm_aset(w, n, 0);
 	mpdm_aset(w, d, 1);
@@ -520,7 +520,7 @@ int mpdm_ival(mpdm_t v)
 	/* if there is no cached integer, calculate it */
 	if(!(v->flags & MPDM_IVAL))
 	{
-		int i=0;
+		int i = 0;
 
 		/* if it's a string, calculate it; other
 		   values will have an ival of 0 */
@@ -546,7 +546,7 @@ int mpdm_ival(mpdm_t v)
 			sscanf(tmp, fmt, &i);
 		}
 
-		v->ival=i;
+		v->ival = i;
 		v->flags |= MPDM_IVAL;
 	}
 
@@ -574,7 +574,7 @@ double mpdm_rval(mpdm_t v)
 	/* if there is no cached double, calculate it */
 	if(!(v->flags & MPDM_RVAL))
 	{
-		double r=0.0;
+		double r = 0.0;
 
 		/* if it's a string, calculate it; other
 		   values will have an rval of 0.0 */
@@ -584,7 +584,7 @@ double mpdm_rval(mpdm_t v)
 			char * prev_locale;
 
 			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
-			tmp[sizeof(tmp) - 1]='\0';
+			tmp[sizeof(tmp) - 1] = '\0';
 
 			/* if the number starts with 0, it's
 			   an octal or hexadecimal number; just
@@ -595,7 +595,7 @@ double mpdm_rval(mpdm_t v)
 			{
 				/* set locale to C for non locale-dependent
 				   floating point conversion */
-				prev_locale=setlocale(LC_NUMERIC, "C");
+				prev_locale = setlocale(LC_NUMERIC, "C");
 
 				/* read */
 				sscanf(tmp, "%lf", &r);
@@ -605,7 +605,7 @@ double mpdm_rval(mpdm_t v)
 			}
 		}
 
-		v->rval=r;
+		v->rval = r;
 		v->flags |= MPDM_RVAL;
 	}
 
@@ -630,25 +630,25 @@ mpdm_t mpdm_gettext(mpdm_t str)
 	mpdm_t v;
 
 	/* try first the cache */
-	if((v=mpdm_hget(mpdm->i18n, str)) == NULL)
+	if((v = mpdm_hget(mpdm->i18n, str)) == NULL)
 	{
 #ifdef CONFOPT_GETTEXT
 		char * s;
 
 		/* convert to mbs */
-		v=MPDM_2MBS(str->data);
+		v = MPDM_2MBS(str->data);
 
 		/* ask gettext for it */
-		s=gettext((char *)v->data);
+		s = gettext((char *)v->data);
 
 		/* create new value only if it's different */
 		if(s != v->data)
-			v=MPDM_MBS(s);
+			v = MPDM_MBS(s);
 		else
 
 #endif /* CONFOPT_GETTEXT */
 
-			v=str;
+			v = str;
 
 		/* store in the cache */
 		mpdm_hset(mpdm->i18n, str, v);
@@ -676,16 +676,16 @@ void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 	mpdm_unref(mpdm->i18n);
 
 	if(data->flags & MPDM_HASH)
-		mpdm->i18n=data;
+		mpdm->i18n = data;
 	else
 	{
-		mpdm->i18n=MPDM_H(0);
+		mpdm->i18n = MPDM_H(0);
 
 #ifdef CONFOPT_GETTEXT
 
 		/* convert both to mbs,s */
-		dom=MPDM_2MBS(dom->data);
-		data=MPDM_2MBS(data->data);
+		dom = MPDM_2MBS(dom->data);
+		data = MPDM_2MBS(data->data);
 
 		/* bind and set domain */
 		bindtextdomain((char *)dom->data, (char *)data->data);
