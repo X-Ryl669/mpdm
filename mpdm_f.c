@@ -95,7 +95,7 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 	if(cptr != NULL)
 	{
 		/* do the conversion */
-		ptr=mpdm_mbstowcs(cptr, s, -1);
+		ptr = mpdm_mbstowcs(cptr, s, -1);
 
 		free(cptr);
 	}
@@ -110,7 +110,7 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 	int s, n;
 	char * ptr;
 
-	ptr=mpdm_wcstombs(str, &s);
+	ptr = mpdm_wcstombs(str, &s);
 
 	for(n = 0;n < s;n++)
 		fputc(ptr[n], f);
@@ -189,17 +189,17 @@ void mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
 		size_t il, ol;
 		char * iptr, * optr;
 
-		il=sizeof(wchar_t); iptr=(char *)str;
-		ol=sizeof(tmp); optr=tmp;
+		il = sizeof(wchar_t); iptr = (char *)str;
+		ol = sizeof(tmp); optr = tmp;
 
 		/* write to file */
 		if(iconv(ic, &iptr, &il, &optr, &ol) == -1)
 		{
 			/* error converting; convert a '?' instead */
-			wchar_t q=L'?';
+			wchar_t q = L'?';
 
-			il=sizeof(wchar_t); iptr=(char *)&q;
-			ol=sizeof(tmp); optr=tmp;
+			il = sizeof(wchar_t); iptr = (char *)&q;
+			ol = sizeof(tmp); optr = tmp;
 
 			iconv(ic, &iptr, &il, &optr, &ol);
 		}
@@ -227,13 +227,13 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 	struct mpdm_file * fs;
 
 	/* convert to mbs,s */
-	filename=MPDM_2MBS(filename->data);
-	mode=MPDM_2MBS(mode->data);
+	filename = MPDM_2MBS(filename->data);
+	mode = MPDM_2MBS(mode->data);
 
-	if((f=fopen((char *)filename->data, (char *)mode->data)) == NULL)
+	if((f = fopen((char *)filename->data, (char *)mode->data)) == NULL)
 		return(NULL);
 
-	if((fs=malloc(sizeof(struct mpdm_file))) == NULL)
+	if((fs = malloc(sizeof(struct mpdm_file))) == NULL)
 	{
 		fclose(f);
 		return(NULL);
@@ -241,18 +241,18 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 
 	memset(fs, '\0', sizeof(struct mpdm_file));
 
-	fs->fd=f;
+	fs->fd = f;
 
 #ifdef CONFOPT_ICONV
 
 	if(mpdm->encoding)
 	{
-		mpdm_t cs=MPDM_2MBS(mpdm->encoding->data);
+		mpdm_t cs = MPDM_2MBS(mpdm->encoding->data);
 
-		fs->ic_enc=iconv_open((char *)cs->data, "WCHAR_T");
-		fs->ic_dec=iconv_open("WCHAR_T", (char *)cs->data);
+		fs->ic_enc = iconv_open((char *)cs->data, "WCHAR_T");
+		fs->ic_dec = iconv_open("WCHAR_T", (char *)cs->data);
 
-		fs->has_iconv=1;
+		fs->has_iconv = 1;
 	}
 
 #endif
@@ -271,14 +271,14 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
  */
 mpdm_t mpdm_close(mpdm_t fd)
 {
-	struct mpdm_file * fs=fd->data;
+	struct mpdm_file * fs = fd->data;
 
 	if((fd->flags & MPDM_FILE) && fs != NULL)
 	{
 		if(fs->fd != NULL)
 		{
 			fclose(fs->fd);
-			fs->fd=NULL;
+			fs->fd = NULL;
 		}
 
 #ifdef CONFOPT_ICONV
@@ -287,7 +287,7 @@ mpdm_t mpdm_close(mpdm_t fd)
 		{
 			iconv_close(fs->ic_enc);
 			iconv_close(fs->ic_dec);
-			fs->has_iconv=0;
+			fs->has_iconv = 0;
 		}
 
 #endif
@@ -307,10 +307,10 @@ mpdm_t mpdm_close(mpdm_t fd)
  */
 mpdm_t mpdm_read(mpdm_t fd)
 {
-	mpdm_t v=NULL;
+	mpdm_t v = NULL;
 	wchar_t * ptr;
 	int s;
-	struct mpdm_file * fs=fd->data;
+	struct mpdm_file * fs = fd->data;
 
 	if(fs == NULL)
 		return(NULL);
@@ -318,15 +318,15 @@ mpdm_t mpdm_read(mpdm_t fd)
 #ifdef CONFOPT_ICONV
 
 	if(fs->has_iconv)
-		ptr=mpdm_read_dec(fs->fd, fs->ic_dec, &s);
+		ptr = mpdm_read_dec(fs->fd, fs->ic_dec, &s);
 	else
 
 #endif /* CONFOPT_ICONV */
 
-		ptr=mpdm_read_mbs(fs->fd, &s);
+		ptr = mpdm_read_mbs(fs->fd, &s);
 
 	if(ptr != NULL)
-		v=MPDM_ENS(ptr, s);
+		v = MPDM_ENS(ptr, s);
 
 	return(v);
 }
@@ -343,7 +343,7 @@ mpdm_t mpdm_read(mpdm_t fd)
  */
 int mpdm_write(mpdm_t fd, mpdm_t v)
 {
-	struct mpdm_file * fs=fd->data;
+	struct mpdm_file * fs = fd->data;
 
 	if(fs == NULL)
 		return(-1);
@@ -398,16 +398,16 @@ int mpdm_encoding(mpdm_t charset)
 	if(charset != NULL)
 	{
 		iconv_t ic;
-		mpdm_t cs=MPDM_2MBS(charset->data);
+		mpdm_t cs = MPDM_2MBS(charset->data);
 
 		/* tries to create an encoder and a decoder for this charset */
 
-		if((ic=iconv_open("WCHAR_T", (char *)cs->data)) == (iconv_t) -1)
+		if((ic = iconv_open("WCHAR_T", (char *)cs->data)) == (iconv_t) -1)
 			return(-1);
 
 		iconv_close(ic);
 
-		if((ic=iconv_open((char *)cs->data, "WCHAR_T")) == (iconv_t) -1)
+		if((ic = iconv_open((char *)cs->data, "WCHAR_T")) == (iconv_t) -1)
 			return(-2);
 
 		iconv_close(ic);
@@ -416,9 +416,9 @@ int mpdm_encoding(mpdm_t charset)
 	/* can create; store and exit */
 
 	mpdm_unref(mpdm->encoding);
-	mpdm->encoding=mpdm_ref(charset);
+	mpdm->encoding = mpdm_ref(charset);
 
-	ret=0;
+	ret = 0;
 
 #endif
 
@@ -436,7 +436,7 @@ int mpdm_encoding(mpdm_t charset)
 int mpdm_unlink(mpdm_t filename)
 {
 	/* convert to mbs */
-	filename=MPDM_2MBS(filename->data);
+	filename = MPDM_2MBS(filename->data);
 
 	return(unlink((char *)filename->data));
 }
@@ -458,7 +458,7 @@ int mpdm_unlink(mpdm_t filename)
  */
 mpdm_t mpdm_glob(mpdm_t spec)
 {
-	mpdm_t v=NULL;
+	mpdm_t v = NULL;
 
 #ifdef CONFOPT_WIN32
 
@@ -466,32 +466,32 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	HANDLE h;
 	char * ptr;
 	mpdm_t w;
-	mpdm_t s=NULL;
+	mpdm_t s = NULL;
 
 	/* convert to mbs */
 	if(spec != NULL)
-		spec=MPDM_2MBS(spec->data);
+		spec = MPDM_2MBS(spec->data);
 	else
-		spec=MPDM_2MBS(L"*.*");
+		spec = MPDM_2MBS(L"*.*");
 
-	ptr=(char *)spec->data;
+	ptr = (char *)spec->data;
 
 	/* convert MSDOS dir separators into Unix ones */
 	for(;*ptr != '\0';ptr++)
 	{
 		if(*ptr == '\\')
-			*ptr='/';
+			*ptr = '/';
 	}
 
-	v=MPDM_A(0);
+	v = MPDM_A(0);
 
-	if((h=FindFirstFile((char *)spec->data, &f)) != INVALID_HANDLE_VALUE)
+	if((h = FindFirstFile((char *)spec->data, &f)) != INVALID_HANDLE_VALUE)
 	{
 		/* if spec includes a directory, store in s */
-		if((ptr=strrchr((char *)spec->data, '/')) != NULL)
+		if((ptr = strrchr((char *)spec->data, '/')) != NULL)
 		{
-			*(ptr+1)='\0';
-			s=MPDM_S(spec->data);
+			*(ptr + 1) = '\0';
+			s = MPDM_S(spec->data);
 		}
 
 		do
@@ -502,15 +502,15 @@ mpdm_t mpdm_glob(mpdm_t spec)
 				continue;
 
 			/* concat base directory and file names */
-			w=mpdm_strcat(s, MPDM_MBS(f.cFileName));
+			w = mpdm_strcat(s, MPDM_MBS(f.cFileName));
 
 			/* if it's a directory, add a / */
 			if(f.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-				w=mpdm_strcat(w, MPDM_LS(L"/"));
+				w = mpdm_strcat(w, MPDM_LS(L"/"));
 
-			mpdm_apush(v, w);
+			mpdm_push(v, w);
 		}
-		while(FindNextFile(h,&f));
+		while(FindNextFile(h, &f));
 
 		FindClose(h);
 	}
@@ -527,22 +527,22 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	/* convert to mbs */
 	if(spec != NULL)
 	{
-		spec=MPDM_2MBS(spec->data);
+		spec = MPDM_2MBS(spec->data);
 
-		ptr=spec->data;
+		ptr = spec->data;
 		if(ptr == NULL || *ptr == '\0')
-			ptr="*";
+			ptr = "*";
 	}
 	else
-		ptr="*";
+		ptr = "*";
 
-	globbuf.gl_offs=1;
-	v=MPDM_A(0);
+	globbuf.gl_offs = 1;
+	v = MPDM_A(0);
 
 	if(glob(ptr, GLOB_MARK, NULL, &globbuf) == 0)
 	{
-		for(n=0;globbuf.gl_pathv[n]!=NULL;n++)
-			mpdm_apush(v, MPDM_MBS(globbuf.gl_pathv[n]));
+		for(n = 0;globbuf.gl_pathv[n] != NULL;n++)
+			mpdm_push(v, MPDM_MBS(globbuf.gl_pathv[n]));
 	}
 
 	globfree(&globbuf);

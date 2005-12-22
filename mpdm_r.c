@@ -69,47 +69,47 @@ static wchar_t * regex_flags(mpdm_t r)
 
 mpdm_t mpdm_regcomp(mpdm_t r)
 {
-	mpdm_t c=NULL;
+	mpdm_t c = NULL;
 
 	/* if cache does not exist, create it */
 	if(mpdm->regex == NULL)
-		mpdm->regex=mpdm_ref(MPDM_H(0));
+		mpdm->regex = mpdm_ref(MPDM_H(0));
 
 	/* search the regex in the cache */
-	if((c=mpdm_hget(mpdm->regex, r)) == NULL)
+	if((c = mpdm_hget(mpdm->regex, r)) == NULL)
 	{
 		mpdm_t rmb;
 		regex_t re;
 		char * regex;
 		char * flags;
-		int f=REG_EXTENDED;
+		int f = REG_EXTENDED;
 
 		/* not found; regex must be compiled */
 
 		/* convert to mbs */
-		rmb=MPDM_2MBS(r->data);
+		rmb = MPDM_2MBS(r->data);
 
-		regex=(char *)rmb->data;
-		if((flags=strrchr(regex, *regex)) == NULL)
+		regex = (char *)rmb->data;
+		if((flags = strrchr(regex, *regex)) == NULL)
 			return(NULL);
 
 		if(strchr(flags, 'i') != NULL) f |= REG_ICASE;
 		if(strchr(flags, 'm') != NULL) f |= REG_NEWLINE;
 
 		regex++;
-		*flags='\0';
+		*flags = '\0';
 
 		if(!regcomp(&re, regex, f))
 		{
 			void * ptr;
 
-			if((ptr=malloc(sizeof(regex_t))) != NULL)
+			if((ptr = malloc(sizeof(regex_t))) != NULL)
 			{
 				/* copies */
 				memcpy(ptr, &re, sizeof(regex_t));
 
 				/* create value */
-				c=mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
+				c = mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
 
 				/* stores */
 				mpdm_hset(mpdm->regex, r, c);
@@ -147,7 +147,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  */
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 {
-	mpdm_t w=NULL;
+	mpdm_t w = NULL;
 	mpdm_t t;
 
 	/* special case: if r is NULL, return previous match */
@@ -172,16 +172,16 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		/* multiple value; try sequentially all regexes,
 		   moving the offset forward */
 
-		w=MPDM_A(mpdm_size(r));
+		w = MPDM_A(mpdm_size(r));
 
-		for(n=0;n < mpdm_size(r);n++)
+		for(n = 0;n < mpdm_size(r);n++)
 		{
-			t=mpdm_regex(mpdm_aget(r, n), v, offset);
+			t = mpdm_regex(mpdm_aget(r, n), v, offset);
 
 			/* if not found, invalid all search and exit */
 			if(t == NULL)
 			{
-				w=NULL;
+				w = NULL;
 				break;
 			}
 
@@ -197,7 +197,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		/* single value; really do the regex */
 
 		/* compile the regex */
-		if((cr=mpdm_regcomp(r)) != NULL)
+		if((cr = mpdm_regcomp(r)) != NULL)
 		{
 			regmatch_t rm;
 			char * ptr;
@@ -218,7 +218,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				mpdm_regex_offset += offset;
 
 				/* create now the matching string */
-				w=MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
+				w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
 
 				/* and store the size */
 				mpdm_regex_size = mpdm_size(w);
@@ -258,7 +258,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 	int f;
 	wchar_t * global;
 	mpdm_t t;
-	mpdm_t o=v;
+	mpdm_t o = v;
 
 	if(r == NULL)
 	{
@@ -270,20 +270,20 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		return(NULL);
 
 	/* compile the regex */
-	if((cr=mpdm_regcomp(r)) != NULL)
+	if((cr = mpdm_regcomp(r)) != NULL)
 	{
 		/* takes pointer to global flag */
-		if((global=regex_flags(r)) != NULL)
-			global=wcschr(global, 'g');
+		if((global = regex_flags(r)) != NULL)
+			global = wcschr(global, 'g');
 
 		/* store the first part */
-		o=MPDM_NS(v->data, offset);
+		o = MPDM_NS(v->data, offset);
 
 		/* convert to mbs */
-		if((t=MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
+		if((t = MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
 			return(v);
 
-		ptr=(char *) t->data;
+		ptr = (char *) t->data;
 
 		/* reset count */
 		mpdm_sregex_count = 0;
@@ -293,18 +293,18 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 			regmatch_t rm;
 
 			/* try match */
-			f=!regexec((regex_t *) cr->data, ptr,
+			f = !regexec((regex_t *) cr->data, ptr,
 				1, &rm, offset > 0 ? REG_NOTBOL : 0);
 
 			if(f)
 			{
 				/* creates a string from the beginning
 				   to the start of the match */
-				t=MPDM_NMBS(ptr, rm.rm_so);
-				o=mpdm_strcat(o, t);
+				t = MPDM_NMBS(ptr, rm.rm_so);
+				o = mpdm_strcat(o, t);
 
 				/* appends the substitution string */
-				o=mpdm_strcat(o, s);
+				o = mpdm_strcat(o, s);
 
 				ptr += rm.rm_eo;
 
@@ -315,8 +315,8 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		} while(t && f && global);
 
 		/* no (more) matches; convert and append the rest */
-		t=MPDM_MBS(ptr);
-		o=mpdm_strcat(o, t);
+		t = MPDM_MBS(ptr);
+		o = mpdm_strcat(o, t);
 	}
 
 	return(o);

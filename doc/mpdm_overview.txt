@@ -107,8 +107,8 @@ elements instead:
  mpdm_t ary = MPDM_A(0);
  
  /* two new values pushed */
- mpdm_apush(ary, MPDM_LS(L"Hey!");
- mpdm_apush(ary, MPDM_LS(L"You!");
+ mpdm_push(ary, MPDM_LS(L"Hey!");
+ mpdm_push(ary, MPDM_LS(L"You!");
  
  /* prints 2 */
  printf("%d\n", mpdm_size(ary));
