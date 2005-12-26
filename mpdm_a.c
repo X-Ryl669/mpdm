@@ -303,6 +303,22 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
 
 
 /**
+ * mpdm_shift - Extracts the first element of an array.
+ * @a: the array
+ *
+ * Extracts the first element of the array. The array
+ * is shrinked by one.
+ *
+ * Returns the deleted element.
+ * [Arrays]
+ */
+mpdm_t mpdm_shift(mpdm_t a)
+{
+	return(mpdm_adel(a, 0));
+}
+
+
+/**
  * mpdm_push - Pushes a value into an array.
  * @a: the array
  * @e: the value
