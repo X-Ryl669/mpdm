@@ -93,6 +93,7 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset);
 mpdm_t mpdm_aget(mpdm_t a, int offset);
 mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset);
 mpdm_t mpdm_adel(mpdm_t a, int offset);
+mpdm_t mpdm_shift(mpdm_t a);
 mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
 mpdm_t mpdm_pop(mpdm_t a);
 mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size);
