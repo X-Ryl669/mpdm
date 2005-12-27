@@ -81,6 +81,7 @@ mpdm_t mpdm_clone(mpdm_t v);
 mpdm_t mpdm_root(void);
 
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args);
+mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1);
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2);
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3);
 

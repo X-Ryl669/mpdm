@@ -331,6 +331,21 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 }
 
 
+mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
+{
+	mpdm_t av[] = { a1 };
+	mpdm_t r;
+
+	MPDM_ND_BEGIN();
+
+	r = mpdm_exec(c, MPDM_ND_A(av));
+
+	MPDM_ND_END();
+
+	return(r);
+}
+
+
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 {
 	mpdm_t av[] = { a1, a2 };
