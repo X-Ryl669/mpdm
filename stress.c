@@ -340,6 +340,14 @@ void test_hash(void)
 
 	do_test("exists 1", mpdm_exists(h, MPDM_LS(L"ok")));
 	do_test("exists 2", ! mpdm_exists(h, MPDM_LS(L"notok")));
+
+	v = mpdm_hget_s(h, L"ok");
+	do_test("hget_s 1", mpdm_ival(v) == 666);
+
+	mpdm_hset_s(h, L"ok", MPDM_I(777));
+
+	v = mpdm_hget_s(h, L"ok");
+	do_test("hget_s + hset_s", mpdm_ival(v) == 777);
 }
 
 
