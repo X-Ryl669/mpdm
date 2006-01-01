@@ -99,7 +99,9 @@ mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
 mpdm_t mpdm_pop(mpdm_t a);
 mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size);
 int mpdm_seek(mpdm_t a, mpdm_t k, int step);
+int mpdm_seek_s(mpdm_t a, wchar_t * k, int step);
 int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos);
+int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int * pos);
 mpdm_t mpdm_sort(mpdm_t a, int step);
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 

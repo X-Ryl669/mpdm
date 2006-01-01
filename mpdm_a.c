@@ -407,6 +407,29 @@ int mpdm_seek(mpdm_t a, mpdm_t k, int step)
 
 
 /**
+ * mpdm_seek_s - Seeks a value in an array (sequential, string version).
+ * @a: the array
+ * @k: the key
+ * @step: number of elements to step
+ *
+ * Seeks sequentially the value @k in the @a array in
+ * increments of @step. A complete search should use a step of 1.
+ * Returns the offset of the element if found, or -1 otherwise.
+ * [Arrays]
+ */
+int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
+{
+	int r;
+
+	MPDM_ND_BEGIN();
+	r = mpdm_seek(a, MPDM_ND_LS(k), step);
+	MPDM_ND_END();
+
+	return(r);
+}
+
+
+/**
  * mpdm_bseek - Seeks a value in an array (binary).
  * @a: the ordered array
  * @k: the key
@@ -450,6 +473,35 @@ int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos)
 
 	if(pos != NULL) *pos = b * step;
 	return(-1);
+}
+
+
+/**
+ * mpdm_bseek_s - Seeks a value in an array (binary, string version).
+ * @a: the ordered array
+ * @k: the key
+ * @step: number of elements to step
+ * @pos: the position where the element should be, if it's not found
+ *
+ * Seeks the value @k in the @a array in increments of @step.
+ * The array should be sorted to work correctly. A complete search
+ * should use a step of 1.
+ *
+ * If the element is found, returns the offset of the element
+ * as a positive number; otherwise, -1 is returned and the position
+ * where the element should be is stored in @pos. You can set @pos
+ * to NULL if you don't mind.
+ * [Arrays]
+ */
+int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int * pos)
+{
+	int r;
+
+	MPDM_ND_BEGIN();
+	r = mpdm_bseek(a, MPDM_ND_LS(k), step, pos);
+	MPDM_ND_END();
+
+	return(r);
 }
 
 
