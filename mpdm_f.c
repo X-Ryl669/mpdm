@@ -123,8 +123,8 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 
 extern int errno;
 
-wchar_t * mpdm_read_dec(FILE * f, iconv_t ic, int * s)
-/* reads a multibyte string from a stream into a dynamic string */
+wchar_t * mpdm_read_iconv(FILE * f, iconv_t ic, int * s)
+/* reads a multibyte string transforming with iconv */
 {
 	char tmp[128];
 	wchar_t * ptr = NULL;
@@ -175,8 +175,8 @@ wchar_t * mpdm_read_dec(FILE * f, iconv_t ic, int * s)
 }
 
 
-void mpdm_write_enc(FILE * f, iconv_t ic, wchar_t * str)
-/* writes a wide string to a stream, using enc as encoder */
+void mpdm_write_iconv(FILE * f, iconv_t ic, wchar_t * str)
+/* writes a wide string to a stream using iconv */
 {
 	char tmp[128];
 
@@ -318,7 +318,7 @@ mpdm_t mpdm_read(mpdm_t fd)
 #ifdef CONFOPT_ICONV
 
 	if(fs->has_iconv)
-		ptr = mpdm_read_dec(fs->fd, fs->ic_dec, &s);
+		ptr = mpdm_read_iconv(fs->fd, fs->ic_dec, &s);
 	else
 
 #endif /* CONFOPT_ICONV */
@@ -351,7 +351,7 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 #ifdef CONFOPT_ICONV
 
 	if(fs->has_iconv)
-		mpdm_write_enc(fs->fd, fs->ic_enc, mpdm_string(v));
+		mpdm_write_iconv(fs->fd, fs->ic_enc, mpdm_string(v));
 	else
 
 #endif /* CONFOPT_ICONV */
