@@ -65,7 +65,6 @@ struct mpdm_control
 	int nd_size;		/* size of nd_pool */
 	mpdm_t nd_pool;		/* pool of non-dyn values */
 	mpdm_t encoding;	/* file encoding charset */
-	mpdm_t regex;		/* regular expression cache */
 	mpdm_t i18n;		/* translated strings cache */
 };
 

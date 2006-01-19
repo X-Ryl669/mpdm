@@ -70,13 +70,17 @@ static wchar_t * regex_flags(mpdm_t r)
 mpdm_t mpdm_regcomp(mpdm_t r)
 {
 	mpdm_t c = NULL;
+	mpdm_t regex_cache = NULL;
 
 	/* if cache does not exist, create it */
-	if(mpdm->regex == NULL)
-		mpdm->regex = mpdm_ref(MPDM_H(0));
+	if((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL)
+	{
+		regex_cache = MPDM_H(0);
+		mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", regex_cache);
+	}
 
 	/* search the regex in the cache */
-	if((c = mpdm_hget(mpdm->regex, r)) == NULL)
+	if((c = mpdm_hget(regex_cache, r)) == NULL)
 	{
 		mpdm_t rmb;
 		regex_t re;
@@ -112,7 +116,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 				c = mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
 
 				/* stores */
-				mpdm_hset(mpdm->regex, r, c);
+				mpdm_hset(regex_cache, r, c);
 			}
 		}
 	}
