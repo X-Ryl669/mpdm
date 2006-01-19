@@ -61,7 +61,6 @@ struct mpdm_file
 
 	iconv_t ic_enc;
 	iconv_t ic_dec;
-	int has_iconv:1;
 
 #endif /* CONFOPT_ICONV */
 };
@@ -251,9 +250,9 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 
 		fs->ic_enc = iconv_open((char *)cs->data, "WCHAR_T");
 		fs->ic_dec = iconv_open("WCHAR_T", (char *)cs->data);
-
-		fs->has_iconv = 1;
 	}
+	else
+		fs->ic_enc = fs->ic_dec = (iconv_t) -1;
 
 #endif
 
@@ -283,13 +282,17 @@ mpdm_t mpdm_close(mpdm_t fd)
 
 #ifdef CONFOPT_ICONV
 
-		if(fs->has_iconv)
+		if(fs->ic_enc != (iconv_t) -1)
 		{
 			iconv_close(fs->ic_enc);
-			iconv_close(fs->ic_dec);
-			fs->has_iconv = 0;
+			fs->ic_enc = (iconv_t) -1;
 		}
 
+		if(fs->ic_dec != (iconv_t) -1)
+		{
+			iconv_close(fs->ic_dec);
+			fs->ic_dec = (iconv_t) -1;
+		}
 #endif
 	}
 
@@ -317,7 +320,7 @@ mpdm_t mpdm_read(mpdm_t fd)
 
 #ifdef CONFOPT_ICONV
 
-	if(fs->has_iconv)
+	if(fs->ic_dec != (iconv_t) -1)
 		ptr = mpdm_read_iconv(fs->fd, fs->ic_dec, &s);
 	else
 
@@ -350,7 +353,7 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 
 #ifdef CONFOPT_ICONV
 
-	if(fs->has_iconv)
+	if(fs->ic_enc != (iconv_t) -1)
 		mpdm_write_iconv(fs->fd, fs->ic_enc, mpdm_string(v));
 	else
 
