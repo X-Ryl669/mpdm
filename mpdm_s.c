@@ -617,8 +617,10 @@ double mpdm_rval(mpdm_t v)
  * mpdm_gettext - Translates a string to the current language.
  * @str: the string
  *
- * Translates the @str string to the current language. The active language
- * and data directory is set by a call to mpdm_gettext_domain().
+ * Translates the @str string to the current language.
+ *
+ * This function can still be used even if there is no real gettext
+ * support() by manually filling the __I18N__ hash.
  *
  * If the string is found in the current table, the translation is
  * returned; otherwise, the same @str value is returned.
@@ -628,9 +630,14 @@ double mpdm_rval(mpdm_t v)
 mpdm_t mpdm_gettext(mpdm_t str)
 {
 	mpdm_t v;
+	mpdm_t i18n = NULL;
+
+	/* gets the cache, if any */
+	if((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
+		return(str);
 
 	/* try first the cache */
-	if((v = mpdm_hget(mpdm->i18n, str)) == NULL)
+	if((v = mpdm_hget(i18n, str)) == NULL)
 	{
 #ifdef CONFOPT_GETTEXT
 		char * s;
@@ -651,7 +658,7 @@ mpdm_t mpdm_gettext(mpdm_t str)
 			v = str;
 
 		/* store in the cache */
-		mpdm_hset(mpdm->i18n, str, v);
+		mpdm_hset(i18n, str, v);
 	}
 
 	return(v);
@@ -661,40 +668,37 @@ mpdm_t mpdm_gettext(mpdm_t str)
 /**
  * mpdm_gettext_domain - Sets domain and data directory for translations.
  * @dom: the domain (application name)
- * @data: translation data
+ * @data: directory contaning the .mo files
  *
  * Sets the domain (application name) and translation data for translating
- * strings that will be returned by mpdm_gettext(). If @data is a hash, it
- * is directly used as a translation hash for future translations; if it's
- * a scalar string, @data must point to a directory containing the
- * .mo (compiled .po) files (gettext support must exist for this to work).
+ * strings that will be returned by mpdm_gettext().@data must point to a
+ * directory containing the .mo (compiled .po) files.
+ *
+ * If there is no gettext support, returns -1, or 0 otherwise.
  * [Strings]
  * [Localization]
  */
-void mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
+int mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 {
-	mpdm_unref(mpdm->i18n);
-
-	if(data->flags & MPDM_HASH)
-		mpdm->i18n = data;
-	else
-	{
-		mpdm->i18n = MPDM_H(0);
+	int ret = -1;
 
 #ifdef CONFOPT_GETTEXT
 
-		/* convert both to mbs,s */
-		dom = MPDM_2MBS(dom->data);
-		data = MPDM_2MBS(data->data);
+	/* convert both to mbs,s */
+	dom = MPDM_2MBS(dom->data);
+	data = MPDM_2MBS(data->data);
 
-		/* bind and set domain */
-		bindtextdomain((char *)dom->data, (char *)data->data);
-		textdomain((char *)dom->data);
+	/* bind and set domain */
+	bindtextdomain((char *)dom->data, (char *)data->data);
+	textdomain((char *)dom->data);
+
+	mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+
+	ret = 0;
 
 #endif /* CONFOPT_GETTEXT */
-	}
 
-	mpdm_ref(mpdm->i18n);
+	return(ret);
 }
 
 

@@ -65,7 +65,6 @@ struct mpdm_control
 	int nd_size;		/* size of nd_pool */
 	mpdm_t nd_pool;		/* pool of non-dyn values */
 	mpdm_t encoding;	/* file encoding charset */
-	mpdm_t i18n;		/* translated strings cache */
 };
 
 extern struct mpdm_control * mpdm;
@@ -161,7 +160,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset);
 mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset);
 
 mpdm_t mpdm_gettext(mpdm_t str);
-void mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
+int mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
 /* value type testing macros */
 
