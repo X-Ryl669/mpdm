@@ -50,7 +50,7 @@
 
 /* matching of the last regex */
 
-int mpdm_regex_offset = 0;
+int mpdm_regex_offset = -1;
 int mpdm_regex_size = 0;
 
 /* number of substitutions in last sregex */
@@ -140,7 +140,8 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * If @r is NULL, the result of the previous regex matching
  * is returned as a two element array. The first element will contain
  * the character offset of the matching and the second the number of
- * characters matched.
+ * characters matched. If the previous regex was unsuccessful, NULL
+ * is returned.
  *
  * FIXME: Document @r as a multiple value case.
  *
@@ -157,10 +158,14 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 	/* special case: if r is NULL, return previous match */
 	if(r == NULL)
 	{
-		w = MPDM_A(2);
+		/* if previous regex was successful... */
+		if(mpdm_regex_offset != -1)
+		{
+			w = MPDM_A(2);
 
-		mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
-		mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
+			mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
+			mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
+		}
 
 		return(w);
 	}
@@ -199,6 +204,9 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		mpdm_t cr;
 
 		/* single value; really do the regex */
+
+		/* no matching yet */
+		mpdm_regex_offset = -1;
 
 		/* compile the regex */
 		if((cr = mpdm_regcomp(r)) != NULL)
