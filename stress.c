@@ -40,6 +40,7 @@ char * failed_msgs[5000];
 int i_failed_msgs = 0;
 
 int do_benchmarks = 0;
+int do_multibyte_sregex_tests = 0;
 
 /*******************
 	Code
@@ -717,13 +718,18 @@ void test_regex(void)
 	do_test("Multibyte environment regex 1",
 		mpdm_cmp(v, MPDM_LS(L"-")) == 0);
 
-	v = mpdm_sregex(MPDM_LS(L"/-$/"), w, MPDM_LS(L"~"), 0);
-	do_test("Multibyte environment sregex 1",
-		mpdm_cmp(v, MPDM_LS(L"-\x03a9~")) == 0);
+	if(do_multibyte_sregex_tests)
+	{
+		v = mpdm_sregex(MPDM_LS(L"/-$/"), w, MPDM_LS(L"~"), 0);
+		do_test("Multibyte environment sregex 1",
+			mpdm_cmp(v, MPDM_LS(L"-\x03a9~")) == 0);
 
-	v = mpdm_sregex(MPDM_LS(L"/-/g"), w, MPDM_LS(L"~"), 0);
-	do_test("Multibyte environment sregex 2",
-		mpdm_cmp(v, MPDM_LS(L"~\x03a9~")) == 0);
+		v = mpdm_sregex(MPDM_LS(L"/-/g"), w, MPDM_LS(L"~"), 0);
+		do_test("Multibyte environment sregex 2",
+			mpdm_cmp(v, MPDM_LS(L"~\x03a9~")) == 0);
+	}
+	else
+		printf("Multibyte sregex test omitted; activate with -m\n");
 }
 
 
@@ -1056,8 +1062,13 @@ void test_conversion(void)
 
 int main(int argc, char * argv[])
 {
-	if(argc > 1 && strcmp(argv[1], "-b") == 0)
-		do_benchmarks=1;
+	if(argc > 1)
+	{
+		if(strcmp(argv[1], "-b") == 0)
+			do_benchmarks = 1;
+		if(strcmp(argv[1], "-m") == 0)
+			do_multibyte_sregex_tests = 1;
+	}
 
 	mpdm_startup();
 
