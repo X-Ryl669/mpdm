@@ -256,6 +256,10 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
  * matching, and 'g', for global replacements (all ocurrences in @v
  * will be replaced, instead of just the first found one).
  *
+ * If @s is executable, it's executed with the matched part as
+ * the only argument and its return value is used as the
+ * substitution string.
+ *
  * If @r is NULL, returns the number of substitutions made in the
  * previous call to mpdm_sregex() (can be zero if none was done).
  *
@@ -315,8 +319,21 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				t = MPDM_NMBS(ptr, rm.rm_so);
 				o = mpdm_strcat(o, t);
 
+				/* is s an executable value? */
+				if(s->flags & MPDM_EXEC)
+				{
+					/* get the matched part */
+					t = MPDM_NMBS(ptr + rm.rm_so,
+						rm.rm_eo - rm.rm_so);
+
+					/* execute s, with t as argument */
+					t = mpdm_exec_1(s, t);
+				}
+				else
+					t = s;
+
 				/* appends the substitution string */
-				o = mpdm_strcat(o, s);
+				o = mpdm_strcat(o, t);
 
 				ptr += rm.rm_eo;
 
