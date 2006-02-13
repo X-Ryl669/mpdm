@@ -297,10 +297,8 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		o = MPDM_NS(v->data, offset);
 
 		/* convert to mbs */
-		if((t = MPDM_2MBS((wchar_t *)v->data + offset)) == NULL)
-			return(v);
-
-		ptr = (char *) t->data;
+		if((ptr = mpdm_wcstombs(v->data + offset, NULL)) == NULL)
+			return(NULL);
 
 		/* reset count */
 		mpdm_sregex_count = 0;
@@ -327,8 +325,13 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 					t = MPDM_NMBS(ptr + i + rm.rm_so,
 						rm.rm_eo - rm.rm_so);
 
+					/* protect o from sweeping */
+					mpdm_ref(o);
+
 					/* execute s, with t as argument */
 					t = mpdm_exec_1(s, t);
+
+					mpdm_unref(o);
 				}
 				else
 					t = s;
@@ -347,6 +350,8 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		/* no (more) matches; convert and append the rest */
 		t = MPDM_MBS(ptr + i);
 		o = mpdm_strcat(o, t);
+
+		free(ptr);
 	}
 
 	return(o);
