@@ -314,8 +314,6 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 			if(f)
 			{
-				mpdm_t n;
-
 				/* creates a string from the beginning
 				   to the start of the match */
 				t = MPDM_NMBS(ptr, rm.rm_so);
@@ -325,17 +323,17 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				if(s != NULL && s->flags & MPDM_EXEC)
 				{
 					/* get the matched part */
-					n = MPDM_NMBS(ptr + rm.rm_so,
+					t = MPDM_NMBS(ptr + rm.rm_so,
 						rm.rm_eo - rm.rm_so);
 
 					/* execute s, with t as argument */
-					n = mpdm_exec_1(s, n);
+					t = mpdm_exec_1(s, t);
 				}
 				else
-					n = s;
+					t = s;
 
 				/* appends the substitution string */
-				o = mpdm_strcat(o, n);
+				o = mpdm_strcat(o, t);
 
 				ptr += rm.rm_eo;
 
@@ -343,7 +341,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				mpdm_sregex_count ++;
 			}
 
-		} while(t && f && global);
+		} while(f && global);
 
 		/* no (more) matches; convert and append the rest */
 		t = MPDM_MBS(ptr);
