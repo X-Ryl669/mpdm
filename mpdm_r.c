@@ -270,10 +270,6 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 {
 	mpdm_t cr;
-	char * ptr;
-	int f;
-	wchar_t * global;
-	mpdm_t t;
 	mpdm_t o = v;
 
 	if(r == NULL)
@@ -288,6 +284,11 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 	/* compile the regex */
 	if((cr = mpdm_regcomp(r)) != NULL)
 	{
+		char * ptr;
+		int f, i = 0;
+		wchar_t * global;
+		mpdm_t t;
+
 		/* takes pointer to global flag */
 		if((global = regex_flags(r)) != NULL)
 			global = wcschr(global, 'g');
@@ -309,21 +310,21 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 			regmatch_t rm;
 
 			/* try match */
-			f = !regexec((regex_t *) cr->data, ptr,
+			f = !regexec((regex_t *) cr->data, ptr + i,
 				1, &rm, offset > 0 ? REG_NOTBOL : 0);
 
 			if(f)
 			{
 				/* creates a string from the beginning
 				   to the start of the match */
-				t = MPDM_NMBS(ptr, rm.rm_so);
+				t = MPDM_NMBS(ptr + i, rm.rm_so);
 				o = mpdm_strcat(o, t);
 
 				/* is s an executable value? */
 				if(s != NULL && s->flags & MPDM_EXEC)
 				{
 					/* get the matched part */
-					t = MPDM_NMBS(ptr + rm.rm_so,
+					t = MPDM_NMBS(ptr + i + rm.rm_so,
 						rm.rm_eo - rm.rm_so);
 
 					/* execute s, with t as argument */
@@ -335,7 +336,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				/* appends the substitution string */
 				o = mpdm_strcat(o, t);
 
-				ptr += rm.rm_eo;
+				i += rm.rm_eo;
 
 				/* one more substitution */
 				mpdm_sregex_count ++;
@@ -344,7 +345,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		} while(f && global);
 
 		/* no (more) matches; convert and append the rest */
-		t = MPDM_MBS(ptr);
+		t = MPDM_MBS(ptr + i);
 		o = mpdm_strcat(o, t);
 	}
 
