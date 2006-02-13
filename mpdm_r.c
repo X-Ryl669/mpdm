@@ -320,7 +320,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				o = mpdm_strcat(o, t);
 
 				/* is s an executable value? */
-				if(s->flags & MPDM_EXEC)
+				if(s != NULL && s->flags & MPDM_EXEC)
 				{
 					/* get the matched part */
 					t = MPDM_NMBS(ptr + rm.rm_so,
