@@ -137,17 +137,22 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * that ^ and $ match the boundaries of each line instead of the
  * whole string.
  *
+ * If @r is a string, an ordinary regular expression matching is tried
+ * over the @v string. If the matching is possible, the matched string
+ * is returned, or NULL otherwise.
+ *
+ * If @r is an array (of strings), each element is tried sequentially
+ * as an individual regular expression over the @v string, each one using
+ * the offset returned by the previous match. All regular expressions
+ * must match to be successful. If this is the case, an array (with
+ * the same number of arguments) is returned containing the matched
+ * strings, or NULL otherwise.
+ *
  * If @r is NULL, the result of the previous regex matching
  * is returned as a two element array. The first element will contain
  * the character offset of the matching and the second the number of
  * characters matched. If the previous regex was unsuccessful, NULL
  * is returned.
- *
- * FIXME: Document @r as a multiple value case.
- *
- * If @r and @v are defined, the matching string is returned or NULL
- * if no string could be matched; otherwise, the previous match
- * coordinates are returned.
  * [Regular Expressions]
  */
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
