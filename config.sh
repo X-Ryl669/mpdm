@@ -48,7 +48,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	exit 1
 fi
 
-echo "Configuring mpdm..."
+echo "Configuring MPDM..."
 
 echo "/* automatically created by config.sh - do not modify */" > config.h
 echo "# automatically created by config.sh - do not modify" > makefile.opts
