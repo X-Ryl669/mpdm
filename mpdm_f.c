@@ -1,7 +1,7 @@
 /*
 
-    mpdm - Minimum Profit Data Manager
-    Copyright (C) 2003/2005 Angel Ortega <angel@triptico.com>
+    MPDM - Minimum Profit Data Manager
+    Copyright (C) 2003/2006 Angel Ortega <angel@triptico.com>
 
     mpdm_f.c - File management
 

@@ -1,9 +1,9 @@
 /*
 
-    mpdm - Minimum Profit Data Manager
-    Copyright (C) 2003/2005 Angel Ortega <angel@triptico.com>
+    MPDM - Minimum Profit Data Manager
+    Copyright (C) 2003/2006 Angel Ortega <angel@triptico.com>
 
-    stress.c - Stress tests for mpdm.
+    stress.c - Stress tests for MPDM.
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License

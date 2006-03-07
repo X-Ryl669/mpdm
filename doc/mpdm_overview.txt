@@ -1,4 +1,4 @@
-Mpdm overview
+MPDM overview
 =============
 
  Angel Ortega <angel@triptico.com>
@@ -6,7 +6,7 @@ Mpdm overview
 Description
 -----------
 
-Mpdm (Minimum Profit Data Manager) is a lightweight library that provides C
+MPDM (Minimum Profit Data Manager) is a lightweight library that provides C
 programs with a rich set of useful data types as scalars, dynamic arrays
 or hashes, similar to those of the Perl language. Also, it contains a
 rudimentary garbage collector that alleviates the need to keep track of
@@ -14,19 +14,19 @@ data no longer useful, as well as help for operating system abstraction
 and portability, regular expressions, string manipulation, character set
 conversions, localization and file I/O access.
 
-Mpsl (Minimum Profit Scripting Language) is implemented on top of mpdm.
+MPSL (Minimum Profit Scripting Language) is implemented on top of MPDM.
 
 Values
 ------
 
-The basic unit of information under mpdm is the _value_. It's declared
+The basic unit of information under MPDM is the _value_. It's declared
 inside the C code as a variable of mpdm_t type:
 
- /* a mpdm value, initialized as NULL */
+ /* a MPDM value, initialized as NULL */
  mpdm_t v = NULL;
 
-Mpdm values can be single or multiple ones. A single value is a scalar and
-contains meaning by itself; a multiple one contains one or more mpdm
+MPDM values can be single or multiple ones. A single value is a scalar and
+contains meaning by itself; a multiple one contains one or more MPDM
 values, that can be accessed by different means, depending on its nature.
 
 A value also has an internal reference count; when it's 0, the value is
@@ -41,11 +41,11 @@ Scalars
 
 The simplest scalar is a string one:
 
- /* a scalar string mpdm value */
+ /* a scalar string MPDM value */
  mpdm_t v = MPDM_S(L"I'm a happy scalar");
 
-The MPDM_S() macro creates an mpdm value from a dinamically allocated
-copy of a wide-character string. Mpdm works internally with wide-character
+The MPDM_S() macro creates an MPDM value from a dinamically allocated
+copy of a wide-character string. MPDM works internally with wide-character
 strings; though this can seem awkward, it's the only way to do character
 set manipulation (i.e. Unicode) correctly.
 
@@ -69,7 +69,7 @@ Creating values from integers and real numbers (doubles) is also easy:
 Again, those new values are stored as dinamically allocated wide-char
 strings, so they are no different from the first one.
 
-Backwards, an mpdm value can always be converted to integer or real:
+Backwards, an MPDM value can always be converted to integer or real:
 
  /* converts i to integer */
  int n = mpdm_ival(i);
@@ -93,7 +93,7 @@ documentation for further details.
 Value sizes
 -----------
 
-An mpdm value always have a size. For scalar values, the size is usually
+An MPDM value always have a size. For scalar values, the size is usually
 the length of its string representation. It's returned by the mpdm_size()
 function:
 

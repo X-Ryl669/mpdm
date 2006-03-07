@@ -1,7 +1,7 @@
 /*
 
-    mpdm - Minimum Profit Data Manager
-    Copyright (C) 2003/2005 Angel Ortega <angel@triptico.com>
+    MPDM - Minimum Profit Data Manager
+    Copyright (C) 2003/2006 Angel Ortega <angel@triptico.com>
 
     mpdm_t.c - Basic value management
 
@@ -391,7 +391,7 @@ mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 
 
 /**
- * mpdm_startup - Initializes mpdm.
+ * mpdm_startup - Initializes MPDM.
  *
  * Initializes the Minimum Profit Data Manager. Returns 0 if
  * everything went OK.
@@ -422,9 +422,9 @@ int mpdm_startup(void)
 
 
 /**
- * mpdm_shutdown - Shuts down mpdm.
+ * mpdm_shutdown - Shuts down MPDM.
  *
- * Shuts down mpdm. No mpdm functions should be used from now on.
+ * Shuts down MPDM. No MPDM functions should be used from now on.
  */
 void mpdm_shutdown(void)
 {
@@ -504,7 +504,7 @@ void mpdm_shutdown(void)
  * MPDM_I - Creates an integer value.
  * @i: the integer
  *
- * Creates a new integer value. Mpdm integers are strings.
+ * Creates a new integer value. MPDM integers are strings.
  * [Value Creation]
  */
 /** mpdm_t MPDM_I(int i); */
@@ -514,7 +514,7 @@ void mpdm_shutdown(void)
  * MPDM_R - Creates a real value.
  * @r: the real number
  *
- * Creates a new real value. Mpdm integers are strings.
+ * Creates a new real value. MPDM integers are strings.
  * [Value Creation]
  */
 /** mpdm_t MPDM_R(double r); */
