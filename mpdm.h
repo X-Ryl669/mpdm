@@ -144,6 +144,7 @@ mpdm_t mpdm_sget(mpdm_t r, mpdm_t k);
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v);
 
 void mpdm_write_wcs(FILE * f, wchar_t * str);
+mpdm_t mpdm_new_f(FILE * f);
 mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode);
 mpdm_t mpdm_close(mpdm_t fd);
 mpdm_t mpdm_read(mpdm_t fd);
@@ -187,8 +188,10 @@ int mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 #define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
 #define MPDM_X2(f,b)	mpdm_xnew(f,b)
 
-#define MPDM_ND_BEGIN()	unsigned int nd_save=mpdm->nd_index
-#define MPDM_ND_END()	mpdm->nd_index=nd_save
+#define MPDM_F(f)	mpdm_new_f(f)
+
+#define MPDM_ND_BEGIN()	unsigned int nd_save = mpdm->nd_index
+#define MPDM_ND_END()	mpdm->nd_index = nd_save
 
 #define MPDM_ND_LS(s)	mpdm_new_wcs(MPDM_NONDYN, s, -1, 0)
 #define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\
