@@ -521,6 +521,16 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
+ * MPDM_F - Creates a file value.
+ * @f: the file descriptor
+ *
+ * Creates a new file value.
+ * [Value Creation]
+ */
+/** mpdm_t MPDM_F(FILE * f); */
+/* ; */
+
+/**
  * MPDM_MBS - Creates a string value from a multibyte string.
  * @mbs: the multibyte string
  *

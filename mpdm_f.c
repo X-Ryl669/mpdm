@@ -210,27 +210,14 @@ void mpdm_write_iconv(FILE * f, iconv_t ic, wchar_t * str)
 #endif /* CONFOPT_ICONV */
 
 
-/**
- * mpdm_open - Opens a file.
- * @filename: the file name
- * @mode: an fopen-like mode string
- *
- * Opens a file. If @filename can be open in the specified @mode, an
- * mpdm_t value will be returned containing the file descriptor, or NULL
- * otherwise.
- * [File Management]
- */
-mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
+mpdm_t mpdm_new_f(FILE * f)
+/* creates a new file value */
 {
-	FILE * f;
+	mpdm_t v = NULL;
 	struct mpdm_file * fs;
 
-	/* convert to mbs,s */
-	filename = MPDM_2MBS(filename->data);
-	mode = MPDM_2MBS(mode->data);
-
-	if((f = fopen((char *)filename->data, (char *)mode->data)) == NULL)
-		return(NULL);
+	/* NULL is NULL, everywhere */
+	if(f == NULL) return(NULL);
 
 	if((fs = malloc(sizeof(struct mpdm_file))) == NULL)
 	{
@@ -256,8 +243,38 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 
 #endif
 
-	return(mpdm_new(MPDM_FILE|MPDM_FREE, fs,
-		sizeof(struct mpdm_file)));
+	if((v = mpdm_new(MPDM_FILE|MPDM_FREE, fs,
+		sizeof(struct mpdm_file))) == NULL)
+	{
+		fclose(f);
+		free(fs);
+	}
+
+	return(v);
+}
+
+
+/**
+ * mpdm_open - Opens a file.
+ * @filename: the file name
+ * @mode: an fopen-like mode string
+ *
+ * Opens a file. If @filename can be open in the specified @mode, an
+ * mpdm_t value will be returned containing the file descriptor, or NULL
+ * otherwise.
+ * [File Management]
+ */
+mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
+{
+	FILE * f;
+
+	/* convert to mbs,s */
+	filename = MPDM_2MBS(filename->data);
+	mode = MPDM_2MBS(mode->data);
+
+	f = fopen((char *)filename->data, (char *)mode->data);
+
+	return(MPDM_F(f));
 }
 
 
