@@ -281,10 +281,10 @@ mpdm_t mpdm_root(void)
  * Executes an executable value. If @c is a scalar value, its data
  * should be a pointer to a directly executable C function with a
  * prototype of mpdm_t func(mpdm_t args); if it's a multiple one,
- * the first value should be a pointer to a directly executable C
- * function with a prototype of mpdm_t func(mpdm_t c, mpdm_t args).
- * The rest of the elements of @c can be any data, and are used to
- * store bytecode or so when implementing virtual machines or compilers.
+ * the first value's data should be a pointer to a directly executable C
+ * function with a prototype of mpdm_t func(mpdm_t b, mpdm_t args) and
+ * the second value will be passed as the @b argument. This value is used
+ * to store bytecode or so when implementing virtual machines or compilers.
  *
  * Returns the return value of the code. If @c is NULL or not executable,
  * returns NULL.
