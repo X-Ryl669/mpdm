@@ -279,8 +279,12 @@ void test_hash(void)
 
 	h = MPDM_H(0);
 
+	do_test("hsize 1", mpdm_hsize(h) == 0);
+
 	mpdm_hset(h, MPDM_S(L"mp"), MPDM_I(6));
 	v = mpdm_hget(h, MPDM_S(L"mp"));
+
+	do_test("hsize 2", mpdm_hsize(h) == 1);
 
 	do_test("hash: v != NULL", (v != NULL));
 	i = mpdm_ival(v);
@@ -288,6 +292,8 @@ void test_hash(void)
 
 	mpdm_hset(h, MPDM_S(L"mp2"), MPDM_I(66));
 	v = mpdm_hget(h, MPDM_S(L"mp2"));
+
+	do_test("hsize 3", mpdm_hsize(h) == 2);
 
 	do_test("hash: v != NULL", (v != NULL));
 	i = mpdm_ival(v);
@@ -298,6 +304,8 @@ void test_hash(void)
 		mpdm_hset(h, MPDM_I(n), MPDM_I(n * 10));
 	for(n = 100;n >= 50;n--)
 		mpdm_hset(h, MPDM_I(n), MPDM_I(n * 10));
+
+	do_test("hsize 4", mpdm_hsize(h) == 103);
 
 	/* tests 100 values */
 	for(n = 0;n < 100;n++)
@@ -315,6 +323,11 @@ void test_hash(void)
 	}
 
 	printf("h's size: %d\n", mpdm_hsize(h));
+
+	v = mpdm_hdel(h, MPDM_LS(L"mp"));
+	do_test("hdel", mpdm_ival(v) == 6);
+	do_test("hsize 5", mpdm_hsize(h) == 102);
+
 /*
 	mpdm_dump(h);
 
