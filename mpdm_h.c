@@ -62,7 +62,16 @@ static int mpdm_hash_func(wchar_t * string, int mod)
  */
 int mpdm_hsize(mpdm_t h)
 {
-	return(h->ival);
+	int n;
+	int ret = 0;
+
+	for(n = 0;n < mpdm_size(h);n++)
+	{
+		mpdm_t b = mpdm_aget(h, n);
+		ret += mpdm_size(b);
+	}
+
+	return(ret / 2);
 }
 
 
@@ -179,9 +188,6 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 			n = pos;
 			mpdm_expand(b, n, 2);
 			mpdm_aset(b, k, n);
-
-			/* increment number of pairs */
-			h->ival ++;
 		}
 
 		/* sets the value for the key */
@@ -198,9 +204,6 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 
 		/* put the bucket into the hash */
 		mpdm_aset(h, b, n);
-
-		/* increment number of pairs */
-		h->ival ++;
 	}
 
 	return(p);
@@ -254,9 +257,6 @@ mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k)
 
 			/* collapse the bucket */
 			mpdm_collapse(b, n, 2);
-
-			/* decrement number of pairs */
-			h->ival --;
 		}
 	}
 
