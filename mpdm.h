@@ -64,7 +64,6 @@ struct mpdm_control
 	int nd_index;		/* index to next non-dyn value */
 	int nd_size;		/* size of nd_pool */
 	mpdm_t nd_pool;		/* pool of non-dyn values */
-	mpdm_t encoding;	/* file encoding charset */
 };
 
 extern struct mpdm_control * mpdm;
