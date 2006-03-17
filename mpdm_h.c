@@ -169,9 +169,7 @@ int mpdm_exists(mpdm_t h, mpdm_t k)
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 {
 	mpdm_t b;
-	mpdm_t p = NULL;
 	int n;
-	int pos;
 
 	/* if hash is empty, create an optimal number of buckets */
 	if(mpdm_size(h) == 0)
@@ -181,6 +179,8 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 
 	if((b = mpdm_aget(h, n)) != NULL)
 	{
+		int pos;
+
 		/* bucket exists; try to find the key there */
 		if((n = mpdm_bseek(b, k, 2, &pos)) < 0)
 		{
@@ -189,24 +189,23 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 			mpdm_expand(b, n, 2);
 			mpdm_aset(b, k, n);
 		}
-
-		/* sets the value for the key */
-		p = mpdm_aset(b, v, n + 1);
 	}
 	else
 	{
 		/* the bucket does not exist; create it */
 		b = MPDM_A(2);
 
-		/* insert now both key and value */
-		mpdm_aset(b, k, 0);
-		mpdm_aset(b, v, 1);
-
 		/* put the bucket into the hash */
 		mpdm_aset(h, b, n);
+
+		/* offset 0 */
+		n = 0;
+
+		/* insert the key */
+		mpdm_aset(b, k, n);
 	}
 
-	return(p);
+	return(mpdm_aset(b, v, n + 1));
 }
 
 
