@@ -114,7 +114,9 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 	/* add size */
 	a->size += num;
 
-	p = (mpdm_t *) realloc(a->data, a->size * sizeof(mpdm_t));
+	/* expand, or fail */
+	if((p = (mpdm_t *) realloc(a->data, a->size * sizeof(mpdm_t))) == NULL)
+		return(NULL);
 
 	/* moves up from top of the array */
 	for(n = a->size - 1;n >= offset + num;n--)
@@ -170,7 +172,8 @@ mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
 		p[n] = p[n + num];
 
 	/* finally shrinks the memory block */
-	a->data = realloc(p, a->size * sizeof(mpdm_t));
+	if((a->data = realloc(p, a->size * sizeof(mpdm_t))) == NULL)
+		return(NULL);
 
 	return(a);
 }
