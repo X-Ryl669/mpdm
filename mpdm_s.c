@@ -52,13 +52,14 @@ void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
 	if(org != NULL && osize)
 	{
 		/* makes room for the new string */
-		dst = realloc(dst, (*dsize + osize + 1) * esize);
+		if((dst = realloc(dst, (*dsize + osize + 1) * esize)) != NULL)
+		{
+			/* copies it */
+			memcpy(dst + (*dsize * esize), org, (osize + 1) * esize);
 
-		/* copies it */
-		memcpy(dst + (*dsize * esize), org, (osize + 1) * esize);
-
-		/* adds to final size */
-		*dsize += osize;
+			/* adds to final size */
+			*dsize += osize;
+		}
 	}
 
 	return(dst);
@@ -96,9 +97,11 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	if((*s = mbstowcs(NULL, str, 0)) != -1)
 	{
 		/* direct conversion is possible; do it and return */
-		ptr = malloc((*s + 1) * sizeof(wchar_t));
-		mbstowcs(ptr, str, *s);
-		ptr[*s] = L'\0';
+		if((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL)
+		{
+			mbstowcs(ptr, str, *s);
+			ptr[*s] = L'\0';
+		}
 
 		free(str);
 
@@ -136,7 +139,8 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 		i = 0;
 
 		/* store new char */
-		ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t));
+		if((ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t))) == NULL)
+			break;
 	}
 
 	/* free the duplicate */
@@ -161,9 +165,11 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 	if((*s = wcstombs(NULL, str, 0)) != -1)
 	{
 		/* direct conversion is possible; do it and return */
-		ptr = malloc(*s + 1);
-		wcstombs(ptr, str, *s);
-		ptr[*s] = '\0';
+		if((ptr = malloc(*s + 1)) != NULL)
+		{
+			wcstombs(ptr, str, *s);
+			ptr[*s] = '\0';
+		}
 
 		return(ptr);
 	}
@@ -181,7 +187,8 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 		}
 
 		tmp[l] = '\0';
-		ptr = mpdm_poke(ptr, s, tmp, l, 1);
+		if((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
+			break;
 
 		str++;
 	}
