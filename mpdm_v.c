@@ -402,7 +402,8 @@ int mpdm_startup(void)
 	if(mpdm == NULL)
 	{
 		/* alloc space */
-		mpdm = malloc(sizeof(struct mpdm_control));
+		if((mpdm = malloc(sizeof(struct mpdm_control))) == NULL)
+			return(-1);
 
 		/* cleans it */
 		memset(mpdm, '\0', sizeof(struct mpdm_control));
