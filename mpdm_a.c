@@ -643,5 +643,5 @@ mpdm_t mpdm_join(mpdm_t s, mpdm_t a)
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
 	}
 
-	return(MPDM_ENS(ptr, l));
+	return(ptr == NULL ? NULL : MPDM_ENS(ptr, l));
 }

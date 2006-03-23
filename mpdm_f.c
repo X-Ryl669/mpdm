@@ -84,7 +84,8 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 	while((c = fgetc(f)) != EOF)
 	{
 		tmp[0] = c;
-		cptr = mpdm_poke(cptr, &n, tmp, 1, sizeof(char));
+		if((cptr = mpdm_poke(cptr, &n, tmp, 1, sizeof(char))) == NULL)
+			break;
 
 		/* if it's an end of line, finish */
 		if(c == '\n')
@@ -163,7 +164,8 @@ wchar_t * mpdm_read_iconv(FILE * f, iconv_t ic, int * s)
 
 		i = 0;
 
-		ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t));
+		if((ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t))) == NULL)
+			break;
 
 		/* if it's an end of line, finish */
 		if(wc[0] == L'\n')
