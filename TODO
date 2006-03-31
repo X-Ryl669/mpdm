@@ -6,6 +6,10 @@ Release Critical Bugs
 
  * 1056: Fill the overview document.
  * 1083: Add pipe support.
+ * 1085: Use const wherever possible.
+ * 1086: Add a way to get the 'library' (/usr/PREFIX/share on Unix
+   and the "Program Files" directory on Windows) and 'home' (~ and
+   "My Documents") directories.
 
 Open Bugs
 ---------
