@@ -164,10 +164,10 @@ int mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
 /* value type testing macros */
 
-#define MPDM_IS_ARRAY(v)  (((v)->flags) & MPDM_MULTIPLE)
-#define MPDM_IS_HASH(v)   (((v)->flags) & MPDM_HASH)
-#define MPDM_IS_EXEC(v)   (((v)->flags) & MPDM_EXEC)
-#define MPDM_IS_STRING(v) (((v)->flags) & MPDM_STRING)
+#define MPDM_IS_ARRAY(v)  ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
+#define MPDM_IS_HASH(v)   ((v != NULL) && ((v)->flags) & MPDM_HASH)
+#define MPDM_IS_EXEC(v)   ((v != NULL) && ((v)->flags) & MPDM_EXEC)
+#define MPDM_IS_STRING(v) ((v != NULL) && ((v)->flags) & MPDM_STRING)
 
 /* value creation utility macros */
 
