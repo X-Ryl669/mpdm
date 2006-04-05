@@ -605,3 +605,12 @@ void mpdm_shutdown(void)
  */
 /** int MPDM_IS_EXEC(mpdm_t v); */
 /* ; */
+
+/**
+ * MPDM_IS_STRING - Tests if a value is a string.
+ * @v: the value
+ *
+ * Returns non-zero if @v is a string.
+ */
+/** int MPDM_IS_STRING(mpdm_t v); */
+/* ; */
