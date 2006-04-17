@@ -905,7 +905,12 @@ void test_encoding(void)
 
 	printf("\nLocale encoding tests (will look bad if terminal is not ISO-8859-1)\n\n");
 
-	f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
+	if((f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"))) == NULL)
+	{
+		printf("Can't write test.txt; no further file test possible.\n");
+		return;
+	}
+
 	mpdm_write(f, v);
 	mpdm_close(f);
 
