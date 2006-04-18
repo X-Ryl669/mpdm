@@ -41,9 +41,9 @@ docsclean:
 	rm -f doc/*.html
 
 clean:
-	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
+	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress Changelog
 
-distclean: clean docsclean
+distclean: clean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
 dist: distclean ChangeLog docs
