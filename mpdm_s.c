@@ -70,8 +70,11 @@ wchar_t * mpdm_pokev(wchar_t * dst, int * dsize, mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
 	if(v != NULL)
-		dst = mpdm_poke(dst, dsize, mpdm_string(v),
-			mpdm_size(v), sizeof(wchar_t));
+	{
+		wchar_t * ptr = mpdm_string(v);
+
+		dst = mpdm_poke(dst, dsize, ptr, wcslen(ptr), sizeof(wchar_t));
+	}
 
 	return(dst);
 }
