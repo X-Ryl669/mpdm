@@ -43,10 +43,10 @@ docsclean:
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress Changelog
 
-distclean: clean
+distclean: docs clean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
-dist: distclean ChangeLog docs
+dist: distclean ChangeLog
 	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
 	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=CVS $(PROJ)-$(VERSION)/* ; \
 	rm $(PROJ)-$(VERSION)
