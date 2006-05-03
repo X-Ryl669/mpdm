@@ -270,6 +270,9 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 {
 	FILE * f;
 
+	if(filename == NULL || mode == NULL)
+		return(NULL);
+
 	/* convert to mbs,s */
 	filename = MPDM_2MBS(filename->data);
 	mode = MPDM_2MBS(mode->data);
