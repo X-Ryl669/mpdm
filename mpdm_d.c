@@ -111,3 +111,35 @@ void mpdm_dump(mpdm_t v)
 {
 	dump_1(v, 0);
 }
+
+
+/**
+ * mpdm_dump_unref - Dumps all unreferenced values.
+ *
+ * Dumps all unreferenced values.
+ */
+void mpdm_dump_unref(void)
+{
+	mpdm_t f, v;
+	int count = 0;
+
+	/* loop all values */
+	v = f = mpdm->cur;
+
+	printf("** Unreferenced values:\n");
+
+	for(;;)
+	{
+		if(v->ref == 0)
+		{
+			mpdm_dump(v);
+			count++;
+		}
+
+		v = v->next;
+
+		if(v == f) break;
+	}
+
+	printf("** Total unreferenced: %d\n", count);
+}

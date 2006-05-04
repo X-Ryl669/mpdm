@@ -135,6 +135,7 @@ mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k);
 mpdm_t mpdm_keys(mpdm_t h);
 
 void mpdm_dump(mpdm_t v);
+void mpdm_dump_unref(void);
 
 #define MPDM_SGET(r, k) mpdm_sget((r), MPDM_LS((k)))
 #define MPDM_SSET(r, k, v) mpdm_sset((r), MPDM_LS((k)), (v))

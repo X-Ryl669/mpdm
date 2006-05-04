@@ -1107,6 +1107,8 @@ int main(int argc, char * argv[])
 	test_conversion();
 	benchmark();
 
+	mpdm_dump_unref();
+
 	printf("memory: %d\n", mpdm->memory_usage);
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
@@ -1118,6 +1120,8 @@ int main(int argc, char * argv[])
 	mpdm_sweep(-1);
 	mpdm_sweep(-1);
 	printf("memory: %d\n", mpdm->memory_usage);
+
+	mpdm_dump_unref();
 
 	mpdm_shutdown();
 
