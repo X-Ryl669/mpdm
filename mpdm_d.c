@@ -120,26 +120,26 @@ void mpdm_dump(mpdm_t v)
  */
 void mpdm_dump_unref(void)
 {
-	mpdm_t f, v;
-	int count = 0;
+	mpdm_t v;
+	int count, unref;
 
 	/* loop all values */
-	v = f = mpdm->cur;
+	v = mpdm->cur;
+	count = mpdm->count;
+	unref = 0;
 
 	printf("** Unreferenced values:\n");
 
-	for(;;)
+	while(count--)
 	{
 		if(v->ref == 0)
 		{
 			mpdm_dump(v);
-			count++;
+			unref++;
 		}
 
 		v = v->next;
-
-		if(v == f) break;
 	}
 
-	printf("** Total unreferenced: %d\n", count);
+	printf("** Total unreferenced: %d\n", unref);
 }
