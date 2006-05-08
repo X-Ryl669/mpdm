@@ -71,8 +71,22 @@ struct mpdm_file
 ********************/
 
 
-wchar_t * mpdm_read_mbs(FILE * f, int * s)
-/* reads a multibyte string from a stream into a dynamic string */
+static int get_char(struct mpdm_file * f)
+/* reads a character from a file structure */
+{
+	return(fgetc(f->fd));
+}
+
+
+static void put_char(int c, struct mpdm_file * f)
+/* writes a character in a file structure */
+{
+	fputc(c, f->fd);
+}
+
+
+static wchar_t * read_mbs(struct mpdm_file * f, int * s)
+/* reads a multibyte string from a mpdm_file into a dynamic string */
 {
 	wchar_t * ptr = NULL;
 	char * cptr = NULL;
@@ -81,7 +95,7 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 
 	tmp[1] = '\0';
 
-	while((c = fgetc(f)) != EOF)
+	while((c = get_char(f)) != EOF)
 	{
 		tmp[0] = c;
 		if((cptr = mpdm_poke(cptr, &n, tmp, 1, sizeof(char))) == NULL)
@@ -104,8 +118,21 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 }
 
 
-void mpdm_write_wcs(FILE * f, wchar_t * str)
-/* writes a wide string to a stream */
+wchar_t * mpdm_read_mbs(FILE * f, int * s)
+/* reads a multibyte string from a stream into a dynamic string */
+{
+	struct mpdm_file fs;
+
+	/* reset the structure */
+	memset(&fs, '\0', sizeof(fs));
+	fs.fd = f;
+
+	return(read_mbs(&fs, s));
+}
+
+
+static void write_wcs(struct mpdm_file * f, wchar_t * str)
+/* writes a wide string to an struct mpdm_file */
 {
 	int s, n;
 	char * ptr;
@@ -113,9 +140,22 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 	ptr = mpdm_wcstombs(str, &s);
 
 	for(n = 0;n < s;n++)
-		fputc(ptr[n], f);
+		put_char(ptr[n], f);
 
 	free(ptr);
+}
+
+
+void mpdm_write_wcs(FILE * f, wchar_t * str)
+/* writes a wide string to a stream */
+{
+	struct mpdm_file fs;
+
+	/* reset the structure */
+	memset(&fs, '\0', sizeof(fs));
+	fs.fd = f;
+
+	write_wcs(&fs, str);
 }
 
 
