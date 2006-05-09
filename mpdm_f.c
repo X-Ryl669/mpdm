@@ -55,7 +55,8 @@
 /* file structure */
 struct mpdm_file
 {
-	FILE * fd;
+	FILE * in;
+	FILE * out;
 
 #ifdef CONFOPT_ICONV
 
@@ -74,14 +75,14 @@ struct mpdm_file
 static int get_char(struct mpdm_file * f)
 /* reads a character from a file structure */
 {
-	return(fgetc(f->fd));
+	return(fgetc(f->in));
 }
 
 
 static void put_char(int c, struct mpdm_file * f)
 /* writes a character in a file structure */
 {
-	fputc(c, f->fd);
+	fputc(c, f->out);
 }
 
 
@@ -298,7 +299,7 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 
 	/* reset the structure */
 	memset(&fs, '\0', sizeof(fs));
-	fs.fd = f;
+	fs.in = f;
 
 	return(read_mbs(&fs, s));
 }
@@ -311,7 +312,7 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 
 	/* reset the structure */
 	memset(&fs, '\0', sizeof(fs));
-	fs.fd = f;
+	fs.out = f;
 
 	write_wcs(&fs, str);
 }
@@ -327,7 +328,7 @@ mpdm_t mpdm_new_f(FILE * f)
 	if((v = new_mpdm_file()) != NULL)
 	{
 		struct mpdm_file * fs = v->data;
-		fs->fd = f;
+		fs->in = fs->out = f;
 	}
 
 	return(v);
@@ -374,8 +375,11 @@ mpdm_t mpdm_close(mpdm_t fd)
 
 	if((fd->flags & MPDM_FILE) && fs != NULL)
 	{
-		if(fs->fd != NULL)
-			fclose(fs->fd);
+		if(fs->in != NULL)
+			fclose(fs->in);
+
+		if(fs->out != fs->in && fs->out != NULL)
+			fclose(fs->out);
 
 		destroy_mpdm_file(fd);
 	}
@@ -644,6 +648,34 @@ mpdm_t mpdm_glob(mpdm_t spec)
 }
 
 
+static int sysdep_popen(mpdm_t v, char * prg, char * mode)
+{
+	int ok = 0;
+
+#ifdef CONFOPT_WIN32
+
+#else /* CONFOPT_WIN32 */
+
+	FILE * f;
+
+	if((f = popen(prg, mode)) != NULL)
+	{
+		struct mpdm_file * fs = v->data;
+
+		if(*mode == 'r')
+			fs->in = f;
+		else
+			fs->out = f;
+
+		ok = 1;
+	}
+
+#endif /* CONFOPT_WIN32 */
+
+	return(ok);
+}
+
+
 /**
  * mpdm_popen - Opens a pipe.
  * @prg: the program to pipe
@@ -656,9 +688,7 @@ mpdm_t mpdm_glob(mpdm_t spec)
  */
 mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 {
-	FILE * f;
 	mpdm_t v;
-	int ok = 0;
 
 	if(prg == NULL || mode == NULL)
 		return(NULL);
@@ -670,21 +700,7 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 	prg = MPDM_2MBS(prg->data);
 	mode = MPDM_2MBS(mode->data);
 
-#ifdef CONFOPT_WIN32
-
-#else /* CONFOPT_WIN32 */
-
-	if((f = popen((char *)prg->data, (char *)mode->data)) != NULL)
-	{
-		struct mpdm_file * fs = v->data;
-		fs->fd = f;
-
-		ok = 1;
-	}
-
-#endif /* CONFOPT_WIN32 */
-
-	if(!ok)
+	if(!sysdep_popen(v, (char *)prg->data, (char *)mode->data))
 	{
 		destroy_mpdm_file(v);
 		v = NULL;
@@ -711,8 +727,11 @@ mpdm_t mpdm_pclose(mpdm_t fd)
 
 #else /* CONFOPT_WIN32 */
 
-		if(fs->fd != NULL)
-			pclose(fs->fd);
+		if(fs->in != NULL)
+			pclose(fs->in);
+
+		if(fs->out != fs->in && fs->out != NULL)
+			pclose(fs->out);
 
 #endif /* CONFOPT_WIN32 */
 
