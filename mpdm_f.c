@@ -266,23 +266,26 @@ static void destroy_mpdm_file(mpdm_t v)
 {
 	struct mpdm_file * fs = v->data;
 
+	if(fs != NULL)
+	{
 #ifdef CONFOPT_ICONV
 
-	if(fs->ic_enc != (iconv_t) -1)
-	{
-		iconv_close(fs->ic_enc);
-		fs->ic_enc = (iconv_t) -1;
-	}
+		if(fs->ic_enc != (iconv_t) -1)
+		{
+			iconv_close(fs->ic_enc);
+			fs->ic_enc = (iconv_t) -1;
+		}
 
-	if(fs->ic_dec != (iconv_t) -1)
-	{
-		iconv_close(fs->ic_dec);
-		fs->ic_dec = (iconv_t) -1;
-	}
+		if(fs->ic_dec != (iconv_t) -1)
+		{
+			iconv_close(fs->ic_dec);
+			fs->ic_dec = (iconv_t) -1;
+		}
 #endif
 
-	free(fs);
-	v->data = NULL;
+		free(fs);
+		v->data = NULL;
+	}
 }
 
 
@@ -638,4 +641,74 @@ mpdm_t mpdm_glob(mpdm_t spec)
 #endif
 
 	return(v);
+}
+
+
+/**
+ * mpdm_popen - Opens a pipe.
+ * @prg: the program to pipe
+ * @mode: an fopen-like mode string
+ *
+ * Opens a pipe to a program. If @prg can be open in the specified @mode, an
+ * mpdm_t value will be returned containing the file descriptor, or NULL
+ * otherwise.
+ * [File Management]
+ */
+mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
+{
+	FILE * f;
+	mpdm_t v;
+
+	if(prg == NULL || mode == NULL)
+		return(NULL);
+
+	if((v = new_mpdm_file()) == NULL)
+		return(NULL);
+
+	/* convert to mbs,s */
+	prg = MPDM_2MBS(prg->data);
+	mode = MPDM_2MBS(mode->data);
+
+#ifdef CONFOPT_WIN32
+
+#else /* CONFOPT_WIN32 */
+
+	if((f = popen((char *)prg->data, (char *)mode->data)) == NULL)
+	{
+		destroy_mpdm_file(v);
+		return(NULL);
+	}
+
+#endif /* CONFOPT_WIN32 */
+
+	return(v);
+}
+
+
+/**
+ * mpdm_pclose - Closes a pipe.
+ * @fd: the value containing the file descriptor
+ *
+ * Closes a pipe.
+ * [File Management]
+ */
+mpdm_t mpdm_pclose(mpdm_t fd)
+{
+	struct mpdm_file * fs = fd->data;
+
+	if((fd->flags & MPDM_FILE) && fs != NULL)
+	{
+#ifdef CONFOPT_WIN32
+
+#else /* CONFOPT_WIN32 */
+
+		if(fs->fd != NULL)
+			pclose(fs->fd);
+
+#endif /* CONFOPT_WIN32 */
+
+		destroy_mpdm_file(fd);
+	}
+
+	return(NULL);
 }
