@@ -118,19 +118,6 @@ static wchar_t * read_mbs(struct mpdm_file * f, int * s)
 }
 
 
-wchar_t * mpdm_read_mbs(FILE * f, int * s)
-/* reads a multibyte string from a stream into a dynamic string */
-{
-	struct mpdm_file fs;
-
-	/* reset the structure */
-	memset(&fs, '\0', sizeof(fs));
-	fs.fd = f;
-
-	return(read_mbs(&fs, s));
-}
-
-
 static void write_wcs(struct mpdm_file * f, wchar_t * str)
 /* writes a wide string to an struct mpdm_file */
 {
@@ -143,19 +130,6 @@ static void write_wcs(struct mpdm_file * f, wchar_t * str)
 		put_char(ptr[n], f);
 
 	free(ptr);
-}
-
-
-void mpdm_write_wcs(FILE * f, wchar_t * str)
-/* writes a wide string to a stream */
-{
-	struct mpdm_file fs;
-
-	/* reset the structure */
-	memset(&fs, '\0', sizeof(fs));
-	fs.fd = f;
-
-	write_wcs(&fs, str);
 }
 
 
@@ -248,11 +222,36 @@ static void write_iconv(struct mpdm_file * f, wchar_t * str)
 
 		for(n = 0;n < sizeof(tmp) - ol;n++)
 			put_char(tmp[n], f);
-/*		fwrite(tmp, 1, sizeof(tmp) - ol, f);*/
 	}
 }
 
 #endif /* CONFOPT_ICONV */
+
+
+wchar_t * mpdm_read_mbs(FILE * f, int * s)
+/* reads a multibyte string from a stream into a dynamic string */
+{
+	struct mpdm_file fs;
+
+	/* reset the structure */
+	memset(&fs, '\0', sizeof(fs));
+	fs.fd = f;
+
+	return(read_mbs(&fs, s));
+}
+
+
+void mpdm_write_wcs(FILE * f, wchar_t * str)
+/* writes a wide string to a stream */
+{
+	struct mpdm_file fs;
+
+	/* reset the structure */
+	memset(&fs, '\0', sizeof(fs));
+	fs.fd = f;
+
+	write_wcs(&fs, str);
+}
 
 
 mpdm_t mpdm_new_f(FILE * f)
