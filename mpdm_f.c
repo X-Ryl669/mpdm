@@ -163,7 +163,7 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 
 extern int errno;
 
-wchar_t * mpdm_read_iconv(FILE * f, iconv_t ic, int * s)
+static wchar_t * read_iconv(struct mpdm_file * f, int * s)
 /* reads a multibyte string transforming with iconv */
 {
 	char tmp[128];
@@ -175,9 +175,9 @@ wchar_t * mpdm_read_iconv(FILE * f, iconv_t ic, int * s)
 	wc[1] = L'\0';
 
 	/* resets the decoder */
-	iconv(ic, NULL, NULL, NULL, NULL);
+	iconv(f->ic_dec, NULL, NULL, NULL, NULL);
 
-	while((c = fgetc(f)) != EOF)
+	while((c = get_char(f)) != EOF)
 	{
 		size_t il, ol;
 		char * iptr, * optr;
@@ -192,7 +192,7 @@ wchar_t * mpdm_read_iconv(FILE * f, iconv_t ic, int * s)
 		ol = sizeof(wchar_t); optr = (char *)wc;
 
 		/* write to file */
-		if(iconv(ic, &iptr, &il, &optr, &ol) == -1)
+		if(iconv(f->ic_dec, &iptr, &il, &optr, &ol) == -1)
 		{
 			/* found incomplete multibyte character */
 			if(errno == EINVAL)
@@ -216,25 +216,26 @@ wchar_t * mpdm_read_iconv(FILE * f, iconv_t ic, int * s)
 }
 
 
-void mpdm_write_iconv(FILE * f, iconv_t ic, wchar_t * str)
+static void write_iconv(struct mpdm_file * f, wchar_t * str)
 /* writes a wide string to a stream using iconv */
 {
 	char tmp[128];
 
 	/* resets the encoder */
-	iconv(ic, NULL, NULL, NULL, NULL);
+	iconv(f->ic_enc, NULL, NULL, NULL, NULL);
 
 	/* convert char by char */
 	for(;*str != L'\0';str++)
 	{
 		size_t il, ol;
 		char * iptr, * optr;
+		int n;
 
 		il = sizeof(wchar_t); iptr = (char *)str;
 		ol = sizeof(tmp); optr = tmp;
 
 		/* write to file */
-		if(iconv(ic, &iptr, &il, &optr, &ol) == -1)
+		if(iconv(f->ic_enc, &iptr, &il, &optr, &ol) == -1)
 		{
 			/* error converting; convert a '?' instead */
 			wchar_t q = L'?';
@@ -242,10 +243,12 @@ void mpdm_write_iconv(FILE * f, iconv_t ic, wchar_t * str)
 			il = sizeof(wchar_t); iptr = (char *)&q;
 			ol = sizeof(tmp); optr = tmp;
 
-			iconv(ic, &iptr, &il, &optr, &ol);
+			iconv(f->ic_enc, &iptr, &il, &optr, &ol);
 		}
 
-		fwrite(tmp, 1, sizeof(tmp) - ol, f);
+		for(n = 0;n < sizeof(tmp) - ol;n++)
+			put_char(tmp[n], f);
+/*		fwrite(tmp, 1, sizeof(tmp) - ol, f);*/
 	}
 }
 
@@ -383,12 +386,12 @@ mpdm_t mpdm_read(mpdm_t fd)
 #ifdef CONFOPT_ICONV
 
 	if(fs->ic_dec != (iconv_t) -1)
-		ptr = mpdm_read_iconv(fs->fd, fs->ic_dec, &s);
+		ptr = read_iconv(fs, &s);
 	else
 
 #endif /* CONFOPT_ICONV */
 
-		ptr = mpdm_read_mbs(fs->fd, &s);
+		ptr = read_mbs(fs, &s);
 
 	if(ptr != NULL)
 		v = MPDM_ENS(ptr, s);
@@ -416,12 +419,12 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 #ifdef CONFOPT_ICONV
 
 	if(fs->ic_enc != (iconv_t) -1)
-		mpdm_write_iconv(fs->fd, fs->ic_enc, mpdm_string(v));
+		write_iconv(fs, mpdm_string(v));
 	else
 
 #endif /* CONFOPT_ICONV */
 
-		mpdm_write_wcs(fs->fd, mpdm_string(v));
+		write_wcs(fs, mpdm_string(v));
 
 	return(0);
 }
