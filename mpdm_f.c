@@ -676,6 +676,24 @@ static int sysdep_popen(mpdm_t v, char * prg, char * mode)
 }
 
 
+static void sysdep_pclose(mpdm_t v)
+{
+	struct mpdm_file * fs = v->data;
+
+#ifdef CONFOPT_WIN32
+
+#else /* CONFOPT_WIN32 */
+
+	if(fs->in != NULL)
+		pclose(fs->in);
+
+	if(fs->out != fs->in && fs->out != NULL)
+		pclose(fs->out);
+
+#endif /* CONFOPT_WIN32 */
+}
+
+
 /**
  * mpdm_popen - Opens a pipe.
  * @prg: the program to pipe
@@ -719,22 +737,9 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
  */
 mpdm_t mpdm_pclose(mpdm_t fd)
 {
-	struct mpdm_file * fs = fd->data;
-
-	if((fd->flags & MPDM_FILE) && fs != NULL)
+	if((fd->flags & MPDM_FILE) && f->data != NULL)
 	{
-#ifdef CONFOPT_WIN32
-
-#else /* CONFOPT_WIN32 */
-
-		if(fs->in != NULL)
-			pclose(fs->in);
-
-		if(fs->out != fs->in && fs->out != NULL)
-			pclose(fs->out);
-
-#endif /* CONFOPT_WIN32 */
-
+		sysdep_pclose(fd);
 		destroy_mpdm_file(fd);
 	}
 
