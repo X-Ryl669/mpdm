@@ -682,15 +682,19 @@ static int sysdep_popen(mpdm_t v, char * prg, int rw)
 		if(rw & 0x02) { close(0); dup(pw[0]); close(pw[1]); }
 
 		/* run the program */
-		execlp(prg, prg, NULL);
+		system(prg);
 
 		/* still here? exec failed; close pipes and exit */
 		close(0); close(1);
 		exit(0);
 	}
 
-	if(rw & 0x01) { fs->in = fdopen(pr[0], "r"); close(pr[1]); }
-	if(rw & 0x02) { fs->out = fdopen(pw[1], "w"); close(pw[0]); }
+	/* create the pipes as non-buffered streams */
+	if(rw & 0x01) { fs->in = fdopen(pr[0], "r");
+		setvbuf(fs->in, NULL, _IONBF, 0); close(pr[1]); }
+
+	if(rw & 0x02) { fs->out = fdopen(pw[1], "w");
+		setvbuf(fs->out, NULL, _IONBF, 0); close(pw[0]); }
 
 	return(1);
 }
