@@ -674,7 +674,7 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 
 #else /* CONFOPT_WIN32 */
 
-	if((f = popen((char *)prg->data, (char *)mode->data)) == NULL)
+	if((f = popen((char *)prg->data, (char *)mode->data)) != NULL)
 	{
 		struct mpdm_file * fs = v->data;
 		fs->fd = f;
