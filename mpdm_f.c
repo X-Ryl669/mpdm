@@ -682,7 +682,8 @@ static int sysdep_popen(mpdm_t v, char * prg, int rw)
 		if(rw & 0x02) { close(0); dup(pw[0]); close(pw[1]); }
 
 		/* run the program */
-		system(prg);
+		execlp("/bin/sh", "/bin/sh", "-c", prg, NULL);
+		execlp(prg, prg, NULL);
 
 		/* still here? exec failed; close pipes and exit */
 		close(0); close(1);
