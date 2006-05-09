@@ -658,6 +658,7 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 {
 	FILE * f;
 	mpdm_t v;
+	int ok = 0;
 
 	if(prg == NULL || mode == NULL)
 		return(NULL);
@@ -675,11 +676,19 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 
 	if((f = popen((char *)prg->data, (char *)mode->data)) == NULL)
 	{
-		destroy_mpdm_file(v);
-		return(NULL);
+		struct mpdm_file * fs = v->data;
+		fs->fd = f;
+
+		ok = 1;
 	}
 
 #endif /* CONFOPT_WIN32 */
+
+	if(!ok)
+	{
+		destroy_mpdm_file(v);
+		v = NULL;
+	}
 
 	return(v);
 }
