@@ -601,6 +601,9 @@ mpdm_t mpdm_split(mpdm_t s, mpdm_t v)
 	wchar_t * ptr;
 	wchar_t * sptr;
 
+	/* nothing to split? */
+	if(v == NULL) return(NULL);
+
 	w = MPDM_A(0);
 
 	/* travels the string finding separators and creating new values */
