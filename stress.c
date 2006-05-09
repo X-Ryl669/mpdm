@@ -1078,6 +1078,27 @@ void test_conversion(void)
 }
 
 
+void test_pipes(void)
+{
+	mpdm_t f;
+
+	printf("\n");
+
+	if((f = mpdm_popen(MPDM_LS(L"date"), MPDM_LS(L"r"))) != NULL)
+	{
+		mpdm_t v;
+
+		v = mpdm_read(f);
+		mpdm_pclose(f);
+
+		printf("Pipe from 'date':\n");
+		mpdm_dump(v);
+	}
+	else
+		printf("Can't pipe to 'date'\n");
+}
+
+
 int main(int argc, char * argv[])
 {
 	if(argc > 1)
@@ -1105,9 +1126,10 @@ int main(int argc, char * argv[])
 	test_encoding();
 	test_gettext();
 	test_conversion();
+	test_pipes();
 	benchmark();
 
-	mpdm_dump_unref();
+/*	mpdm_dump_unref();*/
 
 	printf("memory: %d\n", mpdm->memory_usage);
 	mpdm_sweep(-1);
@@ -1121,7 +1143,7 @@ int main(int argc, char * argv[])
 	mpdm_sweep(-1);
 	printf("memory: %d\n", mpdm->memory_usage);
 
-	mpdm_dump_unref();
+/*	mpdm_dump_unref();*/
 
 	mpdm_shutdown();
 
