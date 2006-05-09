@@ -701,6 +701,7 @@ static int sysdep_popen(mpdm_t v, char * prg, int rw)
 
 
 static void sysdep_pclose(mpdm_t v)
+/* unix-style pipe close */
 {
 	struct mpdm_file * fs = v->data;
 
@@ -745,14 +746,9 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 	m = (char *)mode->data;
 
 	/* set the mode */
-	if(strcmp(m, "r+") == 0 || strcmp(m, "w+") == 0)
-		rw = 0x03;
-	else
-	if(m[0] == 'w')
-		rw = 0x02;
-	else
-	if(m[0] == 'r')
-		rw = 0x01;
+	if(m[0] == 'r') rw = 0x01;
+	if(m[0] == 'w') rw = 0x02;
+	if(m[1] == '+') rw = 0x03; /* r+ or w+ */
 
 	if(!sysdep_popen(v, (char *)prg->data, rw))
 	{
