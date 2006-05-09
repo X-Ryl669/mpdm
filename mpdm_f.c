@@ -737,7 +737,7 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
  */
 mpdm_t mpdm_pclose(mpdm_t fd)
 {
-	if((fd->flags & MPDM_FILE) && f->data != NULL)
+	if((fd->flags & MPDM_FILE) && fd->data != NULL)
 	{
 		sysdep_pclose(fd);
 		destroy_mpdm_file(fd);
