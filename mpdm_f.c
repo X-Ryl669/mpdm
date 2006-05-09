@@ -648,31 +648,51 @@ mpdm_t mpdm_glob(mpdm_t spec)
 }
 
 
-static int sysdep_popen(mpdm_t v, char * prg, char * mode)
-{
-	int ok = 0;
-
 #ifdef CONFOPT_WIN32
+
+static int sysdep_popen(mpdm_t v, char * ptr, int rw)
+{
+	return(0);
+}
+
+
+static void sysdep_pclose(mpdm_t v)
+{
+}
+
 
 #else /* CONFOPT_WIN32 */
 
-	FILE * f;
+static int sysdep_popen(mpdm_t v, char * prg, int rw)
+/* unix-style pipe open */
+{
+	int pr[2], pw[2];
+	struct mpdm_file * fs = v->data;
 
-	if((f = popen(prg, mode)) != NULL)
+	/* init all */
+	pr[0] = pr[1] = pw[0] = pw[1] = -1;
+
+	if(rw & 0x01) pipe(pr);
+	if(rw & 0x02) pipe(pw);
+
+	if(fork() == 0)
 	{
-		struct mpdm_file * fs = v->data;
+		/* child process */
+		if(rw & 0x01) { close(1); dup(pr[1]); close(pr[0]); }
+		if(rw & 0x02) { close(0); dup(pw[0]); close(pw[1]); }
 
-		if(*mode == 'r')
-			fs->in = f;
-		else
-			fs->out = f;
+		/* run the program */
+		execlp(prg, prg, NULL);
 
-		ok = 1;
+		/* still here? exec failed; close pipes and exit */
+		close(0); close(1);
+		exit(0);
 	}
 
-#endif /* CONFOPT_WIN32 */
+	if(rw & 0x01) { fs->in = fdopen(pr[0], "r"); close(pr[1]); }
+	if(rw & 0x02) { fs->out = fdopen(pw[1], "w"); close(pw[0]); }
 
-	return(ok);
+	return(1);
 }
 
 
@@ -680,18 +700,15 @@ static void sysdep_pclose(mpdm_t v)
 {
 	struct mpdm_file * fs = v->data;
 
-#ifdef CONFOPT_WIN32
-
-#else /* CONFOPT_WIN32 */
-
 	if(fs->in != NULL)
-		pclose(fs->in);
+		fclose(fs->in);
 
 	if(fs->out != fs->in && fs->out != NULL)
-		pclose(fs->out);
+		fclose(fs->out);
+}
+
 
 #endif /* CONFOPT_WIN32 */
-}
 
 
 /**
@@ -707,6 +724,8 @@ static void sysdep_pclose(mpdm_t v)
 mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 {
 	mpdm_t v;
+	char * m;
+	int rw = 0;
 
 	if(prg == NULL || mode == NULL)
 		return(NULL);
@@ -718,7 +737,20 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 	prg = MPDM_2MBS(prg->data);
 	mode = MPDM_2MBS(mode->data);
 
-	if(!sysdep_popen(v, (char *)prg->data, (char *)mode->data))
+	/* get the mode */
+	m = (char *)mode->data;
+
+	/* set the mode */
+	if(strcmp(m, "r+") == 0 || strcmp(m, "w+") == 0)
+		rw = 0x03;
+	else
+	if(m[0] == 'w')
+		rw = 0x02;
+	else
+	if(m[0] == 'r')
+		rw = 0x01;
+
+	if(!sysdep_popen(v, (char *)prg->data, rw))
 	{
 		destroy_mpdm_file(v);
 		v = NULL;
