@@ -228,6 +228,66 @@ static void write_iconv(struct mpdm_file * f, wchar_t * str)
 #endif /* CONFOPT_ICONV */
 
 
+static mpdm_t new_mpdm_file(void)
+/* creates a new file value */
+{
+	mpdm_t v = NULL;
+	struct mpdm_file * fs;
+
+	if((fs = malloc(sizeof(struct mpdm_file))) == NULL)
+		return(NULL);
+
+	memset(fs, '\0', sizeof(struct mpdm_file));
+
+#ifdef CONFOPT_ICONV
+
+	if((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL)
+	{
+		mpdm_t cs = MPDM_2MBS(v->data);
+
+		fs->ic_enc = iconv_open((char *)cs->data, "WCHAR_T");
+		fs->ic_dec = iconv_open("WCHAR_T", (char *)cs->data);
+	}
+	else
+		fs->ic_enc = fs->ic_dec = (iconv_t) -1;
+
+#endif
+
+	if((v = mpdm_new(MPDM_FILE|MPDM_FREE, fs,
+		sizeof(struct mpdm_file))) == NULL)
+		free(fs);
+
+	return(v);
+}
+
+
+static void destroy_mpdm_file(mpdm_t v)
+/* destroys and file value */
+{
+	struct mpdm_file * fs = v->data;
+
+#ifdef CONFOPT_ICONV
+
+	if(fs->ic_enc != (iconv_t) -1)
+	{
+		iconv_close(fs->ic_enc);
+		fs->ic_enc = (iconv_t) -1;
+	}
+
+	if(fs->ic_dec != (iconv_t) -1)
+	{
+		iconv_close(fs->ic_dec);
+		fs->ic_dec = (iconv_t) -1;
+	}
+#endif
+
+	free(fs);
+	v->data = NULL;
+}
+
+
+/** interface **/
+
 wchar_t * mpdm_read_mbs(FILE * f, int * s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
@@ -255,43 +315,16 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 
 
 mpdm_t mpdm_new_f(FILE * f)
-/* creates a new file value */
+/* creates a new file value from a FILE * */
 {
 	mpdm_t v = NULL;
-	struct mpdm_file * fs;
 
-	/* NULL is NULL, everywhere */
 	if(f == NULL) return(NULL);
 
-	if((fs = malloc(sizeof(struct mpdm_file))) == NULL)
+	if((v = new_mpdm_file()) != NULL)
 	{
-		fclose(f);
-		return(NULL);
-	}
-
-	memset(fs, '\0', sizeof(struct mpdm_file));
-
-	fs->fd = f;
-
-#ifdef CONFOPT_ICONV
-
-	if((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL)
-	{
-		mpdm_t cs = MPDM_2MBS(v->data);
-
-		fs->ic_enc = iconv_open((char *)cs->data, "WCHAR_T");
-		fs->ic_dec = iconv_open("WCHAR_T", (char *)cs->data);
-	}
-	else
-		fs->ic_enc = fs->ic_dec = (iconv_t) -1;
-
-#endif
-
-	if((v = mpdm_new(MPDM_FILE|MPDM_FREE, fs,
-		sizeof(struct mpdm_file))) == NULL)
-	{
-		fclose(f);
-		free(fs);
+		struct mpdm_file * fs = v->data;
+		fs->fd = f;
 	}
 
 	return(v);
@@ -339,25 +372,9 @@ mpdm_t mpdm_close(mpdm_t fd)
 	if((fd->flags & MPDM_FILE) && fs != NULL)
 	{
 		if(fs->fd != NULL)
-		{
 			fclose(fs->fd);
-			fs->fd = NULL;
-		}
 
-#ifdef CONFOPT_ICONV
-
-		if(fs->ic_enc != (iconv_t) -1)
-		{
-			iconv_close(fs->ic_enc);
-			fs->ic_enc = (iconv_t) -1;
-		}
-
-		if(fs->ic_dec != (iconv_t) -1)
-		{
-			iconv_close(fs->ic_dec);
-			fs->ic_dec = (iconv_t) -1;
-		}
-#endif
+		destroy_mpdm_file(fd);
 	}
 
 	return(NULL);
