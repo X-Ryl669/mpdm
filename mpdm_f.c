@@ -84,6 +84,19 @@ static int get_char(struct mpdm_file * f)
 {
 	int c = EOF;
 
+#ifdef CONFOPT_WIN32
+
+	if(f->hin != NULL)
+	{
+		char tmp;
+		DWORD n;
+
+		if(ReadFile(f->hin, &tmp, 1, &n, NULL) && n > 0)
+			c = (int) tmp;
+	}
+
+#endif /* CONFOPT_WIN32 */
+
 	if(f->in != NULL)
 		c = fgetc(f->in);
 
@@ -95,6 +108,19 @@ static int put_char(int c, struct mpdm_file * f)
 /* writes a character in a file structure */
 {
 	int ret = EOF;
+
+#ifdef CONFOPT_WIN32
+
+	if(f->hout != NULL)
+	{
+		char tmp = c;
+		DWORD n;
+
+		if(WriteFile(f->hout, &tmp, 1, &n, NULL) && n > 0)
+			ret = c;
+	}
+
+#endif /* CONFOPT_WIN32 */
 
 	if(f->out != NULL)
 		ret = fputc(c, f->out);
@@ -682,29 +708,71 @@ mpdm_t mpdm_glob(mpdm_t spec)
 
 #ifdef CONFOPT_WIN32
 
-static HANDLE make_non_inherit(HANDLE h)
-/* makes a handle non-inheritable */
+static void win32_pipe(HANDLE * h, int n)
 {
-	HANDLE r;
+	SECURITY_ATTRIBUTES sa;
+	HANDLE cp, t;
 
-	if(!DuplicateHandle(GetCurrentProcess(), h,
-		GetCurrentProcess(), &r, 0, FALSE,
-		DUPLICATE_SAME_ACCESS))
-		r = NULL;
+	memset(&sa, '\0', sizeof(sa));
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
 
-	CloseHandle(h);
-	return(r);
+	cp = GetCurrentProcess();
+
+	CreatePipe(&h[0], &h[1], &sa, 0);
+	DuplicateHandle(cp, h[n], cp, &t, 0, FALSE, DUPLICATE_SAME_ACCESS);
+	CloseHandle(h[n]);
+	h[n] = t;
 }
 
 
-static int sysdep_popen(mpdm_t v, char * ptr, int rw)
+static int sysdep_popen(mpdm_t v, char * prg, int rw)
 {
-	return(0);
+	HANDLE pr[2]; HANDLE pw[2];
+	PROCESS_INFORMATION pi;
+	STARTUPINFO si;
+	int ret;
+	struct mpdm_file * fs = v->data;
+
+	/* init all */
+	pr[0] = pr[1] = pw[0] = pw[1] = NULL;
+
+	if(rw & 0x01) win32_pipe(pr, 0);
+	if(rw & 0x02) win32_pipe(pw, 1);
+
+	/* spawn new process */
+	memset(&pi, '\0', sizeof(pi));
+	memset(&si, '\0', sizeof(si));
+
+	si.cb = sizeof(STARTUPINFO);
+	si.hStdError = pr[1];
+	si.hStdOutput = pr[1];
+	si.hStdInput = pw[0];
+	si.dwFlags |= STARTF_USESTDHANDLES;
+
+	ret = CreateProcess(NULL, prg, NULL, NULL, TRUE,
+			0, NULL, NULL, &si, &pi);
+
+	if(rw & 0x01) CloseHandle(pr[1]);
+	if(rw & 0x02) CloseHandle(pw[0]);
+
+	fs->hin = pr[0];
+	fs->hout = pw[1];
+
+	return(ret);
 }
 
 
 static void sysdep_pclose(mpdm_t v)
 {
+	struct mpdm_file * fs = v->data;
+
+	if(fs->hin != NULL)
+		CloseHandle(fs->hin);
+
+	if(fs->hout != NULL)
+		CloseHandle(fs->hout);
 }
 
 
