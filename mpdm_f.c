@@ -64,6 +64,13 @@ struct mpdm_file
 	iconv_t ic_dec;
 
 #endif /* CONFOPT_ICONV */
+
+#ifdef CONFOPT_WIN32
+
+	HANDLE hin;
+	HANDLE hout;
+
+#endif /* CONFOPT_WIN32 */
 };
 
 
@@ -674,6 +681,21 @@ mpdm_t mpdm_glob(mpdm_t spec)
 
 
 #ifdef CONFOPT_WIN32
+
+static HANDLE make_non_inherit(HANDLE h)
+/* makes a handle non-inheritable */
+{
+	HANDLE r;
+
+	if(!DuplicateHandle(GetCurrentProcess(), h,
+		GetCurrentProcess(), &r, 0, FALSE,
+		DUPLICATE_SAME_ACCESS))
+		r = NULL;
+
+	CloseHandle(h);
+	return(r);
+}
+
 
 static int sysdep_popen(mpdm_t v, char * ptr, int rw)
 {
