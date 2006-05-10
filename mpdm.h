@@ -143,7 +143,7 @@ void mpdm_dump_unref(void);
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k);
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v);
 
-void mpdm_write_wcs(FILE * f, wchar_t * str);
+int mpdm_write_wcs(FILE * f, wchar_t * str);
 mpdm_t mpdm_new_f(FILE * f);
 mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode);
 mpdm_t mpdm_close(mpdm_t fd);
