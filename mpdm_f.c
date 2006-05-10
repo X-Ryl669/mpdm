@@ -75,14 +75,24 @@ struct mpdm_file
 static int get_char(struct mpdm_file * f)
 /* reads a character from a file structure */
 {
-	return(fgetc(f->in));
+	int c = EOF;
+
+	if(f->in != NULL)
+		c = fgetc(f->in);
+
+	return(c);
 }
 
 
-static void put_char(int c, struct mpdm_file * f)
+static int put_char(int c, struct mpdm_file * f)
 /* writes a character in a file structure */
 {
-	fputc(c, f->out);
+	int ret = EOF;
+
+	if(f->out != NULL)
+		ret = fputc(c, f->out);
+
+	return(ret);
 }
 
 
@@ -119,7 +129,7 @@ static wchar_t * read_mbs(struct mpdm_file * f, int * s)
 }
 
 
-static void write_wcs(struct mpdm_file * f, wchar_t * str)
+static int write_wcs(struct mpdm_file * f, wchar_t * str)
 /* writes a wide string to an struct mpdm_file */
 {
 	int s, n;
@@ -128,9 +138,17 @@ static void write_wcs(struct mpdm_file * f, wchar_t * str)
 	ptr = mpdm_wcstombs(str, &s);
 
 	for(n = 0;n < s;n++)
-		put_char(ptr[n], f);
+	{
+		if(put_char(ptr[n], f) == EOF)
+		{
+			n = -1;
+			break;
+		}
+	}
 
 	free(ptr);
+
+	return(n);
 }
 
 
@@ -191,10 +209,11 @@ static wchar_t * read_iconv(struct mpdm_file * f, int * s)
 }
 
 
-static void write_iconv(struct mpdm_file * f, wchar_t * str)
+static int write_iconv(struct mpdm_file * f, wchar_t * str)
 /* writes a wide string to a stream using iconv */
 {
 	char tmp[128];
+	int cnt = 0;
 
 	/* resets the encoder */
 	iconv(f->ic_enc, NULL, NULL, NULL, NULL);
@@ -221,9 +240,14 @@ static void write_iconv(struct mpdm_file * f, wchar_t * str)
 			iconv(f->ic_enc, &iptr, &il, &optr, &ol);
 		}
 
-		for(n = 0;n < sizeof(tmp) - ol;n++)
-			put_char(tmp[n], f);
+		for(n = 0;n < sizeof(tmp) - ol;n++, cnt++)
+		{
+			if(put_char(tmp[n], f) == EOF)
+				return(-1);
+		}
 	}
+
+	return(cnt);
 }
 
 #endif /* CONFOPT_ICONV */
@@ -305,7 +329,7 @@ wchar_t * mpdm_read_mbs(FILE * f, int * s)
 }
 
 
-void mpdm_write_wcs(FILE * f, wchar_t * str)
+int mpdm_write_wcs(FILE * f, wchar_t * str)
 /* writes a wide string to a stream */
 {
 	struct mpdm_file fs;
@@ -314,7 +338,7 @@ void mpdm_write_wcs(FILE * f, wchar_t * str)
 	memset(&fs, '\0', sizeof(fs));
 	fs.out = f;
 
-	write_wcs(&fs, str);
+	return(write_wcs(&fs, str));
 }
 
 
@@ -435,6 +459,7 @@ mpdm_t mpdm_read(mpdm_t fd)
 int mpdm_write(mpdm_t fd, mpdm_t v)
 {
 	struct mpdm_file * fs = fd->data;
+	int ret = -1;
 
 	if(fs == NULL)
 		return(-1);
@@ -442,14 +467,14 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 #ifdef CONFOPT_ICONV
 
 	if(fs->ic_enc != (iconv_t) -1)
-		write_iconv(fs, mpdm_string(v));
+		ret = write_iconv(fs, mpdm_string(v));
 	else
 
 #endif /* CONFOPT_ICONV */
 
-		write_wcs(fs, mpdm_string(v));
+		ret = write_wcs(fs, mpdm_string(v));
 
-	return(0);
+	return(ret);
 }
 
 
