@@ -397,7 +397,10 @@ int mpdm_seek(mpdm_t a, mpdm_t k, int step)
 {
 	int n;
 
-	for(n=0;n < mpdm_size(a);n+=step)
+	/* avoid stupid steps */
+	if(step <= 0) step = 1;
+
+	for(n=0;n < mpdm_size(a);n += step)
 	{
 		mpdm_t v = mpdm_aget(a, n);
 
@@ -452,6 +455,9 @@ int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
 int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos)
 {
 	int b, t, n, c;
+
+	/* avoid stupid steps */
+	if(step <= 0) step = 1;
 
 	b=0; t = (mpdm_size(a) - 1) / step;
 
