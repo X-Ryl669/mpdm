@@ -42,6 +42,7 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#include <shlobj.h>
 
 #endif
 
