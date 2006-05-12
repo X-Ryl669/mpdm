@@ -950,6 +950,20 @@ mpdm_t mpdm_app_dir(void)
 {
 	mpdm_t r = NULL;
 
+#ifdef CONFOPT_WIN32
+
+	char tmp[MAX_PATH];
+	LPITEMIDLIST pidl;
+
+	/* get the 'My Documents' folder */
+	SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
+	SHGetPathFromIDList(pidl, tmp);
+	strcat(tmp, "\\");
+
+	r = MPDM_MBS(tmp);
+
+#endif
+
 	/* still none? get the configured directory */
 	if(r == NULL)
 		r = MPDM_MBS(CONFOPT_PREFIX "/share/");
