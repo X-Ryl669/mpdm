@@ -924,22 +924,27 @@ mpdm_t mpdm_pclose(mpdm_t fd)
 }
 
 
+/**
+ * mpdm_home_dir - Returns the home user directory.
+ *
+ * Returns a system-dependent directory where the user can write
+ * documents and create subdirectories.
+ * [File Management]
+ */
 mpdm_t mpdm_home_dir(void)
 {
 	mpdm_t r = NULL;
 	char * ptr;
+	char tmp[512] = "";
 
 #ifdef CONFOPT_WIN32
 
-	char tmp[MAX_PATH];
 	LPITEMIDLIST pidl;
 
 	/* get the 'My Documents' folder */
 	SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
 	SHGetPathFromIDList(pidl, tmp);
 	strcat(tmp, "\\");
-
-	r = MPDM_MBS(tmp);
 
 #endif
 
@@ -948,19 +953,35 @@ mpdm_t mpdm_home_dir(void)
 	struct passwd * p;
 
 	/* get home dir from /etc/passwd entry */
-	if(r == NULL && (p = getpwuid(getpid())) != NULL)
-		r = MPDM_MBS(p->pw_dir);
+	if(tmp[0] == '\0' && (p = getpwuid(getpid())) != NULL)
+	{
+		strcpy(tmp, p->pw_dir);
+		strcat(tmp, "/");
+	}
 
 #endif
 
 	/* still none? try the ENV variable $HOME */
-	if(r == NULL && (ptr = getenv("HOME")) != NULL)
-		r = MPDM_MBS(ptr);
+	if(tmp[0] == '\0' && (ptr = getenv("HOME")) != NULL)
+	{
+		strcpy(tmp, ptr);
+		strcat(tmp, "/");
+	}
+
+	if(tmp[0] != '\0')
+		r = MPDM_MBS(tmp);
 
 	return(r);
 }
 
 
+/**
+ * mpdm_app_dir - Returns the applications directory.
+ *
+ * Returns a system-dependent directory where the applications store
+ * their private data, as components or resources.
+ * [File Management]
+ */
 mpdm_t mpdm_app_dir(void)
 {
 	mpdm_t r = NULL;
