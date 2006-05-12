@@ -39,8 +39,15 @@
 #endif
 
 #ifdef CONFOPT_WIN32
+
 #include <windows.h>
 #include <commctrl.h>
+
+#else
+
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #endif
 
 #include "mpdm.h"
@@ -728,6 +735,7 @@ static void win32_pipe(HANDLE * h, int n)
 
 
 static int sysdep_popen(mpdm_t v, char * prg, int rw)
+/* win32-style pipe */
 {
 	HANDLE pr[2]; HANDLE pw[2];
 	PROCESS_INFORMATION pi;
@@ -764,7 +772,7 @@ static int sysdep_popen(mpdm_t v, char * prg, int rw)
 }
 
 
-static void sysdep_pclose(mpdm_t v)
+static int sysdep_pclose(mpdm_t v)
 {
 	struct mpdm_file * fs = v->data;
 
@@ -773,6 +781,9 @@ static void sysdep_pclose(mpdm_t v)
 
 	if(fs->hout != NULL)
 		CloseHandle(fs->hout);
+
+	/* how to know process exit code? */
+	return(0);
 }
 
 
@@ -816,9 +827,10 @@ static int sysdep_popen(mpdm_t v, char * prg, int rw)
 }
 
 
-static void sysdep_pclose(mpdm_t v)
+static int sysdep_pclose(mpdm_t v)
 /* unix-style pipe close */
 {
+	int s;
 	struct mpdm_file * fs = v->data;
 
 	if(fs->in != NULL)
@@ -826,6 +838,10 @@ static void sysdep_pclose(mpdm_t v)
 
 	if(fs->out != fs->in && fs->out != NULL)
 		fclose(fs->out);
+
+	wait(&s);
+
+	return(s);
 }
 
 
@@ -885,11 +901,13 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
  */
 mpdm_t mpdm_pclose(mpdm_t fd)
 {
+	mpdm_t r = NULL;
+
 	if((fd->flags & MPDM_FILE) && fd->data != NULL)
 	{
-		sysdep_pclose(fd);
+		r = MPDM_I(sysdep_pclose(fd));
 		destroy_mpdm_file(fd);
 	}
 
-	return(NULL);
+	return(r);
 }
