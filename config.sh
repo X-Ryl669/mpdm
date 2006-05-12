@@ -203,6 +203,34 @@ else
 	echo "No"
 fi
 
+# sys/types.h detection
+echo -n "Testing for sys/types.h... "
+echo "#include <sys/types.h>" > .tmp.c
+echo "int main(void) { return(0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_SYS_TYPES_H 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
+# sys/wait.h detection
+echo -n "Testing for sys/wait.h... "
+echo "#include <sys/wait.h>" > .tmp.c
+echo "int main(void) { return(0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_SYS_WAIT_H 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
 # gettext support
 echo -n "Testing for gettext... "
 
