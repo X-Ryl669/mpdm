@@ -660,15 +660,17 @@ mpdm_t mpdm_gettext(mpdm_t str)
 
 		/* create new value only if it's different */
 		if(s != v->data)
+		{
 			v = MPDM_MBS(s);
+
+			/* store in the cache */
+			mpdm_hset(i18n, str, v);
+		}
 		else
 
 #endif /* CONFOPT_GETTEXT */
 
 			v = str;
-
-		/* store in the cache */
-		mpdm_hset(i18n, str, v);
 	}
 
 	return(v);
