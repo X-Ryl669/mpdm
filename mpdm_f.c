@@ -929,12 +929,26 @@ mpdm_t mpdm_home_dir(void)
 	mpdm_t r = NULL;
 	char * ptr;
 
+#ifdef CONFOPT_WIN32
+
+	char tmp[MAX_PATH];
+	LPITEMIDLIST pidl;
+
+	/* get the 'My Documents' folder */
+	SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
+	SHGetPathFromIDList(pidl, tmp);
+	strcat(tmp, "\\");
+
+	r = MPDM_MBS(tmp);
+
+#endif
+
 #ifdef CONFOPT_PWD_H
 
 	struct passwd * p;
 
 	/* get home dir from /etc/passwd entry */
-	if((p = getpwuid(getpid())) != NULL)
+	if(r == NULL && (p = getpwuid(getpid())) != NULL)
 		r = MPDM_MBS(p->pw_dir);
 
 #endif
@@ -950,20 +964,6 @@ mpdm_t mpdm_home_dir(void)
 mpdm_t mpdm_app_dir(void)
 {
 	mpdm_t r = NULL;
-
-#ifdef CONFOPT_WIN32
-
-	char tmp[MAX_PATH];
-	LPITEMIDLIST pidl;
-
-	/* get the 'My Documents' folder */
-	SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
-	SHGetPathFromIDList(pidl, tmp);
-	strcat(tmp, "\\");
-
-	r = MPDM_MBS(tmp);
-
-#endif
 
 	/* still none? get the configured directory */
 	if(r == NULL)
