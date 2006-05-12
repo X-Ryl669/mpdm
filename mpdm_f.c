@@ -917,3 +917,30 @@ mpdm_t mpdm_pclose(mpdm_t fd)
 
 	return(r);
 }
+
+
+mpdm_t mpdm_home_dir(void)
+{
+	mpdm_t r = NULL;
+	char * ptr;
+
+#ifdef CONFOPT_PWD_H
+#endif
+
+	/* still none? try the ENV variable $HOME */
+	if((ptr = getenv("HOME")) != NULL)
+		r = MPDM_MBS(ptr);
+
+	return(r);
+}
+
+
+mpdm_t mpdm_app_dir(void)
+{
+	mpdm_t r = NULL;
+
+	/* by default, it's the configured directory */
+	r = MPDM_MBS(CONFOPT_PREFIX "/share/");
+
+	return(r);
+}
