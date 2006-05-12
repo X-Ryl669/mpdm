@@ -166,6 +166,9 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset);
 mpdm_t mpdm_gettext(mpdm_t str);
 int mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
+mpdm_t mpdm_home_dir(void);
+mpdm_t mpdm_app_dir(void);
+
 /* value type testing macros */
 
 #define MPDM_IS_ARRAY(v)  ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
