@@ -965,6 +965,36 @@ mpdm_t mpdm_app_dir(void)
 {
 	mpdm_t r = NULL;
 
+#ifdef CONFOPT_WIN32
+
+	HKEY hkey;
+	char tmp[MAX_PATH];
+	LPITEMIDLIST pidl;
+
+	/* get the 'Program Files' folder (can fail) */
+	tmp[0] = '\0';
+	if(SHGetSpecialFolderLocation(NULL, CSIDL_PROGRAM_FILES, &pidl) == S_OK)
+		SHGetPathFromIDList(pidl, tmp);
+
+	/* if it's still empty, get from the registry */
+	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+		"SOFTWARE\\Microsoft\\Windows\\CurrentVersion",
+		0, KEY_QUERY_VALUE, &hkey) == ERROR_SUCCESS)
+	{
+		int n = sizeof(tmp);
+
+		if(RegQueryValueEx(hkey, "ProgramFilesDir",
+			NULL, NULL, tmp, (LPDWORD) &n) != ERROR_SUCCESS)
+			tmp[0] = '\0';
+	}
+
+	if(tmp[0] != '\0')
+	{
+		strcat(tmp, "\\");
+		r = MPDM_MBS(tmp);
+	}
+#endif
+
 	/* still none? get the configured directory */
 	if(r == NULL)
 		r = MPDM_MBS(CONFOPT_PREFIX "/share/");
