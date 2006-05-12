@@ -231,6 +231,20 @@ else
 	echo "No"
 fi
 
+# pwd.h detection
+echo -n "Testing for pwd.h... "
+echo "#include <pwd.h>" > .tmp.c
+echo "int main(void) { return(0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_PWD_H 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
 # gettext support
 echo -n "Testing for gettext... "
 

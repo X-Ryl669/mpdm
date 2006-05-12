@@ -1099,6 +1099,15 @@ void test_pipes(void)
 }
 
 
+void test_misc(void)
+{
+	printf("Home dir:\n");
+	mpdm_dump(mpdm_home_dir());
+	printf("App dir:\n");
+	mpdm_dump(mpdm_app_dir());
+}
+
+
 int main(int argc, char * argv[])
 {
 	if(argc > 1)
@@ -1127,6 +1136,7 @@ int main(int argc, char * argv[])
 	test_gettext();
 	test_conversion();
 	test_pipes();
+	test_misc();
 	benchmark();
 
 /*	mpdm_dump_unref();*/
