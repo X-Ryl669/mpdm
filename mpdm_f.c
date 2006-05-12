@@ -807,6 +807,9 @@ static int sysdep_popen(mpdm_t v, char * prg, int rw)
 		if(rw & 0x01) { close(1); dup(pr[1]); close(pr[0]); }
 		if(rw & 0x02) { close(0); dup(pw[0]); close(pw[1]); }
 
+		/* redirect stderr to stdout */
+		close(2); dup(1);
+
 		/* run the program */
 		execlp("/bin/sh", "/bin/sh", "-c", prg, NULL);
 		execlp(prg, prg, NULL);
