@@ -43,11 +43,14 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#else
+#endif
 
+#ifdef CONFOPT_SYS_TYPES_H
 #include <sys/types.h>
-#include <sys/wait.h>
+#endif
 
+#ifdef CONFOPT_SYS_WAIT_H
+#include <sys/wait.h>
 #endif
 
 #include "mpdm.h"
