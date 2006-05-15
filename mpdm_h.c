@@ -41,8 +41,16 @@ static int mpdm_hash_func(wchar_t * string, int mod)
 {
 	int c;
 
+#ifdef CONFOPT_NULL_HASH
+
+	c = *string % mod;
+
+#else /* CONFOPT_NULL_HASH */
+
 	for(c = 0;*string != L'\0';string++)
 		c = (128 * c + (int)*string) % mod;
+
+#endif /* CONFOPT_NULL_HASH */
 
 	return(c);
 }

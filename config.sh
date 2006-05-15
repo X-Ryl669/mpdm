@@ -19,6 +19,7 @@ while [ $# -gt 0 ] ; do
 	--without-gettext)	WITHOUT_GETTEXT=1 ;;
 	--without-iconv)	WITHOUT_ICONV=1 ;;
 	--without-wcwidth)	WITHOUT_WCWIDTH=1 ;;
+	--with-null-hash)	WITH_NULL_HASH=1 ;;
 	--help)			CONFIG_HELP=1 ;;
 
 	--prefix)		PREFIX=$2 ; shift ;;
@@ -39,6 +40,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "--without-gettext     Disable gettext usage."
 	echo "--without-iconv       Disable iconv usage."
 	echo "--without-wcwidth     Disable system wcwidth() (use workaround)."
+	echo "--with-null-hash      Use a NULL hash function (experimental)."
 
 	echo
 	echo "Environment variables:"
@@ -327,6 +329,12 @@ else
 	else
 		echo "No; activating workaround"
 	fi
+fi
+
+if [ "$WITH_NULL_HASH" = "1" ] ; then
+	echo "Selecting NULL hash function"
+
+	echo "#define CONFOPT_NULL_HASH 1" >> config.h
 fi
 
 #########################################################
