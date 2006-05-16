@@ -151,6 +151,9 @@ mpdm_t mpdm_read(mpdm_t fd);
 int mpdm_write(mpdm_t fd, mpdm_t v);
 int mpdm_encoding(mpdm_t charset);
 int mpdm_unlink(mpdm_t filename);
+mpdm_t mpdm_stat(mpdm_t filename);
+int mpdm_chmod(mpdm_t filename, mpdm_t perms);
+int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid);
 mpdm_t mpdm_glob(mpdm_t spec);
 
 mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode);
