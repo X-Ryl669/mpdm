@@ -592,6 +592,10 @@ void test_file(void)
 	mpdm_unlink(MPDM_LS(L"test.txt"));
 	do_test("unlink", mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r")) == NULL);
 
+	v = mpdm_stat(MPDM_LS(L"stress.c"));
+	printf("Stat from stress.c:\n");
+	mpdm_dump(v);
+
 /*	v=mpdm_glob(MPDM_LS(L"*"));*/
 	printf("Glob:\n");
 	v = mpdm_glob(NULL);

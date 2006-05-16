@@ -54,6 +54,10 @@
 #include <sys/wait.h>
 #endif
 
+#ifdef CONFOPT_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
 #ifdef CONFOPT_PWD_H
 #include <pwd.h>
 #endif
@@ -602,6 +606,87 @@ int mpdm_unlink(mpdm_t filename)
 	filename = MPDM_2MBS(filename->data);
 
 	return(unlink((char *)filename->data));
+}
+
+
+/**
+ * mpdm_stat - Gives status from a file.
+ * @filename: file name to get the status from
+ *
+ * Returns a 13 element array of the status (permissions, onwer, etc.)
+ * from the desired @filename, or NULL if the file cannot be accessed.
+ * (man 2 stat).
+ * [File Management]
+ */
+mpdm_t mpdm_stat(mpdm_t filename)
+{
+	mpdm_t r = NULL;
+
+#ifdef CONFOPT_SYS_STAT_H
+	struct stat s;
+
+	filename = MPDM_2MBS(filename->data);
+
+	if(stat((char *)filename->data, &s) != -1)
+	{
+		r = MPDM_A(13);
+
+		mpdm_aset(r, MPDM_I(s.st_dev), 0);
+		mpdm_aset(r, MPDM_I(s.st_ino), 1);
+		mpdm_aset(r, MPDM_I(s.st_mode), 2);
+		mpdm_aset(r, MPDM_I(s.st_nlink), 3);
+		mpdm_aset(r, MPDM_I(s.st_uid), 4);
+		mpdm_aset(r, MPDM_I(s.st_gid), 5);
+		mpdm_aset(r, MPDM_I(s.st_rdev), 6);
+		mpdm_aset(r, MPDM_I(s.st_size), 7);
+		mpdm_aset(r, MPDM_I(s.st_blksize), 8);
+		mpdm_aset(r, MPDM_I(s.st_blocks), 9);
+		mpdm_aset(r, MPDM_I(s.st_atime), 10);
+		mpdm_aset(r, MPDM_I(s.st_mtime), 11);
+		mpdm_aset(r, MPDM_I(s.st_ctime), 12);
+	}
+#endif /* CONFOPT_SYS_STAT_H */
+
+	return(r);
+}
+
+
+/**
+ * mpdm_chmod - Changes a file's permissions.
+ * @filename: the file name
+ * @perms: permissions (element 2 from mpdm_stat())
+ *
+ * Changes the permissions for a file.
+ * [File Management]
+ */
+int mpdm_chmod(mpdm_t filename, mpdm_t perms)
+{
+	int r = -1;
+
+	filename = MPDM_2MBS(filename->data);
+	r = chmod((char *)filename->data, mpdm_ival(perms));
+
+	return(r);
+}
+
+
+/**
+ * mpdm_chown - Changes a file's owner.
+ * @filename: the file name
+ * @uid: user id (element 4 from mpdm_stat())
+ * @gid: group id (element 5 from mpdm_stat())
+ *
+ * Changes the owner and group id's for a file.
+ * [File Management]
+ */
+int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid)
+{
+	int r = -1;
+
+	filename = MPDM_2MBS(filename->data);
+	r = chown((char *)filename->data, mpdm_ival(uid), mpdm_ival(gid));
+
+	return(r);
 }
 
 
