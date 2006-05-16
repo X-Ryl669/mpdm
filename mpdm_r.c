@@ -253,7 +253,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
  * mpdm_sregex - Matches and substitutes a regular expression.
  * @r: the regular expression
  * @v: the value to be matched
- * @s: the string that will substitute the matched string
+ * @s: the substitution string, hash or code
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value, and substitutes the
@@ -264,6 +264,9 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
  * If @s is executable, it's executed with the matched part as
  * the only argument and its return value is used as the
  * substitution string.
+ *
+ * If @s is a hash, the matched string is used as a key to it and
+ * its value used as the substitution.
  *
  * If @r is NULL, returns the number of substitutions made in the
  * previous call to mpdm_sregex() (can be zero if none was done).
@@ -323,13 +326,13 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				t = MPDM_NMBS(ptr + i, rm.rm_so);
 				o = mpdm_strcat(o, t);
 
-				/* is s an executable value? */
-				if(s != NULL && s->flags & MPDM_EXEC)
-				{
-					/* get the matched part */
-					t = MPDM_NMBS(ptr + i + rm.rm_so,
-						rm.rm_eo - rm.rm_so);
+				/* get the matched part */
+				t = MPDM_NMBS(ptr + i + rm.rm_so,
+					rm.rm_eo - rm.rm_so);
 
+				/* is s an executable value? */
+				if(MPDM_IS_EXEC(s))
+				{
 					/* protect o from sweeping */
 					mpdm_ref(o);
 
@@ -338,6 +341,10 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 					mpdm_unref(o);
 				}
+				else
+				/* is s a hash? use match as key */
+				if(MPDM_IS_HASH(s))
+					t = mpdm_hget(s, t);
 				else
 					t = s;
 
