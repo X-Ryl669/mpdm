@@ -261,6 +261,21 @@ else
 	echo "No"
 fi
 
+# chown() detection
+echo -n "Testing for chown()... "
+echo "#include <sys/types.h>" > .tmp.c
+echo "#include <unistd.h>" >> .tmp.c
+echo "int main(void) { chown(\"file\", 0, 0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_CHOWN 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
 # gettext support
 echo -n "Testing for gettext... "
 
