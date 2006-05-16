@@ -639,11 +639,11 @@ mpdm_t mpdm_stat(mpdm_t filename)
 		mpdm_aset(r, MPDM_I(s.st_gid), 5);
 		mpdm_aset(r, MPDM_I(s.st_rdev), 6);
 		mpdm_aset(r, MPDM_I(s.st_size), 7);
-		mpdm_aset(r, MPDM_I(s.st_blksize), 8);
-		mpdm_aset(r, MPDM_I(s.st_blocks), 9);
-		mpdm_aset(r, MPDM_I(s.st_atime), 10);
-		mpdm_aset(r, MPDM_I(s.st_mtime), 11);
-		mpdm_aset(r, MPDM_I(s.st_ctime), 12);
+		mpdm_aset(r, MPDM_I(s.st_atime), 8);
+		mpdm_aset(r, MPDM_I(s.st_mtime), 9);
+		mpdm_aset(r, MPDM_I(s.st_ctime), 10);
+		mpdm_aset(r, MPDM_I(0), 11);	/* s.st_blksize */
+		mpdm_aset(r, MPDM_I(0), 12);	/* s.st_blocks */
 	}
 #endif /* CONFOPT_SYS_STAT_H */
 
@@ -683,8 +683,12 @@ int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid)
 {
 	int r = -1;
 
+#ifdef CONFOPT_CHOWN
+
 	filename = MPDM_2MBS(filename->data);
 	r = chown((char *)filename->data, mpdm_ival(uid), mpdm_ival(gid));
+
+#endif /* CONFOPT_CHOWN */
 
 	return(r);
 }
