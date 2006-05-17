@@ -374,7 +374,6 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 	if(v2 == NULL)
 		return(1);
 
-	/* if both values are strings, compare as such */
 	if(MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
 		r = wcscmp((wchar_t *)v1->data, (wchar_t *)v2->data);
 	else
