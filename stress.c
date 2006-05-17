@@ -268,6 +268,20 @@ void test_array(void)
 	v = MPDM_A(0);
 	mpdm_push(v, MPDM_I(100));
 	mpdm_pop(v);
+
+	/* array comparisons with mpdm_cmp() */
+	a = MPDM_A(2);
+	mpdm_aset(a, MPDM_I(10), 0);
+	mpdm_aset(a, MPDM_I(60), 1);
+
+	v = mpdm_clone(a);
+	do_test("mpdm_cmp: array clones are equal", mpdm_cmp(a, v) == 0);
+
+	mpdm_adel(v, -1);
+	do_test("mpdm_cmp: shorter arrays are lesser", mpdm_cmp(a, v) > 0);
+
+	mpdm_push(v, MPDM_I(80));
+	do_test("mpdm_cmp: 2# element is bigger, so array is bigger", mpdm_cmp(a, v) < 0);
 }
 
 
