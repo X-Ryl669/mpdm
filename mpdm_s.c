@@ -358,12 +358,16 @@ wchar_t * mpdm_string(mpdm_t v)
  * @v2: the second value
  *
  * Compares two values. If both has the MPDM_STRING flag set,
- * a comparison using strcmp() is returned; otherwise, a
- * simple pointer comparison is done.
+ * a comparison using wcscmp() is returned; if both are arrays,
+ * the size is compared first and, if they have the same number
+ * elements, each one is compared; otherwise, a simple pointer
+ * comparison is done.
  * [Strings]
  */
 int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 {
+	int r;
+
 	/* special treatment to NULL values */
 	if(v1 == NULL)
 		return(-1);
@@ -371,11 +375,31 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 		return(1);
 
 	/* if both values are strings, compare as such */
-	if((v1->flags & MPDM_STRING) && (v2->flags & MPDM_STRING))
-		return(wcscmp((wchar_t *)v1->data, (wchar_t *)v2->data));
+	if(MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
+		r = wcscmp((wchar_t *)v1->data, (wchar_t *)v2->data);
+	else
+	if(MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2))
+	{
+		/* compare first the sizes */
+		if((r = mpdm_size(v1) - mpdm_size(v2)) == 0)
+		{
+			int n;
 
+			/* they have the same size;
+			   compare each pair of elements */
+			for(n = 0;n < mpdm_size(v1);n++)
+			{
+				if((r = mpdm_cmp(mpdm_aget(v1, n),
+					mpdm_aget(v2, n))) != 0)
+					break;
+			}
+		}
+	}
+	else
 	/* in any other case, compare just pointers */
-	return((int)(v1->data - v2->data));
+	r = (int)(v1->data - v2->data);
+
+	return(r);
 }
 
 
