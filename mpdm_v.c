@@ -397,8 +397,15 @@ static mpdm_t MPDM(mpdm_t args)
 
 	if(v != NULL)
 	{
+		mpdm_t w;
+
 		/* do changes */
-		/* ... */
+		if((w = mpdm_hget_s(v, L"low_threshold")) != NULL &&
+			mpdm_ival(w) > 0)
+			mpdm->low_threshold = mpdm_ival(w);
+
+		if((w = mpdm_hget_s(v, L"default_sweep")) != NULL)
+			mpdm->default_sweep = mpdm_ival(w);
 	}
 
 	/* now collect all information */
