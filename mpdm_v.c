@@ -390,6 +390,30 @@ mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2)
 }
 
 
+static mpdm_t MPDM(mpdm_t args)
+/* accesor / mutator for MPDM internal data */
+{
+	mpdm_t v = mpdm_aget(args, 0);
+
+	if(v != NULL)
+	{
+		/* do changes */
+		/* ... */
+	}
+
+	/* now collect all information */
+	v = MPDM_H(0);
+
+	mpdm_hset_s(v, L"count", MPDM_I(mpdm->count));
+	mpdm_hset_s(v, L"low_threshold", MPDM_I(mpdm->low_threshold));
+	mpdm_hset_s(v, L"default_sweep", MPDM_I(mpdm->default_sweep));
+	mpdm_hset_s(v, L"memory_usage", MPDM_I(mpdm->memory_usage));
+	mpdm_hset_s(v, L"root", mpdm->root);
+
+	return(v);
+}
+
+
 /**
  * mpdm_startup - Initializes MPDM.
  *
@@ -415,6 +439,9 @@ int mpdm_startup(void)
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)
 			setlocale(LC_ALL, "C");
+
+		/* store the MPDM() function */
+		mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_X(MPDM));
 	}
 
 	/* everything went OK */
