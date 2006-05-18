@@ -408,7 +408,6 @@ static mpdm_t MPDM(mpdm_t args)
 	mpdm_hset_s(v, L"low_threshold", MPDM_I(mpdm->low_threshold));
 	mpdm_hset_s(v, L"default_sweep", MPDM_I(mpdm->default_sweep));
 	mpdm_hset_s(v, L"memory_usage", MPDM_I(mpdm->memory_usage));
-	mpdm_hset_s(v, L"root", mpdm->root);
 
 	return(v);
 }
