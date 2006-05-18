@@ -406,6 +406,9 @@ static mpdm_t MPDM(mpdm_t args)
 
 		if((w = mpdm_hget_s(v, L"default_sweep")) != NULL)
 			mpdm->default_sweep = mpdm_ival(w);
+
+		if((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
+			mpdm->hash_buckets = mpdm_ival(w);
 	}
 
 	/* now collect all information */
@@ -415,6 +418,7 @@ static mpdm_t MPDM(mpdm_t args)
 	mpdm_hset_s(v, L"low_threshold", MPDM_I(mpdm->low_threshold));
 	mpdm_hset_s(v, L"default_sweep", MPDM_I(mpdm->default_sweep));
 	mpdm_hset_s(v, L"memory_usage", MPDM_I(mpdm->memory_usage));
+	mpdm_hset_s(v, L"hash_buckets", MPDM_I(mpdm->hash_buckets));
 
 	return(v);
 }
@@ -441,6 +445,7 @@ int mpdm_startup(void)
 		/* sets the defaults */
 		mpdm->low_threshold = 16;
 		mpdm->default_sweep = 16;
+		mpdm->hash_buckets  = 31;
 
 		/* sets the locale */
 		if(setlocale(LC_ALL, "") == NULL)

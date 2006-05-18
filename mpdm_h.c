@@ -181,7 +181,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 
 	/* if hash is empty, create an optimal number of buckets */
 	if(mpdm_size(h) == 0)
-		mpdm_expand(h, 0, 31);
+		mpdm_expand(h, 0, mpdm->hash_buckets);
 
 	n = HASH_BUCKET(h, k);
 
