@@ -43,6 +43,8 @@ static void dump_1(mpdm_t v, int l)
 {
 	int n;
 
+	mpdm_ref(v);
+
 	/* indent */
 	for(n = 0;n < l;n++)
 		printf("  ");
@@ -97,6 +99,8 @@ static void dump_1(mpdm_t v, int l)
 				dump_1(mpdm_aget(v, n), l + 1);
 		}
 	}
+
+	mpdm_unref(v);
 }
 
 
