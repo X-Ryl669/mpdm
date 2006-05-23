@@ -831,3 +831,92 @@ int mpdm_wcwidth(wchar_t c)
 #endif /* CONFOPT_WCWIDTH */
 
 }
+
+
+mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
+{
+	wchar_t * i;
+	wchar_t * o = NULL;
+	int l = 0, n = 0;
+	wchar_t c;
+
+	/* loop all characters */
+	for(i = (wchar_t *) fmt->data;(c = *i) != L'\0';i++)
+	{
+		if(c == L'%' && n < mpdm_size(args))
+		{
+			char t_fmt[128];
+			int m = 0;
+			wchar_t * tptr = NULL;
+			wchar_t * wptr = NULL;
+			mpdm_t v = mpdm_aget(args, n++);
+
+			i++;
+			t_fmt[m++] = '%';
+
+			/* transfer the format */
+			while(*i != L'\0' && wcschr(L"-.0123456789", *i) != NULL)
+				m += wctomb(&t_fmt[m], *i++);
+
+			/* null-terminate it */
+			t_fmt[m] = '\0';
+
+			switch(t_fmt[1])
+			{
+			case 'd':
+			case 'i':
+			case 'x':
+			case 'X':
+			case 'o':
+			case 'c':
+
+				{
+				char t_out[1024];
+
+				/* integer value */
+				sprintf(t_out, t_fmt, mpdm_ival(v));
+				tptr = wptr = mpdm_mbstowcs(t_out, NULL, -1);
+				break;
+				}
+
+			case 'f':
+
+				{
+				char t_out[1024];
+
+				/* float (real) value */
+				sprintf(t_out, t_fmt, mpdm_rval(v));
+				tptr = wptr = mpdm_mbstowcs(t_out, NULL, -1);
+				break;
+				}
+
+			case 's':
+
+				/* string value */
+				wptr = mpdm_string(v);
+				break;
+
+			default:
+
+				/* unknown? write the 'format' as is */
+				tptr = wptr = mpdm_mbstowcs(t_fmt, NULL, -1);
+				break;
+			}
+
+			/* transfer */
+			for(m = 0;(c = wptr[m]) != '\0';m++)
+				o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+
+			/* free the temporary buffer, if any */
+			if(tptr != NULL) free(tptr);
+		}
+		else
+			o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+	}
+
+	/* null-terminate */
+	c = L'\0';
+	o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+
+	return(o == NULL ? NULL : MPDM_ENS(o, l));
+}
