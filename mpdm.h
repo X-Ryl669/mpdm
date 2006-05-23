@@ -117,6 +117,7 @@ mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 int mpdm_wcwidth(wchar_t c);
+mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args);
 
 wchar_t * mpdm_string(mpdm_t v);
 mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del);

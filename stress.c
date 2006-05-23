@@ -1126,6 +1126,49 @@ void test_misc(void)
 }
 
 
+void test_sprintf(void)
+{
+	mpdm_t v;
+	mpdm_t w;
+
+	printf("sprintf tests\n");
+
+	v = MPDM_A(0);
+	mpdm_push(v, MPDM_I(100));
+	mpdm_push(v, MPDM_LS(L"beers"));
+
+	w = mpdm_sprintf(MPDM_LS(L"%d %s for me"), v);
+	do_test("sprintf 1", mpdm_cmp(w, MPDM_LS(L"100 beers for me")) == 0);
+
+	w = mpdm_sprintf(MPDM_LS(L"%d %s for me %d"), v);
+	do_test("sprintf 2", mpdm_cmp(w, MPDM_LS(L"100 beers for me %d")) == 0);
+
+	w = mpdm_sprintf(MPDM_LS(L"%10d %s for me"), v);
+	do_test("sprintf 3", mpdm_cmp(w, MPDM_LS(L"       100 beers for me")) == 0);
+
+	w = mpdm_sprintf(MPDM_LS(L"%010d %s for me"), v);
+	do_test("sprintf 4", mpdm_cmp(w, MPDM_LS(L"0000000100 beers for me")) == 0);
+
+	v = MPDM_A(0);
+	mpdm_push(v, MPDM_R(3.1416));
+
+	w = mpdm_sprintf(MPDM_LS(L"Value for PI is %6.4f"), v);
+	do_test("sprintf 2.1", mpdm_cmp(w, MPDM_LS(L"Value for PI is 3.1416")) == 0);
+
+	w = mpdm_sprintf(MPDM_LS(L"Value for PI is %08.2f"), v);
+	do_test("sprintf 2.1", mpdm_cmp(w, MPDM_LS(L"Value for PI is 00003.14")) == 0);
+
+	v = MPDM_A(0);
+	mpdm_push(v, MPDM_LS(L"stress"));
+
+	w = mpdm_sprintf(MPDM_LS(L"This is a |%10s| test"), v);
+	do_test("sprintf 3.1", mpdm_cmp(w, MPDM_LS(L"This is a |    stress| test")) == 0);
+
+	w = mpdm_sprintf(MPDM_LS(L"This is a |%-10s| test"), v);
+	do_test("sprintf 3.2", mpdm_cmp(w, MPDM_LS(L"This is a |stress    | test")) == 0);
+}
+
+
 int main(int argc, char * argv[])
 {
 	if(argc > 1)
@@ -1155,6 +1198,8 @@ int main(int argc, char * argv[])
 	test_conversion();
 	test_pipes();
 	test_misc();
+	test_sprintf();
+
 	benchmark();
 
 /*	mpdm_dump_unref();*/
