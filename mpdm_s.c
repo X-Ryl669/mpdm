@@ -833,90 +833,108 @@ int mpdm_wcwidth(wchar_t c)
 }
 
 
+/**
+ * mpdm_sprintf - Formats a sprintf()-like string
+ * @fmt: the string format
+ * @args: an array of values
+ *
+ * Formats a string using the sprintf() format taking the values from @args.
+ * [Strings]
+ */
 mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 {
-	wchar_t * i;
+	wchar_t * i = fmt->data;
 	wchar_t * o = NULL;
 	int l = 0, n = 0;
 	wchar_t c;
 
 	/* loop all characters */
-	for(i = (wchar_t *) fmt->data;(c = *i) != L'\0';i++)
+	while((c = *i++) != L'\0')
 	{
-		if(c == L'%' && n < mpdm_size(args))
-		{
-			char t_fmt[128];
-			int m = 0;
-			wchar_t * tptr = NULL;
-			wchar_t * wptr = NULL;
-			mpdm_t v = mpdm_aget(args, n++);
+		int m = 0;
+		wchar_t * tptr = NULL;
+		wchar_t * wptr = NULL;
 
-			i++;
+		if(c == L'%')
+		{
+			/* format directive */
+			char t_fmt[128];
+			char tmp[1024];
+			mpdm_t v;
+			char * ptr = NULL;
+
+			/* transfer the % */
 			t_fmt[m++] = '%';
 
-			/* transfer the format */
-			while(*i != L'\0' && wcschr(L"-.0123456789", *i) != NULL)
+			/* transform the format to mbs */
+			while(*i != L'\0' && m < sizeof(t_fmt) - MB_CUR_MAX - 1 &&
+				wcschr(L"-.0123456789", *i) != NULL)
 				m += wctomb(&t_fmt[m], *i++);
 
-			/* null-terminate it */
+			/* transfer the directive */
+			m += wctomb(&t_fmt[m], *i++);
+
 			t_fmt[m] = '\0';
 
-			switch(t_fmt[1])
-			{
-			case 'd':
-			case 'i':
-			case 'x':
-			case 'X':
-			case 'o':
-			case 'c':
+			/* by default, copies the format */
+			strcpy(tmp, t_fmt);
 
+			/* any values left? */
+			if(n < mpdm_size(args) && (v = mpdm_aget(args, n++)) != NULL)
+			{
+				switch(t_fmt[m - 1])
 				{
-				char t_out[1024];
+				case 'd':
+				case 'i':
+				case 'x':
+				case 'X':
+				case 'o':
+				case 'c':
 
 				/* integer value */
-				sprintf(t_out, t_fmt, mpdm_ival(v));
-				tptr = wptr = mpdm_mbstowcs(t_out, NULL, -1);
+				snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(v));
 				break;
-				}
 
-			case 'f':
-
-				{
-				char t_out[1024];
+				case 'f':
 
 				/* float (real) value */
-				sprintf(t_out, t_fmt, mpdm_rval(v));
-				tptr = wptr = mpdm_mbstowcs(t_out, NULL, -1);
+				snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_rval(v));
 				break;
-				}
 
-			case 's':
+				case 's':
 
 				/* string value */
-				wptr = mpdm_string(v);
-				break;
+				ptr = mpdm_wcstombs(mpdm_string(v), NULL);
+				snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
+				free(ptr);
 
-			default:
-
-				/* unknown? write the 'format' as is */
-				tptr = wptr = mpdm_mbstowcs(t_fmt, NULL, -1);
 				break;
+				}
 			}
 
 			/* transfer */
-			for(m = 0;(c = wptr[m]) != '\0';m++)
-				o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
-
-			/* free the temporary buffer, if any */
-			if(tptr != NULL) free(tptr);
+			wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
 		}
 		else
-			o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+		{
+			/* raw character */
+			m = 1;
+			wptr = &c;
+		}
+
+		/* transfer */
+		o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
+
+		/* free the temporary buffer, if any */
+		if(tptr != NULL) free(tptr);
 	}
+
+	if(o == NULL)
+		return(NULL);
 
 	/* null-terminate */
 	c = L'\0';
 	o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
 
-	return(o == NULL ? NULL : MPDM_ENS(o, l));
+	return(MPDM_ENS(o, l));
 }

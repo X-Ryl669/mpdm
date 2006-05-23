@@ -190,5 +190,6 @@ Closed
  * 1086: Add a way to get the 'library' (/usr/PREFIX/share on Unix
    and the "Program Files" directory on Windows) and 'home' (~ and
    "My Documents") directories (Fri, 12 May 2006 13:26:32 +0200).
+ * 1088: mpdm_sprintf() (Tue, 23 May 2006 18:07:58 +0200).
 
 Email bugs to angel@triptico.com
