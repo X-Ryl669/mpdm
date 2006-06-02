@@ -92,10 +92,19 @@ struct mpdm_file
 #endif /* CONFOPT_WIN32 */
 };
 
+extern int errno;
+
 
 /*******************
 	Code
 ********************/
+
+
+static void store_syserr(void)
+/* stores the system error inside the global ERROR */
+{
+	mpdm_hset_s(mpdm_root(), L"ERROR", MPDM_MBS(strerror(errno)));
+}
 
 
 static int get_char(struct mpdm_file * f)
@@ -205,8 +214,6 @@ static int write_wcs(struct mpdm_file * f, wchar_t * str)
 
 
 #ifdef CONFOPT_ICONV
-
-extern int errno;
 
 static wchar_t * read_iconv(struct mpdm_file * f, int * s)
 /* reads a multibyte string transforming with iconv */
@@ -432,7 +439,8 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 	filename = MPDM_2MBS(filename->data);
 	mode = MPDM_2MBS(mode->data);
 
-	f = fopen((char *)filename->data, (char *)mode->data);
+	if((f = fopen((char *)filename->data, (char *)mode->data)) == NULL)
+		store_syserr();
 
 	return(MPDM_F(f));
 }
@@ -602,10 +610,15 @@ int mpdm_encoding(mpdm_t charset)
  */
 int mpdm_unlink(mpdm_t filename)
 {
+	int ret;
+
 	/* convert to mbs */
 	filename = MPDM_2MBS(filename->data);
 
-	return(unlink((char *)filename->data));
+	if((ret = unlink((char *)filename->data)) == -1)
+		store_syserr();
+
+	return(ret);
 }
 
 
@@ -645,6 +658,9 @@ mpdm_t mpdm_stat(mpdm_t filename)
 		mpdm_aset(r, MPDM_I(0), 11);	/* s.st_blksize */
 		mpdm_aset(r, MPDM_I(0), 12);	/* s.st_blocks */
 	}
+	else
+		store_syserr();
+
 #endif /* CONFOPT_SYS_STAT_H */
 
 	return(r);
@@ -664,7 +680,8 @@ int mpdm_chmod(mpdm_t filename, mpdm_t perms)
 	int r = -1;
 
 	filename = MPDM_2MBS(filename->data);
-	r = chmod((char *)filename->data, mpdm_ival(perms));
+	if((r = chmod((char *)filename->data, mpdm_ival(perms))) == -1)
+		store_syserr();
 
 	return(r);
 }
@@ -686,7 +703,8 @@ int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid)
 #ifdef CONFOPT_CHOWN
 
 	filename = MPDM_2MBS(filename->data);
-	r = chown((char *)filename->data, mpdm_ival(uid), mpdm_ival(gid));
+	if((r = chown((char *)filename->data, mpdm_ival(uid), mpdm_ival(gid))) == -1)
+		store_syserr();
 
 #endif /* CONFOPT_CHOWN */
 
