@@ -375,7 +375,7 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 
 	/* loop until a has the desired size */
 	while(mpdm_size(a) > size - 1)
-		v = mpdm_adel(a, 0);
+		v = mpdm_shift(a);
 
 	mpdm_push(a, e);
 	return(v);
