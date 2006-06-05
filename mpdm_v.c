@@ -449,7 +449,7 @@ int mpdm_startup(void)
 		memset(mpdm, '\0', sizeof(struct mpdm_control));
 
 		/* sets the defaults */
-		mpdm->low_threshold = 16384;
+		mpdm->low_threshold = 16;
 		mpdm->default_sweep = 16;
 		mpdm->hash_buckets  = 31;
 
