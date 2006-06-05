@@ -88,66 +88,70 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	char tmp[MB_CUR_MAX + 1];
 	wchar_t wc[2];
 	int n, i, c, t;
+	char * cstr;
 
 	/* allow NULL values for s */
 	if(s == NULL) s = &t;
 
-	/* create a duplicate and optionally limit */
-	str = strdup(str);
-	if(l >= 0) str[l] = '\0';
+	/* if there is a limit, duplicate and break the string */
+	if(l >= 0)
+	{
+		cstr = strdup(str);
+		cstr[l] = '\0';
+	}
+	else
+		cstr = str;
 
 	/* try first a direct conversion with mbstowcs */
-	if((*s = mbstowcs(NULL, str, 0)) != -1)
+	if((*s = mbstowcs(NULL, cstr, 0)) != -1)
 	{
-		/* direct conversion is possible; do it and return */
+		/* direct conversion is possible; do it */
 		if((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL)
 		{
-			mbstowcs(ptr, str, *s);
+			mbstowcs(ptr, cstr, *s);
 			ptr[*s] = L'\0';
 		}
-
-		free(str);
-
-		return(ptr);
 	}
-
-	/* zero everything */
-	*s = n = i = 0;
-	wc[1] = L'\0';
-
-	for(;;)
+	else
 	{
-		/* no more characters to process? */
-		if((c = str[n + i]) == '\0' && i == 0)
-			break;
+		/* zero everything */
+		*s = n = i = 0;
+		wc[1] = L'\0';
 
-		tmp[i++] = c; tmp[i] = '\0';
-
-		/* try to convert */
-		if(mbstowcs(wc, tmp, 1) == -1)
+		for(;;)
 		{
-			/* can still be an incomplete multibyte char? */
-			if(c != '\0' && i <= MB_CUR_MAX)
-				continue;
-			else
+			/* no more characters to process? */
+			if((c = cstr[n + i]) == '\0' && i == 0)
+				break;
+
+			tmp[i++] = c; tmp[i] = '\0';
+
+			/* try to convert */
+			if(mbstowcs(wc, tmp, 1) == -1)
 			{
-				/* too many failing bytes; skip 1 byte */
-				wc[0] = L'?';
-				i = 1;
+				/* can still be an incomplete multibyte char? */
+				if(c != '\0' && i <= MB_CUR_MAX)
+					continue;
+				else
+				{
+					/* too many failing bytes; skip 1 byte */
+					wc[0] = L'?';
+					i = 1;
+				}
 			}
+
+			/* skip used bytes and back again */
+			n += i;
+			i = 0;
+
+			/* store new char */
+			if((ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t))) == NULL)
+				break;
 		}
-
-		/* skip used bytes and back again */
-		n += i;
-		i = 0;
-
-		/* store new char */
-		if((ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t))) == NULL)
-			break;
 	}
 
 	/* free the duplicate */
-	free(str);
+	if(cstr != str) free(cstr);
 
 	return(ptr);
 }
