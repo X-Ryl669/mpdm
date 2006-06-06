@@ -124,13 +124,7 @@ mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
  */
 mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
 {
-	mpdm_t v;
-
-	MPDM_ND_BEGIN();
-	v = mpdm_hget(h, MPDM_ND_LS(k));
-	MPDM_ND_END();
-
-	return(v);
+	return(mpdm_hget(h, MPDM_LS(k)));
 }
 
 
@@ -230,11 +224,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  */
 mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
 {
-	MPDM_ND_BEGIN();
-	v = mpdm_hset(h, MPDM_ND_LS(k), v);
-	MPDM_ND_END();
-
-	return(v);
+	return(mpdm_hset(h, MPDM_LS(k), v));
 }
 
 
@@ -314,11 +304,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	if(k->flags & MPDM_MULTIPLE)
 		p = k;
 	else
-	{
-		MPDM_ND_BEGIN();
-		p = mpdm_split(MPDM_ND_LS(L"."), k);
-		MPDM_ND_END();
-	}
+		p = mpdm_split(MPDM_LS(L"."), k);
 
 	for(n = 0;n < mpdm_size(p) - s;n++)
 	{

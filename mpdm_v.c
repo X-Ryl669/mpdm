@@ -333,46 +333,28 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
 {
-	mpdm_t av[] = { a1 };
-	mpdm_t r;
-
-	MPDM_ND_BEGIN();
-
-	r = mpdm_exec(c, MPDM_ND_A(av));
-
-	MPDM_ND_END();
-
-	return(r);
+	mpdm_t a = MPDM_A(1);
+	mpdm_aset(a, a1, 0);
+	return(mpdm_exec(c, a));
 }
 
 
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 {
-	mpdm_t av[] = { a1, a2 };
-	mpdm_t r;
-
-	MPDM_ND_BEGIN();
-
-	r = mpdm_exec(c, MPDM_ND_A(av));
-
-	MPDM_ND_END();
-
-	return(r);
+	mpdm_t a = MPDM_A(2);
+	mpdm_aset(a, a1, 0);
+	mpdm_aset(a, a2, 1);
+	return(mpdm_exec(c, a));
 }
 
 
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 {
-	mpdm_t av[] = { a1, a2, a3 };
-	mpdm_t r;
-
-	MPDM_ND_BEGIN();
-
-	r = mpdm_exec(c, MPDM_ND_A(av));
-
-	MPDM_ND_END();
-
-	return(r);
+	mpdm_t a = MPDM_A(3);
+	mpdm_aset(a, a1, 0);
+	mpdm_aset(a, a2, 1);
+	mpdm_aset(a, a3, 2);
+	return(mpdm_exec(c, a));
 }
 
 
