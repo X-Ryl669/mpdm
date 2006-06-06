@@ -425,13 +425,7 @@ int mpdm_seek(mpdm_t a, mpdm_t k, int step)
  */
 int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
 {
-	int r;
-
-	MPDM_ND_BEGIN();
-	r = mpdm_seek(a, MPDM_ND_LS(k), step);
-	MPDM_ND_END();
-
-	return(r);
+	return(mpdm_seek(a, MPDM_LS(k), step));
 }
 
 
@@ -504,13 +498,7 @@ int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos)
  */
 int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int * pos)
 {
-	int r;
-
-	MPDM_ND_BEGIN();
-	r = mpdm_bseek(a, MPDM_ND_LS(k), step, pos);
-	MPDM_ND_END();
-
-	return(r);
+	return(mpdm_bseek(a, MPDM_LS(k), step, pos));
 }
 
 
