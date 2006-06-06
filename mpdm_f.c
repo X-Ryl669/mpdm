@@ -180,6 +180,9 @@ static wchar_t * read_mbs(struct mpdm_file * f, int * s)
 
 	if(cptr != NULL)
 	{
+		/* NULL terminate */
+		cptr = mpdm_poke(cptr, &n, "", 1, 1);
+
 		/* do the conversion */
 		ptr = mpdm_mbstowcs(cptr, s, -1);
 
@@ -221,10 +224,9 @@ static wchar_t * read_iconv(struct mpdm_file * f, int * s)
 	char tmp[128];
 	wchar_t * ptr = NULL;
 	int c, i;
-	wchar_t wc[2];
+	wchar_t wc;
 
 	*s = i = 0;
-	wc[1] = L'\0';
 
 	/* resets the decoder */
 	iconv(f->ic_dec, NULL, NULL, NULL, NULL);
@@ -241,7 +243,7 @@ static wchar_t * read_iconv(struct mpdm_file * f, int * s)
 			break;
 
 		il = i; iptr = tmp;
-		ol = sizeof(wchar_t); optr = (char *)wc;
+		ol = sizeof(wchar_t); optr = (char *)&wc;
 
 		/* write to file */
 		if(iconv(f->ic_dec, &iptr, &il, &optr, &ol) == -1)
@@ -251,17 +253,23 @@ static wchar_t * read_iconv(struct mpdm_file * f, int * s)
 				continue;
 
 			/* otherwise, return '?' */
-			wc[0] = L'?';
+			wc = L'?';
 		}
 
 		i = 0;
 
-		if((ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t))) == NULL)
+		if((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
 			break;
 
 		/* if it's an end of line, finish */
-		if(wc[0] == L'\n')
+		if(wc == L'\n')
 			break;
+	}
+
+	if(ptr != NULL)
+	{
+		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+		(*s)--;
 	}
 
 	return(ptr);

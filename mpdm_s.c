@@ -52,10 +52,10 @@ void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
 	if(org != NULL && osize)
 	{
 		/* makes room for the new string */
-		if((dst = realloc(dst, (*dsize + osize + 1) * esize)) != NULL)
+		if((dst = realloc(dst, (*dsize + osize) * esize)) != NULL)
 		{
 			/* copies it */
-			memcpy(dst + (*dsize * esize), org, (osize + 1) * esize);
+			memcpy(dst + (*dsize * esize), org, osize * esize);
 
 			/* adds to final size */
 			*dsize += osize;
@@ -86,8 +86,8 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 {
 	wchar_t * ptr = NULL;
 	char tmp[MB_CUR_MAX + 1];
-	wchar_t wc[2];
-	int n, i, c, t;
+	wchar_t wc;
+	int n, i, c, t = 0;
 	char * cstr;
 
 	/* allow NULL values for s */
@@ -116,7 +116,6 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 	{
 		/* zero everything */
 		*s = n = i = 0;
-		wc[1] = L'\0';
 
 		for(;;)
 		{
@@ -127,7 +126,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 			tmp[i++] = c; tmp[i] = '\0';
 
 			/* try to convert */
-			if(mbstowcs(wc, tmp, 1) == -1)
+			if(mbstowcs(&wc, tmp, 1) == -1)
 			{
 				/* can still be an incomplete multibyte char? */
 				if(c != '\0' && i <= MB_CUR_MAX)
@@ -135,7 +134,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 				else
 				{
 					/* too many failing bytes; skip 1 byte */
-					wc[0] = L'?';
+					wc = L'?';
 					i = 1;
 				}
 			}
@@ -145,9 +144,16 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 			i = 0;
 
 			/* store new char */
-			if((ptr = mpdm_poke(ptr, s, wc, 1, sizeof(wchar_t))) == NULL)
+			if((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
 				break;
 		}
+	}
+
+	/* null terminate and count one less */
+	if(ptr != NULL)
+	{
+		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+		(*s)--;
 	}
 
 	/* free the duplicate */
@@ -163,7 +169,7 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 {
 	char * ptr = NULL;
 	char tmp[MB_CUR_MAX + 1];
-	int l, t;
+	int l, t = 0;
 
 	/* allow NULL values for s */
 	if(s == NULL) s = &t;
@@ -198,6 +204,13 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
 			break;
 
 		str++;
+	}
+
+	/* null terminate and count one less */
+	if(ptr != NULL)
+	{
+		ptr = mpdm_poke(ptr, s, "", 1, 1);
+		(*s)--;
 	}
 
 	return(ptr);
@@ -289,7 +302,7 @@ mpdm_t mpdm_new_i(int ival)
 
 	v = MPDM_MBS(tmp);
 	v->flags |= MPDM_IVAL;
-	v->ival=ival;
+	v->ival = ival;
 
 	return(v);
 }
@@ -536,7 +549,8 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 	if(ptr == NULL)
 		return(MPDM_LS(L""));
 
-	return(MPDM_ENS(ptr, s));
+	ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
+	return(MPDM_ENS(ptr, s - 1));
 }
 
 
@@ -940,8 +954,7 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 		return(NULL);
 
 	/* null-terminate */
-	c = L'\0';
-	o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+	o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
 
-	return(MPDM_ENS(o, l));
+	return(MPDM_ENS(o, l - 1));
 }
