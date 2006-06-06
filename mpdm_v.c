@@ -414,7 +414,7 @@ static mpdm_t MPDM(mpdm_t args)
 
 	/* loop all values counting the references ones */
 	for(n = mpdm->count, v = mpdm->cur;n > 0;n--, v = v->next)
-		if(v->ref > 0) c++;
+		if(v->ref == 0) c++;
 
 	/* now collect all information */
 	v = MPDM_H(0);
@@ -424,7 +424,7 @@ static mpdm_t MPDM(mpdm_t args)
 	mpdm_hset_s(v, L"default_sweep", MPDM_I(mpdm->default_sweep));
 	mpdm_hset_s(v, L"memory_usage", MPDM_I(mpdm->memory_usage));
 	mpdm_hset_s(v, L"hash_buckets", MPDM_I(mpdm->hash_buckets));
-	mpdm_hset_s(v, L"referenced", MPDM_I(c));
+	mpdm_hset_s(v, L"unreferenced", MPDM_I(c));
 
 	return(v);
 }
