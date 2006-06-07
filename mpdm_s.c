@@ -222,9 +222,6 @@ mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 {
 	wchar_t * ptr;
 
-	/* HACK: avoid using NONDYN string values */
-	flags &= ~MPDM_NONDYN;
-
 	/* a size of -1 means 'calculate it' */
 	if(size == -1 && str != NULL)
 		size = wcslen(str);
