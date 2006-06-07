@@ -50,9 +50,6 @@ mpdm_t mpdm_new_a(int flags, int size)
 {
 	mpdm_t v;
 
-	/* standard arrays can't be nondyn */
-	flags &= ~ MPDM_NONDYN;
-
 	/* creates and expands */
 	if((v = mpdm_new(flags|MPDM_MULTIPLE, NULL, 0)) != NULL)
 		mpdm_expand(v, 0, size);
@@ -104,10 +101,6 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 	int n;
 	mpdm_t * p;
 
-	/* avoid expanding non-dyn arrays */
-	if(a->flags & MPDM_NONDYN)
-		return(NULL);
-
 	/* sanity checks */
 	if(num <= 0) return(a);
 
@@ -146,10 +139,6 @@ mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
 {
 	int n;
 	mpdm_t * p;
-
-	/* avoid collapsing non-dyn arrays */
-	if(a->flags & MPDM_NONDYN)
-		return(NULL);
 
 	/* sanity checks */
 	if(num <= 0) return(a);
@@ -207,20 +196,9 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 
 	p = (mpdm_t *)a->data;
 
-	/* if e is nondyn, store a clone and not the value itself */
-	if(e != NULL && e->flags & MPDM_NONDYN)
-		e = mpdm_clone(e);
-
-	/* assigns */
-	v = p[offset];
-	p[offset] = e;
-
-	/* if array is dynamic, ref and unref the values */
-	if(! (a->flags & MPDM_NONDYN))
-	{
-		mpdm_unref(v);
-		mpdm_ref(e);
-	}
+	/* assigns and references */
+	v = mpdm_unref(p[offset]);
+	p[offset] = mpdm_ref(e);
 
 	return(v);
 }
@@ -369,8 +347,8 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 {
 	mpdm_t v=NULL;
 
-	/* zero size or non-dyn queues are nonsense */
-	if(size == 0 || a->flags & MPDM_NONDYN)
+	/* zero size is nonsense */
+	if(size == 0)
 		return(NULL);
 
 	/* loop until a has the desired size */

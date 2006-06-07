@@ -877,41 +877,6 @@ void test_exec(void)
 }
 
 
-void test_nondyn(void)
-{
-	mpdm_t v;
-	mpdm_t w;
-	mpdm_t a;
-	mpdm_t av[2] = { NULL, NULL };
-
-	a = MPDM_A(1);
-
-	printf("Non-dynamic values\n");
-
-	v = MPDM_ND_LS(L"This is a non-dynamic value");
-	mpdm_dump(v);
-
-	do_test("Non-dynamic literal value size", mpdm_size(v) == 27);
-
-	/* test auto-cloning when storing nondyn values to arrays */
-	mpdm_aset(a, v, 0);
-	w = mpdm_aget(a, 0);
-
-	do_test("ND_LS values should have been cloned on mpdm_aset",
-		w != v);
-
-	v = MPDM_ND_A(av);
-	mpdm_dump(v);
-
-	/* test auto-cloning when storing nondyn values to arrays */
-	mpdm_aset(a, v, 0);
-	w = mpdm_aget(a, 0);
-
-	do_test("ND_A values should have been cloned on mpdm_aset",
-		w != v);
-}
-
-
 void test_encoding(void)
 {
 	mpdm_t f;
@@ -1192,7 +1157,6 @@ int main(int argc, char * argv[])
 	test_file();
 	test_regex();
 	test_exec();
-	test_nondyn();
 	test_encoding();
 	test_gettext();
 	test_conversion();

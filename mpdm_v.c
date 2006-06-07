@@ -51,38 +51,30 @@ static int mpdm_destroy(mpdm_t v)
 	if(v->ref)
 		return(0);
 
-	if(v->flags & MPDM_NONDYN)
+	/* collapse multiple values */
+	if(v->flags & MPDM_MULTIPLE)
+		mpdm_collapse(v, 0, v->size);
+
+	/* free data if needed */
+	if(v->data != NULL && v->flags & MPDM_FREE)
 	{
-		/* count back */
-		mpdm->nd_index--;
+		mpdm->memory_usage -= v->size;
+		free(v->data);
 	}
-	else
-	{
-		/* collapse multiple values */
-		if(v->flags & MPDM_MULTIPLE)
-			mpdm_collapse(v, 0, v->size);
 
-		/* free data if needed */
-		if(v->data != NULL && v->flags & MPDM_FREE)
-		{
-			mpdm->memory_usage -= v->size;
-			free(v->data);
-		}
+	/* dequeue */
+	v->next->prev = v->prev;
+	v->prev->next = v->next;
 
-		/* dequeue */
-		v->next->prev = v->prev;
-		v->prev->next = v->next;
+	/* if it's the current one, move to next */
+	if(mpdm->cur == v)
+		mpdm->cur = v->next;
 
-		/* if it's the current one, move to next */
-		if(mpdm->cur == v)
-			mpdm->cur = v->next;
+	/* account one value less */
+	mpdm->count--;
 
-		/* account one value less */
-		mpdm->count--;
-
-		/* finally free */
-		free(v);
-	}
+	/* finally free */
+	free(v);
 
 	return(1);
 }
@@ -107,51 +99,31 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 {
 	mpdm_t v = NULL;
 
-	if(flags & MPDM_NONDYN)
-	{
-		/* non-dynamic; take from nd_pool */
-		if(mpdm->nd_size <= mpdm->nd_index)
-		{
-			/* if not enough, create more nondyn values */
-			mpdm->nd_size ++;
+	/* alloc */
+	if((v = malloc(sizeof(struct mpdm_val))) == NULL)
+		return(NULL);
 
-			mpdm->nd_pool = realloc(mpdm->nd_pool,
-				sizeof(struct mpdm_val) * mpdm->nd_size);
-		}
+	memset(v, '\0', sizeof(struct mpdm_val));
 
-		/* return next one */
-		v = &mpdm->nd_pool[mpdm->nd_index++];
-
-		memset(v, '\0', sizeof(struct mpdm_val));
-	}
+	/* add to the circular list */
+	if(mpdm->cur == NULL)
+		v->next = v->prev = v;
 	else
 	{
-		/* dynamic; alloc */
-		if((v = malloc(sizeof(struct mpdm_val))) == NULL)
-			return(NULL);
+		v->prev = mpdm->cur;
+		v->next = mpdm->cur->next;
 
-		memset(v, '\0', sizeof(struct mpdm_val));
-
-		/* add to the circular list */
-		if(mpdm->cur == NULL)
-			v->next = v->prev = v;
-		else
-		{
-			v->prev = mpdm->cur;
-			v->next = mpdm->cur->next;
-
-			v->prev->next = v->next->prev = v;
-		}
-
-		mpdm->cur = v->next;
-
-		/* account one value more */
-		mpdm->count ++;
-
-		/* count memory if data is dynamic */
-		if(flags & MPDM_FREE)
-			mpdm->memory_usage += size;
+		v->prev->next = v->next->prev = v;
 	}
+
+	mpdm->cur = v->next;
+
+	/* account one value more */
+	mpdm->count ++;
+
+	/* count memory if data is dynamic */
+	if(flags & MPDM_FREE)
+		mpdm->memory_usage += size;
 
 	v->flags = flags;
 	v->data = data;
@@ -244,14 +216,8 @@ int mpdm_size(mpdm_t v)
  */
 mpdm_t mpdm_clone(mpdm_t v)
 {
-	if(v != NULL)
-	{
-		if(v->flags & MPDM_MULTIPLE)
-			v = mpdm_aclone(v);
-		else
-		if(v->flags & MPDM_NONDYN)
-			v = MPDM_S(v->data);
-	}
+	if(MPDM_IS_ARRAY(v))
+		v = mpdm_aclone(v);
 
 	return(v);
 }
@@ -401,6 +367,7 @@ static mpdm_t MPDM(mpdm_t args)
 	/* now collect all information */
 	v = MPDM_H(0);
 
+	mpdm_hset_s(v, L"version", MPDM_MBS(VERSION));
 	mpdm_hset_s(v, L"count", MPDM_I(mpdm->count));
 	mpdm_hset_s(v, L"low_threshold", MPDM_I(mpdm->low_threshold));
 	mpdm_hset_s(v, L"default_sweep", MPDM_I(mpdm->default_sweep));

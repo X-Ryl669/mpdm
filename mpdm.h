@@ -25,7 +25,6 @@
 #define MPDM_STRING	0x00000001	/* data can be string-compared */
 #define MPDM_MULTIPLE	0x00000002	/* data is multiple */
 #define MPDM_FREE	0x00000004	/* free data at destroy */
-#define MPDM_NONDYN	0x00000008	/* value is non-dynamic */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 #define MPDM_RVAL	0x00000020	/* real value cached in .rval */
@@ -57,9 +56,6 @@ struct mpdm_control
 {
 	mpdm_t root;		/* the root hash */
 	mpdm_t cur;		/* current value (circular list) */
-	int nd_index;		/* index to next non-dyn value */
-	int nd_size;		/* size of nd_pool */
-	mpdm_t nd_pool;		/* pool of non-dyn values */
 
 	int count;		/* total count of values */
 	int low_threshold;	/* minimum number of values to start sweeping */
@@ -202,13 +198,6 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_X2(f,b)	mpdm_xnew(f,b)
 
 #define MPDM_F(f)	mpdm_new_f(f)
-
-#define MPDM_ND_BEGIN()	unsigned int nd_save = mpdm->nd_index
-#define MPDM_ND_END()	mpdm->nd_index = nd_save
-
-#define MPDM_ND_LS(s)	mpdm_new_wcs(MPDM_NONDYN, s, -1, 0)
-#define MPDM_ND_A(v)	mpdm_new(MPDM_MULTIPLE|MPDM_NONDYN,\
-				v,(sizeof(v) / sizeof(mpdm_t)))
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);

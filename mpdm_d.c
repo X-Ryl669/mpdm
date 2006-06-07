@@ -57,10 +57,9 @@ static void dump_1(mpdm_t v, int l)
 				(v->flags & MPDM_EXEC ? 'X' : '-')),
 		v->flags & MPDM_HASH	? 'H' :
 			(v->flags & MPDM_MULTIPLE ? 'M' : '-'),
-		v->flags & MPDM_FREE ? 'A' :
-			(v->flags & MPDM_IVAL	? 'I' :
-				(v->flags & MPDM_RVAL ? 'R' : '-')),
-		v->flags & MPDM_NONDYN ? 'N' : '-'
+		v->flags & MPDM_FREE ? 'A' : '-',
+		v->flags & MPDM_IVAL ? 'I' :
+			(v->flags & MPDM_RVAL ? 'R' : '-')
 		);
 
 		/* if it's a multiple value, add also the number
