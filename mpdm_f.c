@@ -67,7 +67,6 @@
 #ifdef CONFOPT_ICONV
 
 #include <iconv.h>
-#include <errno.h>
 
 #endif
 
@@ -82,6 +81,10 @@ struct mpdm_file
 	iconv_t ic_enc;
 	iconv_t ic_dec;
 
+#else /* CONFOPT_ICONV */
+
+	int utf8;
+
 #endif /* CONFOPT_ICONV */
 
 #ifdef CONFOPT_WIN32
@@ -92,6 +95,7 @@ struct mpdm_file
 #endif /* CONFOPT_WIN32 */
 };
 
+#include <errno.h>
 extern int errno;
 
 
@@ -343,7 +347,22 @@ static mpdm_t new_mpdm_file(void)
 	else
 		fs->ic_enc = fs->ic_dec = (iconv_t) -1;
 
-#endif
+#else /* CONFOPT_ICONV */
+
+	/* if the encoding is utf8, set the flag */
+	if((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL)
+	{
+		wchar_t * enc = mpdm_string(v);
+
+		/* if it's utf-8, set the flag */
+		if(wcscmp(enc, L"utf-8") == 0 ||
+		   wcscmp(enc, L"UTF-8") == 0 ||
+		   wcscmp(enc, L"utf8") == 0 ||
+		   wcscmp(enc, L"UTF8") == 0)
+			fs->utf8 = 1;
+	}
+
+#endif /* CONFOPT_ICONV */
 
 	if((v = mpdm_new(MPDM_FILE|MPDM_FREE, fs,
 		sizeof(struct mpdm_file))) == NULL)
@@ -603,7 +622,21 @@ int mpdm_encoding(mpdm_t charset)
 
 	ret = 0;
 
-#endif
+#else /* CONFOPT_ICONV */
+
+	wchar_t * enc = mpdm_string(charset);
+
+	/* if it's utf-8, store */
+	if(wcscmp(enc, L"utf-8") == 0 ||
+	   wcscmp(enc, L"UTF-8") == 0 ||
+	   wcscmp(enc, L"utf8") == 0 ||
+	   wcscmp(enc, L"UTF8") == 0)
+	{
+		mpdm_hset_s(mpdm_root(), L"ENCODING", charset);
+		ret = 0;
+	}
+
+#endif /* CONFOPT_ICONV */
 
 	return(ret);
 }
