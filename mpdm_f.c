@@ -321,6 +321,62 @@ static int write_iconv(struct mpdm_file * f, wchar_t * str)
 	return(cnt);
 }
 
+
+#else /* CONFOPT_ICONV */
+
+#define UTF8_BYTE() if((c = get_char(f)) == EOF) break
+
+static wchar_t * read_utf8(struct mpdm_file * f, int * s)
+/* crappy, ad-hoc utf8 reader */
+{
+	wchar_t * ptr = NULL;
+	wchar_t wc;
+	int c;
+
+	*s = 0;
+
+	for(;;)
+	{
+		wc = L'\0';
+
+		UTF8_BYTE();
+
+		if((c & 0x80) == 0)
+			wc = c;
+		else
+		if((c & 0xe0) == 0xe0)
+		{
+			wc = (c & 0x1f) << 12;
+			UTF8_BYTE();
+			wc |= (c & 0x3f) << 6;
+			UTF8_BYTE();
+			wc |= (c & 0x3f);
+		}
+		else
+		{
+			wc = (c & 0x3f) << 6;
+			UTF8_BYTE();
+			wc |= (c & 0x3f);
+		}
+
+		/* store */
+		if((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+			break;
+
+		/* if it's an end of line, finish */
+		if(wc == L'\n')
+			break;
+	}
+
+	if(ptr != NULL)
+	{
+		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+		(*s)--;
+	}
+
+	return(ptr);
+}
+
 #endif /* CONFOPT_ICONV */
 
 
@@ -521,6 +577,12 @@ mpdm_t mpdm_read(mpdm_t fd)
 
 	if(fs->ic_dec != (iconv_t) -1)
 		ptr = read_iconv(fs, &s);
+	else
+
+#else /* CONFOPT_ICONV */
+
+	if(fs->utf8)
+		ptr = read_utf8(fs, &s);
 	else
 
 #endif /* CONFOPT_ICONV */
