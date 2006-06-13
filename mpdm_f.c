@@ -377,6 +377,40 @@ static wchar_t * read_utf8(struct mpdm_file * f, int * s)
 	return(ptr);
 }
 
+
+static int write_utf8(struct mpdm_file * f, wchar_t * str)
+/* crappy, ad-hoc utf8 writer */
+{
+	int cnt = 0;
+	wchar_t wc;
+
+	/* convert char by char */
+	for(;(wc = *str) != L'\0';str++)
+	{
+		if(wc < 0x80)
+			put_char((int) wc, f);
+		else
+		if(wc < 0x800)
+		{
+			put_char((int) (0xc0 | (wc >> 6)), f);
+			put_char((int) (0x80 | (wc & 0x3f)), f);
+			cnt++;
+		}
+		else
+		{
+			put_char((int) (0xe0 | (wc >> 12)), f);
+			put_char((int) (0x80 | ((wc >> 6) & 0x3f)), f);
+			put_char((int) (0x80 | (wc & 0x3f)), f);
+			cnt += 2;
+		}
+
+		cnt++;
+	}
+
+	return(cnt);
+}
+
+
 #endif /* CONFOPT_ICONV */
 
 
@@ -617,6 +651,12 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 
 	if(fs->ic_enc != (iconv_t) -1)
 		ret = write_iconv(fs, mpdm_string(v));
+	else
+
+#else /* CONFOPT_ICONV */
+
+	if(fs->utf8)
+		ret = write_utf8(fs, mpdm_string(v));
 	else
 
 #endif /* CONFOPT_ICONV */
