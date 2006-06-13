@@ -920,6 +920,13 @@ void test_encoding(void)
 		return;
 	}
 
+	printf("\nForced utf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
+
+	f = mpdm_open(MPDM_LS(L"utf8.txt"), MPDM_LS(L"r"));
+	w = mpdm_read(f);
+	mpdm_dump(w);
+	mpdm_close(f);
+
 	/* new open file will use the specified encoding */
 	f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 	mpdm_write(f, v);
