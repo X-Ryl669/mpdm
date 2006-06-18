@@ -105,9 +105,9 @@ extern int errno;
 
 
 static void store_syserr(void)
-/* stores the system error inside the global ERROR */
+/* stores the system error inside the global ERRNO */
 {
-	mpdm_hset_s(mpdm_root(), L"ERROR", MPDM_MBS(strerror(errno)));
+	mpdm_hset_s(mpdm_root(), L"ERRNO", MPDM_MBS(strerror(errno)));
 }
 
 
