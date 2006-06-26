@@ -6,6 +6,7 @@ LIB=$(TARGET)
 all: $(TARGET)
 
 PROJ=mpdm
+DOCS=doc/mpdm_api.html doc/mpdm_overview.html
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
 	mpdm_r.o gnu_regex.o
@@ -30,12 +31,18 @@ $(LIB): $(OBJS)
 stress: stress.c $(LIB)
 	$(CC) $(CFLAGS) `cat config.ldflags` stress.c -L. -lmpdm -o $@
 
-docs:
-	mkdir -p doc
+doc/index.html: doc/index.txt
+	-grutatxt -i $< -o $@
+
+doc/mpdm_overview.html: doc/mpdm_overview.txt
+	-grutatxt -i $< -o $@
+
+doc/mpdm_api.html: mpdm_*.c
 	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
-	-t "Mpdm C API ($(VERSION))" \
+	-t "MPDM C API ($(VERSION))" \
 	-a 'Angel Ortega - angel@triptico.com'
-	-grutatxt -i doc/mpdm_overview.txt -o doc/mpdm_overview.html
+
+docs: $(DOCS)
 
 docsclean:
 	rm -f doc/*.html
