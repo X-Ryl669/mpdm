@@ -67,3 +67,6 @@ build-mo:
 		mkdir -p po/$$B/LC_MESSAGES ; \
 		msgfmt -o po/$$B/LC_MESSAGES/stress.mo $$a ; \
 	done
+
+installdoc:
+	install -m 644 $(DOCS) $(DOCDIR)
