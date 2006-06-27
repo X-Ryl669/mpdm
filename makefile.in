@@ -50,7 +50,7 @@ docsclean:
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress Changelog
 
-distclean: docs clean
+distclean: clean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
 dist: distclean ChangeLog
