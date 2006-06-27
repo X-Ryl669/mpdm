@@ -3,7 +3,7 @@
 TARGET=libmpdm.a
 LIB=$(TARGET)
 
-all: $(TARGET)
+all: $(TARGET) docs
 
 PROJ=mpdm
 DOCS=doc/mpdm_api.html doc/mpdm_overview.html
