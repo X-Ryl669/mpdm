@@ -506,6 +506,10 @@ void test_split(void)
 	w = mpdm_split(MPDM_S(L"."), MPDM_S(L"."));
 	mpdm_dump(w);
 	do_test("2 elems: ", (w->size == 2));
+
+	w = mpdm_split(NULL, MPDM_S(L"I am the man"));
+	do_test("NULL split 1: ", mpdm_size(w) == 12);
+	do_test("NULL split 2: ", mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I")) == 0);
 }
 
 
