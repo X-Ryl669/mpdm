@@ -562,8 +562,12 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
  * @v: the value to be separated
  *
  * Separates the @v string value into an array of pieces, using @s
- * as a separator. If the string does not contain the separator,
- * an array holding the complete string is returned.
+ * as a separator.
+ *
+ * If the separator is NULL, the string is splitted by characters.
+ *
+ * If the string does not contain the separator, an array holding 
+ * the complete string is returned.
  * [Arrays]
  * [Strings]
  */
@@ -577,6 +581,15 @@ mpdm_t mpdm_split(mpdm_t s, mpdm_t v)
 	if(v == NULL) return(NULL);
 
 	w = MPDM_A(0);
+
+	/* NULL separator? special case: split string in characters */
+	if(s == NULL)
+	{
+		for(ptr = mpdm_string(v);ptr && *ptr != '\0';ptr++)
+			mpdm_push(w, MPDM_NS(ptr, 1));
+
+		return(w);
+	}
 
 	/* travels the string finding separators and creating new values */
 	for(ptr = v->data;
