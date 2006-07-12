@@ -630,6 +630,35 @@ mpdm_t mpdm_read(mpdm_t fd)
 }
 
 
+mpdm_t mpdm_getchar(mpdm_t fd)
+{
+	int c;
+	wchar_t tmp[2];
+	struct mpdm_file * fs = fd->data;
+
+	if(fs == NULL || (c = get_char(fs)) == EOF)
+		return(NULL);
+
+	/* get the char as-is */
+	tmp[0] = (wchar_t) c;
+	tmp[1] = L'\0';
+
+	return(MPDM_S(tmp));
+}
+
+
+mpdm_t mpdm_putchar(mpdm_t fd, mpdm_t c)
+{
+	struct mpdm_file * fs = fd->data;
+	wchar_t * ptr = mpdm_string(c);
+
+	if(fs == NULL || put_char(*ptr, fs) == -1)
+		return(NULL);
+
+	return(c);
+}
+
+
 /**
  * mpdm_write - Writes a value into a file.
  * @fd: the file descriptor.
