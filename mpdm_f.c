@@ -558,6 +558,22 @@ mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 
 	if((f = fopen((char *)filename->data, (char *)mode->data)) == NULL)
 		store_syserr();
+	else
+	{
+#if defined(CONFOPT_SYS_STAT_H) && defined(S_ISDIR) && defined(EISDIR)
+		struct stat s;
+
+		/* test if the open file is a directory */
+		if(fstat(fileno(f), &s) != -1 && S_ISDIR(s.st_mode))
+		{
+			/* it's a directory; fail */
+			errno = EISDIR;
+			store_syserr();
+			fclose(f);
+			f = NULL;
+		}
+#endif
+	}
 
 	return(MPDM_F(f));
 }
