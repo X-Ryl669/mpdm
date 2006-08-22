@@ -533,6 +533,8 @@ mpdm_t mpdm_sort(mpdm_t a, int step)
  */
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 {
+	if(a == NULL) return(NULL);
+
 	/* creates a copy to be sorted */
 	a = mpdm_clone(a);
 
