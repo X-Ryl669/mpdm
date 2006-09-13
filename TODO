@@ -8,6 +8,8 @@ Release Critical Bugs
  * 1085: Use const wherever possible.
  * 1089: Change mpdm_cmp() to use wcscoll() instead of wcscmp().
  * 1090: Sort the array in mpdm_glob() to show directories first.
+ * 1091: Change CONFOPT_NULL_HASH to a runtime switch using an
+   environment variable.
 
 Open Bugs
 ---------
