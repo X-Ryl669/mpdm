@@ -22,7 +22,6 @@ while [ $# -gt 0 ] ; do
 	--without-gettext)	WITHOUT_GETTEXT=1 ;;
 	--without-iconv)	WITHOUT_ICONV=1 ;;
 	--without-wcwidth)	WITHOUT_WCWIDTH=1 ;;
-	--with-null-hash)	WITH_NULL_HASH=1 ;;
 	--help)			CONFIG_HELP=1 ;;
 
 	--prefix)		PREFIX=$2 ; shift ;;
@@ -48,7 +47,6 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "--without-gettext     Disable gettext usage."
 	echo "--without-iconv       Disable iconv usage."
 	echo "--without-wcwidth     Disable system wcwidth() (use Marcus Kuhn's)."
-	echo "--with-null-hash      Use a NULL hash function (experimental)."
 
 	echo
 	echo "Environment variables:"

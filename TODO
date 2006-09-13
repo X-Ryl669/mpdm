@@ -8,8 +8,6 @@ Release Critical Bugs
  * 1085: Use const wherever possible.
  * 1089: Change mpdm_cmp() to use wcscoll() instead of wcscmp().
  * 1090: Sort the array in mpdm_glob() to show directories first.
- * 1091: Change CONFOPT_NULL_HASH to a runtime switch using an
-   environment variable.
 
 Open Bugs
 ---------
@@ -195,5 +193,7 @@ Closed
    and the "Program Files" directory on Windows) and 'home' (~ and
    "My Documents") directories (Fri, 12 May 2006 13:26:32 +0200).
  * 1088: mpdm_sprintf() (Tue, 23 May 2006 18:07:58 +0200).
+ * 1091: Change CONFOPT_NULL_HASH to a runtime switch using an
+   environment variable (Wed, 13 Sep 2006 16:07:18 +0200).
 
 Email bugs to angel@triptico.com
