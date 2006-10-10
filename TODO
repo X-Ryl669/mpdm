@@ -20,8 +20,6 @@ Open Bugs
 Pending Enhancements
 --------------------
 
- * 1006: stat().
- * 1007: chmod().
  * 1008: bread().
  * 1009: bwrite().
  * 1063: Implement copy-on-write on array cloning.
@@ -197,5 +195,7 @@ Closed
  * 1088: mpdm_sprintf() (Tue, 23 May 2006 18:07:58 +0200).
  * 1091: Change CONFOPT_NULL_HASH to a runtime switch using an
    environment variable (Wed, 13 Sep 2006 16:07:18 +0200).
+ * 1006: stat() (Tue, 10 Oct 2006 13:00:54 +0200).
+ * 1007: chmod() (Tue, 10 Oct 2006 13:00:54 +0200).
 
 Email bugs to angel@triptico.com
