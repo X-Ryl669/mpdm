@@ -5,7 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1089: Change mpdm_cmp() to use wcscoll() instead of wcscmp().
  * 1090: Sort the array in mpdm_glob() to show directories first.
 
 Open Bugs
@@ -197,5 +196,7 @@ Closed
    environment variable (Wed, 13 Sep 2006 16:07:18 +0200).
  * 1006: stat() (Tue, 10 Oct 2006 13:00:54 +0200).
  * 1007: chmod() (Tue, 10 Oct 2006 13:00:54 +0200).
+ * 1089: Change mpdm_cmp() to use wcscoll() instead of wcscmp()
+   (Tue, 10 Oct 2006 13:54:36 +0200).
 
 Email bugs to angel@triptico.com
