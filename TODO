@@ -5,7 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1085: Use const wherever possible.
  * 1089: Change mpdm_cmp() to use wcscoll() instead of wcscmp().
  * 1090: Sort the array in mpdm_glob() to show directories first.
 
@@ -30,6 +29,7 @@ Pending Enhancements
    as this could mask possible sweeping errors, it has not been implemented yet.
  * 1092: fseek().
  * 1093: ftell().
+ * 1085: Use const wherever possible.
 
 Closed
 ------
