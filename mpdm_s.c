@@ -392,7 +392,7 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 		return(1);
 
 	if(MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
-		r = wcscmp((wchar_t *)v1->data, (wchar_t *)v2->data);
+		r = wcscoll((wchar_t *)v1->data, (wchar_t *)v2->data);
 	else
 	if(MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2))
 	{
