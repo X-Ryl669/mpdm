@@ -727,13 +727,13 @@ mpdm_t mpdm_gettext(mpdm_t str)
  * strings that will be returned by mpdm_gettext().@data must point to a
  * directory containing the .mo (compiled .po) files.
  *
- * If there is no gettext support, returns -1, or 0 otherwise.
+ * If there is no gettext support, returns 0, or 1 otherwise.
  * [Strings]
  * [Localization]
  */
 int mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 {
-	int ret = -1;
+	int ret = 0;
 
 #ifdef CONFOPT_GETTEXT
 
@@ -747,7 +747,7 @@ int mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 
 	mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
-	ret = 0;
+	ret = 1;
 
 #endif /* CONFOPT_GETTEXT */
 
