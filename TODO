@@ -26,8 +26,6 @@ Pending Enhancements
    control won't have this, as they (should) never be used after being
    unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
    as this could mask possible sweeping errors, it has not been implemented yet.
- * 1092: fseek().
- * 1093: ftell().
  * 1085: Use const wherever possible.
 
 Closed
@@ -198,5 +196,7 @@ Closed
  * 1007: chmod() (Tue, 10 Oct 2006 13:00:54 +0200).
  * 1089: Change mpdm_cmp() to use wcscoll() instead of wcscmp()
    (Tue, 10 Oct 2006 13:54:36 +0200).
+ * 1092: fseek() (Thu, 12 Oct 2006 09:54:34 +0200).
+ * 1093: ftell() (Thu, 12 Oct 2006 09:54:34 +0200).
 
 Email bugs to angel@triptico.com
