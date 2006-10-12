@@ -712,6 +712,22 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 }
 
 
+int mpdm_fseek(mpdm_t fd, long offset, int whence)
+{
+	struct mpdm_file * fs = fd->data;
+
+	return(fseek(fs->in, offset, whence));
+}
+
+
+long mpdm_ftell(mpdm_t fd)
+{
+	struct mpdm_file * fs = fd->data;
+
+	return(ftell(fs->in));
+}
+
+
 /*
 mpdm_t mpdm_bread(mpdm_t fd, int size)
 {
