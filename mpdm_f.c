@@ -130,7 +130,12 @@ static int get_char(struct mpdm_file * f)
 #endif /* CONFOPT_WIN32 */
 
 	if(f->in != NULL)
+	{
 		c = fgetc(f->in);
+
+		/* some systems (mingw32) return negative values for bytes > 127 */
+		if(!feof(f->in) && c < 0) c += 256;
+	}
 
 	return(c);
 }
