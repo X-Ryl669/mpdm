@@ -110,7 +110,7 @@ void test_basic(void)
 	mpdm_dump(v);
 
 	/* greek omega is 03a9 */
-	v = MPDM_MBS("¡España! (non-ASCII string, as ISO-8859-1 char *)");
+	v = MPDM_MBS("?Espa?a! (non-ASCII string, as ISO-8859-1 char *)");
 	mpdm_dump(v);
 	printf("(Previous value will be NULL if locale doesn't match stress.c encoding)\n");
 
@@ -765,6 +765,11 @@ void test_regex(void)
 	}
 	else
 		printf("Multibyte sregex test omitted; activate with -m\n");
+
+	/* 'last' flag tests */
+	v = MPDM_LS(L"this string has many words");
+	v = mpdm_regex(MPDM_LS(L"/[a-z]+/l"), v, 0);
+	do_test("Flag l in mpdm_regex", mpdm_cmp(v, MPDM_LS(L"words")) == 0);
 }
 
 
@@ -888,7 +893,7 @@ void test_encoding(void)
 	mpdm_t w;
 	wchar_t * ptr;
 
-	v = MPDM_MBS("¡España!\n");
+	v = MPDM_MBS("?Espa?a!\n");
 
 	printf("\nLocale encoding tests (will look bad if terminal is not ISO-8859-1)\n\n");
 
