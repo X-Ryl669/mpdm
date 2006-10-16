@@ -219,6 +219,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			regmatch_t rm;
 			char * ptr;
 			wchar_t * last;
+			int o = 0;
 
 			/* takes pointer to 'last' flag */
 			if((last = regex_flags(r)) != NULL)
@@ -227,28 +228,26 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			/* convert to mbs */
 			ptr = mpdm_wcstombs((wchar_t *)v->data + offset, NULL);
 
-			rm.rm_eo = 0;
-
 			/* match? */
-			while(regexec((regex_t *) cr->data, ptr + rm.rm_eo, 1,
+			while(regexec((regex_t *) cr->data, ptr + o, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
 				/* converts to mbs the string from the beginning
 				   to the start of the match, just to know
 				   the size (and immediately frees it) */
-				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
-
-				/* adds the offset */
-				mpdm_regex_offset += offset;
+				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so + o));
 
 				/* if 'last' is not set, it's done */
 				if(last == NULL) break;
+				o += rm.rm_eo;
 			}
 
 			if(mpdm_regex_offset != -1)
 			{
+				mpdm_regex_offset += offset;
+
 				/* create now the matching string */
-				w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
+				w = MPDM_NMBS(ptr + mpdm_regex_offset, rm.rm_eo - rm.rm_so);
 
 				/* and store the size */
 				mpdm_regex_size = mpdm_size(w);
