@@ -220,6 +220,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			char * ptr;
 			wchar_t * last;
 			int o = 0;
+			int f = 0;
 
 			/* takes pointer to 'last' flag */
 			if((last = regex_flags(r)) != NULL)
@@ -234,11 +235,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			{
 				rm.rm_so += o;
 				rm.rm_eo += o;
-
-				/* converts to mbs the string from the beginning
-				   to the start of the match, just to know
-				   the size (and immediately frees it) */
-				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
+				f++;
 
 				/* if 'last' is not set, it's done */
 				if(last == NULL) break;
@@ -246,8 +243,13 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				o = rm.rm_eo;
 			}
 
-			if(mpdm_regex_offset != -1)
+			if(f)
 			{
+				/* converts to mbs the string from the beginning
+				   to the start of the match, just to know
+				   the size (and immediately frees it) */
+				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
+
 				/* add the offset */
 				mpdm_regex_offset += offset;
 
