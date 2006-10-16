@@ -233,13 +233,13 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			while(regexec((regex_t *) cr->data, ptr + o, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
-				rm.rm_so += o;
-				rm.rm_eo += o;
 				f++;
 
 				/* if 'last' is not set, it's done */
 				if(last == NULL) break;
 
+				rm.rm_so += o;
+				rm.rm_eo += o;
 				o = rm.rm_eo;
 			}
 
