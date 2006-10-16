@@ -218,12 +218,19 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		{
 			regmatch_t rm;
 			char * ptr;
+			wchar_t * last;
+
+			/* takes pointer to 'last' flag */
+			if((last = regex_flags(r)) != NULL)
+				last = wcschr(last, 'l');
 
 			/* convert to mbs */
 			ptr = mpdm_wcstombs((wchar_t *)v->data + offset, NULL);
 
+			rm.rm_eo = 0;
+
 			/* match? */
-			if(regexec((regex_t *) cr->data, ptr, 1,
+			while(regexec((regex_t *) cr->data, ptr + rm.rm_eo, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
 				/* converts to mbs the string from the beginning
@@ -234,6 +241,12 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 				/* adds the offset */
 				mpdm_regex_offset += offset;
 
+				/* if 'last' is not set, it's done */
+				if(last == NULL) break;
+			}
+
+			if(mpdm_regex_offset != -1)
+			{
 				/* create now the matching string */
 				w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
 
