@@ -132,10 +132,11 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value. Valid flags are 'i',
- * for case-insensitive matching, or 'm', to treat the string as a
+ * for case-insensitive matching, 'm', to treat the string as a
  * multiline string (i.e., one containing newline characters), so
  * that ^ and $ match the boundaries of each line instead of the
- * whole string.
+ * whole string, or 'l', to return the last matching instead of
+ * the first one.
  *
  * If @r is a string, an ordinary regular expression matching is tried
  * over the @v string. If the matching is possible, the matched string
