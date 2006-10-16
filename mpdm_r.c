@@ -232,22 +232,27 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			while(regexec((regex_t *) cr->data, ptr + o, 1,
 				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
 			{
+				rm.rm_so += o;
+				rm.rm_eo += o;
+
 				/* converts to mbs the string from the beginning
 				   to the start of the match, just to know
 				   the size (and immediately frees it) */
-				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so + o));
+				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
 
 				/* if 'last' is not set, it's done */
 				if(last == NULL) break;
-				o += rm.rm_eo;
+
+				o = rm.rm_eo;
 			}
 
 			if(mpdm_regex_offset != -1)
 			{
+				/* add the offset */
 				mpdm_regex_offset += offset;
 
 				/* create now the matching string */
-				w = MPDM_NMBS(ptr + mpdm_regex_offset, rm.rm_eo - rm.rm_so);
+				w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
 
 				/* and store the size */
 				mpdm_regex_size = mpdm_size(w);
