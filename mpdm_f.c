@@ -131,10 +131,9 @@ static int get_char(struct mpdm_file * f)
 
 	if(f->in != NULL)
 	{
-		c = fgetc(f->in);
-
-		/* some systems (mingw32) return negative values for bytes > 127 */
-		if(!feof(f->in) && c < 0) c += 256;
+		/* read (converting to positive if needed) */
+		if((c = fgetc(f->in)) < 0 && !feof(f->in))
+			c += 256;
 	}
 
 	return(c);
