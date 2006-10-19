@@ -806,8 +806,9 @@ int mpdm_encoding(mpdm_t charset)
 
 	wchar_t * enc = mpdm_string(charset);
 
-	/* if it's utf-8, store */
-	if(wcscmp(enc, L"utf-8") == 0 ||
+	/* if it's NULL or utf-8, store */
+	if(charset == NULL ||
+	   wcscmp(enc, L"utf-8") == 0 ||
 	   wcscmp(enc, L"UTF-8") == 0 ||
 	   wcscmp(enc, L"utf8") == 0 ||
 	   wcscmp(enc, L"UTF8") == 0)
