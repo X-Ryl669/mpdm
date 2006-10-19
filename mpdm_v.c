@@ -44,7 +44,7 @@ struct mpdm_control * mpdm = NULL;
 	Code
 ********************/
 
-static int mpdm_destroy(mpdm_t v)
+int mpdm_destroy(mpdm_t v)
 /* destroys a value */
 {
 	/* if still referenced, don't do it */
