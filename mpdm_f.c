@@ -169,32 +169,45 @@ static wchar_t * read_mbs(struct mpdm_file * f, int * s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
 	wchar_t * ptr = NULL;
-	char * cptr = NULL;
-	char tmp[2];
-	int c, n = 0;
-
-	tmp[1] = '\0';
+	char * auxptr = NULL;
+	char tmp[100];
+	int c, i = 0, n = 0;
 
 	while((c = get_char(f)) != EOF)
 	{
-		tmp[0] = c;
-		if((cptr = mpdm_poke(cptr, &n, tmp, 1, sizeof(char))) == NULL)
-			break;
+		tmp[i++] = c;
 
-		/* if it's an end of line, finish */
-		if(c == '\n')
-			break;
+		if(c == '\n') break;
+
+		if(i == sizeof(tmp) - 1)
+		{
+			/* out of space; start allocating */
+			if((auxptr = mpdm_poke(auxptr, &n, tmp, i, sizeof(char))) == NULL)
+				return(NULL);
+
+			i = 0;
+		}
 	}
 
-	if(cptr != NULL)
+	/* is there something to return? */
+	if(i || n)
 	{
-		/* NULL terminate */
-		cptr = mpdm_poke(cptr, &n, "", 1, 1);
+		/* NULL-terminate */
+		tmp[i++] = '\0';
 
-		/* do the conversion */
-		ptr = mpdm_mbstowcs(cptr, s, -1);
+		if(n)
+		{
+			/* auxiliary space used; concat all */
+			if((auxptr = mpdm_poke(auxptr, &n, tmp, i, sizeof(char))) == NULL)
+				return(NULL);
 
-		free(cptr);
+			/* do the conversion */
+			ptr = mpdm_mbstowcs(auxptr, s, -1);
+
+			free(auxptr);
+		}
+		else
+			ptr = mpdm_mbstowcs(tmp, s, -1);
 	}
 
 	return(ptr);
