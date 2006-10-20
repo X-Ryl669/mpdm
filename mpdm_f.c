@@ -140,31 +140,6 @@ static int get_char(struct mpdm_file * f)
 }
 
 
-static int put_char(int c, struct mpdm_file * f)
-/* writes a character in a file structure */
-{
-	int ret = EOF;
-
-#ifdef CONFOPT_WIN32
-
-	if(f->hout != NULL)
-	{
-		char tmp = c;
-		DWORD n;
-
-		if(WriteFile(f->hout, &tmp, 1, &n, NULL) && n > 0)
-			ret = c;
-	}
-
-#endif /* CONFOPT_WIN32 */
-
-	if(f->out != NULL)
-		ret = fputc(c, f->out);
-
-	return(ret);
-}
-
-
 static int put_buf(char * ptr, int s, struct mpdm_file * f)
 /* writes s bytes in the buffer in ptr to f */
 {
@@ -185,6 +160,18 @@ static int put_buf(char * ptr, int s, struct mpdm_file * f)
 		s = fwrite(ptr, s, 1, f->out);
 
 	return(s);
+}
+
+
+static int put_char(int c, struct mpdm_file * f)
+/* writes a character in a file structure */
+{
+	char tmp = c;
+
+	if(put_buf(&tmp, 1, f) != 1)
+		c = EOF;
+
+	return(c);
 }
 
 
