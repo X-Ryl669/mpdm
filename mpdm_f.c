@@ -227,23 +227,14 @@ static wchar_t * read_mbs(struct mpdm_file * f, int * s)
 static int write_wcs(struct mpdm_file * f, wchar_t * str)
 /* writes a wide string to an struct mpdm_file */
 {
-	int s, n;
+	int s;
 	char * ptr;
 
 	ptr = mpdm_wcstombs(str, &s);
-
-	for(n = 0;n < s;n++)
-	{
-		if(put_char(ptr[n], f) == EOF)
-		{
-			n = -1;
-			break;
-		}
-	}
-
+	s = put_buf(ptr, s, f);
 	free(ptr);
 
-	return(n);
+	return(s);
 }
 
 
