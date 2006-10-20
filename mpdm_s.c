@@ -147,13 +147,13 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 			if((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
 				break;
 		}
-	}
 
-	/* null terminate and count one less */
-	if(ptr != NULL)
-	{
-		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
-		(*s)--;
+		/* null terminate and count one less */
+		if(ptr != NULL)
+		{
+			ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+			(*s)--;
+		}
 	}
 
 	/* free the duplicate */
