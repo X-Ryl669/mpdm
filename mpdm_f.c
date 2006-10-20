@@ -165,6 +165,29 @@ static int put_char(int c, struct mpdm_file * f)
 }
 
 
+static int put_buf(char * ptr, int s, struct mpdm_file * f)
+/* writes s bytes in the buffer in ptr to f */
+{
+#ifdef CONFOPT_WIN32
+
+	if(f->hout != NULL)
+	{
+		DWORD n;
+
+		if(WriteFile(f->hout, ptr, s, &n, NULL) && n > 0)
+			s = n;
+	}
+	else
+
+#endif /* CONFOPT_WIN32 */
+
+	if(f->out != NULL)
+		s = fwrite(ptr, s, 1, f->out);
+
+	return(s);
+}
+
+
 static wchar_t * read_mbs(struct mpdm_file * f, int * s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
