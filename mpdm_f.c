@@ -951,6 +951,8 @@ int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid)
  */
 mpdm_t mpdm_glob(mpdm_t spec)
 {
+	mpdm_t d = NULL;
+	mpdm_t f = NULL;
 	mpdm_t v = NULL;
 
 #ifdef CONFOPT_WIN32
@@ -977,6 +979,8 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	}
 
 	v = MPDM_A(0);
+	d = MPDM_A(0);
+	f = MPDM_A(0);
 
 	if((h = FindFirstFile((char *)spec->data, &f)) != INVALID_HANDLE_VALUE)
 	{
@@ -999,9 +1003,12 @@ mpdm_t mpdm_glob(mpdm_t spec)
 
 			/* if it's a directory, add a / */
 			if(f.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
 				w = mpdm_strcat(w, MPDM_LS(L"/"));
-
-			mpdm_push(v, w);
+				mpdm_push(d, w);
+			}
+			else
+				mpdm_push(f, w);
 		}
 		while(FindNextFile(h, &f));
 
@@ -1013,7 +1020,6 @@ mpdm_t mpdm_glob(mpdm_t spec)
 #if CONFOPT_GLOB_H
 
 	/* glob.h support */
-	int n;
 	glob_t globbuf;
 	char * ptr;
 
@@ -1030,12 +1036,26 @@ mpdm_t mpdm_glob(mpdm_t spec)
 		ptr = "*";
 
 	globbuf.gl_offs = 1;
+
 	v = MPDM_A(0);
+	d = MPDM_A(0);
+	f = MPDM_A(0);
 
 	if(glob(ptr, GLOB_MARK, NULL, &globbuf) == 0)
 	{
+		int n;
+
 		for(n = 0;globbuf.gl_pathv[n] != NULL;n++)
-			mpdm_push(v, MPDM_MBS(globbuf.gl_pathv[n]));
+		{
+			char * ptr = globbuf.gl_pathv[n];
+			mpdm_t t = MPDM_MBS(ptr);
+
+			/* if last char is /, add to directories */
+			if(ptr[strlen(ptr) - 1] == '/')
+				mpdm_push(d, t);
+			else
+				mpdm_push(f, t);
+		}
 	}
 
 	globfree(&globbuf);
@@ -1046,6 +1066,20 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	/* ... */
 
 #endif
+
+	if(v != NULL)
+	{
+		int n;
+
+		d = mpdm_sort(d, 1);
+		f = mpdm_sort(f, 1);
+
+		/* transfer all data in d and f */
+		for(n = 0;n < mpdm_size(d);n++)
+			mpdm_push(v, mpdm_aget(d, n));
+		for(n = 0;n < mpdm_size(f);n++)
+			mpdm_push(v, mpdm_aget(f, n));
+	}
 
 	return(v);
 }
