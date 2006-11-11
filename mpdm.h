@@ -134,6 +134,7 @@ mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k);
 mpdm_t mpdm_keys(mpdm_t h);
 
+mpdm_t mpdm_dumper(mpdm_t v);
 void mpdm_dump(mpdm_t v);
 void mpdm_dump_unref(void);
 
