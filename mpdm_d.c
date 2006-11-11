@@ -117,6 +117,24 @@ static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
 
 
 /**
+ * mpdm_dumper - Returns a visual representation of a complex value
+ * @v: The value
+ *
+ * Returns a visual representation of a complex value.
+ */
+mpdm_t mpdm_dumper(mpdm_t v)
+{
+	int size = 0;
+	wchar_t * ptr;
+
+	ptr = dump_1(v, 0, NULL, &size);
+	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+
+	return(MPDM_ENS(ptr, size));
+}
+
+
+/**
  * mpdm_dump - Dumps a value to stdin.
  * @v: The value
  *
@@ -125,14 +143,9 @@ static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
  */
 void mpdm_dump(mpdm_t v)
 {
-	int size = 0;
-	wchar_t * ptr;
-
-	ptr = dump_1(v, 0, NULL, &size);
-	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
-
-	mpdm_write_wcs(stdout, ptr);
-	free(ptr);
+	v = mpdm_dumper(v);
+	mpdm_write_wcs(stdout, mpdm_string(v));
+	mpdm_destroy(v);
 }
 
 
