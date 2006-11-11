@@ -26,6 +26,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 
@@ -39,17 +40,21 @@
 	Code
 ********************/
 
-static void dump_1(mpdm_t v, int l)
+static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
 {
 	int n;
+	wchar_t * wptr;
 
 	/* indent */
 	for(n = 0;n < l;n++)
-		printf("  ");
+		ptr = mpdm_poke(ptr, size, L"  ", 2, sizeof(wchar_t));
 
 	if(v != NULL)
 	{
-		printf("%d,%c%c%c%c:", v->ref,
+		char tmp[256];
+		int s;
+
+		sprintf(tmp, "%d,%c%c%c%c:", v->ref,
 		v->flags & MPDM_FILE	? 'F' :
 			(v->flags & MPDM_STRING	? 'S' :
 				(v->flags & MPDM_EXEC ? 'X' : '-')),
@@ -60,15 +65,25 @@ static void dump_1(mpdm_t v, int l)
 			(v->flags & MPDM_RVAL ? 'R' : '-')
 		);
 
+		wptr = mpdm_mbstowcs(tmp, &s, -1);
+		ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
+		free(wptr);
+
 		/* if it's a multiple value, add also the number
 		   of elements */
 		if(v->flags & MPDM_MULTIPLE)
-			printf("[%d] ", mpdm_size(v));
+		{
+			sprintf(tmp, "[%d] ", mpdm_size(v));
+			wptr = mpdm_mbstowcs(tmp, &s, -1);
+			ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
+			free(wptr);
+		}
 	}
 
 	/* add the visual representation of the value */
-	mpdm_write_wcs(stdout, mpdm_string(v));
-	printf("\n");
+	wptr = mpdm_string(v);
+	ptr = mpdm_poke(ptr, size, wptr, wcslen(wptr), sizeof(wchar_t));
+	ptr = mpdm_poke(ptr, size, L"\n", 1, sizeof(wchar_t));
 
 	if(v != NULL)
 	{
@@ -85,17 +100,19 @@ static void dump_1(mpdm_t v, int l)
 			{
 				t = mpdm_aget(w, n);
 
-				dump_1(t, l + 1);
-				dump_1(mpdm_hget(v, t), l + 2);
+				ptr = dump_1(t, l + 1, ptr, size);
+				ptr = dump_1(mpdm_hget(v, t), l + 2, ptr, size);
 			}
 		}
 		else
 		if(v->flags & MPDM_MULTIPLE)
 		{
 			for(n = 0;n < mpdm_size(v);n++)
-				dump_1(mpdm_aget(v, n), l + 1);
+				ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
 		}
 	}
+
+	return(ptr);
 }
 
 
@@ -108,7 +125,14 @@ static void dump_1(mpdm_t v, int l)
  */
 void mpdm_dump(mpdm_t v)
 {
-	dump_1(v, 0);
+	int size = 0;
+	wchar_t * ptr;
+
+	ptr = dump_1(v, 0, NULL, &size);
+	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+
+	mpdm_write_wcs(stdout, ptr);
+	free(ptr);
 }
 
 
