@@ -26,6 +26,8 @@ Pending Enhancements
    unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
    as this could mask possible sweeping errors, it has not been implemented yet.
  * 1085: Use const wherever possible.
+ * 1094: Try an (optional) usage of pthreads to call sweep() in a low priority
+   thread, when nothing else is happening.
 
 Closed
 ------
