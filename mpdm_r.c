@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2006 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
 
     mpdm_r.c - Regular expressions
 
