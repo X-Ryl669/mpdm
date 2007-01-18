@@ -957,7 +957,7 @@ mpdm_t mpdm_glob(mpdm_t spec)
 
 #ifdef CONFOPT_WIN32
 
-	WIN32_FIND_DATA f;
+	WIN32_FIND_DATA fd;
 	HANDLE h;
 	char * ptr;
 	mpdm_t w;
@@ -982,7 +982,7 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	d = MPDM_A(0);
 	f = MPDM_A(0);
 
-	if((h = FindFirstFile((char *)spec->data, &f)) != INVALID_HANDLE_VALUE)
+	if((h = FindFirstFile((char *)spec->data, &fd)) != INVALID_HANDLE_VALUE)
 	{
 		/* if spec includes a directory, store in s */
 		if((ptr = strrchr((char *)spec->data, '/')) != NULL)
@@ -994,15 +994,15 @@ mpdm_t mpdm_glob(mpdm_t spec)
 		do
 		{
 			/* ignore . and .. */
-			if(strcmp(f.cFileName,".") == 0 ||
-			   strcmp(f.cFileName,"..") == 0)
+			if(strcmp(fd.cFileName,".") == 0 ||
+			   strcmp(fd.cFileName,"..") == 0)
 				continue;
 
 			/* concat base directory and file names */
-			w = mpdm_strcat(s, MPDM_MBS(f.cFileName));
+			w = mpdm_strcat(s, MPDM_MBS(fd.cFileName));
 
 			/* if it's a directory, add a / */
-			if(f.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			if(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			{
 				w = mpdm_strcat(w, MPDM_LS(L"/"));
 				mpdm_push(d, w);
@@ -1010,7 +1010,7 @@ mpdm_t mpdm_glob(mpdm_t spec)
 			else
 				mpdm_push(f, w);
 		}
-		while(FindNextFile(h, &f));
+		while(FindNextFile(h, &fd));
 
 		FindClose(h);
 	}
