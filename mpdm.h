@@ -56,6 +56,7 @@ struct mpdm_control
 {
 	mpdm_t root;		/* the root hash */
 	mpdm_t cur;		/* current value (circular list) */
+	mpdm_t del;		/* list of deleted values */
 
 	int count;		/* total count of values */
 	int low_threshold;	/* minimum number of values to start sweeping */
