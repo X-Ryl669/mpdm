@@ -74,7 +74,8 @@ int mpdm_destroy(mpdm_t v)
 	mpdm->count--;
 
 	/* finally free */
-	free(v);
+	v->next = mpdm->del;
+	mpdm->del = v;
 
 	return(1);
 }
@@ -100,6 +101,9 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 	mpdm_t v = NULL;
 
 	/* alloc */
+	if((v = mpdm->del) != NULL)
+		mpdm->del = v->next;
+	else
 	if((v = malloc(sizeof(struct mpdm_val))) == NULL)
 		return(NULL);
 
