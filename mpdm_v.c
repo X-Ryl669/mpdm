@@ -107,8 +107,6 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 	if((v = malloc(sizeof(struct mpdm_val))) == NULL)
 		return(NULL);
 
-	memset(v, '\0', sizeof(struct mpdm_val));
-
 	/* add to the circular list */
 	if(mpdm->cur == NULL)
 		v->next = v->prev = v;
@@ -130,6 +128,7 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 		mpdm->memory_usage += size;
 
 	v->flags = flags;
+	v->ref = 0;
 	v->data = data;
 	v->size = size;
 
