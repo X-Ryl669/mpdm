@@ -109,7 +109,7 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 
 	/* add to the circular list */
 	if(mpdm->cur == NULL)
-		mpdm->cur = v->next = v->prev = v;
+		v->next = v->prev = v;
 	else
 	{
 		v->prev = mpdm->cur;
