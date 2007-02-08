@@ -118,6 +118,8 @@ mpdm_t mpdm_new(int flags, void * data, int size)
 		v->prev->next = v->next->prev = v;
 	}
 
+	mpdm->cur = v->next;
+
 	/* account one value more */
 	mpdm->count ++;
 
