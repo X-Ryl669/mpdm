@@ -11,6 +11,8 @@ DOCS=doc/mpdm_api.html doc/mpdm_overview.html
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
 	mpdm_r.o gnu_regex.o
 
+DIST_TARGET=/tmp/$(PROJ)-$(VERSION)
+
 ##################################################################
 
 version:
@@ -18,7 +20,7 @@ version:
 
 ChangeLog:
 #	cvs2cl --fsf --stdout > Changelog
-	svn log > Changelog
+	svk log -x > Changelog
 
 .c.o:
 	$(CC) $(CFLAGS) `cat config.cflags` -c $<
@@ -54,10 +56,13 @@ clean:
 distclean: clean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
-dist: distclean ChangeLog
-	cd .. ; ln -s $(PROJ) $(PROJ)-$(VERSION); \
-	tar czvf $(PROJ)-$(VERSION)/$(PROJ)-$(VERSION).tar.gz --exclude=.svn $(PROJ)-$(VERSION)/* ; \
-	rm $(PROJ)-$(VERSION)
+distcopy: distclean ChangeLog
+	mkdir -p $(DIST_TARGET) ; \
+	tar cf - --exclude=.svn . | (cd $(DIST_TARGET) ; tar xf -)
+
+dist: distcopy ChangeLog
+	(cd /tmp ; tar czf - $(PROJ)-$(VERSION)/* ) > $(PROJ)-$(VERSION).tar.gz ; \
+	rm -rf $(DIST_TARGET)
 
 .po.mo:
 	msgfmt -o $@ $<
