@@ -30,6 +30,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <locale.h>
+#include <wctype.h>
 
 #ifdef CONFOPT_GETTEXT
 #include <libintl.h>
@@ -873,4 +874,34 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 	o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
 
 	return(MPDM_ENS(o, l - 1));
+}
+
+
+/**
+ * mpdm_ulc - Converts a string to uppercase or lowecase
+ * @s: the string
+ * @u: convert to uppercase (1) or to lowercase (0).
+ *
+ * Converts @s to uppercase (for @u == 1) or to lowercase (@u == 0).
+ * [Strings]
+ */
+mpdm_t mpdm_ulc(mpdm_t s, int u)
+{
+	mpdm_t r = NULL;
+	wchar_t * optr;
+	int i = mpdm_size(s);
+
+	if((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL)
+	{
+		wchar_t * iptr = mpdm_string(s);
+		int n;
+
+		for(n = 0;n < i;n++)
+			optr[n] = u ? towupper(iptr[n]) : towlower(iptr[n]);
+
+		optr[n] = L'\0';
+		r = MPDM_ENS(optr, i);
+	}
+
+	return(r);
 }
