@@ -850,6 +850,7 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 				case 'c':
 
 				/* char */
+				m = 1;
 				wptr = &c;
 				c = mpdm_ival(v);
 				break;
