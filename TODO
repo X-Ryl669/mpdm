@@ -5,6 +5,8 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
+ * 1095: The %c directive in sprintf() should work with Unicode
+   (or wchar_t) characters.
 
 Open Bugs
 ---------
