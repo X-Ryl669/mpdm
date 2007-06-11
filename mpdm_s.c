@@ -827,7 +827,6 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 				case 'x':
 				case 'X':
 				case 'o':
-				case 'c':
 
 				/* integer value */
 				snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(v));
@@ -847,11 +846,19 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 				free(ptr);
 
 				break;
+
+				case 'c':
+
+				/* char */
+				wptr = &c;
+				c = mpdm_ival(v);
+				break;
 				}
 			}
 
 			/* transfer */
-			wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
+			if(wptr == NULL)
+				wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
 		}
 		else
 		{
