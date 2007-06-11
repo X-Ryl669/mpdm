@@ -1147,6 +1147,12 @@ void test_sprintf(void)
 
 	w = mpdm_sprintf(MPDM_LS(L"This is a |%-10s| test"), v);
 	do_test("sprintf 3.2", mpdm_cmp(w, MPDM_LS(L"This is a |stress    | test")) == 0);
+
+	v = MPDM_A(0);
+	mpdm_push(v, MPDM_I(0x263a));
+
+	w = mpdm_sprintf(MPDM_LS(L"%c"), v);
+	do_test("sprintf 3.3", mpdm_cmp(w, MPDM_LS(L"\x263a")) == 0);
 }
 
 
