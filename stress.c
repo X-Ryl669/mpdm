@@ -770,6 +770,11 @@ void test_regex(void)
 	v = MPDM_LS(L"this string has many words");
 	v = mpdm_regex(MPDM_LS(L"/[a-z]+/l"), v, 0);
 	do_test("Flag l in mpdm_regex", mpdm_cmp(v, MPDM_LS(L"words")) == 0);
+
+	/* & in substitution tests */
+	v = MPDM_LS(L"this string has many words");
+	v = mpdm_sregex(MPDM_LS(L"/[a-z]+/"), MPDM_LS(L"[&]"), v, 0);
+	do_test("& in sregex target", mpdm_cmp(v, MPDM_LS(L"[this] [string] [has] [many] [words]")) == 0);
 }
 
 

@@ -272,7 +272,30 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 /* substitutes all unescaped ampersands in s with t */
 {
-	/* ... */
+	wchar_t * sptr = mpdm_string(s);
+	wchar_t * wptr;
+
+	if((wptr = wcschr(sptr, L'&')) != NULL)
+	{
+		mpdm_t v = NULL;
+
+		while(wptr != NULL)
+		{
+			int n = wptr - sptr;
+
+			/* add the leading part */
+			v = mpdm_strcat(v, MPDM_NS(sptr, n));
+
+			/* now add the substitution string */
+			v = mpdm_strcat(v, t);
+
+			sptr = wptr + 1;
+			wptr = wcschr(sptr, L'&');
+		}
+
+		/* add the rest of the string */
+		s = mpdm_strcat(v, MPDM_S(sptr));
+	}
 
 	return(s);
 }
