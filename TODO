@@ -28,6 +28,7 @@ Pending Enhancements
  * 1085: Use const wherever possible.
  * 1094: Try an (optional) usage of pthreads to call sweep() in a low priority
    thread, when nothing else is happening.
+ * 1096: On mpdm_sregex(), substitute all unescaped & with the regex match.
 
 Closed
 ------
