@@ -269,6 +269,15 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 }
 
 
+static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
+/* substitutes all unescaped ampersands in s with t */
+{
+	/* ... */
+
+	return(t);
+}
+
+
 /**
  * mpdm_sregex - Matches and substitutes a regular expression.
  * @r: the regular expression
@@ -366,7 +375,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				if(MPDM_IS_HASH(s))
 					t = mpdm_hget(s, t);
 				else
-					t = s;
+					t = expand_ampersands(s, t);
 
 				/* appends the substitution string */
 				o = mpdm_strcat(o, t);
