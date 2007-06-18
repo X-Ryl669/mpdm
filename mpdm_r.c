@@ -333,6 +333,10 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
  * If @r is NULL, returns the number of substitutions made in the
  * previous call to mpdm_sregex() (can be zero if none was done).
  *
+ * The global variables @mpdm_regex_offset and @mpdm_regex_size are
+ * set to the offset of the matched string and the size of the
+ * replaced string, respectively.
+ *
  * Returns the modified string, or the original one if no substitutions
  * were done.
  * [Regular Expressions]
@@ -372,6 +376,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 		/* reset count */
 		mpdm_sregex_count = 0;
+		mpdm_regex_offset = -1;
 
 		do
 		{
@@ -387,6 +392,9 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				   to the start of the match */
 				t = MPDM_NMBS(ptr + i, rm.rm_so);
 				o = mpdm_strcat(o, t);
+
+				/* store offset of substitution */
+				mpdm_regex_offset = mpdm_size(t) + offset;
 
 				/* get the matched part */
 				t = MPDM_NMBS(ptr + i + rm.rm_so,
@@ -412,6 +420,9 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 				/* appends the substitution string */
 				o = mpdm_strcat(o, t);
+
+				/* store size of substitution */
+				mpdm_regex_size = mpdm_size(t);
 
 				i += rm.rm_eo;
 
