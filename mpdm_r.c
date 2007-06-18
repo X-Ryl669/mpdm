@@ -371,7 +371,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		o = MPDM_NS(v->data, offset);
 
 		/* convert to mbs */
-		if((ptr = mpdm_wcstombs(v->data + offset, NULL)) == NULL)
+		if((ptr = mpdm_wcstombs((wchar_t *)v->data + offset, NULL)) == NULL)
 			return(NULL);
 
 		/* reset count */
