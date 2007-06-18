@@ -274,7 +274,7 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 {
 	/* ... */
 
-	return(t);
+	return(s);
 }
 
 
