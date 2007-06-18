@@ -282,12 +282,22 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 		while(wptr != NULL)
 		{
 			int n = wptr - sptr;
+			mpdm_t t2 = t;
+
+			if(n && *(wptr - 1) == '\\')
+			{
+				/* is it escaped? avoid the \ */
+				n--;
+
+				/* and set the substitution string to & */
+				t2 = MPDM_LS(L"&");
+			}
 
 			/* add the leading part */
 			v = mpdm_strcat(v, MPDM_NS(sptr, n));
 
 			/* now add the substitution string */
-			v = mpdm_strcat(v, t);
+			v = mpdm_strcat(v, t2);
 
 			sptr = wptr + 1;
 			wptr = wcschr(sptr, L'&');
