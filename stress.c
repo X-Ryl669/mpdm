@@ -710,6 +710,15 @@ void test_regex(void)
 	v = mpdm_sregex(NULL, NULL, NULL, 0);
 	do_test("Previous sregex substitutions must be 3", mpdm_ival(v) == 3);
 
+	/* & in substitution tests */
+	v = MPDM_LS(L"this string has many words");
+	v = mpdm_sregex(MPDM_LS(L"/[a-z]+/g"), v, MPDM_LS(L"[&]"), 0);
+	do_test("& in sregex target", mpdm_cmp(v, MPDM_LS(L"[this] [string] [has] [many] [words]")) == 0);
+
+	v = MPDM_LS(L"this string has many words");
+	v = mpdm_sregex(MPDM_LS(L"/[a-z]+/g"), v, MPDM_LS(L"[\\&]"), 0);
+	do_test("escaped & in sregex target", mpdm_cmp(v, MPDM_LS(L"[&] [&] [&] [&] [&]")) == 0);
+
 	/* multiple regex tests */
 	w = MPDM_A(0);
 
@@ -770,11 +779,6 @@ void test_regex(void)
 	v = MPDM_LS(L"this string has many words");
 	v = mpdm_regex(MPDM_LS(L"/[a-z]+/l"), v, 0);
 	do_test("Flag l in mpdm_regex", mpdm_cmp(v, MPDM_LS(L"words")) == 0);
-
-	/* & in substitution tests */
-	v = MPDM_LS(L"this string has many words");
-	v = mpdm_sregex(MPDM_LS(L"/[a-z]+/"), MPDM_LS(L"[&]"), v, 0);
-	do_test("& in sregex target", mpdm_cmp(v, MPDM_LS(L"[this] [string] [has] [many] [words]")) == 0);
 }
 
 

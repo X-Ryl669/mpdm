@@ -28,7 +28,6 @@ Pending Enhancements
  * 1085: Use const wherever possible.
  * 1094: Try an (optional) usage of pthreads to call sweep() in a low priority
    thread, when nothing else is happening.
- * 1096: On mpdm_sregex(), substitute all unescaped & with the regex match.
 
 Closed
 ------
@@ -204,5 +203,7 @@ Closed
    (Fri, 10 Nov 2006 17:32:27 +0100).
  * 1095: The %c directive in sprintf() should work with Unicode
    (or wchar_t) characters (Mon, 11 Jun 2007 08:42:02 +0200).
+ * 1096: On mpdm_sregex(), substitute all unescaped & with the regex match
+   (Mon, 18 Jun 2007 12:23:37 +0200).
 
 Email bugs to angel@triptico.com
