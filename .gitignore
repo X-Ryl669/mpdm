@@ -6,3 +6,4 @@ config.ldflags
 doc/*.html
 makefile.opts
 *.[oa]
+stress
