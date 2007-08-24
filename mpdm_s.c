@@ -86,7 +86,7 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
    with question marks instead of just failing */
 {
 	wchar_t * ptr = NULL;
-	char tmp[MB_CUR_MAX + 1];
+	char tmp[64];		/* really MB_CUR_MAX + 1 */
 	wchar_t wc;
 	int n, i, c, t = 0;
 	char * cstr;
@@ -169,7 +169,7 @@ char * mpdm_wcstombs(wchar_t * str, int * s)
    with question marks instead of just failing */
 {
 	char * ptr = NULL;
-	char tmp[MB_CUR_MAX + 1];
+	char tmp[64];		/* really MB_CUR_MAX + 1 */
 	int l, t = 0;
 
 	/* allow NULL values for s */
