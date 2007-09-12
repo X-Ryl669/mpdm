@@ -5,7 +5,6 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
- * 1098: mpdm_cmp(NULL, NULL) should return 0.
  * 1099: mpdm_cmp() should be optimized to return 0 if two arrays
    are *the same*.
 
@@ -210,5 +209,7 @@ Closed
    (Mon, 18 Jun 2007 12:23:37 +0200).
  * 1097: Fixed a bug in offset processing in mpdm_sregex()
    (Mon, 18 Jun 2007 13:54:24 +0200).
+ * 1098: mpdm_cmp(NULL, NULL) should return 0
+   (Wed, 12 Sep 2007 09:50:08 +0200).
 
 Email bugs to angel@triptico.com
