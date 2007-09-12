@@ -5,6 +5,9 @@ Release Critical Bugs
 ---------------------
 
  * 1056: Fill the overview document.
+ * 1098: mpdm_cmp(NULL, NULL) should return 0.
+ * 1099: mpdm_cmp() should be optimized to return 0 if two arrays
+   are *the same*.
 
 Open Bugs
 ---------
