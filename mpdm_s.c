@@ -388,7 +388,7 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 
 	/* special treatment to NULL values */
 	if(v1 == NULL)
-		return(-1);
+		return(v2 == NULL ? 0 : -1);
 	if(v2 == NULL)
 		return(1);
 
