@@ -1,9 +1,10 @@
 MPDM Release Notes
 ==================
 
-1.0.0-rc5
----------
+1.0.1
+-----
 
+ * mpdm_cmp() now correctly compares NULL and NULL as equal.
  * %c in mpdm_sprintf() now works with Unicode (wchar_t) characters.
  * The substitution string in mpdm_sregex() now can include the
    special character & to select the matched string. To include a
