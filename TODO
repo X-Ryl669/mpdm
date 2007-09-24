@@ -4,13 +4,12 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1056: Fill the overview document.
- * 1099: mpdm_cmp() should be optimized to return 0 if two arrays
-   are *the same*.
+None!
 
 Open Bugs
 ---------
 
+ * 1056: Finish the overview document.
  * 1061: On IRIX, iconv() doesn't have the "WCHAR_T" charset, so
    iconv support doesn't seem to work there; but it has "UCS-4", which
    is practically the same and it works, so there should be some
@@ -30,6 +29,8 @@ Pending Enhancements
  * 1085: Use const wherever possible.
  * 1094: Try an (optional) usage of pthreads to call sweep() in a low priority
    thread, when nothing else is happening.
+ * 1099: mpdm_cmp() should be optimized to return 0 if two arrays
+   are *the same*.
 
 Closed
 ------
