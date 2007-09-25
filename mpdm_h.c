@@ -311,7 +311,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	mpdm_t p;
 
 	if(r == NULL)
-		r=mpdm_root();
+		r = mpdm_root();
 
 	/* splits the path, if needed */
 	if(k->flags & MPDM_MULTIPLE)
@@ -319,14 +319,16 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	else
 		p = mpdm_split(MPDM_LS(L"."), k);
 
-	for(n = 0;n < mpdm_size(p) - s;n++)
-	{
-		/* try each component as a hash, then as array */
-		if(r->flags & MPDM_HASH)
+	for(n = 0;n < mpdm_size(p) - s;n++) {
+
+		/* is executable? run it and take its output */
+		while (MPDM_IS_EXEC(r))
+			r = mpdm_exec(r, NULL);
+
+		if(MPDM_IS_HASH(r))
 			r = mpdm_hget(r, mpdm_aget(p, n));
 		else
-		if(r->flags & MPDM_MULTIPLE)
-		{
+		if(MPDM_IS_ARRAY(r)) {
 			int i = mpdm_ival(mpdm_aget(p, n));
 			r = mpdm_aget(r, i);
 		}
@@ -338,12 +340,10 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	}
 
 	/* if want to set, do it */
-	if(s && r != NULL)
-	{
+	if(s && r != NULL) {
 		if(r->flags & MPDM_HASH)
 			r = mpdm_hset(r, mpdm_aget(p, n), v);
-		else
-		{
+		else {
 			int i = mpdm_ival(mpdm_aget(p, n));
 			r = mpdm_aset(r, v, i);
 		}
