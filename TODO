@@ -31,6 +31,10 @@ Pending Enhancements
    thread, when nothing else is happening.
  * 1099: mpdm_cmp() should be optimized to return 0 if two arrays
    are *the same*.
+ * 1100: Allow for a component in a 'symbol' managed by mpdm_sym() to
+   be an executable.
+ * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
+   don't really belong here.
 
 Closed
 ------
