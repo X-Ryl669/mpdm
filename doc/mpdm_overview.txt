@@ -159,5 +159,11 @@ Charset conversions
 Localization
 ------------
 
+Environment variables
+---------------------
+
+MPDM_NULL_HASH
+~~~~~~~~~~~~~~
+
 ----
-Angel Ortega <angel@triptico.com> - $Date$
+Angel Ortega <angel@triptico.com>
