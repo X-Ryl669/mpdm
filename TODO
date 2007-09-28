@@ -31,7 +31,6 @@ Pending Enhancements
    thread, when nothing else is happening.
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
- * 1102: Optimize mpdm_cmp() when comparing the same values.
 
 Closed
 ------
@@ -217,5 +216,7 @@ Closed
    be an executable (Tue, 25 Sep 2007 18:13:38 +0200).
  * 1099: mpdm_cmp() should be optimized to return 0 if two arrays
    are *the same* (Closed by 1102; Fri, 28 Sep 2007 13:01:55 +0200).
+ * 1102: Optimize mpdm_cmp() when comparing the same values
+   (Fri, 28 Sep 2007 13:10:44 +0200).
 
 Email bugs to angel@triptico.com
