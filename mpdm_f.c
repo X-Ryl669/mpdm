@@ -352,7 +352,8 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 
 		if ((c & 0x80) == 0)
 			wc = c;
-		else if ((c & 0xe0) == 0xe0) {
+		else
+		if ((c & 0xe0) == 0xe0) {
 			wc = (c & 0x1f) << 12;
 			UTF8_BYTE();
 			wc |= (c & 0x3f) << 6;
@@ -393,7 +394,8 @@ static int write_utf8(struct mpdm_file *f, wchar_t * str)
 	for (; (wc = *str) != L'\0'; str++) {
 		if (wc < 0x80)
 			put_char((int) wc, f);
-		else if (wc < 0x800) {
+		else
+		if (wc < 0x800) {
 			put_char((int) (0xc0 | (wc >> 6)), f);
 			put_char((int) (0x80 | (wc & 0x3f)), f);
 			cnt++;

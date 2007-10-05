@@ -318,7 +318,8 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
 		if (MPDM_IS_HASH(r))
 			r = mpdm_hget(r, mpdm_aget(p, n));
-		else if (MPDM_IS_ARRAY(r)) {
+		else
+		if (MPDM_IS_ARRAY(r)) {
 			int i = mpdm_ival(mpdm_aget(p, n));
 			r = mpdm_aget(r, i);
 		}

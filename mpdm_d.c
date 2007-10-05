@@ -98,7 +98,8 @@ static wchar_t *dump_1(mpdm_t v, int l, wchar_t * ptr, int *size)
 				ptr = dump_1(mpdm_hget(v, t), l + 2, ptr, size);
 			}
 		}
-		else if (v->flags & MPDM_MULTIPLE) {
+		else
+		if (v->flags & MPDM_MULTIPLE) {
 			for (n = 0; n < mpdm_size(v); n++)
 				ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
 		}

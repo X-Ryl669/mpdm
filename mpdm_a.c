@@ -449,7 +449,8 @@ int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int *pos)
 
 		if (c == 0)
 			return (n * step);
-		else if (c < 0)
+		else
+		if (c < 0)
 			t = n - 1;
 		else
 			b = n + 1;
