@@ -1,6 +1,13 @@
 MPDM Release Notes
 ==================
 
+1.0.2
+-----
+
+ * Components of a compact symbol can be executable, apart from
+   hashes and arrays.
+ * mpdm_cmp() is optimized to return 0 when comparing the same value.
+
 1.0.1
 -----
 
