@@ -61,9 +61,9 @@ int mpdm_sregex_count = 0;
 	Code
 ********************/
 
-static wchar_t * regex_flags(mpdm_t r)
+static wchar_t *regex_flags(mpdm_t r)
 {
-	return(wcsrchr((wchar_t *)r->data, *(wchar_t *)r->data));
+	return (wcsrchr((wchar_t *) r->data, *(wchar_t *) r->data));
 }
 
 
@@ -73,19 +73,17 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 	mpdm_t regex_cache = NULL;
 
 	/* if cache does not exist, create it */
-	if((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL)
-	{
+	if ((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL) {
 		regex_cache = MPDM_H(0);
 		mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", regex_cache);
 	}
 
 	/* search the regex in the cache */
-	if((c = mpdm_hget(regex_cache, r)) == NULL)
-	{
+	if ((c = mpdm_hget(regex_cache, r)) == NULL) {
 		mpdm_t rmb;
 		regex_t re;
-		char * regex;
-		char * flags;
+		char *regex;
+		char *flags;
 		int f = REG_EXTENDED;
 
 		/* not found; regex must be compiled */
@@ -93,22 +91,22 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 		/* convert to mbs */
 		rmb = MPDM_2MBS(r->data);
 
-		regex = (char *)rmb->data;
-		if((flags = strrchr(regex, *regex)) == NULL)
-			return(NULL);
+		regex = (char *) rmb->data;
+		if ((flags = strrchr(regex, *regex)) == NULL)
+			return (NULL);
 
-		if(strchr(flags, 'i') != NULL) f |= REG_ICASE;
-		if(strchr(flags, 'm') != NULL) f |= REG_NEWLINE;
+		if (strchr(flags, 'i') != NULL)
+			f |= REG_ICASE;
+		if (strchr(flags, 'm') != NULL)
+			f |= REG_NEWLINE;
 
 		regex++;
 		*flags = '\0';
 
-		if(!regcomp(&re, regex, f))
-		{
-			void * ptr;
+		if (!regcomp(&re, regex, f)) {
+			void *ptr;
 
-			if((ptr = malloc(sizeof(regex_t))) != NULL)
-			{
+			if ((ptr = malloc(sizeof(regex_t))) != NULL) {
 				/* copies */
 				memcpy(ptr, &re, sizeof(regex_t));
 
@@ -121,7 +119,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 		}
 	}
 
-	return(c);
+	return (c);
 }
 
 
@@ -162,26 +160,23 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 	mpdm_t t;
 
 	/* special case: if r is NULL, return previous match */
-	if(r == NULL)
-	{
+	if (r == NULL) {
 		/* if previous regex was successful... */
-		if(mpdm_regex_offset != -1)
-		{
+		if (mpdm_regex_offset != -1) {
 			w = MPDM_A(2);
 
 			mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
 			mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
 		}
 
-		return(w);
+		return (w);
 	}
 
 	/* if the string to be tested is NULL, return NULL */
-	if(v == NULL)
-		return(NULL);
+	if (v == NULL)
+		return (NULL);
 
-	if(r->flags & MPDM_MULTIPLE)
-	{
+	if (r->flags & MPDM_MULTIPLE) {
 		int n;
 
 		/* multiple value; try sequentially all regexes,
@@ -189,13 +184,11 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 		w = MPDM_A(mpdm_size(r));
 
-		for(n = 0;n < mpdm_size(r);n++)
-		{
+		for (n = 0; n < mpdm_size(r); n++) {
 			t = mpdm_regex(mpdm_aget(r, n), v, offset);
 
 			/* if not found, invalid all search and exit */
-			if(t == NULL)
-			{
+			if (t == NULL) {
 				w = NULL;
 				break;
 			}
@@ -205,8 +198,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			offset = mpdm_regex_offset + mpdm_regex_size;
 		}
 	}
-	else
-	{
+	else {
 		mpdm_t cr;
 
 		/* single value; really do the regex */
@@ -215,37 +207,35 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		mpdm_regex_offset = -1;
 
 		/* compile the regex */
-		if((cr = mpdm_regcomp(r)) != NULL)
-		{
+		if ((cr = mpdm_regcomp(r)) != NULL) {
 			regmatch_t rm;
-			char * ptr;
-			wchar_t * last;
+			char *ptr;
+			wchar_t *last;
 			int o = 0;
 			int f = 0;
 
 			/* takes pointer to 'last' flag */
-			if((last = regex_flags(r)) != NULL)
+			if ((last = regex_flags(r)) != NULL)
 				last = wcschr(last, 'l');
 
 			/* convert to mbs */
-			ptr = mpdm_wcstombs((wchar_t *)v->data + offset, NULL);
+			ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL);
 
 			/* match? */
-			while(regexec((regex_t *) cr->data, ptr + o, 1,
-				&rm, offset > 0 ? REG_NOTBOL : 0) == 0)
-			{
+			while (regexec((regex_t *) cr->data, ptr + o, 1,
+				       &rm, offset > 0 ? REG_NOTBOL : 0) == 0) {
 				f++;
 
 				/* if 'last' is not set, it's done */
-				if(last == NULL) break;
+				if (last == NULL)
+					break;
 
 				rm.rm_so += o;
 				rm.rm_eo += o;
 				o = rm.rm_eo;
 			}
 
-			if(f)
-			{
+			if (f) {
 				/* converts to mbs the string from the beginning
 				   to the start of the match, just to know
 				   the size (and immediately frees it) */
@@ -265,27 +255,24 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		}
 	}
 
-	return(w);
+	return (w);
 }
 
 
 static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 /* substitutes all unescaped ampersands in s with t */
 {
-	wchar_t * sptr = mpdm_string(s);
-	wchar_t * wptr;
+	wchar_t *sptr = mpdm_string(s);
+	wchar_t *wptr;
 
-	if((wptr = wcschr(sptr, L'&')) != NULL)
-	{
+	if ((wptr = wcschr(sptr, L'&')) != NULL) {
 		mpdm_t v = NULL;
 
-		while(wptr != NULL)
-		{
+		while (wptr != NULL) {
 			int n = wptr - sptr;
 			mpdm_t t2 = t;
 
-			if(n && *(wptr - 1) == '\\')
-			{
+			if (n && *(wptr - 1) == '\\') {
 				/* is it escaped? avoid the \ */
 				n--;
 
@@ -307,7 +294,7 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 		s = mpdm_strcat(v, MPDM_S(sptr));
 	}
 
-	return(s);
+	return (s);
 }
 
 
@@ -346,48 +333,44 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 	mpdm_t cr;
 	mpdm_t o = v;
 
-	if(r == NULL)
-	{
+	if (r == NULL) {
 		/* return last count */
-		return(MPDM_I(mpdm_sregex_count));
+		return (MPDM_I(mpdm_sregex_count));
 	}
 
-	if(v == NULL)
-		return(NULL);
+	if (v == NULL)
+		return (NULL);
 
 	/* compile the regex */
-	if((cr = mpdm_regcomp(r)) != NULL)
-	{
-		char * ptr;
+	if ((cr = mpdm_regcomp(r)) != NULL) {
+		char *ptr;
 		int f, i = 0;
-		wchar_t * global;
+		wchar_t *global;
 		mpdm_t t;
 
 		/* takes pointer to global flag */
-		if((global = regex_flags(r)) != NULL)
+		if ((global = regex_flags(r)) !=NULL)
 			global = wcschr(global, 'g');
 
 		/* store the first part */
 		o = MPDM_NS(v->data, offset);
 
 		/* convert to mbs */
-		if((ptr = mpdm_wcstombs((wchar_t *)v->data + offset, NULL)) == NULL)
-			return(NULL);
+		if ((ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL)) == NULL)
+			return (NULL);
 
 		/* reset count */
 		mpdm_sregex_count = 0;
 		mpdm_regex_offset = -1;
 
-		do
-		{
+		do {
 			regmatch_t rm;
 
 			/* try match */
 			f = !regexec((regex_t *) cr->data, ptr + i,
-				1, &rm, offset > 0 ? REG_NOTBOL : 0);
+				     1, &rm, offset > 0 ? REG_NOTBOL : 0);
 
-			if(f)
-			{
+			if (f) {
 				/* creates a string from the beginning
 				   to the start of the match */
 				t = MPDM_NMBS(ptr + i, rm.rm_so);
@@ -397,12 +380,10 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				mpdm_regex_offset = mpdm_size(t) + offset;
 
 				/* get the matched part */
-				t = MPDM_NMBS(ptr + i + rm.rm_so,
-					rm.rm_eo - rm.rm_so);
+				t = MPDM_NMBS(ptr + i + rm.rm_so, rm.rm_eo - rm.rm_so);
 
 				/* is s an executable value? */
-				if(MPDM_IS_EXEC(s))
-				{
+				if (MPDM_IS_EXEC(s)) {
 					/* protect o from sweeping */
 					mpdm_ref(o);
 
@@ -412,8 +393,8 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 					mpdm_unref(o);
 				}
 				else
-				/* is s a hash? use match as key */
-				if(MPDM_IS_HASH(s))
+					/* is s a hash? use match as key */
+				if (MPDM_IS_HASH(s))
 					t = mpdm_hget(s, t);
 				else
 					t = expand_ampersands(s, t);
@@ -427,10 +408,10 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 				i += rm.rm_eo;
 
 				/* one more substitution */
-				mpdm_sregex_count ++;
+				mpdm_sregex_count++;
 			}
 
-		} while(f && global);
+		} while (f && global);
 
 		/* no (more) matches; convert and append the rest */
 		t = MPDM_MBS(ptr + i);
@@ -439,5 +420,5 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		free(ptr);
 	}
 
-	return(o);
+	return (o);
 }

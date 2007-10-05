@@ -47,14 +47,12 @@
 	Code
 ********************/
 
-void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
+void *mpdm_poke(void *dst, int *dsize, void *org, int osize, int esize)
 /* pokes (adds) org into dst, which is a dynamic string, making it grow */
 {
-	if(org != NULL && osize)
-	{
+	if (org != NULL && osize) {
 		/* makes room for the new string */
-		if((dst = realloc(dst, (*dsize + osize) * esize)) != NULL)
-		{
+		if ((dst = realloc(dst, (*dsize + osize) * esize)) != NULL) {
 			/* copies it */
 			memcpy(dst + (*dsize * esize), org, osize * esize);
 
@@ -63,40 +61,39 @@ void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize)
 		}
 	}
 
-	return(dst);
+	return (dst);
 }
 
 
-wchar_t * mpdm_pokev(wchar_t * dst, int * dsize, mpdm_t v)
+wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
-	if(v != NULL)
-	{
-		wchar_t * ptr = mpdm_string(v);
+	if (v != NULL) {
+		wchar_t *ptr = mpdm_string(v);
 
 		dst = mpdm_poke(dst, dsize, ptr, wcslen(ptr), sizeof(wchar_t));
 	}
 
-	return(dst);
+	return (dst);
 }
 
 
-wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
+wchar_t *mpdm_mbstowcs(char *str, int *s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
-	wchar_t * ptr = NULL;
+	wchar_t *ptr = NULL;
 	char tmp[64];		/* really MB_CUR_MAX + 1 */
 	wchar_t wc;
 	int n, i, c, t = 0;
-	char * cstr;
+	char *cstr;
 
 	/* allow NULL values for s */
-	if(s == NULL) s = &t;
+	if (s == NULL)
+		s = &t;
 
 	/* if there is a limit, duplicate and break the string */
-	if(l >= 0)
-	{
+	if (l >= 0) {
 		cstr = strdup(str);
 		cstr[l] = '\0';
 	}
@@ -104,36 +101,31 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 		cstr = str;
 
 	/* try first a direct conversion with mbstowcs */
-	if((*s = mbstowcs(NULL, cstr, 0)) != -1)
-	{
+	if ((*s = mbstowcs(NULL, cstr, 0)) != -1) {
 		/* direct conversion is possible; do it */
-		if((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL)
-		{
+		if ((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL) {
 			mbstowcs(ptr, cstr, *s);
 			ptr[*s] = L'\0';
 		}
 	}
-	else
-	{
+	else {
 		/* zero everything */
 		*s = n = i = 0;
 
-		for(;;)
-		{
+		for (;;) {
 			/* no more characters to process? */
-			if((c = cstr[n + i]) == '\0' && i == 0)
+			if ((c = cstr[n + i]) == '\0' && i == 0)
 				break;
 
-			tmp[i++] = c; tmp[i] = '\0';
+			tmp[i++] = c;
+			tmp[i] = '\0';
 
 			/* try to convert */
-			if(mbstowcs(&wc, tmp, 1) == -1)
-			{
+			if (mbstowcs(&wc, tmp, 1) == -1) {
 				/* can still be an incomplete multibyte char? */
-				if(c != '\0' && i <= MB_CUR_MAX)
+				if (c != '\0' && i <= MB_CUR_MAX)
 					continue;
-				else
-				{
+				else {
 					/* too many failing bytes; skip 1 byte */
 					wc = L'?';
 					i = 1;
@@ -145,103 +137,97 @@ wchar_t * mpdm_mbstowcs(char * str, int * s, int l)
 			i = 0;
 
 			/* store new char */
-			if((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+			if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
 				break;
 		}
 
 		/* null terminate and count one less */
-		if(ptr != NULL)
-		{
+		if (ptr != NULL) {
 			ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
 			(*s)--;
 		}
 	}
 
 	/* free the duplicate */
-	if(cstr != str) free(cstr);
+	if (cstr != str)
+		free(cstr);
 
-	return(ptr);
+	return (ptr);
 }
 
 
-char * mpdm_wcstombs(wchar_t * str, int * s)
+char *mpdm_wcstombs(wchar_t * str, int *s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
-	char * ptr = NULL;
+	char *ptr = NULL;
 	char tmp[64];		/* really MB_CUR_MAX + 1 */
 	int l, t = 0;
 
 	/* allow NULL values for s */
-	if(s == NULL) s = &t;
+	if (s == NULL)
+		s = &t;
 
 	/* try first a direct conversion with wcstombs */
-	if((*s = wcstombs(NULL, str, 0)) != -1)
-	{
+	if ((*s = wcstombs(NULL, str, 0)) != -1) {
 		/* direct conversion is possible; do it and return */
-		if((ptr = malloc(*s + 1)) != NULL)
-		{
+		if ((ptr = malloc(*s + 1)) != NULL) {
 			wcstombs(ptr, str, *s);
 			ptr[*s] = '\0';
 		}
 
-		return(ptr);
+		return (ptr);
 	}
 
 	/* invalid encoding? convert characters one by one */
 	*s = 0;
 
-	while(*str)
-	{
-		if((l = wctomb(tmp, *str)) <= 0)
-		{
+	while (*str) {
+		if ((l = wctomb(tmp, *str)) <= 0) {
 			/* if char couldn't be converted,
 			   write a question mark instead */
 			l = wctomb(tmp, L'?');
 		}
 
 		tmp[l] = '\0';
-		if((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
+		if ((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
 			break;
 
 		str++;
 	}
 
 	/* null terminate and count one less */
-	if(ptr != NULL)
-	{
+	if (ptr != NULL) {
 		ptr = mpdm_poke(ptr, s, "", 1, 1);
 		(*s)--;
 	}
 
-	return(ptr);
+	return (ptr);
 }
 
 
 mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
-	wchar_t * ptr;
+	wchar_t *ptr;
 
 	/* a size of -1 means 'calculate it' */
-	if(size == -1 && str != NULL)
+	if (size == -1 && str != NULL)
 		size = wcslen(str);
 
 	/* create a copy? */
-	if(cpy)
-	{
+	if (cpy) {
 		/* free() on destruction */
 		flags |= MPDM_FREE;
 
 		/* allocs */
-		if((ptr = malloc((size + 1) * sizeof(wchar_t))) == NULL)
-			return(NULL);
+		if ((ptr = malloc((size + 1) * sizeof(wchar_t))) == NULL)
+			return (NULL);
 
 		/* if no source, reset to zeroes; otherwise, copy */
-		if(str == NULL)
+		if (str == NULL)
 			memset(ptr, '\0', size * sizeof(wchar_t));
-		else
-		{
+		else {
 			wcsncpy(ptr, str, size);
 			ptr[size] = L'\0';
 		}
@@ -252,30 +238,30 @@ mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 	/* it's a string */
 	flags |= MPDM_STRING;
 
-	return(mpdm_new(flags, str, size));
+	return (mpdm_new(flags, str, size));
 }
 
 
-mpdm_t mpdm_new_mbstowcs(int flags, char * str, int l)
+mpdm_t mpdm_new_mbstowcs(int flags, char *str, int l)
 /* creates a new string value from an mbs */
 {
-	wchar_t * ptr;
+	wchar_t *ptr;
 	int size;
 
-	if((ptr = mpdm_mbstowcs(str, &size, l)) == NULL)
-		return(NULL);
+	if ((ptr = mpdm_mbstowcs(str, &size, l)) == NULL)
+		return (NULL);
 
 	/* it's a string */
-	flags |= (MPDM_STRING|MPDM_FREE);
+	flags |= (MPDM_STRING | MPDM_FREE);
 
-	return(mpdm_new(flags, ptr, size));
+	return (mpdm_new(flags, ptr, size));
 }
 
 
 mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 /* creates a new mbs value from a wbs */
 {
-	char * ptr;
+	char *ptr;
 	int size;
 
 	ptr = mpdm_wcstombs(str, &size);
@@ -283,9 +269,9 @@ mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 	flags |= MPDM_FREE;
 
 	/* unset the string flag; mbs,s are not 'strings' */
-	flags &= ~ MPDM_STRING;
+	flags &= ~MPDM_STRING;
 
-	return(mpdm_new(flags, ptr, size));
+	return (mpdm_new(flags, ptr, size));
 }
 
 
@@ -302,7 +288,7 @@ mpdm_t mpdm_new_i(int ival)
 	v->flags |= MPDM_IVAL;
 	v->ival = ival;
 
-	return(v);
+	return (v);
 }
 
 
@@ -316,14 +302,14 @@ mpdm_t mpdm_new_r(double rval)
 	snprintf(tmp, sizeof(tmp), "%lf", rval);
 
 	/* manually strip useless zeroes */
-	if(strchr(tmp, '.') != NULL)
-	{
-		char * ptr;
+	if (strchr(tmp, '.') != NULL) {
+		char *ptr;
 
-		for(ptr = tmp + strlen(tmp) - 1;*ptr == '0';ptr--);
+		for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
 
 		/* if it's over the ., strip it also */
-		if(*ptr != '.') ptr++;
+		if (*ptr != '.')
+			ptr++;
 
 		*ptr = '\0';
 	}
@@ -332,7 +318,7 @@ mpdm_t mpdm_new_r(double rval)
 	v->flags |= MPDM_RVAL;
 	v->rval = rval;
 
-	return(v);
+	return (v);
 }
 
 
@@ -348,25 +334,25 @@ mpdm_t mpdm_new_r(double rval)
  * can be a pointer to a static buffer.
  * [Strings]
  */
-wchar_t * mpdm_string(mpdm_t v)
+wchar_t *mpdm_string(mpdm_t v)
 {
 	static wchar_t wtmp[32];
 	char tmp[32];
 
 	/* if it's NULL, return a constant */
-	if(v == NULL)
-		return(L"[NULL]");
+	if (v == NULL)
+		return (L"[NULL]");
 
 	/* if it's a string, return it */
-	if(v->flags & MPDM_STRING)
-		return((wchar_t *)v->data);
+	if (v->flags & MPDM_STRING)
+		return ((wchar_t *) v->data);
 
 	/* otherwise, return a visual representation */
 	snprintf(tmp, sizeof(tmp), "%p", v);
 	mbstowcs(wtmp, tmp, sizeof(wtmp));
 	wtmp[sizeof(wtmp) - 1] = L'\0';
 
-	return(wtmp);
+	return (wtmp);
 }
 
 
@@ -391,40 +377,37 @@ int mpdm_cmp(mpdm_t v1, mpdm_t v2)
 		return (0);
 
 	/* is any value NULL? */
-	if(v1 == NULL)
+	if (v1 == NULL)
 		return (-1);
-	if(v2 == NULL)
+	if (v2 == NULL)
 		return (1);
 
 	/* different values, but same content? (unlikely) */
 	if (v1->data == v2->data)
 		return (0);
 
-	if(MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
-		r = wcscoll((wchar_t *)v1->data, (wchar_t *)v2->data);
+	if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
+		r = wcscoll((wchar_t *) v1->data, (wchar_t *) v2->data);
 	else
-	if(MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2))
-	{
+	if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
 		/* compare first the sizes */
-		if((r = mpdm_size(v1) - mpdm_size(v2)) == 0)
-		{
+		if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
 			int n;
 
 			/* they have the same size;
 			   compare each pair of elements */
-			for(n = 0;n < mpdm_size(v1);n++)
-			{
-				if((r = mpdm_cmp(mpdm_aget(v1, n),
+			for (n = 0; n < mpdm_size(v1); n++) {
+				if ((r = mpdm_cmp(mpdm_aget(v1, n),
 					mpdm_aget(v2, n))) != 0)
 					break;
 			}
 		}
 	}
 	else
-	/* in any other case, compare just pointers */
-	r = (int)(v1->data - v2->data);
+		/* in any other case, compare just pointers */
+		r = (int) (v1->data - v2->data);
 
-	return(r);
+	return (r);
 }
 
 
@@ -455,26 +438,28 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 	mpdm_t d = NULL;
 	int os, ns, r;
 	int ins = 0;
-	wchar_t * ptr;
+	wchar_t *ptr;
 
-	if(v != NULL)
-	{
+	if (v != NULL) {
 		os = mpdm_size(v);
 
 		/* negative offsets start from the end */
-		if(offset < 0) offset = os + 1 - offset;
+		if (offset < 0)
+			offset = os + 1 - offset;
 
 		/* never add further the end */
-		if(offset > os) offset = os;
+		if (offset > os)
+			offset = os;
 
 		/* negative del counts as 'characters left' */
-		if(del < 0) del = os + 1 - offset + del;
+		if (del < 0)
+			del = os + 1 - offset + del;
 
 		/* something to delete? */
-		if(del > 0)
-		{
+		if (del > 0) {
 			/* never delete further the end */
-			if(offset + del > os) del = os - offset;
+			if (offset + del > os)
+				del = os - offset;
 
 			/* deleted string */
 			d = MPDM_NS(((wchar_t *) v->data) + offset, del);
@@ -489,29 +474,26 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 		ns = os + ins - del;
 		r = offset + del;
 
-		if((n = MPDM_NS(NULL, ns)) == NULL)
-			return(NULL);
+		if ((n = MPDM_NS(NULL, ns)) == NULL)
+			return (NULL);
 
 		ptr = n->data;
 
 		/* copy the beginning */
-		if(offset > 0)
-		{
+		if (offset > 0) {
 			wcsncpy(ptr, v->data, offset);
 			ptr += offset;
 		}
 
 		/* copy the text to be inserted */
-		if(ins > 0)
-		{
+		if (ins > 0) {
 			wcsncpy(ptr, i->data, ins);
 			ptr += ins;
 		}
 
 		/* copy the remaining */
 		os -= r;
-		if(os > 0)
-		{
+		if (os > 0) {
 			wcsncpy(ptr, ((wchar_t *) v->data) + r, os);
 			ptr += os;
 		}
@@ -528,7 +510,7 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
 	mpdm_aset(w, n, 0);
 	mpdm_aset(w, d, 1);
 
-	return(w);
+	return (w);
 }
 
 
@@ -542,21 +524,21 @@ mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
  */
 mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
 {
-	wchar_t * ptr = NULL;
+	wchar_t *ptr = NULL;
 	int s = 0;
 
-	if(s1 == NULL && s2 == NULL)
-		return(NULL);
+	if (s1 == NULL && s2 == NULL)
+		return (NULL);
 
 	ptr = mpdm_pokev(ptr, &s, s1);
 	ptr = mpdm_pokev(ptr, &s, s2);
 
 	/* if no characters were added, returns an empty string */
-	if(ptr == NULL)
-		return(MPDM_LS(L""));
+	if (ptr == NULL)
+		return (MPDM_LS(L""));
 
 	ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
-	return(MPDM_ENS(ptr, s - 1));
+	return (MPDM_ENS(ptr, s - 1));
 }
 
 
@@ -574,30 +556,27 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
  */
 int mpdm_ival(mpdm_t v)
 {
-	if(v == NULL)
-		return(0);
+	if (v == NULL)
+		return (0);
 
 	/* if there is no cached integer, calculate it */
-	if(!(v->flags & MPDM_IVAL))
-	{
+	if (!(v->flags & MPDM_IVAL)) {
 		int i = 0;
 
 		/* if it's a string, calculate it; other
 		   values will have an ival of 0 */
-		if(v->flags & MPDM_STRING)
-		{
+		if (v->flags & MPDM_STRING) {
 			char tmp[32];
-			char * fmt = "%i";
+			char *fmt = "%i";
 
-			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
-			tmp[sizeof(tmp) - 1]='\0';
+			wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+			tmp[sizeof(tmp) - 1] = '\0';
 
 			/* workaround for mingw32: as it doesn't
 			   correctly parse octal and hexadecimal
 			   numbers, they are tried as special cases */
-			if(tmp[0] == '0')
-			{
-				if(tmp[1] == 'x' || tmp[1] == 'X')
+			if (tmp[0] == '0') {
+				if (tmp[1] == 'x' || tmp[1] == 'X')
 					fmt = "%x";
 				else
 					fmt = "%o";
@@ -610,7 +589,7 @@ int mpdm_ival(mpdm_t v)
 		v->flags |= MPDM_IVAL;
 	}
 
-	return(v->ival);
+	return (v->ival);
 }
 
 
@@ -628,31 +607,28 @@ int mpdm_ival(mpdm_t v)
  */
 double mpdm_rval(mpdm_t v)
 {
-	if(v == NULL)
-		return(0);
+	if (v == NULL)
+		return (0);
 
 	/* if there is no cached double, calculate it */
-	if(!(v->flags & MPDM_RVAL))
-	{
+	if (!(v->flags & MPDM_RVAL)) {
 		double r = 0.0;
 
 		/* if it's a string, calculate it; other
 		   values will have an rval of 0.0 */
-		if(v->flags & MPDM_STRING)
-		{
+		if (v->flags & MPDM_STRING) {
 			char tmp[128];
-			char * prev_locale;
+			char *prev_locale;
 
-			wcstombs(tmp, (wchar_t *)v->data, sizeof(tmp));
+			wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
 			tmp[sizeof(tmp) - 1] = '\0';
 
 			/* if the number starts with 0, it's
 			   an octal or hexadecimal number; just
 			   take the integer value and cast it */
-			if(tmp[0] == '0' && tmp[1] != '.')
+			if (tmp[0] == '0' && tmp[1] != '.')
 				r = (double) mpdm_ival(v);
-			else
-			{
+			else {
 				/* set locale to C for non locale-dependent
 				   floating point conversion */
 				prev_locale = setlocale(LC_NUMERIC, "C");
@@ -669,7 +645,7 @@ double mpdm_rval(mpdm_t v)
 		v->flags |= MPDM_RVAL;
 	}
 
-	return(v->rval);
+	return (v->rval);
 }
 
 
@@ -693,37 +669,34 @@ mpdm_t mpdm_gettext(mpdm_t str)
 	mpdm_t i18n = NULL;
 
 	/* gets the cache, if any */
-	if((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
-		return(str);
+	if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
+		return (str);
 
 	/* try first the cache */
-	if((v = mpdm_hget(i18n, str)) == NULL)
-	{
+	if ((v = mpdm_hget(i18n, str)) == NULL) {
 #ifdef CONFOPT_GETTEXT
-		char * s;
+		char *s;
 
 		/* convert to mbs */
 		v = MPDM_2MBS(str->data);
 
 		/* ask gettext for it */
-		s = gettext((char *)v->data);
+		s = gettext((char *) v->data);
 
 		/* create new value only if it's different */
-		if(s != v->data)
-		{
+		if (s != v->data) {
 			v = MPDM_MBS(s);
 
 			/* store in the cache */
 			mpdm_hset(i18n, str, v);
 		}
 		else
-
-#endif /* CONFOPT_GETTEXT */
+#endif				/* CONFOPT_GETTEXT */
 
 			v = str;
 	}
 
-	return(v);
+	return (v);
 }
 
 
@@ -751,16 +724,16 @@ int mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 	data = MPDM_2MBS(data->data);
 
 	/* bind and set domain */
-	bindtextdomain((char *)dom->data, (char *)data->data);
-	textdomain((char *)dom->data);
+	bindtextdomain((char *) dom->data, (char *) data->data);
+	textdomain((char *) dom->data);
 
 	mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
 	ret = 1;
 
-#endif /* CONFOPT_GETTEXT */
+#endif				/* CONFOPT_GETTEXT */
 
-	return(ret);
+	return (ret);
 }
 
 
@@ -768,15 +741,21 @@ int mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
 
 int wcwidth(wchar_t);
 
-int mpdm_wcwidth(wchar_t c) { return(wcwidth(c)); }
+int mpdm_wcwidth(wchar_t c)
+{
+	return (wcwidth(c));
+}
 
-#else /* CONFOPT_WCWIDTH */
+#else				/* CONFOPT_WCWIDTH */
 
 #include "wcwidth.c"
 
-int mpdm_wcwidth(wchar_t c) { return(mk_wcwidth(c)); }
+int mpdm_wcwidth(wchar_t c)
+{
+	return (mk_wcwidth(c));
+}
 
-#endif /* CONFOPT_WCWIDTH */
+#endif				/* CONFOPT_WCWIDTH */
 
 
 /**
@@ -789,32 +768,30 @@ int mpdm_wcwidth(wchar_t c) { return(mk_wcwidth(c)); }
  */
 mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 {
-	wchar_t * i = fmt->data;
-	wchar_t * o = NULL;
+	wchar_t *i = fmt->data;
+	wchar_t *o = NULL;
 	int l = 0, n = 0;
 	wchar_t c;
 
 	/* loop all characters */
-	while((c = *i++) != L'\0')
-	{
+	while ((c = *i++) != L'\0') {
 		int m = 0;
-		wchar_t * tptr = NULL;
-		wchar_t * wptr = NULL;
+		wchar_t *tptr = NULL;
+		wchar_t *wptr = NULL;
 
-		if(c == L'%')
-		{
+		if (c == L'%') {
 			/* format directive */
 			char t_fmt[128];
 			char tmp[1024];
 			mpdm_t v;
-			char * ptr = NULL;
+			char *ptr = NULL;
 
 			/* transfer the % */
 			t_fmt[m++] = '%';
 
 			/* transform the format to mbs */
-			while(*i != L'\0' && m < sizeof(t_fmt) - MB_CUR_MAX - 1 &&
-				wcschr(L"-.0123456789", *i) != NULL)
+			while (*i != L'\0' && m < sizeof(t_fmt) - MB_CUR_MAX - 1 &&
+			       wcschr(L"-.0123456789", *i) != NULL)
 				m += wctomb(&t_fmt[m], *i++);
 
 			/* transfer the directive */
@@ -826,51 +803,50 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 			strcpy(tmp, t_fmt);
 
 			/* any values left? */
-			if(n < mpdm_size(args) && (v = mpdm_aget(args, n++)) != NULL)
-			{
-				switch(t_fmt[m - 1])
-				{
+			if (n < mpdm_size(args) && (v = mpdm_aget(args, n++)) != NULL) {
+				switch (t_fmt[m - 1]) {
 				case 'd':
 				case 'i':
 				case 'x':
 				case 'X':
 				case 'o':
 
-				/* integer value */
-				snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(v));
-				break;
+					/* integer value */
+					snprintf(tmp, sizeof(tmp) - 1,
+						t_fmt, mpdm_ival(v));
+					break;
 
 				case 'f':
 
-				/* float (real) value */
-				snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_rval(v));
-				break;
+					/* float (real) value */
+					snprintf(tmp, sizeof(tmp) - 1,
+						t_fmt, mpdm_rval(v));
+					break;
 
 				case 's':
 
-				/* string value */
-				ptr = mpdm_wcstombs(mpdm_string(v), NULL);
-				snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
-				free(ptr);
+					/* string value */
+					ptr = mpdm_wcstombs(mpdm_string(v), NULL);
+					snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
+					free(ptr);
 
-				break;
+					break;
 
 				case 'c':
 
-				/* char */
-				m = 1;
-				wptr = &c;
-				c = mpdm_ival(v);
-				break;
+					/* char */
+					m = 1;
+					wptr = &c;
+					c = mpdm_ival(v);
+					break;
 				}
 			}
 
 			/* transfer */
-			if(wptr == NULL)
+			if (wptr == NULL)
 				wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
 		}
-		else
-		{
+		else {
 			/* raw character */
 			m = 1;
 			wptr = &c;
@@ -880,16 +856,17 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 		o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
 
 		/* free the temporary buffer, if any */
-		if(tptr != NULL) free(tptr);
+		if (tptr != NULL)
+			free(tptr);
 	}
 
-	if(o == NULL)
-		return(NULL);
+	if (o == NULL)
+		return (NULL);
 
 	/* null-terminate */
 	o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
 
-	return(MPDM_ENS(o, l - 1));
+	return (MPDM_ENS(o, l - 1));
 }
 
 
@@ -904,20 +881,19 @@ mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
 mpdm_t mpdm_ulc(mpdm_t s, int u)
 {
 	mpdm_t r = NULL;
-	wchar_t * optr;
+	wchar_t *optr;
 	int i = mpdm_size(s);
 
-	if((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL)
-	{
-		wchar_t * iptr = mpdm_string(s);
+	if ((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL) {
+		wchar_t *iptr = mpdm_string(s);
 		int n;
 
-		for(n = 0;n < i;n++)
+		for (n = 0; n < i; n++)
 			optr[n] = u ? towupper(iptr[n]) : towlower(iptr[n]);
 
 		optr[n] = L'\0';
 		r = MPDM_ENS(optr, i);
 	}
 
-	return(r);
+	return (r);
 }

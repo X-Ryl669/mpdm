@@ -40,30 +40,28 @@
 	Code
 ********************/
 
-static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
+static wchar_t *dump_1(mpdm_t v, int l, wchar_t * ptr, int *size)
 {
 	int n;
-	wchar_t * wptr;
+	wchar_t *wptr;
 
 	/* indent */
-	for(n = 0;n < l;n++)
+	for (n = 0; n < l; n++)
 		ptr = mpdm_poke(ptr, size, L"  ", 2, sizeof(wchar_t));
 
-	if(v != NULL)
-	{
+	if (v != NULL) {
 		char tmp[256];
 		int s;
 
 		sprintf(tmp, "%d,%c%c%c%c:", v->ref,
-		v->flags & MPDM_FILE	? 'F' :
-			(v->flags & MPDM_STRING	? 'S' :
-				(v->flags & MPDM_EXEC ? 'X' : '-')),
-		v->flags & MPDM_HASH	? 'H' :
+			v->flags & MPDM_FILE ? 'F' :
+			(v->flags & MPDM_STRING ? 'S' :
+			 (v->flags & MPDM_EXEC ? 'X' : '-')),
+			v->flags & MPDM_HASH ? 'H' :
 			(v->flags & MPDM_MULTIPLE ? 'M' : '-'),
-		v->flags & MPDM_FREE ? 'A' : '-',
-		v->flags & MPDM_IVAL ? 'I' :
-			(v->flags & MPDM_RVAL ? 'R' : '-')
-		);
+			v->flags & MPDM_FREE ? 'A' : '-',
+			v->flags & MPDM_IVAL ? 'I' : (v->flags & MPDM_RVAL ? 'R' : '-')
+		    );
 
 		wptr = mpdm_mbstowcs(tmp, &s, -1);
 		ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
@@ -71,8 +69,7 @@ static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
 
 		/* if it's a multiple value, add also the number
 		   of elements */
-		if(v->flags & MPDM_MULTIPLE)
-		{
+		if (v->flags & MPDM_MULTIPLE) {
 			sprintf(tmp, "[%d] ", mpdm_size(v));
 			wptr = mpdm_mbstowcs(tmp, &s, -1);
 			ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
@@ -85,34 +82,29 @@ static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
 	ptr = mpdm_poke(ptr, size, wptr, wcslen(wptr), sizeof(wchar_t));
 	ptr = mpdm_poke(ptr, size, L"\n", 1, sizeof(wchar_t));
 
-	if(v != NULL)
-	{
+	if (v != NULL) {
 		/* if it's a hash, iterate it using hkeys
 		   (and not assuming a hash is an array) */
-		if(v->flags & MPDM_HASH)
-		{
+		if (v->flags & MPDM_HASH) {
 			mpdm_t w;
 			mpdm_t t;
 
 			w = mpdm_keys(v);
 
-			for(n=0;n < mpdm_size(w);n++)
-			{
+			for (n = 0; n < mpdm_size(w); n++) {
 				t = mpdm_aget(w, n);
 
 				ptr = dump_1(t, l + 1, ptr, size);
 				ptr = dump_1(mpdm_hget(v, t), l + 2, ptr, size);
 			}
 		}
-		else
-		if(v->flags & MPDM_MULTIPLE)
-		{
-			for(n = 0;n < mpdm_size(v);n++)
+		else if (v->flags & MPDM_MULTIPLE) {
+			for (n = 0; n < mpdm_size(v); n++)
 				ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
 		}
 	}
 
-	return(ptr);
+	return (ptr);
 }
 
 
@@ -125,12 +117,12 @@ static wchar_t * dump_1(mpdm_t v, int l, wchar_t * ptr, int * size)
 mpdm_t mpdm_dumper(mpdm_t v)
 {
 	int size = 0;
-	wchar_t * ptr;
+	wchar_t *ptr;
 
 	ptr = dump_1(v, 0, NULL, &size);
 	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
 
-	return(MPDM_ENS(ptr, size));
+	return (MPDM_ENS(ptr, size));
 }
 
 
@@ -166,10 +158,8 @@ void mpdm_dump_unref(void)
 
 	printf("** Unreferenced values:\n");
 
-	while(count--)
-	{
-		if(v->ref == 0)
-		{
+	while (count--) {
+		if (v->ref == 0) {
 			mpdm_dump(v);
 			unref++;
 		}

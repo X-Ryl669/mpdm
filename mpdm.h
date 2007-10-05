@@ -35,25 +35,23 @@
 #define MPDM_EXEC	0x00040000	/* data is 'executable' */
 
 /* mpdm values */
-typedef struct mpdm_val * mpdm_t;
+typedef struct mpdm_val *mpdm_t;
 
 /* a value */
-struct mpdm_val
-{
-	int flags;	/* value flags */
-	int ref;	/* reference count */
-	int size;	/* data size */
-	void * data;	/* the real data */
-	int ival;	/* cached integer value */
-	double rval;	/* cache real value */
-	mpdm_t prev;	/* prev in chain */
-	mpdm_t next;	/* next in chain */
+struct mpdm_val {
+	int flags;		/* value flags */
+	int ref;		/* reference count */
+	int size;		/* data size */
+	void *data;		/* the real data */
+	int ival;		/* cached integer value */
+	double rval;		/* cache real value */
+	mpdm_t prev;		/* prev in chain */
+	mpdm_t next;		/* next in chain */
 };
 
 
 /* the main control structure */
-struct mpdm_control
-{
+struct mpdm_control {
 	mpdm_t root;		/* the root hash */
 	mpdm_t cur;		/* current value (circular list) */
 	mpdm_t del;		/* list of deleted values */
@@ -65,9 +63,9 @@ struct mpdm_control
 	int hash_buckets;	/* default hash buckets */
 };
 
-extern struct mpdm_control * mpdm;
+extern struct mpdm_control *mpdm;
 
-mpdm_t mpdm_new(int flags, void * data, int size);
+mpdm_t mpdm_new(int flags, void *data, int size);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 int mpdm_destroy(mpdm_t v);
@@ -97,34 +95,34 @@ mpdm_t mpdm_pop(mpdm_t a);
 mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size);
 int mpdm_seek(mpdm_t a, mpdm_t k, int step);
 int mpdm_seek_s(mpdm_t a, wchar_t * k, int step);
-int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos);
-int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int * pos);
+int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int *pos);
+int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int *pos);
 mpdm_t mpdm_sort(mpdm_t a, int step);
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 
 mpdm_t mpdm_split(mpdm_t s, mpdm_t a);
 mpdm_t mpdm_join(mpdm_t s, mpdm_t a);
 
-void * mpdm_poke(void * dst, int * dsize, void * org, int osize, int esize);
-wchar_t * mpdm_pokev(wchar_t * dst, int * dsize, mpdm_t v);
-wchar_t * mpdm_mbstowcs(char * str, int * s, int l);
-char * mpdm_wcstombs(wchar_t * str, int * s);
+void *mpdm_poke(void *dst, int *dsize, void *org, int osize, int esize);
+wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, mpdm_t v);
+wchar_t *mpdm_mbstowcs(char *str, int *s, int l);
+char *mpdm_wcstombs(wchar_t * str, int *s);
 mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy);
-mpdm_t mpdm_new_mbstowcs(int flags, char * str, int l);
+mpdm_t mpdm_new_mbstowcs(int flags, char *str, int l);
 mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 int mpdm_wcwidth(wchar_t c);
 mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args);
 mpdm_t mpdm_ulc(mpdm_t s, int u);
-wchar_t * mpdm_string(mpdm_t v);
+wchar_t *mpdm_string(mpdm_t v);
 mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del);
 mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2);
 int mpdm_cmp(mpdm_t v1, mpdm_t v2);
 int mpdm_ival(mpdm_t v);
 double mpdm_rval(mpdm_t v);
 
-mpdm_t mpdm_xnew(mpdm_t (* a1)(mpdm_t, mpdm_t), mpdm_t a2);
+mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2);
 
 int mpdm_hsize(mpdm_t h);
 mpdm_t mpdm_hget(mpdm_t h, mpdm_t k);

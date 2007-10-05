@@ -51,19 +51,20 @@ mpdm_t mpdm_new_a(int flags, int size)
 	mpdm_t v;
 
 	/* creates and expands */
-	if((v = mpdm_new(flags|MPDM_MULTIPLE, NULL, 0)) != NULL)
+	if ((v = mpdm_new(flags | MPDM_MULTIPLE, NULL, 0)) != NULL)
 		mpdm_expand(v, 0, size);
 
-	return(v);
+	return (v);
 }
 
 
 static int wrap_offset(mpdm_t a, int offset)
 /* manages negative offsets */
 {
-	if(offset < 0) offset = mpdm_size(a) + offset;
+	if (offset < 0)
+		offset = mpdm_size(a) + offset;
 
-	return(offset);
+	return (offset);
 }
 
 
@@ -77,10 +78,10 @@ mpdm_t mpdm_aclone(mpdm_t v)
 	w = mpdm_new_a(v->flags, v->size);
 
 	/* fills each element with duplicates of the original */
-	for(n=0;n < w->size;n++)
+	for (n = 0; n < w->size; n++)
 		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
-	return(w);
+	return (w);
 }
 
 
@@ -99,29 +100,30 @@ mpdm_t mpdm_aclone(mpdm_t v)
 mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 {
 	int n;
-	mpdm_t * p;
+	mpdm_t *p;
 
 	/* sanity checks */
-	if(num <= 0) return(a);
+	if (num <= 0)
+		return (a);
 
 	/* add size */
 	a->size += num;
 
 	/* expand, or fail */
-	if((p = (mpdm_t *) realloc(a->data, a->size * sizeof(mpdm_t))) == NULL)
-		return(NULL);
+	if ((p = (mpdm_t *) realloc(a->data, a->size * sizeof(mpdm_t))) == NULL)
+		return (NULL);
 
 	/* moves up from top of the array */
-	for(n = a->size - 1;n >= offset + num;n--)
+	for (n = a->size - 1; n >= offset + num; n--)
 		p[n] = p[n - num];
 
 	/* fills the new space with blanks */
-	for(;n >= offset;n--)
+	for (; n >= offset; n--)
 		p[n] = NULL;
 
 	a->data = p;
 
-	return(a);
+	return (a);
 }
 
 
@@ -138,33 +140,34 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
 {
 	int n;
-	mpdm_t * p;
+	mpdm_t *p;
 
 	/* sanity checks */
-	if(num <= 0) return(a);
+	if (num <= 0)
+		return (a);
 
 	/* don't try to delete beyond the limit */
-	if(offset + num > a->size)
+	if (offset + num > a->size)
 		num = a->size - offset;
 
 	p = (mpdm_t *) a->data;
 
 	/* unrefs the about-to-be-deleted elements */
-	for(n = offset;n < offset + num;n++)
+	for (n = offset; n < offset + num; n++)
 		mpdm_unref(p[n]);
 
 	/* array is now shorter */
 	a->size -= num;
 
 	/* moves down the elements */
-	for(n = offset;n < a->size;n++)
+	for (n = offset; n < a->size; n++)
 		p[n] = p[n + num];
 
 	/* finally shrinks the memory block */
-	if((a->data = realloc(p, a->size * sizeof(mpdm_t))) == NULL)
-		return(NULL);
+	if ((a->data = realloc(p, a->size * sizeof(mpdm_t))) == NULL)
+		return (NULL);
 
-	return(a);
+	return (a);
 }
 
 
@@ -181,26 +184,26 @@ mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 {
 	mpdm_t v;
-	mpdm_t * p;
+	mpdm_t *p;
 
 	offset = wrap_offset(a, offset);
 
 	/* boundary checks */
-	if(offset < 0)
-		return(NULL);
+	if (offset < 0)
+		return (NULL);
 
 	/* if the array is shorter than offset, expand to make room for it */
-	if(offset >= mpdm_size(a))
-		if(mpdm_expand(a, mpdm_size(a), offset - mpdm_size(a) + 1) == NULL)
-			return(NULL);
+	if (offset >= mpdm_size(a))
+		if (mpdm_expand(a, mpdm_size(a), offset - mpdm_size(a) + 1) == NULL)
+			return (NULL);
 
-	p = (mpdm_t *)a->data;
+	p = (mpdm_t *) a->data;
 
 	/* assigns and references */
 	v = mpdm_unref(p[offset]);
 	p[offset] = mpdm_ref(e);
 
-	return(v);
+	return (v);
 }
 
 
@@ -214,17 +217,17 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
  */
 mpdm_t mpdm_aget(mpdm_t a, int offset)
 {
-	mpdm_t * p;
+	mpdm_t *p;
 
 	offset = wrap_offset(a, offset);
 
 	/* boundary checks */
-	if(offset < 0 || offset >= mpdm_size(a))
-		return(NULL);
+	if (offset < 0 || offset >= mpdm_size(a))
+		return (NULL);
 
 	p = (mpdm_t *) a->data;
 
-	return(p[offset]);
+	return (p[offset]);
 }
 
 
@@ -244,10 +247,10 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
 	offset = wrap_offset(a, offset);
 
 	/* open room and set value */
-	if(mpdm_expand(a, offset, 1))
+	if (mpdm_expand(a, offset, 1))
 		mpdm_aset(a, e, offset);
 
-	return(e);
+	return (e);
 }
 
 
@@ -268,8 +271,8 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
 	mpdm_t v;
 
-	if(a == NULL || mpdm_size(a) == 0)
-		return(NULL);
+	if (a == NULL || mpdm_size(a) == 0)
+		return (NULL);
 
 	offset = wrap_offset(a, offset);
 
@@ -279,7 +282,7 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
 	/* shrinks the array */
 	mpdm_collapse(a, offset, 1);
 
-	return(v);
+	return (v);
 }
 
 
@@ -295,7 +298,7 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
  */
 mpdm_t mpdm_shift(mpdm_t a)
 {
-	return(mpdm_adel(a, 0));
+	return (mpdm_adel(a, 0));
 }
 
 
@@ -310,7 +313,7 @@ mpdm_t mpdm_shift(mpdm_t a)
 mpdm_t mpdm_push(mpdm_t a, mpdm_t e)
 {
 	/* inserts at the end */
-	return(mpdm_ins(a, e, mpdm_size(a)));
+	return (mpdm_ins(a, e, mpdm_size(a)));
 }
 
 
@@ -325,7 +328,7 @@ mpdm_t mpdm_push(mpdm_t a, mpdm_t e)
 mpdm_t mpdm_pop(mpdm_t a)
 {
 	/* deletes from the end */
-	return(mpdm_adel(a, -1));
+	return (mpdm_adel(a, -1));
 }
 
 
@@ -345,18 +348,18 @@ mpdm_t mpdm_pop(mpdm_t a)
  */
 mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 {
-	mpdm_t v=NULL;
+	mpdm_t v = NULL;
 
 	/* zero size is nonsense */
-	if(size == 0)
-		return(NULL);
+	if (size == 0)
+		return (NULL);
 
 	/* loop until a has the desired size */
-	while(mpdm_size(a) > size - 1)
+	while (mpdm_size(a) > size - 1)
 		v = mpdm_shift(a);
 
 	mpdm_push(a, e);
-	return(v);
+	return (v);
 }
 
 
@@ -376,17 +379,17 @@ int mpdm_seek(mpdm_t a, mpdm_t k, int step)
 	int n;
 
 	/* avoid stupid steps */
-	if(step <= 0) step = 1;
+	if (step <= 0)
+		step = 1;
 
-	for(n=0;n < mpdm_size(a);n += step)
-	{
+	for (n = 0; n < mpdm_size(a); n += step) {
 		mpdm_t v = mpdm_aget(a, n);
 
-		if(mpdm_cmp(v, k) == 0)
-			return(n);
+		if (mpdm_cmp(v, k) == 0)
+			return (n);
 	}
 
-	return(-1);
+	return (-1);
 }
 
 
@@ -403,7 +406,7 @@ int mpdm_seek(mpdm_t a, mpdm_t k, int step)
  */
 int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
 {
-	return(mpdm_seek(a, MPDM_LS(k), step));
+	return (mpdm_seek(a, MPDM_LS(k), step));
 }
 
 
@@ -424,36 +427,37 @@ int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos)
+int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int *pos)
 {
 	int b, t, n, c;
 
 	/* avoid stupid steps */
-	if(step <= 0) step = 1;
+	if (step <= 0)
+		step = 1;
 
-	b=0; t = (mpdm_size(a) - 1) / step;
+	b = 0;
+	t = (mpdm_size(a) - 1) / step;
 
-	while(t >= b)
-	{
+	while (t >= b) {
 		mpdm_t v;
 
 		n = (b + t) / 2;
-		if((v = mpdm_aget(a, n * step)) == NULL)
+		if ((v = mpdm_aget(a, n * step)) == NULL)
 			break;
 
 		c = mpdm_cmp(k, v);
 
-		if(c == 0)
-			return(n * step);
-		else
-		if(c < 0)
+		if (c == 0)
+			return (n * step);
+		else if (c < 0)
 			t = n - 1;
 		else
 			b = n + 1;
 	}
 
-	if(pos != NULL) *pos = b * step;
-	return(-1);
+	if (pos != NULL)
+		*pos = b * step;
+	return (-1);
 }
 
 
@@ -474,29 +478,28 @@ int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int * pos)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int * pos)
+int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int *pos)
 {
-	return(mpdm_bseek(a, MPDM_LS(k), step, pos));
+	return (mpdm_bseek(a, MPDM_LS(k), step, pos));
 }
 
 
-static int sort_cmp(const void * s1, const void * s2)
+static int sort_cmp(const void *s1, const void *s2)
 /* qsort help function */
 {
 	int ret = 0;
 
 	/* if callback is NULL, use basic value comparisons */
-	if(sort_cb == NULL)
-		ret = mpdm_cmp(*(mpdm_t *)s1, *(mpdm_t *)s2);
-	else
-	{
+	if (sort_cb == NULL)
+		ret = mpdm_cmp(*(mpdm_t *) s1, *(mpdm_t *) s2);
+	else {
 		/* executes the callback and converts to integer */
 		ret = mpdm_ival(mpdm_exec_2(sort_cb,
-			(mpdm_t) * ((mpdm_t *)s1),
-			(mpdm_t) * ((mpdm_t *)s2)));
+					    (mpdm_t) * ((mpdm_t *) s1),
+					    (mpdm_t) * ((mpdm_t *) s2)));
 	}
 
-	return(ret);
+	return (ret);
 }
 
 
@@ -512,7 +515,7 @@ static int sort_cmp(const void * s1, const void * s2)
  */
 mpdm_t mpdm_sort(mpdm_t a, int step)
 {
-	return(mpdm_sort_cb(a, step, NULL));
+	return (mpdm_sort_cb(a, step, NULL));
 }
 
 
@@ -533,7 +536,8 @@ mpdm_t mpdm_sort(mpdm_t a, int step)
  */
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 {
-	if(a == NULL) return(NULL);
+	if (a == NULL)
+		return (NULL);
 
 	/* creates a copy to be sorted */
 	a = mpdm_clone(a);
@@ -545,8 +549,7 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 	mpdm_ref(a);
 	mpdm_ref(sort_cb);
 
-	qsort(a->data, mpdm_size(a) / step,
-		sizeof(mpdm_t) * step, sort_cmp);
+	qsort(a->data, mpdm_size(a) / step, sizeof(mpdm_t) * step, sort_cmp);
 
 	/* unreferences */
 	mpdm_unref(sort_cb);
@@ -554,7 +557,7 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 
 	sort_cb = NULL;
 
-	return(a);
+	return (a);
 }
 
 
@@ -576,33 +579,33 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 mpdm_t mpdm_split(mpdm_t s, mpdm_t v)
 {
 	mpdm_t w;
-	wchar_t * ptr;
-	wchar_t * sptr;
+	wchar_t *ptr;
+	wchar_t *sptr;
 
 	/* nothing to split? */
-	if(v == NULL) return(NULL);
+	if (v == NULL)
+		return (NULL);
 
 	w = MPDM_A(0);
 
 	/* NULL separator? special case: split string in characters */
-	if(s == NULL)
-	{
-		for(ptr = mpdm_string(v);ptr && *ptr != '\0';ptr++)
+	if (s == NULL) {
+		for (ptr = mpdm_string(v); ptr && *ptr != '\0'; ptr++)
 			mpdm_push(w, MPDM_NS(ptr, 1));
 
-		return(w);
+		return (w);
 	}
 
 	/* travels the string finding separators and creating new values */
-	for(ptr = v->data;
-		*ptr != L'\0' && (sptr = wcsstr(ptr, s->data)) != NULL;
-		ptr = sptr + mpdm_size(s))
+	for (ptr = v->data;
+	     *ptr != L'\0' && (sptr = wcsstr(ptr, s->data)) != NULL;
+	     ptr = sptr + mpdm_size(s))
 		mpdm_push(w, MPDM_NS(ptr, sptr - ptr));
 
 	/* add last part */
 	mpdm_push(w, MPDM_S(ptr));
 
-	return(w);
+	return (w);
 }
 
 
@@ -618,14 +621,13 @@ mpdm_t mpdm_split(mpdm_t s, mpdm_t v)
 mpdm_t mpdm_join(mpdm_t s, mpdm_t a)
 {
 	int n;
-	wchar_t * ptr = NULL;
+	wchar_t *ptr = NULL;
 	int l = 0;
 
 	/* adds the first string */
 	ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
 
-	for(n = 1;n < mpdm_size(a);n++)
-	{
+	for (n = 1; n < mpdm_size(a); n++) {
 		/* add separator */
 		ptr = mpdm_pokev(ptr, &l, s);
 
@@ -633,9 +635,9 @@ mpdm_t mpdm_join(mpdm_t s, mpdm_t a)
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
 	}
 
-	if(ptr == NULL)
-		return(NULL);
+	if (ptr == NULL)
+		return (NULL);
 
 	ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
-	return(MPDM_ENS(ptr, l - 1));
+	return (MPDM_ENS(ptr, l - 1));
 }
