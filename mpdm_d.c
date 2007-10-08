@@ -105,7 +105,7 @@ static wchar_t *dump_1(mpdm_t v, int l, wchar_t * ptr, int *size)
 		}
 	}
 
-	return (ptr);
+	return ptr;
 }
 
 
@@ -123,7 +123,7 @@ mpdm_t mpdm_dumper(mpdm_t v)
 	ptr = dump_1(v, 0, NULL, &size);
 	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
 
-	return (MPDM_ENS(ptr, size));
+	return MPDM_ENS(ptr, size);
 }
 
 

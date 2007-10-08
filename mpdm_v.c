@@ -49,7 +49,7 @@ int mpdm_destroy(mpdm_t v)
 {
 	/* if still referenced, don't do it */
 	if (v->ref)
-		return (0);
+		return 0;
 
 	/* collapse multiple values */
 	if (v->flags & MPDM_MULTIPLE)
@@ -76,7 +76,7 @@ int mpdm_destroy(mpdm_t v)
 	v->next = mpdm->del;
 	mpdm->del = v;
 
-	return (1);
+	return 1;
 }
 
 
@@ -104,7 +104,7 @@ mpdm_t mpdm_new(int flags, void *data, int size)
 		mpdm->del = v->next;
 	else
 	if ((v = malloc(sizeof(struct mpdm_val))) == NULL)
-		return (NULL);
+		return NULL;
 
 	/* add to the circular list */
 	if (mpdm->cur == NULL)
@@ -130,7 +130,7 @@ mpdm_t mpdm_new(int flags, void *data, int size)
 	v->data = data;
 	v->size = size;
 
-	return (v);
+	return v;
 }
 
 
@@ -145,7 +145,7 @@ mpdm_t mpdm_ref(mpdm_t v)
 {
 	if (v != NULL)
 		v->ref++;
-	return (v);
+	return v;
 }
 
 
@@ -160,7 +160,7 @@ mpdm_t mpdm_unref(mpdm_t v)
 {
 	if (v != NULL)
 		v->ref--;
-	return (v);
+	return v;
 }
 
 
@@ -204,9 +204,9 @@ int mpdm_size(mpdm_t v)
 {
 	/* NULL values have no size */
 	if (v == NULL)
-		return (0);
+		return 0;
 
-	return (v->size);
+	return v->size;
 }
 
 
@@ -224,7 +224,7 @@ mpdm_t mpdm_clone(mpdm_t v)
 	if (MPDM_IS_ARRAY(v))
 		v = mpdm_aclone(v);
 
-	return (v);
+	return v;
 }
 
 
@@ -240,7 +240,7 @@ mpdm_t mpdm_root(void)
 	if (mpdm->root == NULL)
 		mpdm->root = mpdm_ref(MPDM_H(0));
 
-	return (mpdm->root);
+	return mpdm->root;
 }
 
 
@@ -295,7 +295,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 		mpdm_unref(c);
 	}
 
-	return (r);
+	return r;
 }
 
 
@@ -307,7 +307,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
 	mpdm_aset(a, a1, 0);
 	r = mpdm_exec(c, a);
 	mpdm_destroy(a);
-	return (r);
+	return r;
 }
 
 
@@ -320,7 +320,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 	mpdm_aset(a, a2, 1);
 	r = mpdm_exec(c, a);
 	mpdm_destroy(a);
-	return (r);
+	return r;
 }
 
 
@@ -334,7 +334,7 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 	mpdm_aset(a, a3, 2);
 	r = mpdm_exec(c, a);
 	mpdm_destroy(a);
-	return (r);
+	return r;
 }
 
 
@@ -348,7 +348,7 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2)
 	mpdm_aset(x, MPDM_X(a1), 0);
 	mpdm_aset(x, a2, 1);
 
-	return (x);
+	return x;
 }
 
 
@@ -388,7 +388,7 @@ static mpdm_t MPDM(mpdm_t args)
 	mpdm_hset_s(v, L"hash_buckets", MPDM_I(mpdm->hash_buckets));
 	mpdm_hset_s(v, L"unreferenced", MPDM_I(c));
 
-	return (v);
+	return v;
 }
 
 
@@ -404,7 +404,7 @@ int mpdm_startup(void)
 	if (mpdm == NULL) {
 		/* alloc space */
 		if ((mpdm = malloc(sizeof(struct mpdm_control))) == NULL)
-			return (-1);
+			return -1;
 
 		/* cleans it */
 		memset(mpdm, '\0', sizeof(struct mpdm_control));
@@ -423,7 +423,7 @@ int mpdm_startup(void)
 	}
 
 	/* everything went OK */
-	return (0);
+	return 0;
 }
 
 

@@ -63,7 +63,7 @@ int mpdm_sregex_count = 0;
 
 static wchar_t *regex_flags(mpdm_t r)
 {
-	return (wcsrchr((wchar_t *) r->data, *(wchar_t *) r->data));
+	return wcsrchr((wchar_t *) r->data, *(wchar_t *) r->data);
 }
 
 
@@ -93,7 +93,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 
 		regex = (char *) rmb->data;
 		if ((flags = strrchr(regex, *regex)) == NULL)
-			return (NULL);
+			return NULL;
 
 		if (strchr(flags, 'i') != NULL)
 			f |= REG_ICASE;
@@ -119,7 +119,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 		}
 	}
 
-	return (c);
+	return c;
 }
 
 
@@ -169,12 +169,12 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 			mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
 		}
 
-		return (w);
+		return w;
 	}
 
 	/* if the string to be tested is NULL, return NULL */
 	if (v == NULL)
-		return (NULL);
+		return NULL;
 
 	if (r->flags & MPDM_MULTIPLE) {
 		int n;
@@ -255,7 +255,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 		}
 	}
 
-	return (w);
+	return w;
 }
 
 
@@ -294,7 +294,7 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 		s = mpdm_strcat(v, MPDM_S(sptr));
 	}
 
-	return (s);
+	return s;
 }
 
 
@@ -335,11 +335,11 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 	if (r == NULL) {
 		/* return last count */
-		return (MPDM_I(mpdm_sregex_count));
+		return MPDM_I(mpdm_sregex_count);
 	}
 
 	if (v == NULL)
-		return (NULL);
+		return NULL;
 
 	/* compile the regex */
 	if ((cr = mpdm_regcomp(r)) != NULL) {
@@ -357,7 +357,7 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 
 		/* convert to mbs */
 		if ((ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL)) == NULL)
-			return (NULL);
+			return NULL;
 
 		/* reset count */
 		mpdm_sregex_count = 0;
@@ -420,5 +420,5 @@ mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
 		free(ptr);
 	}
 
-	return (o);
+	return o;
 }

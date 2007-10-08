@@ -50,13 +50,13 @@ static int standard_hash_func(wchar_t * string, int mod)
 	for (c = 0; *string != L'\0'; string++)
 		c = (128 * c + (int) *string) % mod;
 
-	return (c);
+	return c;
 }
 
 
 static int null_hash_func(wchar_t * string, int mod)
 {
-	return (*string % mod);
+	return *string % mod;
 }
 
 static int switch_hash_func(wchar_t * string, int mod)
@@ -70,7 +70,7 @@ static int switch_hash_func(wchar_t * string, int mod)
 		mpdm_hash_func = standard_hash_func;
 
 	/* and fall back to it */
-	return (mpdm_hash_func(string, mod));
+	return mpdm_hash_func(string, mod);
 }
 
 #define HASH_BUCKET(h, k) (mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
@@ -94,7 +94,7 @@ int mpdm_hsize(mpdm_t h)
 		ret += mpdm_size(b);
 	}
 
-	return (ret / 2);
+	return ret / 2;
 }
 
 
@@ -122,7 +122,7 @@ mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
 		}
 	}
 
-	return (v);
+	return v;
 }
 
 
@@ -137,7 +137,7 @@ mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
  */
 mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
 {
-	return (mpdm_hget(h, MPDM_LS(k)));
+	return mpdm_hget(h, MPDM_LS(k));
 }
 
 
@@ -164,7 +164,7 @@ int mpdm_exists(mpdm_t h, mpdm_t k)
 		}
 	}
 
-	return (ret);
+	return ret;
 }
 
 
@@ -215,7 +215,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 		mpdm_aset(b, k, n);
 	}
 
-	return (mpdm_aset(b, v, n + 1));
+	return mpdm_aset(b, v, n + 1);
 }
 
 
@@ -232,7 +232,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  */
 mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
 {
-	return (mpdm_hset(h, MPDM_LS(k), v));
+	return mpdm_hset(h, MPDM_LS(k), v);
 }
 
 
@@ -263,7 +263,7 @@ mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k)
 		}
 	}
 
-	return (v);
+	return v;
 }
 
 
@@ -292,7 +292,7 @@ mpdm_t mpdm_keys(mpdm_t h)
 		}
 	}
 
-	return (a);
+	return a;
 }
 
 
@@ -340,17 +340,17 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 		}
 	}
 
-	return (r);
+	return r;
 }
 
 
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k)
 {
-	return (mpdm_sym(r, k, NULL, 0));
+	return mpdm_sym(r, k, NULL, 0);
 }
 
 
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v)
 {
-	return (mpdm_sym(r, k, v, 1));
+	return mpdm_sym(r, k, v, 1);
 }
