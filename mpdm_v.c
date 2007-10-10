@@ -44,13 +44,9 @@ struct mpdm_control *mpdm = NULL;
 	Code
 ********************/
 
-int mpdm_destroy(mpdm_t v)
-/* destroys a value */
+static void cleanup_value(mpdm_t v)
+/* cleans a value */
 {
-	/* if still referenced, don't do it */
-	if (v->ref)
-		return 0;
-
 	/* collapse multiple values */
 	if (v->flags & MPDM_MULTIPLE)
 		mpdm_collapse(v, 0, v->size);
@@ -60,6 +56,15 @@ int mpdm_destroy(mpdm_t v)
 		mpdm->memory_usage -= v->size;
 		free(v->data);
 	}
+}
+
+
+int mpdm_destroy(mpdm_t v)
+/* destroys a value */
+{
+	/* if still referenced, don't do it */
+	if (v->ref)
+		return 0;
 
 	/* dequeue */
 	v->next->prev = v->prev;
@@ -72,9 +77,11 @@ int mpdm_destroy(mpdm_t v)
 	/* account one value less */
 	mpdm->count--;
 
-	/* finally free */
+	/* add to the deleted values queue */
 	v->next = mpdm->del;
 	mpdm->del = v;
+
+	cleanup_value(v);
 
 	return 1;
 }
