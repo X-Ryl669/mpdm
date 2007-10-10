@@ -48,9 +48,9 @@ static int standard_hash_func(wchar_t * string, int mod)
 	int c;
 
 	for (c = 0; *string != L'\0'; string++)
-		c = (128 * c + (int) *string) % mod;
+		c ^= (int) *string;
 
-	return c;
+	return c % mod;
 }
 
 
