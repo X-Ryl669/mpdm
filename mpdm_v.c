@@ -185,8 +185,12 @@ mpdm_t mpdm_unref(mpdm_t v)
 void mpdm_sweep(int count)
 {
 	/* if count is zero, sweep 'some' values */
-	if (count == 0)
-		count = mpdm->default_sweep;
+	if (count == 0) {
+		if (mpdm->default_sweep < 0)
+			count = mpdm->count / -mpdm->default_sweep;
+		else
+			count = mpdm->default_sweep;
+	}
 
 	/* if count is -1, sweep all */
 	if (count == -1)
