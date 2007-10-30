@@ -33,6 +33,11 @@ Pending Enhancements
    thread, when nothing else is happening.
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
+ * 1105: Try another approach: store in the circular queue only the
+   unreferenced values; the others will be completely unqueued. This way,
+   values to be swept are immediately found. On the other side, mpdm_ref()
+   and mpdm_unref() will be much expensive, as they will en/dequeue values
+   depending of v->ref 0 or 1.
 
 Closed
 ------
