@@ -1,6 +1,16 @@
 MPDM Release Notes
 ==================
 
+1.0.3
+-----
+
+ * The hashing function has changed to a less accurate but faster one.
+ * There is a new, adaptive way of sweeping: if default_sweep if set
+   to a negative value (different from -1), it's used as a divisor
+   of the total count of values; this will be the number of values
+   that will be swept on each call to mpdm_sweep(0). This way, the
+   number of swept values depend on the total count.
+
 1.0.2
 -----
 
