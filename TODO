@@ -16,6 +16,8 @@ Open Bugs
    workaround to use it whenever "WCHAR_T" fails.
  * 1103: mpdm_home_dir() calls strcat() insecurely.
  * 1104: mpdm_app_dir() calls strcat() insecurely.
+ * 1106: Implement a function to get the file handle of an MPDM_FILE type.
+ * 1107: Implement functions to set the ival and rval of a value.
 
 Pending Enhancements
 --------------------
