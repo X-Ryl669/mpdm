@@ -422,7 +422,7 @@ int mpdm_startup(void)
 
 		/* sets the defaults */
 		mpdm->low_threshold = 16;
-		mpdm->default_sweep = 16;
+		mpdm->default_sweep = -50000;
 		mpdm->hash_buckets = 31;
 
 		/* sets the locale */
