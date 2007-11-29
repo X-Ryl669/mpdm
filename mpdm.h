@@ -155,6 +155,7 @@ mpdm_t mpdm_getchar(mpdm_t fd);
 mpdm_t mpdm_putchar(mpdm_t fd, mpdm_t c);
 int mpdm_fseek(mpdm_t fd, long offset, int whence);
 long mpdm_ftell(mpdm_t fd);
+FILE * mpdm_get_filehandle(mpdm_t fd);
 int mpdm_encoding(mpdm_t charset);
 int mpdm_unlink(mpdm_t filename);
 mpdm_t mpdm_stat(mpdm_t filename);

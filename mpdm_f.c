@@ -717,6 +717,19 @@ long mpdm_ftell(mpdm_t fd)
 }
 
 
+FILE * mpdm_get_filehandle(mpdm_t fd)
+{
+	FILE * f = NULL;
+
+	if (fd->flags & MPDM_FILE) {
+		struct mpdm_file *fs = fd->data;
+		f = fs->in;
+	}
+
+	return f;
+}
+
+
 /*
 mpdm_t mpdm_bread(mpdm_t fd, int size)
 {

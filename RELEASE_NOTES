@@ -11,6 +11,7 @@ MPDM Release Notes
    that will be swept on each call to mpdm_sweep(0). This way, the
    number of swept values depend on the total count.
  * New functions mpdm_set_ival() and mpdm_set_rval().
+ * New function mpdm_get_filehandle().
 
 1.0.2
 -----
