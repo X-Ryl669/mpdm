@@ -275,26 +275,6 @@ mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 }
 
 
-mpdm_t mpdm_set_ival(mpdm_t v, int ival)
-/* sets an integer value to a value */
-{
-	v->flags |= MPDM_IVAL;
-	v->ival = ival;
-
-	return v;
-}
-
-
-mpdm_t mpdm_set_rval(mpdm_t v, double rval)
-/* sets a real value to a value */
-{
-	v->flags |= MPDM_RVAL;
-	v->rval = rval;
-
-	return v;
-}
-
-
 mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
