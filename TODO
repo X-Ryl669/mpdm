@@ -17,7 +17,6 @@ Open Bugs
  * 1103: mpdm_home_dir() calls strcat() insecurely.
  * 1104: mpdm_app_dir() calls strcat() insecurely.
  * 1106: Implement a function to get the file handle of an MPDM_FILE type.
- * 1107: Implement functions to set the ival and rval of a value.
 
 Pending Enhancements
 --------------------
@@ -227,5 +226,7 @@ Closed
    are *the same* (Closed by 1102; Fri, 28 Sep 2007 13:01:55 +0200).
  * 1102: Optimize mpdm_cmp() when comparing the same values
    (Fri, 28 Sep 2007 13:10:44 +0200).
+ * 1107: Implement functions to set the ival and rval of a value
+   (Thu, 29 Nov 2007 09:07:33 +0100).
 
 Email bugs to angel@triptico.com

@@ -275,6 +275,26 @@ mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
 }
 
 
+mpdm_t mpdm_set_ival(mpdm_t v, int ival)
+/* sets an integer value to a value */
+{
+	v->flags |= MPDM_IVAL;
+	v->ival = ival;
+
+	return v;
+}
+
+
+mpdm_t mpdm_set_rval(mpdm_t v, double rval)
+/* sets a real value to a value */
+{
+	v->flags |= MPDM_RVAL;
+	v->rval = rval;
+
+	return v;
+}
+
+
 mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
@@ -285,10 +305,8 @@ mpdm_t mpdm_new_i(int ival)
 	snprintf(tmp, sizeof(tmp), "%d", ival);
 
 	v = MPDM_MBS(tmp);
-	v->flags |= MPDM_IVAL;
-	v->ival = ival;
 
-	return v;
+	return mpdm_set_ival(v, ival);
 }
 
 
@@ -315,10 +333,8 @@ mpdm_t mpdm_new_r(double rval)
 	}
 
 	v = MPDM_MBS(tmp);
-	v->flags |= MPDM_RVAL;
-	v->rval = rval;
 
-	return v;
+	return mpdm_set_rval(v, rval);
 }
 
 
@@ -585,8 +601,7 @@ int mpdm_ival(mpdm_t v)
 			sscanf(tmp, fmt, &i);
 		}
 
-		v->ival = i;
-		v->flags |= MPDM_IVAL;
+		mpdm_set_ival(v, i);
 	}
 
 	return v->ival;
@@ -641,8 +656,7 @@ double mpdm_rval(mpdm_t v)
 			}
 		}
 
-		v->rval = r;
-		v->flags |= MPDM_RVAL;
+		mpdm_set_rval(v, r);
 	}
 
 	return v->rval;

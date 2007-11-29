@@ -121,6 +121,8 @@ mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2);
 int mpdm_cmp(mpdm_t v1, mpdm_t v2);
 int mpdm_ival(mpdm_t v);
 double mpdm_rval(mpdm_t v);
+mpdm_t mpdm_set_ival(mpdm_t v, int ival);
+mpdm_t mpdm_set_rval(mpdm_t v, double rval);
 
 mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2);
 
