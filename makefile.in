@@ -30,11 +30,10 @@ $(LIB): $(OBJS)
 stress: stress.c $(LIB)
 	$(CC) $(CFLAGS) `cat config.ldflags` stress.c -L. -lmpdm -o $@
 
-doc/index.html: doc/index.txt
-	-grutatxt -i $< -o $@
+.SUFFIXES: .txt .html
 
-doc/mpdm_overview.html: doc/mpdm_overview.txt
-	-grutatxt -i $< -o $@
+.txt.html:
+	grutatxt -i $< -o $@
 
 doc/mpdm_api.html: mpdm_*.c
 	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
