@@ -373,7 +373,7 @@ fi
 # test for Grutatxt
 echo -n "Testing if Grutatxt is installed... "
 
-if which fgrutatxt > /dev/null ; then
+if which grutatxt > /dev/null ; then
 	echo "OK"
 	echo "GRUTATXT=grutatxt" >> makefile.opts
 else
