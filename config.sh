@@ -370,6 +370,20 @@ else
 	fi
 fi
 
+# test for Grutatxt
+echo -n "Testing if Grutatxt is installed... "
+
+if which fgrutatxt > /dev/null ; then
+	echo "OK"
+	echo "GRUTATXT=grutatxt" >> makefile.opts
+else
+	echo "No"
+	echo
+	echo "Grutatxt not found; some documentation will not be generated."
+	echo "You can take it from http://www.triptico.com/software/grutatxt.html"
+	echo "GRUTATXT=(echo '<html><body><pre>' ; cat ; echo '</pre></body></html>')" >> makefile.opts
+fi
+
 if [ "$WITH_NULL_HASH" = "1" ] ; then
 	echo "Selecting NULL hash function"
 

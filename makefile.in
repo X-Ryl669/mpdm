@@ -33,7 +33,7 @@ stress: stress.c $(LIB)
 .SUFFIXES: .txt .html
 
 .txt.html:
-	grutatxt -i $< -o $@
+	$(GRUTATXT) < $< > $@
 
 doc/mpdm_api.html: mpdm_*.c
 	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
