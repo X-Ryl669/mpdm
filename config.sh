@@ -396,7 +396,7 @@ else
 	echo
 	echo "mp_doccer not found; some documentation will not be generated."
 	echo "You can take it from http://www.triptico.com/software/mp_doccer.html"
-	echo "MP_DOCCER=echo" >> makefile.opts
+	echo "MP_DOCCER=echo > \$@" >> makefile.opts
 fi
 
 if [ "$WITH_NULL_HASH" = "1" ] ; then
