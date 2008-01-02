@@ -384,6 +384,21 @@ else
 	echo "GRUTATXT=(echo '<html><body><pre>' ; cat ; echo '</pre></body></html>')" >> makefile.opts
 fi
 
+# test for mp_doccer
+echo -n "Testing if mp_doccer is installed... "
+MP_DOCCER=$(which mp_doccer || which mp-doccer)
+
+if [ $? == 0 ] ; then
+	echo "OK"
+	echo "MP_DOCCER=${MP_DOCCER}" >> makefile.opts
+else
+	echo "No"
+	echo
+	echo "mp_doccer not found; some documentation will not be generated."
+	echo "You can take it from http://www.triptico.com/software/mp_doccer.html"
+	echo "MP_DOCCER=echo" >> makefile.opts
+fi
+
 if [ "$WITH_NULL_HASH" = "1" ] ; then
 	echo "Selecting NULL hash function"
 

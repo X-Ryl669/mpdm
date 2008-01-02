@@ -36,7 +36,7 @@ stress: stress.c $(LIB)
 	$(GRUTATXT) < $< > $@
 
 doc/mpdm_api.html: mpdm_*.c
-	-mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
+	$(MP_DOCCER) mpdm_*.c -o doc/mpdm_api -f html1 \
 	-t "MPDM C API ($(VERSION))" \
 	-a 'Angel Ortega - angel@triptico.com'
 
