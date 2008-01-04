@@ -51,6 +51,8 @@ clean:
 distclean: clean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
+realdistclean: distclean docsclean
+
 distcopy: distclean
 	mkdir -p $(DIST_TARGET) ; \
 	tar cf - * | (cd $(DIST_TARGET) ; tar xf -)
