@@ -6,7 +6,10 @@ LIB=$(TARGET)
 all: $(TARGET) docs
 
 PROJ=mpdm
-DOCS=doc/mpdm_api.html doc/mpdm_overview.html
+
+RAW_DOCS=RELEASE_NOTES
+GRUTATXT_DOCS=doc/mpdm_overview.html
+MP_DOCCER_DOCS=doc/mpdm_api.html
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
 	mpdm_r.o gnu_regex.o
@@ -33,10 +36,10 @@ stress: stress.c $(LIB)
 .SUFFIXES: .txt .html
 
 .txt.html:
-	$(GRUTATXT) < $< > $@
+	grutatxt < $< > $@
 
 doc/mpdm_api.html: mpdm_*.c
-	$(MP_DOCCER) mpdm_*.c -o doc/mpdm_api -f html1 \
+	mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
 	-t "MPDM C API ($(VERSION))" \
 	-a 'Angel Ortega - angel@triptico.com'
 

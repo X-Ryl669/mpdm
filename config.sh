@@ -373,15 +373,19 @@ fi
 # test for Grutatxt
 echo -n "Testing if Grutatxt is installed... "
 
+DOCS="\$(RAW_DOCS)"
+
 if which grutatxt > /dev/null ; then
 	echo "OK"
-	echo "GRUTATXT=grutatxt" >> makefile.opts
+	echo "GRUTATXT=yes" >> makefile.opts
+	DOCS="\$(GRUTATXT_DOCS)"
 else
 	echo "No"
 	echo
 	echo "Grutatxt not found; some documentation will not be generated."
 	echo "You can take it from http://www.triptico.com/software/grutatxt.html"
-	echo "GRUTATXT=(echo '<html><body><pre>' ; cat ; echo '</pre></body></html>')" >> makefile.opts
+	echo
+	echo "GRUTATXT=no" >> makefile.opts
 fi
 
 # test for mp_doccer
@@ -390,13 +394,14 @@ MP_DOCCER=$(which mp_doccer || which mp-doccer)
 
 if [ $? == 0 ] ; then
 	echo "OK"
-	echo "MP_DOCCER=${MP_DOCCER}" >> makefile.opts
+	echo "MP_DOCCER=yes" >> makefile.opts
+	DOCS="$DOCS \$(MP_DOCCER_DOCS)"
 else
 	echo "No"
 	echo
 	echo "mp_doccer not found; some documentation will not be generated."
 	echo "You can take it from http://www.triptico.com/software/mp_doccer.html"
-	echo "MP_DOCCER=echo > \$@" >> makefile.opts
+	echo "MP_DOCCER=no" >> makefile.opts
 fi
 
 if [ "$WITH_NULL_HASH" = "1" ] ; then
@@ -409,6 +414,7 @@ fi
 
 # final setup
 
+echo "DOCS=$DOCS" >> makefile.opts
 echo "VERSION=$VERSION" >> makefile.opts
 echo "PREFIX=\$(DESTDIR)$PREFIX" >> makefile.opts
 echo "DOCDIR=\$(DESTDIR)$DOCDIR" >> makefile.opts
