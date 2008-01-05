@@ -373,7 +373,7 @@ fi
 # test for Grutatxt
 echo -n "Testing if Grutatxt is installed... "
 
-DOCS="\$(RAW_DOCS)"
+DOCS="\$(ADD_DOCS)"
 
 if which grutatxt > /dev/null ; then
 	echo "OK"

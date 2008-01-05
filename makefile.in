@@ -7,7 +7,7 @@ all: $(TARGET) docs
 
 PROJ=mpdm
 
-RAW_DOCS=RELEASE_NOTES
+ADD_DOCS=RELEASE_NOTES
 GRUTATXT_DOCS=doc/mpdm_overview.html
 MP_DOCCER_DOCS=doc/mpdm_api.html
 
