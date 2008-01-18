@@ -113,7 +113,7 @@ mpdm_t mpdm_new_wcstombs(int flags, const wchar_t * str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 int mpdm_wcwidth(wchar_t c);
-mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args);
+mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args);
 mpdm_t mpdm_ulc(mpdm_t s, int u);
 wchar_t *mpdm_string(const mpdm_t v);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del);

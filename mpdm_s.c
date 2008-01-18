@@ -763,7 +763,7 @@ int mpdm_wcwidth(wchar_t c)
  * Formats a string using the sprintf() format taking the values from @args.
  * [Strings]
  */
-mpdm_t mpdm_sprintf(mpdm_t fmt, mpdm_t args)
+mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 {
 	wchar_t *i = fmt->data;
 	wchar_t *o = NULL;
