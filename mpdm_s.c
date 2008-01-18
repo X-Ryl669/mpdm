@@ -330,7 +330,7 @@ mpdm_t mpdm_new_r(double rval)
  * can be a pointer to a static buffer.
  * [Strings]
  */
-wchar_t *mpdm_string(mpdm_t v)
+wchar_t *mpdm_string(const mpdm_t v)
 {
 	static wchar_t wtmp[32];
 	char tmp[32];
