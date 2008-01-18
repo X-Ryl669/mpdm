@@ -156,7 +156,7 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 }
 
 
-char *mpdm_wcstombs(wchar_t * str, int *s)
+char *mpdm_wcstombs(const wchar_t * str, int *s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
