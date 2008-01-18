@@ -383,7 +383,7 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2)
 }
 
 
-static mpdm_t MPDM(mpdm_t args)
+static mpdm_t MPDM(const mpdm_t args)
 /* accesor / mutator for MPDM internal data */
 {
 	mpdm_t v = mpdm_aget(args, 0);
