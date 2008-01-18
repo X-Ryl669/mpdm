@@ -501,7 +501,7 @@ wchar_t *mpdm_read_mbs(FILE * f, int *s)
 }
 
 
-int mpdm_write_wcs(FILE * f, wchar_t * str)
+int mpdm_write_wcs(FILE * f, const wchar_t * str)
 /* writes a wide string to a stream */
 {
 	struct mpdm_file fs;
@@ -541,18 +541,20 @@ mpdm_t mpdm_new_f(FILE * f)
  * otherwise.
  * [File Management]
  */
-mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
+mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 {
 	FILE *f;
+	mpdm_t fn;
+	mpdm_t m;
 
 	if (filename == NULL || mode == NULL)
 		return NULL;
 
 	/* convert to mbs,s */
-	filename = MPDM_2MBS(filename->data);
-	mode = MPDM_2MBS(mode->data);
+	fn = MPDM_2MBS(filename->data);
+	m = MPDM_2MBS(mode->data);
 
-	if ((f = fopen((char *) filename->data, (char *) mode->data)) == NULL)
+	if ((f = fopen((char *) fn->data, (char *) m->data)) == NULL)
 		store_syserr();
 	else {
 #if defined(CONFOPT_SYS_STAT_H) && defined(S_ISDIR) && defined(EISDIR)
@@ -606,7 +608,7 @@ mpdm_t mpdm_close(mpdm_t fd)
  * [File Management]
  * [Character Set Conversion]
  */
-mpdm_t mpdm_read(mpdm_t fd)
+mpdm_t mpdm_read(const mpdm_t fd)
 {
 	mpdm_t v = NULL;
 	wchar_t *ptr;
@@ -637,11 +639,11 @@ mpdm_t mpdm_read(mpdm_t fd)
 }
 
 
-mpdm_t mpdm_getchar(mpdm_t fd)
+mpdm_t mpdm_getchar(const mpdm_t fd)
 {
 	int c;
 	wchar_t tmp[2];
-	struct mpdm_file *fs = fd->data;
+	const struct mpdm_file *fs = fd->data;
 
 	if (fs == NULL || (c = get_char(fs)) == EOF)
 		return NULL;
@@ -654,10 +656,10 @@ mpdm_t mpdm_getchar(mpdm_t fd)
 }
 
 
-mpdm_t mpdm_putchar(mpdm_t fd, mpdm_t c)
+mpdm_t mpdm_putchar(const mpdm_t fd, const mpdm_t c)
 {
-	struct mpdm_file *fs = fd->data;
-	wchar_t *ptr = mpdm_string(c);
+	const struct mpdm_file *fs = fd->data;
+	const wchar_t *ptr = mpdm_string(c);
 
 	if (fs == NULL || put_char(*ptr, fs) == -1)
 		return NULL;
@@ -675,9 +677,9 @@ mpdm_t mpdm_putchar(mpdm_t fd, mpdm_t c)
  * [File Management]
  * [Character Set Conversion]
  */
-int mpdm_write(mpdm_t fd, mpdm_t v)
+int mpdm_write(const mpdm_t fd, const mpdm_t v)
 {
-	struct mpdm_file *fs = fd->data;
+	const struct mpdm_file *fs = fd->data;
 	int ret = -1;
 
 	if (fs == NULL)
@@ -701,23 +703,23 @@ int mpdm_write(mpdm_t fd, mpdm_t v)
 }
 
 
-int mpdm_fseek(mpdm_t fd, long offset, int whence)
+int mpdm_fseek(const mpdm_t fd, long offset, int whence)
 {
-	struct mpdm_file *fs = fd->data;
+	const struct mpdm_file *fs = fd->data;
 
 	return fseek(fs->in, offset, whence);
 }
 
 
-long mpdm_ftell(mpdm_t fd)
+long mpdm_ftell(const mpdm_t fd)
 {
-	struct mpdm_file *fs = fd->data;
+	const struct mpdm_file *fs = fd->data;
 
 	return ftell(fs->in);
 }
 
 
-FILE * mpdm_get_filehandle(mpdm_t fd)
+FILE * mpdm_get_filehandle(const mpdm_t fd)
 {
 	FILE * f = NULL;
 
@@ -812,14 +814,15 @@ int mpdm_encoding(mpdm_t charset)
  * Deletes a file.
  * [File Management]
  */
-int mpdm_unlink(mpdm_t filename)
+int mpdm_unlink(const mpdm_t filename)
 {
 	int ret;
+	mpdm_t fn;
 
 	/* convert to mbs */
-	filename = MPDM_2MBS(filename->data);
+	fn = MPDM_2MBS(filename->data);
 
-	if ((ret = unlink((char *) filename->data)) == -1)
+	if ((ret = unlink((char *) fn->data)) == -1)
 		store_syserr();
 
 	return ret;
@@ -835,16 +838,17 @@ int mpdm_unlink(mpdm_t filename)
  * (man 2 stat).
  * [File Management]
  */
-mpdm_t mpdm_stat(mpdm_t filename)
+mpdm_t mpdm_stat(const mpdm_t filename)
 {
 	mpdm_t r = NULL;
 
 #ifdef CONFOPT_SYS_STAT_H
 	struct stat s;
+	mpdm_t fn;
 
-	filename = MPDM_2MBS(filename->data);
+	fn = MPDM_2MBS(filename->data);
 
-	if (stat((char *) filename->data, &s) != -1) {
+	if (stat((char *) fn->data, &s) != -1) {
 		r = MPDM_A(13);
 
 		mpdm_aset(r, MPDM_I(s.st_dev), 0);
@@ -878,12 +882,13 @@ mpdm_t mpdm_stat(mpdm_t filename)
  * Changes the permissions for a file.
  * [File Management]
  */
-int mpdm_chmod(mpdm_t filename, mpdm_t perms)
+int mpdm_chmod(const mpdm_t filename, mpdm_t perms)
 {
 	int r = -1;
 
-	filename = MPDM_2MBS(filename->data);
-	if ((r = chmod((char *) filename->data, mpdm_ival(perms))) == -1)
+	mpdm_t fn = MPDM_2MBS(filename->data);
+
+	if ((r = chmod((char *) fn->data, mpdm_ival(perms))) == -1)
 		store_syserr();
 
 	return r;
@@ -899,14 +904,15 @@ int mpdm_chmod(mpdm_t filename, mpdm_t perms)
  * Changes the owner and group id's for a file.
  * [File Management]
  */
-int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid)
+int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
 {
 	int r = -1;
 
 #ifdef CONFOPT_CHOWN
 
-	filename = MPDM_2MBS(filename->data);
-	if ((r = chown((char *) filename->data, mpdm_ival(uid), mpdm_ival(gid))) == -1)
+	mpdm_t fn = MPDM_2MBS(filename->data);
+
+	if ((r = chown((char *) fn->data, mpdm_ival(uid), mpdm_ival(gid))) == -1)
 		store_syserr();
 
 #endif				/* CONFOPT_CHOWN */
@@ -929,7 +935,7 @@ int mpdm_chown(mpdm_t filename, mpdm_t uid, mpdm_t gid)
  * array if no file matches), or NULL if globbing is unsupported.
  * [File Management]
  */
-mpdm_t mpdm_glob(mpdm_t spec)
+mpdm_t mpdm_glob(const mpdm_t spec)
 {
 	mpdm_t d = NULL;
 	mpdm_t f = NULL;
@@ -943,13 +949,15 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	mpdm_t w;
 	mpdm_t s = NULL;
 
+	mpdm_t sp;
+
 	/* convert to mbs */
 	if (spec != NULL)
-		spec = MPDM_2MBS(spec->data);
+		sp = MPDM_2MBS(spec->data);
 	else
-		spec = MPDM_2MBS(L"*.*");
+		sp = MPDM_2MBS(L"*.*");
 
-	ptr = (char *) spec->data;
+	ptr = (char *) sp->data;
 
 	/* convert MSDOS dir separators into Unix ones */
 	for (; *ptr != '\0'; ptr++) {
@@ -961,11 +969,11 @@ mpdm_t mpdm_glob(mpdm_t spec)
 	d = MPDM_A(0);
 	f = MPDM_A(0);
 
-	if ((h = FindFirstFile((char *) spec->data, &fd)) != INVALID_HANDLE_VALUE) {
+	if ((h = FindFirstFile((char *) sp->data, &fd)) != INVALID_HANDLE_VALUE) {
 		/* if spec includes a directory, store in s */
-		if ((ptr = strrchr((char *) spec->data, '/')) != NULL) {
+		if ((ptr = strrchr((char *) sp->data, '/')) != NULL) {
 			*(ptr + 1) = '\0';
-			s = MPDM_S(spec->data);
+			s = MPDM_S(sp->data);
 		}
 
 		do {
@@ -999,9 +1007,9 @@ mpdm_t mpdm_glob(mpdm_t spec)
 
 	/* convert to mbs */
 	if (spec != NULL) {
-		spec = MPDM_2MBS(spec->data);
+		mpdm_t sp = MPDM_2MBS(spec->data);
 
-		ptr = spec->data;
+		ptr = sp->data;
 		if (ptr == NULL || *ptr == '\0')
 			ptr = "*";
 	}
