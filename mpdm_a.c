@@ -404,7 +404,7 @@ int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
  * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
+int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step)
 {
 	return mpdm_seek(a, MPDM_LS(k), step);
 }
