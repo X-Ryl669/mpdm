@@ -173,7 +173,7 @@ extern int mpdm_sregex_count;
 mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset);
 mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset);
 
-mpdm_t mpdm_gettext(mpdm_t str);
+mpdm_t mpdm_gettext(const mpdm_t str);
 int mpdm_gettext_domain(mpdm_t dom, mpdm_t data);
 
 mpdm_t mpdm_home_dir(void);

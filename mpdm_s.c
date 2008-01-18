@@ -657,7 +657,7 @@ double mpdm_rval(mpdm_t v)
  * [Strings]
  * [Localization]
  */
-mpdm_t mpdm_gettext(mpdm_t str)
+mpdm_t mpdm_gettext(const mpdm_t str)
 {
 	mpdm_t v;
 	mpdm_t i18n = NULL;
