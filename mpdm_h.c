@@ -135,7 +135,7 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
  * NULL if the key does not exist.
  * [Hashes]
  */
-mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
+mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t * k)
 {
 	return mpdm_hget(h, MPDM_LS(k));
 }
