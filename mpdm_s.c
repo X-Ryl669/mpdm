@@ -765,7 +765,7 @@ int mpdm_wcwidth(wchar_t c)
  */
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 {
-	wchar_t *i = fmt->data;
+	const wchar_t *i = fmt->data;
 	wchar_t *o = NULL;
 	int l = 0, n = 0;
 	wchar_t c;
