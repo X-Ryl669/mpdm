@@ -206,7 +206,7 @@ char *mpdm_wcstombs(const wchar_t * str, int *s)
 }
 
 
-mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
+mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
 	wchar_t *ptr;
@@ -231,14 +231,14 @@ mpdm_t mpdm_new_wcs(int flags, wchar_t * str, int size, int cpy)
 			wcsncpy(ptr, str, size);
 			ptr[size] = L'\0';
 		}
-
-		str = ptr;
 	}
+	else
+		ptr = (wchar_t *) str;
 
 	/* it's a string */
 	flags |= MPDM_STRING;
 
-	return mpdm_new(flags, str, size);
+	return mpdm_new(flags, ptr, size);
 }
 
 
