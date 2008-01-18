@@ -37,12 +37,12 @@
 ********************/
 
 /* prototype for the one-time wrapper hash function */
-static int switch_hash_func(wchar_t *, int);
+static int switch_hash_func(const wchar_t *, int);
 
 /* pointer to the hashing function */
-static int (*mpdm_hash_func) (wchar_t *, int) = switch_hash_func;
+static int (*mpdm_hash_func) (const wchar_t *, int) = switch_hash_func;
 
-static int standard_hash_func(wchar_t * string, int mod)
+static int standard_hash_func(const wchar_t * string, int mod)
 /* computes a hashing function on string */
 {
 	int c;
@@ -54,12 +54,12 @@ static int standard_hash_func(wchar_t * string, int mod)
 }
 
 
-static int null_hash_func(wchar_t * string, int mod)
+static int null_hash_func(const wchar_t * string, int mod)
 {
 	return *string % mod;
 }
 
-static int switch_hash_func(wchar_t * string, int mod)
+static int switch_hash_func(const wchar_t * string, int mod)
 /* one-time wrapper for hash method autodetection */
 {
 	/* commute the real hashing function on
