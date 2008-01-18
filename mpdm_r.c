@@ -61,13 +61,13 @@ int mpdm_sregex_count = 0;
 	Code
 ********************/
 
-static wchar_t *regex_flags(mpdm_t r)
+static wchar_t *regex_flags(const mpdm_t r)
 {
 	return wcsrchr((wchar_t *) r->data, *(wchar_t *) r->data);
 }
 
 
-mpdm_t mpdm_regcomp(mpdm_t r)
+static mpdm_t mpdm_regcomp(mpdm_t r)
 {
 	mpdm_t c = NULL;
 	mpdm_t regex_cache = NULL;
@@ -154,7 +154,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
  * is returned.
  * [Regular Expressions]
  */
-mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
+mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 {
 	mpdm_t w = NULL;
 	mpdm_t t;
@@ -261,6 +261,7 @@ mpdm_t mpdm_regex(mpdm_t r, mpdm_t v, int offset)
 
 static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 /* substitutes all unescaped ampersands in s with t */
+/* FIXME: const */
 {
 	wchar_t *sptr = mpdm_string(s);
 	wchar_t *wptr;
@@ -328,7 +329,7 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
  * were done.
  * [Regular Expressions]
  */
-mpdm_t mpdm_sregex(mpdm_t r, mpdm_t v, mpdm_t s, int offset)
+mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 {
 	mpdm_t cr;
 	mpdm_t o = v;
