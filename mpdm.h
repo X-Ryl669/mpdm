@@ -42,7 +42,7 @@ struct mpdm_val {
 	int flags;		/* value flags */
 	int ref;		/* reference count */
 	int size;		/* data size */
-	void *data;		/* the real data */
+	const void *data;	/* the real data */
 	int ival;		/* cached integer value */
 	double rval;		/* cache real value */
 	mpdm_t prev;		/* prev in chain */
@@ -65,7 +65,7 @@ struct mpdm_control {
 
 extern struct mpdm_control *mpdm;
 
-mpdm_t mpdm_new(int flags, void *data, int size);
+mpdm_t mpdm_new(int flags, const void *data, int size);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 int mpdm_destroy(mpdm_t v);

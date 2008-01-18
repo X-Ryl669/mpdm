@@ -110,7 +110,7 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 	a->size += num;
 
 	/* expand, or fail */
-	if ((p = (mpdm_t *) realloc(a->data, a->size * sizeof(mpdm_t))) == NULL)
+	if ((p = (mpdm_t *) realloc((mpdm_t *)a->data, a->size * sizeof(mpdm_t))) == NULL)
 		return NULL;
 
 	/* moves up from top of the array */
@@ -552,7 +552,7 @@ mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
 	mpdm_ref(n);
 	mpdm_ref(sort_cb);
 
-	qsort(n->data, mpdm_size(n) / step, sizeof(mpdm_t) * step, sort_cmp);
+	qsort((mpdm_t *)n->data, mpdm_size(n) / step, sizeof(mpdm_t) * step, sort_cmp);
 
 	/* unreferences */
 	mpdm_unref(sort_cb);
@@ -582,7 +582,7 @@ mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
 mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
 {
 	mpdm_t w;
-	wchar_t *ptr;
+	const wchar_t *ptr;
 	wchar_t *sptr;
 
 	/* nothing to split? */

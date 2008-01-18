@@ -473,7 +473,7 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 		if ((n = MPDM_NS(NULL, ns)) == NULL)
 			return NULL;
 
-		ptr = n->data;
+		ptr = (wchar_t *)n->data;
 
 		/* copy the beginning */
 		if (offset > 0) {

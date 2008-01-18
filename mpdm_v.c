@@ -54,7 +54,7 @@ static void cleanup_value(mpdm_t v)
 	/* free data if needed */
 	if (v->data != NULL && v->flags & MPDM_FREE) {
 		mpdm->memory_usage -= v->size;
-		free(v->data);
+		free((void *)v->data);
 	}
 }
 
@@ -102,7 +102,7 @@ int mpdm_destroy(mpdm_t v)
  * creation macros instead.
  * [Value Creation]
  */
-mpdm_t mpdm_new(int flags, void *data, int size)
+mpdm_t mpdm_new(int flags, const void *data, int size)
 {
 	mpdm_t v = NULL;
 
