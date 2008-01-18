@@ -72,7 +72,7 @@ int mpdm_destroy(mpdm_t v);
 void mpdm_sweep(int count);
 
 int mpdm_size(mpdm_t v);
-mpdm_t mpdm_clone(mpdm_t v);
+mpdm_t mpdm_clone(const mpdm_t v);
 mpdm_t mpdm_root(void);
 
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args);

@@ -230,10 +230,10 @@ int mpdm_size(mpdm_t v)
  * the same unchanged value is returned.
  * [Value Management]
  */
-mpdm_t mpdm_clone(mpdm_t v)
+mpdm_t mpdm_clone(const mpdm_t v)
 {
 	if (MPDM_IS_ARRAY(v))
-		v = mpdm_aclone(v);
+		return mpdm_aclone(v);
 
 	return v;
 }
