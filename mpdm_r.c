@@ -259,15 +259,16 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 }
 
 
-static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
+static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 /* substitutes all unescaped ampersands in s with t */
-/* FIXME: const */
 {
-	wchar_t *sptr = mpdm_string(s);
+	const wchar_t *sptr = mpdm_string(s);
 	wchar_t *wptr;
+	mpdm_t r = s;
 
 	if ((wptr = wcschr(sptr, L'&')) != NULL) {
-		mpdm_t v = NULL;
+
+		r = NULL;
 
 		while (wptr != NULL) {
 			int n = wptr - sptr;
@@ -282,20 +283,20 @@ static mpdm_t expand_ampersands(mpdm_t s, mpdm_t t)
 			}
 
 			/* add the leading part */
-			v = mpdm_strcat(v, MPDM_NS(sptr, n));
+			r = mpdm_strcat(r, MPDM_NS(sptr, n));
 
 			/* now add the substitution string */
-			v = mpdm_strcat(v, t2);
+			r = mpdm_strcat(r, t2);
 
 			sptr = wptr + 1;
 			wptr = wcschr(sptr, L'&');
 		}
 
 		/* add the rest of the string */
-		s = mpdm_strcat(v, MPDM_S(sptr));
+		r = mpdm_strcat(r, MPDM_S(sptr));
 	}
 
-	return s;
+	return r;
 }
 
 
