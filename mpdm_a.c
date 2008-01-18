@@ -215,7 +215,7 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
  * Returns the element at @offset of the array @a.
  * [Arrays]
  */
-mpdm_t mpdm_aget(mpdm_t a, int offset)
+mpdm_t mpdm_aget(const mpdm_t a, int offset)
 {
 	mpdm_t *p;
 
