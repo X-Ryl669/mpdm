@@ -107,7 +107,7 @@ int mpdm_hsize(const mpdm_t h)
  * NULL if the key does not exist.
  * [Hashes]
  */
-mpdm_t mpdm_hget(mpdm_t h, mpdm_t k)
+mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
 {
 	mpdm_t b;
 	mpdm_t v = NULL;
