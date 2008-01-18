@@ -1126,9 +1126,9 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 }
 
 
-static int sysdep_pclose(mpdm_t v)
+static int sysdep_pclose(const mpdm_t v)
 {
-	struct mpdm_file *fs = v->data;
+	const struct mpdm_file *fs = v->data;
 
 	if (fs->hin != NULL)
 		CloseHandle(fs->hin);
@@ -1201,11 +1201,11 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 }
 
 
-static int sysdep_pclose(mpdm_t v)
+static int sysdep_pclose(const mpdm_t v)
 /* unix-style pipe close */
 {
 	int s;
-	struct mpdm_file *fs = v->data;
+	const struct mpdm_file *fs = v->data;
 
 	if (fs->in != NULL)
 		fclose(fs->in);
@@ -1232,7 +1232,7 @@ static int sysdep_pclose(mpdm_t v)
  * otherwise.
  * [File Management]
  */
-mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
+mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 {
 	mpdm_t v;
 	char *m;
@@ -1245,11 +1245,11 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 		return NULL;
 
 	/* convert to mbs,s */
-	prg = MPDM_2MBS(prg->data);
-	mode = MPDM_2MBS(mode->data);
+	mpdm_t pr = MPDM_2MBS(prg->data);
+	mpdm_t md = MPDM_2MBS(mode->data);
 
 	/* get the mode */
-	m = (char *) mode->data;
+	m = (char *) md->data;
 
 	/* set the mode */
 	if (m[0] == 'r')
@@ -1259,7 +1259,7 @@ mpdm_t mpdm_popen(mpdm_t prg, mpdm_t mode)
 	if (m[1] == '+')
 		rw = 0x03;	/* r+ or w+ */
 
-	if (!sysdep_popen(v, (char *) prg->data, rw)) {
+	if (!sysdep_popen(v, (char *) pr->data, rw)) {
 		destroy_mpdm_file(v);
 		v = NULL;
 	}
