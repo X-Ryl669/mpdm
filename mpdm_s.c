@@ -364,7 +364,7 @@ wchar_t *mpdm_string(const mpdm_t v)
  * comparison is done.
  * [Strings]
  */
-int mpdm_cmp(mpdm_t v1, mpdm_t v2)
+int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 {
 	int r;
 

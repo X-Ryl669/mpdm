@@ -118,7 +118,7 @@ mpdm_t mpdm_ulc(mpdm_t s, int u);
 wchar_t *mpdm_string(const mpdm_t v);
 mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del);
 mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2);
-int mpdm_cmp(mpdm_t v1, mpdm_t v2);
+int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 int mpdm_ival(mpdm_t v);
 double mpdm_rval(mpdm_t v);
 mpdm_t mpdm_set_ival(mpdm_t v, int ival);
