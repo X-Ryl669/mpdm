@@ -479,7 +479,7 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek_s(mpdm_t a, wchar_t * k, int step, int *pos)
+int mpdm_bseek_s(const mpdm_t a, const wchar_t * k, int step, int *pos)
 {
 	return mpdm_bseek(a, MPDM_LS(k), step, pos);
 }
