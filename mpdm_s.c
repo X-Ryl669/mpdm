@@ -518,7 +518,7 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat(mpdm_t s1, mpdm_t s2)
+mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
 {
 	wchar_t *ptr = NULL;
 	int s = 0;
