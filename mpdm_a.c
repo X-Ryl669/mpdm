@@ -374,7 +374,7 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
  * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_seek(mpdm_t a, mpdm_t k, int step)
+int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
 {
 	int n;
 
