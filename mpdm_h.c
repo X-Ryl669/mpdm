@@ -149,7 +149,7 @@ mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k)
  * Returns 1 if @k is defined in @h, or 0 othersize.
  * [Hashes]
  */
-int mpdm_exists(mpdm_t h, mpdm_t k)
+int mpdm_exists(const mpdm_t h, const mpdm_t k)
 {
 	mpdm_t b;
 	int n;
