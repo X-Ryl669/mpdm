@@ -258,7 +258,7 @@ mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l)
 }
 
 
-mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str)
+mpdm_t mpdm_new_wcstombs(int flags, const wchar_t * str)
 /* creates a new mbs value from a wbs */
 {
 	char *ptr;
