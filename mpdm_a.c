@@ -427,7 +427,7 @@ int mpdm_seek_s(mpdm_t a, wchar_t * k, int step)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek(mpdm_t a, mpdm_t k, int step, int *pos)
+int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 {
 	int b, t, n, c;
 
