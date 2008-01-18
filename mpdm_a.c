@@ -621,7 +621,7 @@ mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_join(mpdm_t s, mpdm_t a)
+mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
 {
 	int n;
 	wchar_t *ptr = NULL;
