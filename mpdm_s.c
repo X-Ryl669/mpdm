@@ -242,7 +242,7 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy)
 }
 
 
-mpdm_t mpdm_new_mbstowcs(int flags, char *str, int l)
+mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l)
 /* creates a new string value from an mbs */
 {
 	wchar_t *ptr;

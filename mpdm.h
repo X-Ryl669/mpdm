@@ -108,7 +108,7 @@ wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v);
 wchar_t *mpdm_mbstowcs(const char *str, int *s, int l);
 char *mpdm_wcstombs(const wchar_t * str, int *s);
 mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy);
-mpdm_t mpdm_new_mbstowcs(int flags, char *str, int l);
+mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l);
 mpdm_t mpdm_new_wcstombs(int flags, wchar_t * str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
