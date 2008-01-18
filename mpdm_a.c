@@ -579,7 +579,7 @@ mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_split(mpdm_t s, mpdm_t v)
+mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
 {
 	mpdm_t w;
 	wchar_t *ptr;
