@@ -81,7 +81,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2);
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3);
 
 mpdm_t mpdm_new_a(int flags, int size);
-mpdm_t mpdm_aclone(mpdm_t v);
+mpdm_t mpdm_aclone(const mpdm_t v);
 
 mpdm_t mpdm_expand(mpdm_t a, int offset, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int offset, int num);

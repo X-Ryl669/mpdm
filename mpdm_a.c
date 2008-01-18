@@ -58,7 +58,7 @@ mpdm_t mpdm_new_a(int flags, int size)
 }
 
 
-static int wrap_offset(mpdm_t a, int offset)
+static int wrap_offset(const mpdm_t a, int offset)
 /* manages negative offsets */
 {
 	if (offset < 0)
@@ -68,7 +68,7 @@ static int wrap_offset(mpdm_t a, int offset)
 }
 
 
-mpdm_t mpdm_aclone(mpdm_t v)
+mpdm_t mpdm_aclone(const mpdm_t v)
 /* clones a multiple value */
 {
 	mpdm_t w;
