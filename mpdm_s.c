@@ -47,7 +47,7 @@
 	Code
 ********************/
 
-void *mpdm_poke(void *dst, int *dsize, void *org, int osize, int esize)
+void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 /* pokes (adds) org into dst, which is a dynamic string, making it grow */
 {
 	if (org != NULL && osize) {
