@@ -427,7 +427,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  * if @del is 0).
  * [Strings]
  */
-mpdm_t mpdm_splice(mpdm_t v, mpdm_t i, int offset, int del)
+mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 {
 	mpdm_t w;
 	mpdm_t n = NULL;
