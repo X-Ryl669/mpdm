@@ -897,7 +897,7 @@ void test_encoding(void)
 	mpdm_t f;
 	mpdm_t v;
 	mpdm_t w;
-	wchar_t *ptr;
+	const wchar_t *ptr;
 
 	v = MPDM_MBS("?Espa?a!\n");
 

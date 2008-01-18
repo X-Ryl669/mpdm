@@ -464,7 +464,7 @@ static mpdm_t new_mpdm_file(void)
 static void destroy_mpdm_file(mpdm_t v)
 /* destroys and file value */
 {
-	struct mpdm_file *fs = v->data;
+	struct mpdm_file *fs = (struct mpdm_file *)v->data;
 
 	if (fs != NULL) {
 #ifdef CONFOPT_ICONV
@@ -523,7 +523,7 @@ mpdm_t mpdm_new_f(FILE * f)
 		return NULL;
 
 	if ((v = new_mpdm_file()) != NULL) {
-		struct mpdm_file *fs = v->data;
+		struct mpdm_file *fs = (struct mpdm_file *)v->data;
 		fs->in = fs->out = f;
 	}
 
@@ -584,7 +584,7 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
  */
 mpdm_t mpdm_close(mpdm_t fd)
 {
-	struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
 	if ((fd->flags & MPDM_FILE) && fs != NULL) {
 		if (fs->in != NULL)
@@ -613,7 +613,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 	mpdm_t v = NULL;
 	wchar_t *ptr;
 	int s;
-	struct mpdm_file *fs = fd->data;
+	const struct mpdm_file *fs = fd->data;
 
 	if (fs == NULL)
 		return NULL;
@@ -724,7 +724,7 @@ FILE * mpdm_get_filehandle(const mpdm_t fd)
 	FILE * f = NULL;
 
 	if (fd->flags & MPDM_FILE) {
-		struct mpdm_file *fs = fd->data;
+		const struct mpdm_file *fs = fd->data;
 		f = fs->in;
 	}
 
@@ -1003,7 +1003,7 @@ mpdm_t mpdm_glob(const mpdm_t spec)
 
 	/* glob.h support */
 	glob_t globbuf;
-	char *ptr;
+	const char *ptr;
 
 	/* convert to mbs */
 	if (spec != NULL) {
@@ -1147,7 +1147,7 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 /* unix-style pipe open */
 {
 	int pr[2], pw[2];
-	struct mpdm_file *fs = v->data;
+	struct mpdm_file *fs = (struct mpdm_file *)v->data;
 
 	/* init all */
 	pr[0] = pr[1] = pw[0] = pw[1] = -1;
