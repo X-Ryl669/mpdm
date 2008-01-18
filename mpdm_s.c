@@ -707,19 +707,22 @@ mpdm_t mpdm_gettext(const mpdm_t str)
  * [Strings]
  * [Localization]
  */
-int mpdm_gettext_domain(mpdm_t dom, mpdm_t data)
+int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 {
 	int ret = 0;
 
 #ifdef CONFOPT_GETTEXT
 
+	mpdm_t dm;
+	mpdm_t dt;
+
 	/* convert both to mbs,s */
-	dom = MPDM_2MBS(dom->data);
-	data = MPDM_2MBS(data->data);
+	dm = MPDM_2MBS(dom->data);
+	dt = MPDM_2MBS(data->data);
 
 	/* bind and set domain */
-	bindtextdomain((char *) dom->data, (char *) data->data);
-	textdomain((char *) dom->data);
+	bindtextdomain((char *) dm->data, (char *) dt->data);
+	textdomain((char *) dm->data);
 
 	mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
