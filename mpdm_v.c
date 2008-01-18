@@ -211,7 +211,7 @@ void mpdm_sweep(int count)
  * Returns the size of an element.
  * [Value Management]
  */
-int mpdm_size(mpdm_t v)
+int mpdm_size(const mpdm_t v)
 {
 	/* NULL values have no size */
 	if (v == NULL)
