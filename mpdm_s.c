@@ -65,7 +65,7 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 }
 
 
-wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, mpdm_t v)
+wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
 	if (v != NULL) {
