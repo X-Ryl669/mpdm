@@ -275,7 +275,7 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
  * [Hashes]
  * [Arrays]
  */
-mpdm_t mpdm_keys(mpdm_t h)
+mpdm_t mpdm_keys(const mpdm_t h)
 {
 	int n, m, i;
 	mpdm_t b;
