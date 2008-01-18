@@ -514,7 +514,7 @@ static int sort_cmp(const void *s1, const void *s2)
  * Returns the sorted array (the original one is left untouched).
  * [Arrays]
  */
-mpdm_t mpdm_sort(mpdm_t a, int step)
+mpdm_t mpdm_sort(const mpdm_t a, int step)
 {
 	return mpdm_sort_cb(a, step, NULL);
 }
@@ -535,30 +535,32 @@ mpdm_t mpdm_sort(mpdm_t a, int step)
  * Returns the sorted array (the original one is left untouched).
  * [Arrays]
  */
-mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
+mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
 {
+	mpdm_t n;
+
 	if (a == NULL)
 		return NULL;
 
 	/* creates a copy to be sorted */
-	a = mpdm_clone(a);
+	n = mpdm_clone(a);
 
 	sort_cb = cb;
 
 	/* references the array and the code, as the latter
 	   can include anything (including sweeping) */
-	mpdm_ref(a);
+	mpdm_ref(n);
 	mpdm_ref(sort_cb);
 
-	qsort(a->data, mpdm_size(a) / step, sizeof(mpdm_t) * step, sort_cmp);
+	qsort(n->data, mpdm_size(n) / step, sizeof(mpdm_t) * step, sort_cmp);
 
 	/* unreferences */
 	mpdm_unref(sort_cb);
-	mpdm_unref(a);
+	mpdm_unref(n);
 
 	sort_cb = NULL;
 
-	return a;
+	return n;
 }
 
 
