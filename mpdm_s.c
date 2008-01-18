@@ -78,7 +78,7 @@ wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v)
 }
 
 
-wchar_t *mpdm_mbstowcs(char *str, int *s, int l)
+wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
@@ -98,7 +98,7 @@ wchar_t *mpdm_mbstowcs(char *str, int *s, int l)
 		cstr[l] = '\0';
 	}
 	else
-		cstr = str;
+		cstr = (char *) str;
 
 	/* try first a direct conversion with mbstowcs */
 	if ((*s = mbstowcs(NULL, cstr, 0)) != -1) {
