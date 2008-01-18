@@ -230,7 +230,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  * previously undefined.
  * [Hashes]
  */
-mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
+mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t * k, mpdm_t v)
 {
 	return mpdm_hset(h, MPDM_LS(k), v);
 }
