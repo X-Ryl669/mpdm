@@ -245,7 +245,7 @@ mpdm_t mpdm_hset_s(mpdm_t h, wchar_t * k, mpdm_t v)
  * value, or NULL if the key was not defined.
  * [Hashes]
  */
-mpdm_t mpdm_hdel(mpdm_t h, mpdm_t k)
+mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
 {
 	mpdm_t v = NULL;
 	mpdm_t b;
