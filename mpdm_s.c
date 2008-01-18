@@ -69,7 +69,7 @@ wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
 	if (v != NULL) {
-		wchar_t *ptr = mpdm_string(v);
+		const wchar_t *ptr = mpdm_string(v);
 
 		dst = mpdm_poke(dst, dsize, ptr, wcslen(ptr), sizeof(wchar_t));
 	}
@@ -233,7 +233,7 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy)
 		}
 	}
 	else
-		ptr = (wchar_t *) str;
+		ptr = (wchar_t *)str;
 
 	/* it's a string */
 	flags |= MPDM_STRING;
