@@ -875,7 +875,7 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
  * Converts @s to uppercase (for @u == 1) or to lowercase (@u == 0).
  * [Strings]
  */
-mpdm_t mpdm_ulc(mpdm_t s, int u)
+mpdm_t mpdm_ulc(const mpdm_t s, int u)
 {
 	mpdm_t r = NULL;
 	wchar_t *optr;

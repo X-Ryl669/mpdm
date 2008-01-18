@@ -114,7 +114,7 @@ mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 int mpdm_wcwidth(wchar_t c);
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args);
-mpdm_t mpdm_ulc(mpdm_t s, int u);
+mpdm_t mpdm_ulc(const mpdm_t s, int u);
 wchar_t *mpdm_string(const mpdm_t v);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del);
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);
