@@ -126,7 +126,7 @@ mpdm_t mpdm_set_rval(mpdm_t v, double rval);
 
 mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2);
 
-int mpdm_hsize(mpdm_t h);
+int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget(mpdm_t h, mpdm_t k);
 mpdm_t mpdm_hget_s(mpdm_t h, wchar_t * k);
 int mpdm_exists(mpdm_t h, mpdm_t k);

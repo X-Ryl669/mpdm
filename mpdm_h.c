@@ -84,7 +84,7 @@ static int switch_hash_func(const wchar_t * string, int mod)
  * Returns the number of key-value pairs of a hash.
  * [Hashes]
  */
-int mpdm_hsize(mpdm_t h)
+int mpdm_hsize(const mpdm_t h)
 {
 	int n;
 	int ret = 0;
