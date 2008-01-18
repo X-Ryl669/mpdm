@@ -110,7 +110,7 @@ static void store_syserr(void)
 }
 
 
-static int get_char(struct mpdm_file *f)
+static int get_char(const struct mpdm_file *f)
 /* reads a character from a file structure */
 {
 	int c = EOF;
@@ -137,7 +137,7 @@ static int get_char(struct mpdm_file *f)
 }
 
 
-static int put_buf(char *ptr, int s, struct mpdm_file *f)
+static int put_buf(const char *ptr, int s, const struct mpdm_file *f)
 /* writes s bytes in the buffer in ptr to f */
 {
 #ifdef CONFOPT_WIN32
@@ -158,7 +158,7 @@ static int put_buf(char *ptr, int s, struct mpdm_file *f)
 }
 
 
-static int put_char(int c, struct mpdm_file *f)
+static int put_char(int c, const struct mpdm_file *f)
 /* writes a character in a file structure */
 {
 	char tmp = c;
@@ -170,7 +170,7 @@ static int put_char(int c, struct mpdm_file *f)
 }
 
 
-static wchar_t *read_mbs(struct mpdm_file *f, int *s)
+static wchar_t *read_mbs(const struct mpdm_file *f, int *s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
 	wchar_t *ptr = NULL;
@@ -216,7 +216,7 @@ static wchar_t *read_mbs(struct mpdm_file *f, int *s)
 }
 
 
-static int write_wcs(struct mpdm_file *f, wchar_t * str)
+static int write_wcs(const struct mpdm_file *f, const wchar_t * str)
 /* writes a wide string to an struct mpdm_file */
 {
 	int s;
@@ -232,7 +232,7 @@ static int write_wcs(struct mpdm_file *f, wchar_t * str)
 
 #ifdef CONFOPT_ICONV
 
-static wchar_t *read_iconv(struct mpdm_file *f, int *s)
+static wchar_t *read_iconv(const struct mpdm_file *f, int *s)
 /* reads a multibyte string transforming with iconv */
 {
 	char tmp[128];
@@ -289,7 +289,7 @@ static wchar_t *read_iconv(struct mpdm_file *f, int *s)
 }
 
 
-static int write_iconv(struct mpdm_file *f, wchar_t * str)
+static int write_iconv(const struct mpdm_file *f, const wchar_t * str)
 /* writes a wide string to a stream using iconv */
 {
 	char tmp[128];
@@ -336,7 +336,7 @@ static int write_iconv(struct mpdm_file *f, wchar_t * str)
 
 #define UTF8_BYTE() if((c = get_char(f)) == EOF) break
 
-static wchar_t *read_utf8(struct mpdm_file *f, int *s)
+static wchar_t *read_utf8(const struct mpdm_file *f, int *s)
 /* crappy, ad-hoc utf8 reader */
 {
 	wchar_t *ptr = NULL;
@@ -384,7 +384,7 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf8(struct mpdm_file *f, wchar_t * str)
+static int write_utf8(const struct mpdm_file *f, const wchar_t * str)
 /* crappy, ad-hoc utf8 writer */
 {
 	int cnt = 0;
