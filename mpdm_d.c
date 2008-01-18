@@ -40,7 +40,7 @@
 	Code
 ********************/
 
-static wchar_t *dump_1(mpdm_t v, int l, wchar_t * ptr, int *size)
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
 {
 	int n;
 	wchar_t *wptr;
@@ -115,7 +115,7 @@ static wchar_t *dump_1(mpdm_t v, int l, wchar_t * ptr, int *size)
  *
  * Returns a visual representation of a complex value.
  */
-mpdm_t mpdm_dumper(mpdm_t v)
+mpdm_t mpdm_dumper(const mpdm_t v)
 {
 	int size = 0;
 	wchar_t *ptr;
@@ -134,11 +134,13 @@ mpdm_t mpdm_dumper(mpdm_t v)
  * Dumps a value to stdin. The value can be complex. This function
  * is for debugging purposes only.
  */
-void mpdm_dump(mpdm_t v)
+void mpdm_dump(const mpdm_t v)
 {
-	v = mpdm_dumper(v);
-	mpdm_write_wcs(stdout, mpdm_string(v));
-	mpdm_destroy(v);
+	mpdm_t w;
+
+	w = mpdm_dumper(v);
+	mpdm_write_wcs(stdout, mpdm_string(w));
+	mpdm_destroy(w);
 }
 
 
