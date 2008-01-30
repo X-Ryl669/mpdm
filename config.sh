@@ -378,7 +378,7 @@ DOCS="\$(ADD_DOCS)"
 if which grutatxt > /dev/null ; then
 	echo "OK"
 	echo "GRUTATXT=yes" >> makefile.opts
-	DOCS="\$(GRUTATXT_DOCS)"
+	DOCS="$DOCS \$(GRUTATXT_DOCS)"
 else
 	echo "No"
 	echo
