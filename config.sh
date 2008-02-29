@@ -24,6 +24,11 @@ while [ $# -gt 0 ] ; do
 	--without-wcwidth)	WITHOUT_WCWIDTH=1 ;;
 	--help)			CONFIG_HELP=1 ;;
 
+	--mingw32)		CC=i586-mingw32msvc-cc
+				WINDRES=i586-mingw32msvc-windres
+				AR=i586-mingw32msvc-ar
+				;;
+
 	--prefix)		PREFIX=$2 ; shift ;;
 	--prefix=*)		PREFIX=`echo $1 | sed -e 's/--prefix=//'` ;;
 
@@ -47,6 +52,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
 	echo "--without-gettext     Disable gettext usage."
 	echo "--without-iconv       Disable iconv usage."
 	echo "--without-wcwidth     Disable system wcwidth() (use Marcus Kuhn's)."
+	echo "--mingw32             Build using the mingw32 compiler."
 
 	echo
 	echo "Environment variables:"
