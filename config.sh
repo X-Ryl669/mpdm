@@ -124,12 +124,11 @@ else
 	echo "int STDCALL WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
 	echo "{ return 0; }" >> .tmp.c
 
-	TMP_LDFLAGS="-mwindows -lcomctl32"
+	TMP_LDFLAGS=""
 	$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
 
 	if [ $? = 0 ] ; then
 		echo "#define CONFOPT_WIN32 1" >> config.h
-		echo "$TMP_LDFLAGS " >> config.ldflags
 		echo "OK"
 		WITHOUT_UNIX_GLOB=1
 	else
