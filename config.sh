@@ -386,9 +386,9 @@ if which grutatxt > /dev/null ; then
 	DOCS="$DOCS \$(GRUTATXT_DOCS)"
 else
 	echo "No"
-	echo
-	echo "Grutatxt not found; some documentation will not be generated."
-	echo "You can take it from http://www.triptico.com/software/grutatxt.html"
+#	echo
+#	echo "Grutatxt not found; some documentation will not be generated."
+#	echo "You can take it from http://www.triptico.com/software/grutatxt.html"
 	echo
 	echo "GRUTATXT=no" >> makefile.opts
 fi
@@ -403,9 +403,9 @@ if [ $? == 0 ] ; then
 	DOCS="$DOCS \$(MP_DOCCER_DOCS)"
 else
 	echo "No"
-	echo
-	echo "mp_doccer not found; some documentation will not be generated."
-	echo "You can take it from http://www.triptico.com/software/mp_doccer.html"
+#	echo
+#	echo "mp_doccer not found; some documentation will not be generated."
+#	echo "You can take it from http://www.triptico.com/software/mp_doccer.html"
 	echo "MP_DOCCER=no" >> makefile.opts
 fi
 
