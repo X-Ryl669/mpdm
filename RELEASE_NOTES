@@ -1,6 +1,11 @@
 MPDM Release Notes
 ==================
 
+1.0.4
+-----
+
+ * API Changes; const has been added wherever possible.
+
 1.0.3
 -----
 
