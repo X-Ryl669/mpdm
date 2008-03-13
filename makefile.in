@@ -54,7 +54,9 @@ clean:
 distclean: clean
 	rm -f config.h config.cflags config.ldflags makefile.opts .config.log Makefile
 
-realdistclean: distclean docsclean
+realclean: distclean docsclean
+
+realdistclean: realclean
 
 distcopy: distclean
 	mkdir -p $(DIST_TARGET) ; \
