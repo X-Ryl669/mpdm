@@ -799,44 +799,51 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 			/* by default, copies the format */
 			strcpy(tmp, t_fmt);
 
-			/* any values left? */
-			if (n < mpdm_size(args) && (v = mpdm_aget(args, n++)) != NULL) {
-				switch (t_fmt[m - 1]) {
-				case 'd':
-				case 'i':
-				case 'x':
-				case 'X':
-				case 'o':
+			/* pick next value */
+			v = mpdm_aget(args, n++);
 
-					/* integer value */
-					snprintf(tmp, sizeof(tmp) - 1,
-						t_fmt, mpdm_ival(v));
-					break;
+			switch (t_fmt[m - 1]) {
+			case 'd':
+			case 'i':
+			case 'x':
+			case 'X':
+			case 'o':
 
-				case 'f':
+				/* integer value */
+				snprintf(tmp, sizeof(tmp) - 1,
+					t_fmt, mpdm_ival(v));
+				break;
 
-					/* float (real) value */
-					snprintf(tmp, sizeof(tmp) - 1,
-						t_fmt, mpdm_rval(v));
-					break;
+			case 'f':
 
-				case 's':
+				/* float (real) value */
+				snprintf(tmp, sizeof(tmp) - 1,
+					t_fmt, mpdm_rval(v));
+				break;
 
-					/* string value */
-					ptr = mpdm_wcstombs(mpdm_string(v), NULL);
-					snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
-					free(ptr);
+			case 's':
 
-					break;
+				/* string value */
+				ptr = mpdm_wcstombs(mpdm_string(v), NULL);
+				snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
+				free(ptr);
 
-				case 'c':
+				break;
 
-					/* char */
-					m = 1;
-					wptr = &c;
-					c = mpdm_ival(v);
-					break;
-				}
+			case 'c':
+
+				/* char */
+				m = 1;
+				wptr = &c;
+				c = mpdm_ival(v);
+				break;
+
+			case '%':
+
+				/* percent sign */
+				m = 1;
+				wptr = &c;
+				break;
 			}
 
 			/* transfer */

@@ -4,7 +4,7 @@ Minimum Profit Data Manager (mpdm) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1108: Fix the %% usage in mpdm_sprintf().
+None!
 
 Open Bugs
 ---------
@@ -229,5 +229,7 @@ Closed
  * 1106: Implement a function to get the file handle of an MPDM_FILE type
    (Thu, 29 Nov 2007 13:12:48 +0100).
  * 1085: Use const wherever possible (Fri, 18 Jan 2008 14:10:12 +0100).
+ * 1108: Fix the %% usage in mpdm_sprintf()
+   (Sun, 30 Mar 2008 17:41:02 +0200).
 
 Email bugs to angel@triptico.com
