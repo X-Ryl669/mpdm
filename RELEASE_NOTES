@@ -1,6 +1,13 @@
 MPDM Release Notes
 ==================
 
+1.0.5
+-----
+
+ * The mpdm_regex() function now accepts a new flag, `g', to match
+   globally; in this case, an array of matches are returned instead
+   of a string scalar.
+
 1.0.4
 -----
 
