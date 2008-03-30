@@ -123,6 +123,67 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
 }
 
 
+static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
+/* test for one regex */
+{
+	mpdm_t w = NULL;
+	mpdm_t cr;
+
+	/* no matching yet */
+	mpdm_regex_offset = -1;
+
+	/* compile the regex */
+	if ((cr = mpdm_regcomp(r)) != NULL) {
+		regmatch_t rm;
+		char *ptr;
+		wchar_t *last;
+		int o = 0;
+		int f = 0;
+
+		/* takes pointer to 'last' flag */
+		if ((last = regex_flags(r)) != NULL)
+			last = wcschr(last, 'l');
+
+		/* convert to mbs */
+		ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL);
+
+		/* match? */
+		while (regexec((regex_t *) cr->data, ptr + o, 1,
+			       &rm, offset > 0 ? REG_NOTBOL : 0) == 0) {
+			f++;
+
+			/* if 'last' is not set, it's done */
+			if (last == NULL)
+				break;
+
+			rm.rm_so += o;
+			rm.rm_eo += o;
+			o = rm.rm_eo;
+		}
+
+		if (f) {
+			/* converts to mbs the string from the beginning
+			   to the start of the match, just to know
+			   the size (and immediately frees it) */
+			free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
+
+			/* add the offset */
+			mpdm_regex_offset += offset;
+
+			/* create now the matching string */
+			w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
+
+			/* and store the size */
+			mpdm_regex_size = mpdm_size(w);
+		}
+
+		free(ptr);
+	}
+
+	return w;
+}
+
+
 /**
  * mpdm_regex - Matches a regular expression.
  * @r: the regular expression
@@ -157,7 +218,6 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
 mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 {
 	mpdm_t w = NULL;
-	mpdm_t t;
 
 	/* special case: if r is NULL, return previous match */
 	if (r == NULL) {
@@ -178,6 +238,7 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 
 	if (r->flags & MPDM_MULTIPLE) {
 		int n;
+		mpdm_t t;
 
 		/* multiple value; try sequentially all regexes,
 		   moving the offset forward */
@@ -198,62 +259,8 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 			offset = mpdm_regex_offset + mpdm_regex_size;
 		}
 	}
-	else {
-		mpdm_t cr;
-
-		/* single value; really do the regex */
-
-		/* no matching yet */
-		mpdm_regex_offset = -1;
-
-		/* compile the regex */
-		if ((cr = mpdm_regcomp(r)) != NULL) {
-			regmatch_t rm;
-			char *ptr;
-			wchar_t *last;
-			int o = 0;
-			int f = 0;
-
-			/* takes pointer to 'last' flag */
-			if ((last = regex_flags(r)) != NULL)
-				last = wcschr(last, 'l');
-
-			/* convert to mbs */
-			ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL);
-
-			/* match? */
-			while (regexec((regex_t *) cr->data, ptr + o, 1,
-				       &rm, offset > 0 ? REG_NOTBOL : 0) == 0) {
-				f++;
-
-				/* if 'last' is not set, it's done */
-				if (last == NULL)
-					break;
-
-				rm.rm_so += o;
-				rm.rm_eo += o;
-				o = rm.rm_eo;
-			}
-
-			if (f) {
-				/* converts to mbs the string from the beginning
-				   to the start of the match, just to know
-				   the size (and immediately frees it) */
-				free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
-
-				/* add the offset */
-				mpdm_regex_offset += offset;
-
-				/* create now the matching string */
-				w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
-
-				/* and store the size */
-				mpdm_regex_size = mpdm_size(w);
-			}
-
-			free(ptr);
-		}
-	}
+	else
+		w = regex1(r, v, offset);
 
 	return w;
 }
