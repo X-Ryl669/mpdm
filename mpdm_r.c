@@ -278,6 +278,10 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 
 				offset = mpdm_regex_offset + mpdm_regex_size;
 			}
+
+			/* no matches? convert to NULL */
+			if (size(w) == 0)
+				w = NULL;
 		}
 		else
 			w = regex1(r, v, offset);
