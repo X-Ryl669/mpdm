@@ -861,7 +861,6 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 	fn = MPDM_2MBS(filename->data);
 
 	if (stat((char *) fn->data, &s) != -1) {
-		char *ptr;
 		r = MPDM_A(14);
 
 		mpdm_aset(r, MPDM_I(s.st_dev), 0);
@@ -880,11 +879,26 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 
 #ifdef CONFOPT_CANONICALIZE_FILE_NAME
 
-		if ((ptr = canonicalize_file_name((char *)fn->data)) != NULL) {
-			mpdm_aset(r, MPDM_MBS(ptr), 13);
-			free(ptr);
+		{
+			char * ptr;
+
+			if ((ptr = canonicalize_file_name(
+				(char *)fn->data)) != NULL) {
+				mpdm_aset(r, MPDM_MBS(ptr), 13);
+				free(ptr);
+			}
 		}
 #endif
+
+#ifdef CONFOPT_REALPATH
+		{
+			char tmp[2048];
+
+			if (realpath((char *)fn->data, tmp) != NULL)
+				mpdm_aset(r, MPDM_MBS(tmp), 13);
+		}
+#endif
+
 	}
 	else
 		store_syserr();
