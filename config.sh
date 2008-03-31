@@ -375,6 +375,20 @@ else
 	fi
 fi
 
+# canonicalize_file_name() detection
+echo -n "Testing for canonicalize_file_name()... "
+echo "#include <stdlib.h>" > .tmp.c
+echo "int main(void) { canonicalize_file_name(\"file\"); return 0; }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_CANONICALIZE_FILE_NAME 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
 # test for Grutatxt
 echo -n "Testing if Grutatxt is installed... "
 

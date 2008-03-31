@@ -25,6 +25,10 @@
 
 #include "config.h"
 
+#ifdef CONFOPT_CANONICALIZE_FILE_NAME
+#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -833,9 +837,17 @@ int mpdm_unlink(const mpdm_t filename)
  * mpdm_stat - Gives status from a file.
  * @filename: file name to get the status from
  *
- * Returns a 13 element array of the status (permissions, onwer, etc.)
+ * Returns a 14 element array of the status (permissions, onwer, etc.)
  * from the desired @filename, or NULL if the file cannot be accessed.
  * (man 2 stat).
+ *
+ * The values are: 0, device number of filesystem; 1, inode number;
+ * 2, file mode; 3, number of hard links to the file; 4, uid; 5, gid;
+ * 6, device identifier; 7, total size of file in bytes; 8, atime;
+ * 9, mtime; 10, ctime; 11, preferred block size for system I/O;
+ * 12, number of blocks allocated and 13, canonicalized file name.
+ * Not all elements have necesarily meaningful values, as most are
+ * system-dependent.
  * [File Management]
  */
 mpdm_t mpdm_stat(const mpdm_t filename)
@@ -849,7 +861,8 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 	fn = MPDM_2MBS(filename->data);
 
 	if (stat((char *) fn->data, &s) != -1) {
-		r = MPDM_A(13);
+		char *ptr;
+		r = MPDM_A(14);
 
 		mpdm_aset(r, MPDM_I(s.st_dev), 0);
 		mpdm_aset(r, MPDM_I(s.st_ino), 1);
@@ -864,6 +877,14 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 		mpdm_aset(r, MPDM_I(s.st_ctime), 10);
 		mpdm_aset(r, MPDM_I(0), 11);	/* s.st_blksize */
 		mpdm_aset(r, MPDM_I(0), 12);	/* s.st_blocks */
+
+#ifdef CONFOPT_CANONICALIZE_FILE_NAME
+
+		if ((ptr = canonicalize_file_name((char *)fn->data)) != NULL) {
+			mpdm_aset(r, MPDM_MBS(ptr), 13);
+			free(ptr);
+		}
+#endif
 	}
 	else
 		store_syserr();

@@ -7,6 +7,9 @@ MPDM Release Notes
  * The mpdm_regex() function now accepts a new flag, `g', to match
    globally; in this case, an array of matches are returned instead
    of a string scalar.
+ * The mpdm_stat() function now returns a 14 element array, with a
+   newly #13 argument containing the canonicalized file name, if
+   the underlying system supports it.
 
 1.0.4
 -----
