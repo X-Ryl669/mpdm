@@ -376,7 +376,7 @@ else
 fi
 
 # canonicalize_file_name() detection
-echo -n "Testing for canonicalize_file_name()... "
+echo -n "Testing for file canonicalization... "
 echo "#include <stdlib.h>" > .tmp.c
 echo "int main(void) { canonicalize_file_name(\"file\"); return 0; }" >> .tmp.c
 
@@ -384,9 +384,20 @@ $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
 	echo "#define CONFOPT_CANONICALIZE_FILE_NAME 1" >> config.h
-	echo "OK"
+	echo "canonicalize_file_name()"
 else
-	echo "No"
+	# try now realpath
+	echo "#include <stdlib.h>" > .tmp.c
+	echo "int main(void) { char tmp[2048]; realpath(\"file\", tmp); return 0; }" >> .tmp.c
+
+	$CC .tmp.c -o .tmp.o 2>> .config.log
+
+	if [ $? = 0 ] ; then
+		echo "#define CONFOPT_REALPATH 1" >> config.h
+		echo "realpath()"
+	else
+		echo No
+	fi
 fi
 
 # test for Grutatxt
