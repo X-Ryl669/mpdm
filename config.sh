@@ -422,7 +422,7 @@ fi
 echo -n "Testing if mp_doccer is installed... "
 MP_DOCCER=$(which mp_doccer || which mp-doccer)
 
-if [ $? == 0 ] ; then
+if [ $? = 0 ] ; then
 	echo "OK"
 	echo "MP_DOCCER=yes" >> makefile.opts
 	DOCS="$DOCS \$(MP_DOCCER_DOCS)"
