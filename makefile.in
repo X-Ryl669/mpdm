@@ -77,7 +77,7 @@ build-mo:
 	done
 
 installdoc:
-	install -m 644 doc/ -d $(DOCDIR)/
+	install doc/ -d $(DOCDIR)/
 	for f in README AUTHORS COPYING TODO RELEASE_NOTES ; do \
 		[ -f $$f ] && install -m 644 $$f $(DOCDIR)/$$f.$(PROJ) ; \
 	done
