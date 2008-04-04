@@ -87,6 +87,7 @@ struct mpdm_file {
 #else				/* CONFOPT_ICONV */
 
 	int utf8;
+	int iso8859_1;
 
 #endif				/* CONFOPT_ICONV */
 
@@ -418,6 +419,50 @@ static int write_utf8(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
+static wchar_t *read_iso8859_1(const struct mpdm_file *f, int *s)
+/* crappy, ad-hoc iso8859-1 reader */
+{
+	wchar_t *ptr = NULL;
+	wchar_t wc;
+	int c;
+
+	*s = 0;
+
+	while ((c = get_char(f)) != EOF) {
+		wc = c;
+
+		/* store */
+		if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+			break;
+
+		/* if it's an end of line, finish */
+		if (wc == L'\n')
+			break;
+	}
+
+	if (ptr != NULL) {
+		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+		(*s)--;
+	}
+
+	return ptr;
+}
+
+
+static int write_iso8859_1(const struct mpdm_file *f, const wchar_t * str)
+/* crappy, ad-hoc iso8859-1 writer */
+{
+	int cnt = 0;
+	wchar_t wc;
+
+	/* convert char by char */
+	for (; (wc = *str) != L'\0'; str++)
+		put_char(wc <= 0xff ? (int) wc : '?', f);
+
+	return cnt;
+}
+
+
 #endif				/* CONFOPT_ICONV */
 
 
@@ -450,10 +495,12 @@ static mpdm_t new_mpdm_file(void)
 		wchar_t *enc = mpdm_string(v);
 
 		/* if it's utf-8, set the flag */
-		if (wcscmp(enc, L"utf-8") == 0 ||
-		    wcscmp(enc, L"UTF-8") == 0 ||
-		    wcscmp(enc, L"utf8") == 0 || wcscmp(enc, L"UTF8") == 0)
+		if (wcscmp(enc, L"utf-8") == 0)
 			fs->utf8 = 1;
+
+		/* if it's iso8859-1, set the flag */
+		if (wcscmp(enc, L"iso8859-1") == 0)
+			fs->iso8859_1 = 1;
 	}
 
 #endif				/* CONFOPT_ICONV */
@@ -632,6 +679,9 @@ mpdm_t mpdm_read(const mpdm_t fd)
 	if (fs->utf8)
 		ptr = read_utf8(fs, &s);
 	else
+	if (fs->iso8859_1)
+		ptr = read_iso8859_1(fs, &s);
+
 #endif				/* CONFOPT_ICONV */
 
 		ptr = read_mbs(fs, &s);
@@ -699,6 +749,9 @@ int mpdm_write(const mpdm_t fd, const mpdm_t v)
 	if (fs->utf8)
 		ret = write_utf8(fs, mpdm_string(v));
 	else
+	if (fs->iso8859_1)
+		ret = write_iso8859_1(fs, mpdm_string(v));
+
 #endif				/* CONFOPT_ICONV */
 
 		ret = write_wcs(fs, mpdm_string(v));
@@ -795,15 +848,30 @@ int mpdm_encoding(mpdm_t charset)
 #else				/* CONFOPT_ICONV */
 
 	wchar_t *enc = mpdm_string(charset);
+	mpdm_t v = NULL;
 
-	/* if it's NULL or utf-8, store */
-	if (charset == NULL ||
-	    wcscmp(enc, L"utf-8") == 0 ||
+	/* if it's a valid encoding, store */
+	if (charset == NULL)
+		ret = 0;
+	else
+	if (wcscmp(enc, L"utf-8") == 0 ||
 	    wcscmp(enc, L"UTF-8") == 0 ||
-	    wcscmp(enc, L"utf8") == 0 || wcscmp(enc, L"UTF8") == 0) {
-		mpdm_hset_s(mpdm_root(), L"ENCODING", charset);
+	    wcscmp(enc, L"utf8") == 0 ||
+	    wcscmp(enc, L"UTF8") == 0) {
+		v = MPDM_LS(L"utf-8");
 		ret = 0;
 	}
+	else
+	if (wcscmp(enc, L"iso8859-1") == 0 ||
+	    wcscmp(enc, L"iso-8859-1") == 0 ||
+	    wcscmp(enc, L"ISO8859-1") == 0 ||
+	    wcscmp(enc, L"ISO-8859-1") == 0) {
+		v = MPDM_LS(L"iso8859-1");
+		ret = 0;
+	}
+
+	if (ret == 0)
+		mpdm_hset_s(mpdm_root(), L"ENCODING", v);
 
 #endif				/* CONFOPT_ICONV */
 
