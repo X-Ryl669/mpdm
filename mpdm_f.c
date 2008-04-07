@@ -87,11 +87,6 @@ struct mpdm_file {
 	iconv_t ic_enc;
 	iconv_t ic_dec;
 
-#else				/* CONFOPT_ICONV */
-
-	int utf8;
-	int iso8859_1;
-
 #endif				/* CONFOPT_ICONV */
 
 #ifdef CONFOPT_WIN32
@@ -506,16 +501,12 @@ static mpdm_t new_mpdm_file(void)
 
 		/* if it's utf-8, set the flag */
 		if (wcscmp(enc, L"utf-8") == 0) {
-			fs->utf8 = 1;
-
 			fs->f_read = read_utf8;
 			fs->f_write = write_utf8;
 		}
 
 		/* if it's iso8859-1, set the flag */
 		if (wcscmp(enc, L"iso8859-1") == 0) {
-			fs->iso8859_1 = 1;
-
 			fs->f_read = read_iso8859_1;
 			fs->f_write = write_iso8859_1;
 		}
@@ -687,22 +678,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 	if (fs == NULL)
 		return NULL;
 
-#ifdef CONFOPT_ICONV
-
-	if (fs->ic_dec != (iconv_t) - 1)
-		ptr = read_iconv(fs, &s);
-	else
-#else				/* CONFOPT_ICONV */
-
-	if (fs->utf8)
-		ptr = read_utf8(fs, &s);
-	else
-	if (fs->iso8859_1)
-		ptr = read_iso8859_1(fs, &s);
-
-#endif				/* CONFOPT_ICONV */
-
-		ptr = read_mbs(fs, &s);
+	ptr = fs->f_read(fs, &s);
 
 	if (ptr != NULL)
 		v = MPDM_ENS(ptr, s);
@@ -757,22 +733,7 @@ int mpdm_write(const mpdm_t fd, const mpdm_t v)
 	if (fs == NULL)
 		return -1;
 
-#ifdef CONFOPT_ICONV
-
-	if (fs->ic_enc != (iconv_t) - 1)
-		ret = write_iconv(fs, mpdm_string(v));
-	else
-#else				/* CONFOPT_ICONV */
-
-	if (fs->utf8)
-		ret = write_utf8(fs, mpdm_string(v));
-	else
-	if (fs->iso8859_1)
-		ret = write_iso8859_1(fs, mpdm_string(v));
-
-#endif				/* CONFOPT_ICONV */
-
-		ret = write_wcs(fs, mpdm_string(v));
+	ret = fs->f_write(fs, mpdm_string(v));
 
 	return ret;
 }
