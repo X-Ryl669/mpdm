@@ -69,9 +69,7 @@
 #include "mpdm.h"
 
 #ifdef CONFOPT_ICONV
-
 #include <iconv.h>
-
 #endif
 
 /* file structure */
@@ -83,17 +81,13 @@ struct mpdm_file {
 	int	  (* f_write)(const struct mpdm_file *, const wchar_t *);
 
 #ifdef CONFOPT_ICONV
-
 	iconv_t ic_enc;
 	iconv_t ic_dec;
-
 #endif				/* CONFOPT_ICONV */
 
 #ifdef CONFOPT_WIN32
-
 	HANDLE hin;
 	HANDLE hout;
-
 #endif				/* CONFOPT_WIN32 */
 };
 
@@ -335,7 +329,7 @@ static int write_iconv(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
-#else				/* CONFOPT_ICONV */
+#endif				/* CONFOPT_ICONV */
 
 #define UTF8_BYTE() if((c = get_char(f)) == EOF) break
 
@@ -721,14 +715,12 @@ static int write_utf32(struct mpdm_file *f, const wchar_t * str)
 }
 
 
-#endif				/* CONFOPT_ICONV */
-
-
 static mpdm_t new_mpdm_file(void)
 /* creates a new file value */
 {
 	mpdm_t v = NULL;
 	struct mpdm_file *fs;
+	mpdm_t e;
 
 	if ((fs = malloc(sizeof(struct mpdm_file))) == NULL)
 		return NULL;
@@ -740,23 +732,31 @@ static mpdm_t new_mpdm_file(void)
 	fs->f_write = write_wcs;
 
 #ifdef CONFOPT_ICONV
+	/* no iconv encodings by default */
+	fs->ic_enc = fs->ic_dec = (iconv_t) -1;
+#endif
 
-	if ((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL) {
-		mpdm_t cs = MPDM_2MBS(v->data);
-
-		fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T");
-		fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data);
-
-		fs->f_read = read_iconv;
-		fs->f_write = write_iconv;
+	if ((v = mpdm_new(MPDM_FILE | MPDM_FREE, fs, sizeof(struct mpdm_file))) == NULL) {
+		free(fs);
+		return NULL;
 	}
-	else
-		fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
 
-#else				/* CONFOPT_ICONV */
+	if ((e = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL) {
 
-	if ((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL) {
-		wchar_t *enc = mpdm_string(v);
+		wchar_t *enc = mpdm_string(e);
+
+#ifdef CONFOPT_ICONV
+		mpdm_t cs = MPDM_2MBS(e->data);
+
+		if ((fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) -1 &&
+		    (fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data)) != (iconv_t) -1) {
+
+			fs->f_read = read_iconv;
+			fs->f_write = write_iconv;
+
+			return v;
+		}
+#endif				/* CONFOPT_ICONV */
 
 		if (wcscmp(enc, L"utf-8") == 0) {
 			fs->f_read = read_utf8;
@@ -799,11 +799,6 @@ static mpdm_t new_mpdm_file(void)
 		}
 	}
 
-#endif				/* CONFOPT_ICONV */
-
-	if ((v = mpdm_new(MPDM_FILE | MPDM_FREE, fs, sizeof(struct mpdm_file))) == NULL)
-		free(fs);
-
 	return v;
 }
 
@@ -815,7 +810,6 @@ static void destroy_mpdm_file(mpdm_t v)
 
 	if (fs != NULL) {
 #ifdef CONFOPT_ICONV
-
 		if (fs->ic_enc != (iconv_t) - 1) {
 			iconv_close(fs->ic_enc);
 			fs->ic_enc = (iconv_t) - 1;
@@ -1142,44 +1136,44 @@ int mpdm_encoding(mpdm_t charset)
 {
 	int ret = -1;
 	mpdm_t e = embedded_encodings();
+	mpdm_t v = NULL;
+
+	/* NULL encoding? done */
+	if (charset == NULL) {
+		mpdm_hset_s(mpdm_root(), L"ENCODING", NULL);
+		return 0;
+	}
 
 #ifdef CONFOPT_ICONV
-
-	if (charset != NULL) {
+	{
 		iconv_t ic;
 		mpdm_t cs = MPDM_2MBS(charset->data);
 
-		/* tries to create an encoder and a decoder for this charset */
+		/* tries to create an iconv encoder and decoder for this charset */
 
 		if ((ic = iconv_open("WCHAR_T", (char *) cs->data)) == (iconv_t) - 1)
-			return -1;
+			ret = -1;
+		else {
+			iconv_close(ic);
 
-		iconv_close(ic);
+			if ((ic = iconv_open((char *) cs->data, "WCHAR_T")) == (iconv_t) - 1)
+				ret = -2;
+			else {
+				iconv_close(ic);
 
-		if ((ic = iconv_open((char *) cs->data, "WCHAR_T")) == (iconv_t) - 1)
-			return -2;
-
-		iconv_close(ic);
+				/* got a valid encoding */
+				v = charset;
+				ret = 0;
+			}
+		}
 	}
+#endif				/* CONFOPT_ICONV */
 
-	/* can create; store and exit */
-
-	mpdm_hset_s(mpdm_root(), L"ENCODING", charset);
-
-	ret = 0;
-
-#else				/* CONFOPT_ICONV */
-
-	mpdm_t v = NULL;
-
-	/* if it's a valid encoding, store */
-	if (charset == NULL || (v = mpdm_hget(e, charset)) != NULL)
+	if (ret != 0 && (v = mpdm_hget(e, charset)) != NULL)
 		ret = 0;
 
 	if (ret == 0)
 		mpdm_hset_s(mpdm_root(), L"ENCODING", v);
-
-#endif				/* CONFOPT_ICONV */
 
 	return ret;
 }
