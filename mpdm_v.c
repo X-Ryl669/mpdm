@@ -449,6 +449,8 @@ int mpdm_startup(void)
 		if (setlocale(LC_ALL, "") == NULL)
 			setlocale(LC_ALL, "C");
 
+		mpdm_encoding(NULL);
+
 		/* store the MPDM() function */
 		mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_X(MPDM));
 	}
