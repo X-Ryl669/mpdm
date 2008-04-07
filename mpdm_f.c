@@ -584,6 +584,143 @@ static int write_utf16(struct mpdm_file *f, const wchar_t * str)
 }
 
 
+static wchar_t *read_utf32ae(const struct mpdm_file *f, int *s, int le)
+/* utf32 reader, ANY ending */
+{
+	wchar_t *ptr = NULL;
+	wchar_t wc;
+	int c1, c2, c3, c4;
+
+	*s = 0;
+
+	for (;;) {
+		wc = L'\0';
+
+		if ((c1 = get_char(f)) == EOF)
+			break;
+
+		if ((c2 = get_char(f)) == EOF)
+			break;
+
+		if ((c3 = get_char(f)) == EOF)
+			break;
+
+		if ((c4 = get_char(f)) == EOF)
+			break;
+
+		if (le)
+			wc = c1 | (c2 << 8) | (c3 << 16) | (c4 << 24);
+		else
+			wc = c4 | (c3 << 8) | (c2 << 16) | (c1 << 24);
+
+		/* store */
+		if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+			break;
+
+		/* if it's an end of line, finish */
+		if (wc == L'\n')
+			break;
+	}
+
+	if (ptr != NULL) {
+		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+		(*s)--;
+	}
+
+	return ptr;
+}
+
+
+static int write_utf32ae(const struct mpdm_file *f, const wchar_t * str, int le)
+/* utf32 writer, ANY ending */
+{
+	int cnt = 0;
+	wchar_t wc;
+
+	/* convert char by char */
+	for (; (wc = *str) != L'\0'; str++) {
+
+		if (le) {
+			put_char((wc & 0x000000ff), f);
+			put_char((wc & 0x0000ff00) >> 8, f);
+			put_char((wc & 0x00ff0000) >> 16, f);
+			put_char((wc & 0xff000000) >> 24, f);
+		}
+		else {
+			put_char((wc & 0xff000000) >> 24, f);
+			put_char((wc & 0x00ff0000) >> 16, f);
+			put_char((wc & 0x0000ff00) >> 8, f);
+			put_char((wc & 0x000000ff), f);
+		}
+	}
+
+	return cnt;
+}
+
+
+static wchar_t *read_utf32le(const struct mpdm_file *f, int *s)
+{
+	return read_utf32ae(f, s, 1);
+}
+
+
+static int write_utf32le(const struct mpdm_file *f, const wchar_t * str)
+{
+	return write_utf32ae(f, str, 1);
+}
+
+
+static wchar_t *read_utf32be(const struct mpdm_file *f, int *s)
+{
+	return read_utf32ae(f, s, 0);
+}
+
+
+static int write_utf32be(const struct mpdm_file *f, const wchar_t * str)
+{
+	return write_utf32ae(f, str, 0);
+}
+
+
+static wchar_t *read_utf32(struct mpdm_file *f, int *s)
+{
+	int c1, c2, c3, c4;
+
+	f->f_read = NULL;
+
+	/* autodetection */
+	c1 = get_char(f);
+	c2 = get_char(f);
+	c3 = get_char(f);
+	c4 = get_char(f);
+
+	if (c1 == 0xff && c2 == 0xfe && c3 == 0 && c4 == 0)
+		f->f_read = read_utf32le;
+	else
+	if (c1 == 0 && c2 == 0 && c3 == 0xfe && c4 == 0xff)
+		f->f_read = read_utf32be;
+	else
+		return NULL;
+
+	return f->f_read(f, s);
+}
+
+
+static int write_utf32(struct mpdm_file *f, const wchar_t * str)
+{
+	/* store the LE signature */
+	put_char(0xff, f);
+	put_char(0xfe, f);
+	put_char(0, f);
+	put_char(0, f);
+
+	/* we're 32le from now on */
+	f->f_write = write_utf32le;
+
+	return f->f_write(f, str);
+}
+
+
 #endif				/* CONFOPT_ICONV */
 
 
@@ -644,6 +781,21 @@ static mpdm_t new_mpdm_file(void)
 		if (wcscmp(enc, L"utf-16") == 0) {
 			fs->f_read = read_utf16;
 			fs->f_write = write_utf16;
+		}
+		else
+		if (wcscmp(enc, L"utf-32le") == 0) {
+			fs->f_read = read_utf32le;
+			fs->f_write = write_utf32le;
+		}
+		else
+		if (wcscmp(enc, L"utf-32be") == 0) {
+			fs->f_read = read_utf32be;
+			fs->f_write = write_utf32be;
+		}
+		else
+		if (wcscmp(enc, L"utf-32") == 0) {
+			fs->f_read = read_utf32;
+			fs->f_write = write_utf32;
 		}
 	}
 
@@ -935,6 +1087,16 @@ static mpdm_t embedded_encodings(void)
 		L"utf16",	NULL,
 		L"ucs-2",	NULL,
 		L"ucs2",	NULL,
+		L"utf-32le",	L"utf-32le",
+		L"utf32le",	NULL,
+		L"ucs-4le",	NULL,
+		L"utf-32be",	L"utf-32be",
+		L"utf32be",	NULL,
+		L"ucs-4be",	NULL,
+		L"utf-32",	L"utf-32",
+		L"utf32",	NULL,
+		L"ucs-4",	NULL,
+		L"ucs4",	NULL,
 		NULL,		NULL
 	};
 
