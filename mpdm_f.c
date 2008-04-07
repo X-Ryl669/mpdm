@@ -461,6 +461,60 @@ static int write_iso8859_1(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
+static wchar_t *read_utf16le(const struct mpdm_file *f, int *s)
+{
+	wchar_t *ptr = NULL;
+	wchar_t wc;
+	int c;
+
+	*s = 0;
+
+	for (;;) {
+		wc = L'\0';
+
+		if ((c = get_char(f)) == EOF)
+			break;
+
+		wc = c;
+
+		if ((c = get_char(f)) == EOF)
+			break;
+
+		wc |= (c << 8);
+
+		/* store */
+		if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+			break;
+
+		/* if it's an end of line, finish */
+		if (wc == L'\n')
+			break;
+	}
+
+	if (ptr != NULL) {
+		ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+		(*s)--;
+	}
+
+	return ptr;
+}
+
+
+static int write_utf16le(const struct mpdm_file *f, const wchar_t * str)
+{
+	int cnt = 0;
+	wchar_t wc;
+
+	/* convert char by char */
+	for (; (wc = *str) != L'\0'; str++) {
+		put_char(wc & 0xff, f);
+		put_char((wc & 0xff00) >> 8, f);
+	}
+
+	return cnt;
+}
+
+
 #endif				/* CONFOPT_ICONV */
 
 
@@ -495,20 +549,22 @@ static mpdm_t new_mpdm_file(void)
 
 #else				/* CONFOPT_ICONV */
 
-	/* if the encoding is utf8, set the flag */
 	if ((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL) {
 		wchar_t *enc = mpdm_string(v);
 
-		/* if it's utf-8, set the flag */
 		if (wcscmp(enc, L"utf-8") == 0) {
 			fs->f_read = read_utf8;
 			fs->f_write = write_utf8;
 		}
-
-		/* if it's iso8859-1, set the flag */
+		else
 		if (wcscmp(enc, L"iso8859-1") == 0) {
 			fs->f_read = read_iso8859_1;
 			fs->f_write = write_iso8859_1;
+		}
+		else
+		if (wcscmp(enc, L"utf-16le") == 0) {
+			fs->f_read = read_utf16le;
+			fs->f_write = write_utf16le;
 		}
 	}
 
@@ -846,6 +902,14 @@ int mpdm_encoding(mpdm_t charset)
 	    wcscmp(enc, L"ISO8859-1") == 0 ||
 	    wcscmp(enc, L"ISO-8859-1") == 0) {
 		v = MPDM_LS(L"iso8859-1");
+		ret = 0;
+	}
+	else
+	if (wcscmp(enc, L"utf-16le") == 0 ||
+	    wcscmp(enc, L"UTF-16LE") == 0 ||
+	    wcscmp(enc, L"utf16le") == 0 ||
+	    wcscmp(enc, L"UTF16LE") == 0) {
+		v = MPDM_LS(L"utf-16le");
 		ret = 0;
 	}
 
