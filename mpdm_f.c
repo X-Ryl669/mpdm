@@ -461,26 +461,28 @@ static int write_iso8859_1(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
-static wchar_t *read_utf16le(const struct mpdm_file *f, int *s)
+static wchar_t *read_utf16ae(const struct mpdm_file *f, int *s, int le)
+/* utf16 reader, ANY ending */
 {
 	wchar_t *ptr = NULL;
 	wchar_t wc;
-	int c;
+	int c1, c2;
 
 	*s = 0;
 
 	for (;;) {
 		wc = L'\0';
 
-		if ((c = get_char(f)) == EOF)
+		if ((c1 = get_char(f)) == EOF)
 			break;
 
-		wc = c;
-
-		if ((c = get_char(f)) == EOF)
+		if ((c2 = get_char(f)) == EOF)
 			break;
 
-		wc |= (c << 8);
+		if (le)
+			wc = c1 | (c2 << 8);
+		else
+			wc = c2 | (c1 << 8);
 
 		/* store */
 		if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
@@ -500,18 +502,50 @@ static wchar_t *read_utf16le(const struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf16le(const struct mpdm_file *f, const wchar_t * str)
+static int write_utf16ae(const struct mpdm_file *f, const wchar_t * str, int le)
+/* utf16 writer, ANY ending */
 {
 	int cnt = 0;
 	wchar_t wc;
 
 	/* convert char by char */
 	for (; (wc = *str) != L'\0'; str++) {
-		put_char(wc & 0xff, f);
-		put_char((wc & 0xff00) >> 8, f);
+
+		if (le) {
+			put_char(wc & 0xff, f);
+			put_char((wc & 0xff00) >> 8, f);
+		}
+		else {
+			put_char((wc & 0xff00) >> 8, f);
+			put_char(wc & 0xff, f);
+		}
 	}
 
 	return cnt;
+}
+
+
+static wchar_t *read_utf16le(const struct mpdm_file *f, int *s)
+{
+	return read_utf16ae(f, s, 1);
+}
+
+
+static int write_utf16le(const struct mpdm_file *f, const wchar_t * str)
+{
+	return write_utf16ae(f, str, 1);
+}
+
+
+static wchar_t *read_utf16be(const struct mpdm_file *f, int *s)
+{
+	return read_utf16ae(f, s, 0);
+}
+
+
+static int write_utf16be(const struct mpdm_file *f, const wchar_t * str)
+{
+	return write_utf16ae(f, str, 0);
 }
 
 
@@ -565,6 +599,11 @@ static mpdm_t new_mpdm_file(void)
 		if (wcscmp(enc, L"utf-16le") == 0) {
 			fs->f_read = read_utf16le;
 			fs->f_write = write_utf16le;
+		}
+		else
+		if (wcscmp(enc, L"utf-16be") == 0) {
+			fs->f_read = read_utf16be;
+			fs->f_write = write_utf16be;
 		}
 	}
 
@@ -910,6 +949,14 @@ int mpdm_encoding(mpdm_t charset)
 	    wcscmp(enc, L"utf16le") == 0 ||
 	    wcscmp(enc, L"UTF16LE") == 0) {
 		v = MPDM_LS(L"utf-16le");
+		ret = 0;
+	}
+	else
+	if (wcscmp(enc, L"utf-16be") == 0 ||
+	    wcscmp(enc, L"UTF-16BE") == 0 ||
+	    wcscmp(enc, L"utf16be") == 0 ||
+	    wcscmp(enc, L"UTF16BE") == 0) {
+		v = MPDM_LS(L"utf-16be");
 		ret = 0;
 	}
 
