@@ -915,6 +915,52 @@ int mpdm_bwrite(mpdm_tfd, mpdm_t v, int size)
 */
 
 
+static mpdm_t embedded_encodings(void)
+{
+	mpdm_t e;
+	wchar_t *e2e[] = {
+		L"utf-8",	L"utf-8",
+		L"utf8",	NULL,
+		L"iso8859-1",	L"iso8859-1",
+		L"iso-8859-1",	NULL,
+		L"latin1",	NULL,
+		L"latin-1",	NULL,
+		L"utf-16le",	L"utf-16le",
+		L"utf16le",	NULL,
+		L"ucs-2le",	NULL,
+		L"utf-16be",	L"utf-16be",
+		L"utf16be",	NULL,
+		L"ucs-2be",	NULL,
+		L"utf-16",	L"utf-16",
+		L"utf16",	NULL,
+		L"ucs-2",	NULL,
+		L"ucs2",	NULL,
+		NULL,		NULL
+	};
+
+	if ((e = mpdm_hget_s(mpdm_root(), L"EMBEDDED_ENCODINGS")) == NULL) {
+		int n;
+		wchar_t *p = NULL;
+
+		e = MPDM_H(0);
+
+		for (n = 0; e2e[n] != NULL; n += 2) {
+			mpdm_t v = MPDM_S(e2e[n]);
+
+			if (e2e[n + 1] != NULL)
+				p = e2e[n + 1];
+
+			mpdm_hset(e, v, MPDM_S(p));
+			mpdm_hset(e, mpdm_ulc(v, 1), MPDM_S(p));
+		}
+
+		mpdm_hset_s(mpdm_root(), L"EMBEDDED_ENCODINGS", e);
+	}
+
+	return e;
+}
+
+
 /**
  * mpdm_encoding - Sets the current charset encoding for files.
  * @charset: the charset name.
@@ -933,6 +979,8 @@ int mpdm_bwrite(mpdm_tfd, mpdm_t v, int size)
 int mpdm_encoding(mpdm_t charset)
 {
 	int ret = -1;
+
+	embedded_encodings();
 
 #ifdef CONFOPT_ICONV
 
