@@ -979,8 +979,7 @@ static mpdm_t embedded_encodings(void)
 int mpdm_encoding(mpdm_t charset)
 {
 	int ret = -1;
-
-	embedded_encodings();
+	mpdm_t e = embedded_encodings();
 
 #ifdef CONFOPT_ICONV
 
@@ -1009,52 +1008,11 @@ int mpdm_encoding(mpdm_t charset)
 
 #else				/* CONFOPT_ICONV */
 
-	wchar_t *enc = mpdm_string(charset);
 	mpdm_t v = NULL;
 
 	/* if it's a valid encoding, store */
-	if (charset == NULL)
+	if (charset == NULL || (v = mpdm_hget(e, charset)) != NULL)
 		ret = 0;
-	else
-	if (wcscmp(enc, L"utf-8") == 0 ||
-	    wcscmp(enc, L"UTF-8") == 0 ||
-	    wcscmp(enc, L"utf8") == 0 ||
-	    wcscmp(enc, L"UTF8") == 0) {
-		v = MPDM_LS(L"utf-8");
-		ret = 0;
-	}
-	else
-	if (wcscmp(enc, L"iso8859-1") == 0 ||
-	    wcscmp(enc, L"iso-8859-1") == 0 ||
-	    wcscmp(enc, L"ISO8859-1") == 0 ||
-	    wcscmp(enc, L"ISO-8859-1") == 0) {
-		v = MPDM_LS(L"iso8859-1");
-		ret = 0;
-	}
-	else
-	if (wcscmp(enc, L"utf-16le") == 0 ||
-	    wcscmp(enc, L"UTF-16LE") == 0 ||
-	    wcscmp(enc, L"utf16le") == 0 ||
-	    wcscmp(enc, L"UTF16LE") == 0) {
-		v = MPDM_LS(L"utf-16le");
-		ret = 0;
-	}
-	else
-	if (wcscmp(enc, L"utf-16be") == 0 ||
-	    wcscmp(enc, L"UTF-16BE") == 0 ||
-	    wcscmp(enc, L"utf16be") == 0 ||
-	    wcscmp(enc, L"UTF16BE") == 0) {
-		v = MPDM_LS(L"utf-16be");
-		ret = 0;
-	}
-	else
-	if (wcscmp(enc, L"utf-16") == 0 ||
-	    wcscmp(enc, L"UTF-16") == 0 ||
-	    wcscmp(enc, L"utf16") == 0 ||
-	    wcscmp(enc, L"UTF16") == 0) {
-		v = MPDM_LS(L"utf-16");
-		ret = 0;
-	}
 
 	if (ret == 0)
 		mpdm_hset_s(mpdm_root(), L"ENCODING", v);
