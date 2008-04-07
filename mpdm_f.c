@@ -549,6 +549,41 @@ static int write_utf16be(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
+static wchar_t *read_utf16(struct mpdm_file *f, int *s)
+{
+	int c1, c2;
+
+	f->f_read = NULL;
+
+	/* autodetection */
+	c1 = get_char(f);
+	c2 = get_char(f);
+
+	if (c1 == 0xff && c2 == 0xfe)
+		f->f_read = read_utf16le;
+	else
+	if (c1 == 0xfe && c2 == 0xff)
+		f->f_read = read_utf16be;
+	else
+		return NULL;
+
+	return f->f_read(f, s);
+}
+
+
+static int write_utf16(struct mpdm_file *f, const wchar_t * str)
+{
+	/* store the LE signature */
+	put_char(0xff, f);
+	put_char(0xfe, f);
+
+	/* we're 16le from now on */
+	f->f_write = write_utf16le;
+
+	return f->f_write(f, str);
+}
+
+
 #endif				/* CONFOPT_ICONV */
 
 
@@ -604,6 +639,11 @@ static mpdm_t new_mpdm_file(void)
 		if (wcscmp(enc, L"utf-16be") == 0) {
 			fs->f_read = read_utf16be;
 			fs->f_write = write_utf16be;
+		}
+		else
+		if (wcscmp(enc, L"utf-16") == 0) {
+			fs->f_read = read_utf16;
+			fs->f_write = write_utf16;
 		}
 	}
 
@@ -957,6 +997,14 @@ int mpdm_encoding(mpdm_t charset)
 	    wcscmp(enc, L"utf16be") == 0 ||
 	    wcscmp(enc, L"UTF16BE") == 0) {
 		v = MPDM_LS(L"utf-16be");
+		ret = 0;
+	}
+	else
+	if (wcscmp(enc, L"utf-16") == 0 ||
+	    wcscmp(enc, L"UTF-16") == 0 ||
+	    wcscmp(enc, L"utf16") == 0 ||
+	    wcscmp(enc, L"UTF16") == 0) {
+		v = MPDM_LS(L"utf-16");
 		ret = 0;
 	}
 
