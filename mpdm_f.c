@@ -79,6 +79,9 @@ struct mpdm_file {
 	FILE *in;
 	FILE *out;
 
+	wchar_t * (* f_read) (const struct mpdm_file *, int *);
+	int	  (* f_write)(const struct mpdm_file *, const wchar_t *);
+
 #ifdef CONFOPT_ICONV
 
 	iconv_t ic_enc;
@@ -477,6 +480,10 @@ static mpdm_t new_mpdm_file(void)
 
 	memset(fs, '\0', sizeof(struct mpdm_file));
 
+	/* default I/O functions */
+	fs->f_read = read_mbs;
+	fs->f_write = write_wcs;
+
 #ifdef CONFOPT_ICONV
 
 	if ((v = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL) {
@@ -484,6 +491,9 @@ static mpdm_t new_mpdm_file(void)
 
 		fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T");
 		fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data);
+
+		fs->f_read = read_iconv;
+		fs->f_write = write_iconv;
 	}
 	else
 		fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
@@ -495,12 +505,20 @@ static mpdm_t new_mpdm_file(void)
 		wchar_t *enc = mpdm_string(v);
 
 		/* if it's utf-8, set the flag */
-		if (wcscmp(enc, L"utf-8") == 0)
+		if (wcscmp(enc, L"utf-8") == 0) {
 			fs->utf8 = 1;
 
+			fs->f_read = read_utf8;
+			fs->f_write = write_utf8;
+		}
+
 		/* if it's iso8859-1, set the flag */
-		if (wcscmp(enc, L"iso8859-1") == 0)
+		if (wcscmp(enc, L"iso8859-1") == 0) {
 			fs->iso8859_1 = 1;
+
+			fs->f_read = read_iso8859_1;
+			fs->f_write = write_iso8859_1;
+		}
 	}
 
 #endif				/* CONFOPT_ICONV */
