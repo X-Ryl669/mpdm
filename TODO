@@ -1,4 +1,4 @@
-Minimum Profit Data Manager (mpdm) TODO / Bug List
+Minimum Profit Data Manager (MPDM) TODO / Bug List
 ==================================================
 
 Release Critical Bugs
@@ -10,10 +10,6 @@ Open Bugs
 ---------
 
  * 1056: Finish the overview document.
- * 1061: On IRIX, iconv() doesn't have the "WCHAR_T" charset, so
-   iconv support doesn't seem to work there; but it has "UCS-4", which
-   is practically the same and it works, so there should be some
-   workaround to use it whenever "WCHAR_T" fails.
  * 1103: mpdm_home_dir() calls strcat() insecurely.
  * 1104: mpdm_app_dir() calls strcat() insecurely.
 
@@ -231,5 +227,10 @@ Closed
  * 1085: Use const wherever possible (Fri, 18 Jan 2008 14:10:12 +0100).
  * 1108: Fix the %% usage in mpdm_sprintf()
    (Sun, 30 Mar 2008 17:41:02 +0200).
+ * 1061: On IRIX, iconv() doesn't have the "WCHAR_T" charset, so
+   iconv support doesn't seem to work there; but it has "UCS-4", which
+   is practically the same and it works, so there should be some
+   workaround to use it whenever "WCHAR_T" fails
+   (Mon, 07 Apr 2008 14:55:30 +0200).
 
 Email bugs to angel@triptico.com
