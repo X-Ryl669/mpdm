@@ -10,6 +10,8 @@ MPDM Release Notes
  * The mpdm_stat() function now returns a 14 element array, with a
    newly #13 argument containing the canonicalized file name, if
    the underlying system supports it.
+ * A bunch of embedded charset encoders have been implemented for
+   iso8859-1, utf-16 and utf-32 with or without BOM autodetection.
 
 1.0.4
 -----
