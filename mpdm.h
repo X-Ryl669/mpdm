@@ -21,6 +21,10 @@
 
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* structural flags */
 #define MPDM_STRING	0x00000001	/* data can be string-compared */
 #define MPDM_MULTIPLE	0x00000002	/* data is multiple */
@@ -209,3 +213,7 @@ mpdm_t mpdm_app_dir(void);
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
+
+#ifdef __cplusplus
+}
+#endif
