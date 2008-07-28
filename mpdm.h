@@ -206,7 +206,7 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_NMBS(s,n)	mpdm_new_mbstowcs(0, s, n)
 #define MPDM_2MBS(s)	mpdm_new_wcstombs(0, s)
 
-#define MPDM_X(f)	mpdm_new(MPDM_EXEC,f,0)
+#define MPDM_X(f)	mpdm_new(MPDM_EXEC, (const void *)f, 0)
 #define MPDM_X2(f,b)	mpdm_xnew(f,b)
 
 #define MPDM_F(f)	mpdm_new_f(f)
