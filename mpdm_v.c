@@ -422,6 +422,30 @@ static mpdm_t MPDM(const mpdm_t args)
 	return v;
 }
 
+extern char **environ;
+
+static mpdm_t build_env(void)
+/* builds a hash with the environment */
+{
+	char **ptr;
+	mpdm_t e = MPDM_H(0);
+
+	for (ptr = environ; *ptr != NULL; ptr++) {
+		char *eq = strchr(*ptr, '=');
+
+		if (eq != NULL) {
+			mpdm_t k, v;
+
+			k = MPDM_NMBS((*ptr), eq - (*ptr));
+			v = MPDM_MBS(eq + 1);
+
+			mpdm_hset(e, k, v);
+		}
+	}
+
+	return e;
+}
+
 
 /**
  * mpdm_startup - Initializes MPDM.
@@ -453,6 +477,9 @@ int mpdm_startup(void)
 
 		/* store the MPDM() function */
 		mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_X(MPDM));
+
+		/* store the ENV hash */
+		mpdm_hset_s(mpdm_root(), L"ENV", build_env());
 	}
 
 	/* everything went OK */

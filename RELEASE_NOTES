@@ -1,6 +1,11 @@
 MPDM Release Notes
 ==================
 
+1.0.6
+-----
+
+ * The environment is stored in a hash called ENV in mpdm_root().
+
 1.0.5
 -----
 
