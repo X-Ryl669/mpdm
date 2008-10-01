@@ -762,11 +762,17 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 		case 0x0f: wptr = L"is"; break; /* icelandic */
 		case 0x10: wptr = L"it"; break; /* italian */
 		case 0x11: wptr = L"jp"; break; /* japanese */
+		case 0x12: wptr = L"ko"; break; /* korean */
 		case 0x13: wptr = L"nl"; break; /* dutch */
 		case 0x14: wptr = L"no"; break; /* norwegian */
 		case 0x15: wptr = L"po"; break; /* polish */
 		case 0x16: wptr = L"pt"; break; /* portuguese */
+		case 0x17: wptr = L"rm"; break; /* romansh (switzerland) */
+		case 0x18: wptr = L"ro"; break; /* romanian */
 		case 0x19: wptr = L"ru"; break; /* russian */
+		case 0x1a: wptr = L"sr"; break; /* serbian */
+		case 0x1b: wptr = L"sk"; break; /* slovak */
+		case 0x1c: wptr = L"sq"; break; /* albanian */
 		case 0x1d: wptr = L"sv"; break; /* swedish */
 		}
 
