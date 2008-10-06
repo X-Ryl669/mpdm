@@ -349,7 +349,9 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
  * substitution string.
  *
  * If @s is a hash, the matched string is used as a key to it and
- * its value used as the substitution.
+ * its value used as the substitution. If this value itself is
+ * executable, it's executed with the matched string as its only
+ * argument and its return value used as the substitution.
  *
  * If @r is NULL, returns the number of substitutions made in the
  * previous call to mpdm_sregex() (can be zero if none was done).
@@ -428,8 +430,15 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 				}
 				else
 					/* is s a hash? use match as key */
-				if (MPDM_IS_HASH(s))
-					t = mpdm_hget(s, t);
+				if (MPDM_IS_HASH(s)) {
+					mpdm_t v = mpdm_hget(s, t);
+
+					/* is the value executable? */
+					if (MPDM_IS_EXEC(v))
+						v = mpdm_exec_1(v, t);
+
+					t = v;
+				}
 				else
 					t = expand_ampersands(s, t);
 

@@ -6,7 +6,9 @@ MPDM Release Notes
 
  * The environment is stored in a hash called ENV in mpdm_root().
  * Under win32, the LANG environment variable is hand-built if
-   noe is set.
+   none is set.
+ * If the third argument to sregex() is a hash, the values can
+   now also be executable ones.
 
 1.0.5
 -----
