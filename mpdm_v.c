@@ -55,6 +55,7 @@ static void cleanup_value(mpdm_t v)
 	if (v->data != NULL && v->flags & MPDM_FREE) {
 		mpdm->memory_usage -= v->size;
 		free((void *)v->data);
+		v->data = NULL;
 	}
 }
 
@@ -62,8 +63,8 @@ static void cleanup_value(mpdm_t v)
 int mpdm_destroy(mpdm_t v)
 /* destroys a value */
 {
-	/* if still referenced, don't do it */
-	if (v->ref)
+	/* if still referenced or deleted, do nothing */
+	if (v->ref || v->flags & MPDM_DELETED)
 		return 0;
 
 	/* dequeue */
@@ -82,6 +83,9 @@ int mpdm_destroy(mpdm_t v)
 	mpdm->del = v;
 
 	cleanup_value(v);
+
+	/* mark as deleted */
+	v->flags |= MPDM_DELETED;
 
 	return 1;
 }

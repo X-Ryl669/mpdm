@@ -9,6 +9,7 @@ MPDM Release Notes
    none is set.
  * If the third argument to sregex() is a hash, the values can
    now also be executable ones.
+ * New internal flag for values to mark them as deleted.
 
 1.0.5
 -----

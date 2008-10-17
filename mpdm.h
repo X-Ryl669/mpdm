@@ -29,6 +29,7 @@ extern "C" {
 #define MPDM_STRING	0x00000001	/* data can be string-compared */
 #define MPDM_MULTIPLE	0x00000002	/* data is multiple */
 #define MPDM_FREE	0x00000004	/* free data at destroy */
+#define MPDM_DELETED	0x00000008	/* value is deleted */
 
 #define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
 #define MPDM_RVAL	0x00000020	/* real value cached in .rval */
