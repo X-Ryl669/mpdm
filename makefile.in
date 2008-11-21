@@ -8,8 +8,8 @@ all: $(TARGET) docs
 PROJ=mpdm
 
 ADD_DOCS=RELEASE_NOTES
-GRUTATXT_DOCS=doc/mpdm_overview.html
-MP_DOCCER_DOCS=doc/mpdm_api.html
+GRUTATXT_DOCS=doc/mpdm_overview.html doc/mpdm_api.html
+MP_DOCCER_DOCS=doc/mpdm_api.txt
 
 OBJS=mpdm_v.o mpdm_a.o mpdm_h.o mpdm_d.o mpdm_s.o mpdm_f.o \
 	mpdm_r.o gnu_regex.o
@@ -38,8 +38,8 @@ stress: stress.c $(LIB)
 .txt.html:
 	grutatxt < $< > $@
 
-doc/mpdm_api.html: mpdm_*.c
-	mp_doccer mpdm_*.c -o doc/mpdm_api -f html1 \
+doc/mpdm_api.txt: mpdm_*.c
+	mp_doccer mpdm_*.c -o doc/mpdm_api -f grutatxt \
 	-t "MPDM C API ($(VERSION))" \
 	-a 'Angel Ortega - angel@triptico.com'
 
