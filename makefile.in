@@ -46,7 +46,7 @@ doc/mpdm_api.txt: mpdm_*.c
 docs: $(DOCS)
 
 docsclean:
-	rm -f doc/*.html
+	rm -f doc/mpdm_api.txt doc/*.html
 
 clean:
 	rm -f $(TARGET) $(LIB) $(OBJS) *.o tags *.tar.gz stress
