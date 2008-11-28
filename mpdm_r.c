@@ -296,34 +296,30 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 {
 	const wchar_t *sptr = mpdm_string(s);
 	wchar_t *wptr;
-	mpdm_t r = s;
+	mpdm_t r = NULL;
 
-	if ((wptr = wcschr(sptr, L'&')) != NULL) {
+	if (s == NULL)
+		return s;
 
-		r = NULL;
+	while ((wptr = wcschr(sptr, L'\\')) != NULL ||
+		(wptr = wcschr(sptr, L'&')) != NULL) {
+		int n = wptr - sptr;
 
-		while (wptr != NULL) {
-			int n = wptr - sptr;
-			mpdm_t t2 = t;
+		/* add the leading part */
+		r = mpdm_strcat(r, MPDM_NS(sptr, n));
 
-			if (n && *(wptr - 1) == '\\') {
-				/* is it escaped? avoid the \ */
-				n--;
+		if (*wptr == '\\')
+			r = mpdm_strcat(r, MPDM_NS(++wptr, 1));
+		else
+		if (*wptr == '&')
+			r = mpdm_strcat(r, t);
 
-				/* and set the substitution string to & */
-				t2 = MPDM_LS(L"&");
-			}
+		sptr = wptr + 1;
+	}
 
-			/* add the leading part */
-			r = mpdm_strcat(r, MPDM_NS(sptr, n));
-
-			/* now add the substitution string */
-			r = mpdm_strcat(r, t2);
-
-			sptr = wptr + 1;
-			wptr = wcschr(sptr, L'&');
-		}
-
+	if (r == NULL)
+		r = s;
+	else {
 		/* add the rest of the string */
 		r = mpdm_strcat(r, MPDM_S(sptr));
 	}
