@@ -42,7 +42,7 @@ stress: stress.c $(LIB)
 doc/mpdm_api.txt: mpdm_*.c
 	mp_doccer mpdm_*.c -o doc/mpdm_api -f grutatxt \
 	-t "MPDM C API" \
-	-b "This reference documents the version $(VERSION) of the C API." \
+	-b "This reference documents version $(VERSION) of the C API." \
 	-a 'Angel Ortega - angel@triptico.com'
 
 docs: $(DOCS)
