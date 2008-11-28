@@ -1,11 +1,6 @@
 MPDM overview
 =============
 
- Angel Ortega <angel@triptico.com>
-
-Description
------------
-
 MPDM (Minimum Profit Data Manager) is a lightweight library that provides C
 programs with a rich set of useful data types as scalars, dynamic arrays
 or hashes, similar to those of the Perl language. Also, it contains a
