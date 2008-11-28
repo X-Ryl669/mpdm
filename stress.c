@@ -713,6 +713,11 @@ void test_regex(void)
 	do_test("escaped & in sregex target",
 		mpdm_cmp(v, MPDM_LS(L"[&] [&] [&] [&] [&]")) == 0);
 
+	v = MPDM_LS(L"this string has many words");
+	v = mpdm_sregex(MPDM_LS(L"/[a-z]+/g"), v, MPDM_LS(L"\\\\&"), 0);
+	do_test("escaped \\ in sregex target",
+		mpdm_cmp(v, MPDM_LS(L"\\this \\string \\has \\many \\words")) == 0);
+
 	/* multiple regex tests */
 	w = MPDM_A(0);
 
