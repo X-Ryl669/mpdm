@@ -419,11 +419,19 @@ echo -n "Testing if mp_doccer is installed... "
 MP_DOCCER=$(which mp_doccer || which mp-doccer)
 
 if [ $? = 0 ] ; then
-	echo "OK"
-	echo "MP_DOCCER=yes" >> makefile.opts
-	DOCS="$DOCS \$(MP_DOCCER_DOCS)"
 
-	grep GRUTATXT=yes makefile.opts > /dev/null && DOCS="$DOCS \$(G_AND_MP_DOCS)"
+	if ${MP_DOCCER} --help | grep grutatxt > /dev/null ; then
+
+		echo "OK"
+
+		echo "MP_DOCCER=yes" >> makefile.opts
+		DOCS="$DOCS \$(MP_DOCCER_DOCS)"
+
+		grep GRUTATXT=yes makefile.opts > /dev/null && DOCS="$DOCS \$(G_AND_MP_DOCS)"
+	else
+		echo "Outdated (No)"
+		echo "MP_DOCCER=no" >> makefile.opts
+	fi
 else
 	echo "No"
 	echo "MP_DOCCER=no" >> makefile.opts
