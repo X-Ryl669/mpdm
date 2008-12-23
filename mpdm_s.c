@@ -58,7 +58,7 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 		/* makes room for the new string */
 		if ((dst = realloc(dst, (*dsize + osize) * esize)) != NULL) {
 			/* copies it */
-			memcpy(dst + (*dsize * esize), org, osize * esize);
+			memcpy((char *)dst + (*dsize * esize), org, osize * esize);
 
 			/* adds to final size */
 			*dsize += osize;
@@ -125,9 +125,9 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 			tmp[i] = '\0';
 
 			/* try to convert */
-			if (mbstowcs(&wc, tmp, 1) == -1) {
+			if (mbstowcs(&wc, tmp, 1) == (size_t) -1) {
 				/* can still be an incomplete multibyte char? */
-				if (c != '\0' && i <= MB_CUR_MAX)
+				if (c != '\0' && i <= (int) MB_CUR_MAX)
 					continue;
 				else {
 					/* too many failing bytes; skip 1 byte */
@@ -350,7 +350,7 @@ wchar_t *mpdm_string(const mpdm_t v)
 	/* otherwise, return a visual representation */
 	snprintf(tmp, sizeof(tmp), "%p", v);
 	mbstowcs(wtmp, tmp, sizeof(wtmp));
-	wtmp[sizeof(wtmp) - 1] = L'\0';
+	wtmp[(sizeof(wtmp) / sizeof(wchar_t)) - 1] = L'\0';
 
 	return wtmp;
 }
@@ -405,7 +405,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 	}
 	else
 		/* in any other case, compare just pointers */
-		r = (int) (v1->data - v2->data);
+		r = (int) ((char *)v1->data - (char *)v2->data);
 
 	return r;
 }
@@ -838,8 +838,9 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 			t_fmt[m++] = '%';
 
 			/* transform the format to mbs */
-			while (*i != L'\0' && m < sizeof(t_fmt) - MB_CUR_MAX - 1 &&
-			       wcschr(L"-.0123456789", *i) != NULL)
+			while (*i != L'\0' &&
+				m < (int)(sizeof(t_fmt) - MB_CUR_MAX - 1) &&
+				wcschr(L"-.0123456789", *i) != NULL)
 				m += wctomb(&t_fmt[m], *i++);
 
 			/* transfer the directive */

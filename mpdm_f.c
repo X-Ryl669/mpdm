@@ -258,7 +258,7 @@ static wchar_t *read_iconv(const struct mpdm_file *f, int *s)
 		optr = (char *) &wc;
 
 		/* write to file */
-		if (iconv(f->ic_dec, &iptr, &il, &optr, &ol) == -1) {
+		if (iconv(f->ic_dec, &iptr, &il, &optr, &ol) == (size_t) -1) {
 			/* found incomplete multibyte character */
 			if (errno == EINVAL)
 				continue;
@@ -307,7 +307,7 @@ static int write_iconv(const struct mpdm_file *f, const wchar_t * str)
 		optr = tmp;
 
 		/* write to file */
-		if (iconv(f->ic_enc, &iptr, &il, &optr, &ol) == -1) {
+		if (iconv(f->ic_enc, &iptr, &il, &optr, &ol) == (size_t) -1) {
 			/* error converting; convert a '?' instead */
 			wchar_t q = L'?';
 
@@ -319,7 +319,7 @@ static int write_iconv(const struct mpdm_file *f, const wchar_t * str)
 			iconv(f->ic_enc, &iptr, &il, &optr, &ol);
 		}
 
-		for (n = 0; n < sizeof(tmp) - ol; n++, cnt++) {
+		for (n = 0; n < (int)(sizeof(tmp) - ol); n++, cnt++) {
 			if (put_char(tmp[n], f) == EOF)
 				return -1;
 		}
@@ -1637,7 +1637,7 @@ static int sysdep_pclose(const mpdm_t v)
  */
 mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 {
-	mpdm_t v;
+	mpdm_t v, pr, md;
 	char *m;
 	int rw = 0;
 
@@ -1648,8 +1648,8 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 		return NULL;
 
 	/* convert to mbs,s */
-	mpdm_t pr = MPDM_2MBS(prg->data);
-	mpdm_t md = MPDM_2MBS(mode->data);
+	pr = MPDM_2MBS(prg->data);
+	md = MPDM_2MBS(mode->data);
 
 	/* get the mode */
 	m = (char *) md->data;
