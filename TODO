@@ -4,7 +4,7 @@ Minimum Profit Data Manager (MPDM) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1109: expand_ampersands() kills all backslashes.
+None!
 
 Open Bugs
 ---------
@@ -232,5 +232,7 @@ Closed
    is practically the same and it works, so there should be some
    workaround to use it whenever "WCHAR_T" fails
    (Mon, 07 Apr 2008 14:55:30 +0200).
+ * 1109: expand_ampersands() kills all backslashes
+   (Tue, 03 Feb 2009 07:25:21 +0100).
 
 Email bugs to angel@triptico.com
