@@ -12,6 +12,7 @@ Open Bugs
  * 1056: Finish the overview document.
  * 1103: mpdm_home_dir() calls strcat() insecurely.
  * 1104: mpdm_app_dir() calls strcat() insecurely.
+ * 1110: Win32 file globbing fails when a leading directory is specified.
 
 Pending Enhancements
 --------------------
