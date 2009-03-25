@@ -1376,7 +1376,7 @@ mpdm_t mpdm_glob(const mpdm_t spec)
 		/* if spec includes a directory, store in s */
 		if ((ptr = strrchr((char *) sp->data, '/')) != NULL) {
 			*(ptr + 1) = '\0';
-			s = MPDM_S(sp->data);
+			s = MPDM_MBS(sp->data);
 		}
 
 		do {
