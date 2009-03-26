@@ -1409,16 +1409,14 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	glob_t globbuf;
 	const char *ptr;
 
-	/* convert to mbs */
-	if (spec != NULL) {
-		mpdm_t sp = MPDM_2MBS(spec->data);
+	/* build full path */
+	if (base != NULL)
+		v = mpdm_strcat(base, MPDM_LS(L"/"));
 
-		ptr = sp->data;
-		if (ptr == NULL || *ptr == '\0')
-			ptr = "*";
-	}
-	else
-		ptr = "*";
+	v = mpdm_strcat(v, mpdm_size(spec) == 0 ? MPDM_LS(L"*") : spec);
+	v = MPDM_2MBS(v->data);
+
+	ptr = v->data;
 
 	globbuf.gl_offs = 1;
 
