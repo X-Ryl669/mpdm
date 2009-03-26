@@ -1354,7 +1354,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	mpdm_t s = NULL;
 	mpdm_t sp = NULL;
 
-	if (base != NULL)
+	if (mpdm_size(base))
 		sp = mpdm_strcat(base, MPDM_LS(L"\\"));
 
 	sp = mpdm_strcat(sp, mpdm_size(spec) == 0 ? MPDM_LS(L"*.*") : spec);
@@ -1409,7 +1409,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	const char *ptr;
 
 	/* build full path */
-	if (base != NULL)
+	if (mpdm_size(base))
 		v = mpdm_strcat(base, MPDM_LS(L"/"));
 
 	v = mpdm_strcat(v, mpdm_size(spec) == 0 ? MPDM_LS(L"*") : spec);
