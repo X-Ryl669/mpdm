@@ -1327,9 +1327,10 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
 /**
  * mpdm_glob - Executes a file globbing.
  * @spec: Globbing spec
+ * @base: Optional base directory
  *
  * Executes a file globbing. @spec is system-dependent, but usually
- * the * and ? metacharacters work everywhere. @spec can contain a
+ * the * and ? metacharacters work everywhere. @base can contain a
  * directory; if that's the case, the output strings will include it.
  * In any case, each returned value will be suitable for a call to
  * mpdm_open().
@@ -1338,7 +1339,7 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
  * array if no file matches), or NULL if globbing is unsupported.
  * [File Management]
  */
-mpdm_t mpdm_glob(const mpdm_t spec)
+mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 {
 	mpdm_t d = NULL;
 	mpdm_t f = NULL;

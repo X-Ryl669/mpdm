@@ -608,7 +608,7 @@ void test_file(void)
 
 /*	v=mpdm_glob(MPDM_LS(L"*"));*/
 	printf("Glob:\n");
-	v = mpdm_glob(NULL);
+	v = mpdm_glob(NULL, NULL);
 	mpdm_dump(v);
 }
 

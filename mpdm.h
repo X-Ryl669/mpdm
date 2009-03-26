@@ -166,7 +166,7 @@ int mpdm_unlink(const mpdm_t filename);
 mpdm_t mpdm_stat(const mpdm_t filename);
 int mpdm_chmod(const mpdm_t filename, mpdm_t perms);
 int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid);
-mpdm_t mpdm_glob(mpdm_t spec);
+mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base);
 
 mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode);
 mpdm_t mpdm_pclose(mpdm_t fd);
