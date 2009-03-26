@@ -7,6 +7,7 @@ MPDM Release Notes
  * Fixed a bug when processing backslashes in the substitution
    string in sregex(), that made them dissappear if they were
    not escaping an ampersand.
+ * Fixed a bug in win32 globbing.
 
 1.0.6
 -----
