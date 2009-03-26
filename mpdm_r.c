@@ -309,7 +309,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 		r = mpdm_strcat(r, MPDM_NS(sptr, n));
 
 		if (*wptr == L'\\') {
-			if (*(wptr + 1) == '&')
+			if (*(wptr + 1) == L'&' || *(wptr + 1) == L'\\')
 				wptr++;
 
 			r = mpdm_strcat(r, MPDM_NS(wptr, 1));
