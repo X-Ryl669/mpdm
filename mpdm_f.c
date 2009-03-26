@@ -1352,15 +1352,14 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	char *ptr;
 	mpdm_t w;
 	mpdm_t s = NULL;
+	mpdm_t sp = NULL;
 
-	mpdm_t sp;
+	if (base != NULL)
+		sp = mpdm_strcat(base, MPDM_LS(L"\\"));
 
-	/* convert to mbs */
-	if (spec != NULL)
-		sp = MPDM_2MBS(spec->data);
-	else
-		sp = MPDM_2MBS(L"*.*");
+	sp = mpdm_strcat(sp, mpdm_size(spec) == 0 ? MPDM_LS(L"*.*") : spec);
 
+	sp = MPDM_2MBS(sp->data);
 	ptr = (char *) sp->data;
 
 	/* convert MSDOS dir separators into Unix ones */
