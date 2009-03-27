@@ -1355,18 +1355,14 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	mpdm_t sp = NULL;
 
 	if (mpdm_size(base))
-		sp = mpdm_strcat(base, MPDM_LS(L"\\"));
+		sp = mpdm_strcat(base, MPDM_LS(L"/"));
 
 	sp = mpdm_strcat(sp, mpdm_size(spec) == 0 ? MPDM_LS(L"*.*") : spec);
 
-	sp = MPDM_2MBS(sp->data);
-	ptr = (char *) sp->data;
+	/* delete repeated directory delimiters */
+	sp = mpdm_sregex(MPDM_LS(L"@[\\/]+@g"), sp, MPDM_LS(L"/"), 0);
 
-	/* convert MSDOS dir separators into Unix ones */
-	for (; *ptr != '\0'; ptr++) {
-		if (*ptr == '\\')
-			*ptr = '/';
-	}
+	sp = MPDM_2MBS(sp->data);
 
 	v = MPDM_A(0);
 	d = MPDM_A(0);
@@ -1413,6 +1409,10 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 		v = mpdm_strcat(base, MPDM_LS(L"/"));
 
 	v = mpdm_strcat(v, mpdm_size(spec) == 0 ? MPDM_LS(L"*") : spec);
+
+	/* delete repeated directory delimiters */
+	v = mpdm_sregex(MPDM_LS(L"@/{2,}@g"), v, MPDM_LS(L"/"), 0);
+
 	v = MPDM_2MBS(v->data);
 
 	ptr = v->data;
