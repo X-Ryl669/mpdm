@@ -47,7 +47,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 
 	/* indent */
 	for (n = 0; n < l; n++)
-		ptr = mpdm_poke(ptr, size, L"  ", 2, sizeof(wchar_t));
+		ptr = mpdm_pokews(ptr, size, L"  ");
 
 	if (v != NULL) {
 		char tmp[256];
@@ -83,8 +83,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 
 	/* add the visual representation of the value */
 	wptr = mpdm_string(v);
-	ptr = mpdm_poke(ptr, size, wptr, wcslen(wptr), sizeof(wchar_t));
-	ptr = mpdm_poke(ptr, size, L"\n", 1, sizeof(wchar_t));
+	ptr = mpdm_pokews(ptr, size, wptr);
+	ptr = mpdm_pokews(ptr, size, L"\n");
 
 	if (v != NULL) {
 		/* if it's a hash, iterate it using hkeys
