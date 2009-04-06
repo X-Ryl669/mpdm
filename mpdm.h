@@ -109,7 +109,8 @@ mpdm_t mpdm_split(const mpdm_t s, const mpdm_t a);
 mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a);
 
 void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize);
-wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v);
+wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str);
+wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v);
 wchar_t *mpdm_mbstowcs(const char *str, int *s, int l);
 char *mpdm_wcstombs(const wchar_t * str, int *s);
 mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy);
