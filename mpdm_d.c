@@ -32,15 +32,15 @@
 
 #include "mpdm.h"
 
-/*******************
-	Data
-********************/
+/** data **/
 
-/*******************
-	Code
-********************/
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size);
+wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size) = dump_1;
 
-static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
+/** code **/
+
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
+/* dumps one value to the ptr dynamic string with 'l' indenting level */
 {
 	int n;
 	wchar_t *wptr;

@@ -8,6 +8,7 @@ MPDM Release Notes
    string in sregex(), that made them dissappear if they were
    not escaping an ampersand.
  * Fixed a bug in win32 globbing.
+ * The dump_1() function is now pluggable.
 
 1.0.6
 -----
