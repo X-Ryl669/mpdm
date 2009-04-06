@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
 
     mpdm_d.c - Debugging utilities
 
@@ -35,7 +35,7 @@
 /** data **/
 
 static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size);
-wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size) = dump_1;
+wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size) = NULL;
 
 /** code **/
 
@@ -123,6 +123,10 @@ mpdm_t mpdm_dumper(const mpdm_t v)
 {
 	int size = 0;
 	wchar_t *ptr;
+
+	/* if no dumper plugin is defined, fall back to default */
+	if (mpdm_dump_1 == NULL)
+		mpdm_dump_1 = dump_1;
 
 	ptr = mpdm_dump_1(v, 0, NULL, &size);
 	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
