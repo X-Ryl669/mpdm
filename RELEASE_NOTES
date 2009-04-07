@@ -9,6 +9,7 @@ MPDM Release Notes
    not escaping an ampersand.
  * Fixed a bug in win32 globbing.
  * The dump_1() function is now pluggable.
+ * New function mpdm_chdir().
 
 1.0.6
 -----

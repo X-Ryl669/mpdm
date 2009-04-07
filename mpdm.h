@@ -167,6 +167,7 @@ int mpdm_encoding(mpdm_t charset);
 int mpdm_unlink(const mpdm_t filename);
 mpdm_t mpdm_stat(const mpdm_t filename);
 int mpdm_chmod(const mpdm_t filename, mpdm_t perms);
+int mpdm_chdir(const mpdm_t dir);
 int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid);
 mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base);
 

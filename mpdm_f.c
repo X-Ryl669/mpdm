@@ -1299,6 +1299,26 @@ int mpdm_chmod(const mpdm_t filename, mpdm_t perms)
 
 
 /**
+ * mpdm_chdir - Changes the working directory
+ * @dir: the new path
+ *
+ * Changes the working directory
+ * [File Management]
+ */
+int mpdm_chdir(const mpdm_t dir)
+{
+	int r = -1;
+
+	mpdm_t fn = MPDM_2MBS(dir->data);
+
+	if ((r = chdir((char *) fn->data)) == -1)
+		store_syserr();
+
+	return r;
+}
+
+
+/**
  * mpdm_chown - Changes a file's owner.
  * @filename: the file name
  * @uid: user id (element 4 from mpdm_stat())
