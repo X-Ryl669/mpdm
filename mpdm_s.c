@@ -960,3 +960,134 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 
 	return r;
 }
+
+
+mpdm_t mpdm_scanf(const mpdm_t string, const mpdm_t format)
+{
+	wchar_t *i = (wchar_t *)string->data;
+	wchar_t *f = (wchar_t *)format->data;
+	mpdm_t r;
+
+	r = MPDM_A(0);
+
+	while (*i && *f) {
+		if (*f == L'%') {
+			wchar_t *ptr = NULL;
+			int size = 0;
+			wchar_t yset[1024] = L"";
+			wchar_t nset[1024] = L"";
+			wchar_t cmd;
+			int vsize = 0;
+			int ignore = 0;
+
+			f++;
+
+			/* an asterisk? don't use next value */
+			if (*f == L'*') {
+				ignore = 1;
+				f++;
+			}
+
+			/* does it have a size? */
+			while (wcschr(L"0123456789", *f)) {
+				vsize *= 10;
+				vsize += *f - L'0';
+				f++;
+			}
+
+			/* if no size, set it to an arbitrary limit */
+			if (!vsize)
+				vsize = 0xfffffff;
+
+			/* now *f should contain a command */
+			cmd = *f;
+			f++;
+
+			/* is it a number? */
+			if (wcschr(L"udixf", cmd)) {
+				wcscpy(yset, L"0123456789");
+
+				if (cmd != 'u')
+					wcscat(yset, L"-");
+				if (cmd == 'x')
+					wcscat(yset, L"xabcdefABCDEF");
+				if (cmd == 'f')
+					wcscat(yset, L".");
+			}
+			else
+			/* non-space string */
+			if (cmd == L's')
+				wcscpy(nset, L" \t");
+			else
+			/* raw set */
+			if (cmd == L'[') {
+				int inv = 0;
+				wchar_t tmp[1024];
+				int n = 0;
+
+				/* is it an inverse set? */
+				if (*f == L'^') {
+					inv = 1;
+					f++;
+				}
+
+				/* first one is a ]? add it */
+				if (*f == L']') {
+					tmp[n++] = *f;
+					f++;
+				}
+
+				/* now build the set */
+				for (; n < sizeof(tmp) - 1 && *f && *f != L']'; f++) {
+					/* is it a range? */
+					if (*f == L'-') {
+						f++;
+
+						/* start or end? hyphen itself */
+						if (n == 0 || *f == L']')
+							tmp[n++] = L'-';
+						else {
+							/* pick previous char */
+							wchar_t c = tmp[n - 1];
+
+							/* fill */
+							while (n < sizeof(tmp) - 1 && c < *f)
+								tmp[n++] = ++c;
+						}
+					}
+					else
+						tmp[n++] = *f;
+				}
+
+				tmp[n] = L'\0';
+
+				wcscpy(inv ? nset : yset, tmp);
+			}
+
+			/* now fill the dynamic string */
+			while (vsize && !wcschr(nset, *i) && wcschr(yset, *i)) {
+				ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
+				i++;
+				vsize--;
+			}
+
+			/* null terminate */
+			ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+
+			if (!ignore)
+				mpdm_push(r, MPDM_ENS(ptr, size));
+			else
+				free(ptr);
+		}
+		else
+		/* test for literals in the format string */
+		if (*i == *f) {
+			i++;
+			f++;
+		}
+		else
+			break;
+	}
+
+	return r;
+}
