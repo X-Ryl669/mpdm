@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
 
     mpdm_s.c - String management
 
@@ -1065,7 +1065,7 @@ mpdm_t mpdm_scanf(const mpdm_t string, const mpdm_t format)
 			}
 
 			/* now fill the dynamic string */
-			while (vsize && !wcschr(nset, *i) && wcschr(yset, *i)) {
+			while (vsize && !wcschr(nset, *i) && (yset[0] == L'\0' || wcschr(yset, *i))) {
 				ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
 				i++;
 				vsize--;
