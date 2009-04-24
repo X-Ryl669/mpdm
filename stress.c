@@ -1200,9 +1200,21 @@ void test_scanf(void)
 	do_test("mpdm_scanf_4.3", mpdm_cmp(mpdm_aget(v, 2), MPDM_LS(L"12")) == 0);
 	do_test("mpdm_scanf_4.4", mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"1234567890")) == 0);
 
-	v = mpdm_scanf(MPDM_LS(L"%[abc]%s"), MPDM_LS(L"ccbaabcdaaa and more"));
+	v = mpdm_scanf(MPDM_LS(L"%[abc]%s"), MPDM_LS(L"ccbaabcxaaae and more"));
 	do_test("mpdm_scanf_5.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"ccbaabc")) == 0);
-	do_test("mpdm_scanf_5.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"daaa")) == 0);
+	do_test("mpdm_scanf_5.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"xaaae")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%[a-d]%s"), MPDM_LS(L"ccbaabcxaaae and more"));
+	do_test("mpdm_scanf_6.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"ccbaabc")) == 0);
+	do_test("mpdm_scanf_6.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"xaaae")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%[^x]%s"), MPDM_LS(L"ccbaabcxaaae and more"));
+	do_test("mpdm_scanf_7.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"ccbaabc")) == 0);
+	do_test("mpdm_scanf_7.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"xaaae")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%[^:]: %s"), MPDM_LS(L"key: value"));
+	do_test("mpdm_scanf_8.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"key")) == 0);
+	do_test("mpdm_scanf_8.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"value")) == 0);
 }
 
 
