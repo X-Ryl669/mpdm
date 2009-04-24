@@ -962,10 +962,10 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 }
 
 
-mpdm_t mpdm_scanf(const mpdm_t string, const mpdm_t format)
+mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 {
-	wchar_t *i = (wchar_t *)string->data;
-	wchar_t *f = (wchar_t *)format->data;
+	wchar_t *i = (wchar_t *)str->data;
+	wchar_t *f = (wchar_t *)fmt->data;
 	mpdm_t r;
 
 	r = MPDM_A(0);
