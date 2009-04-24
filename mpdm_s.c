@@ -1069,18 +1069,20 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 
 			/* now fill the dynamic string */
 			while (vsize && !wcschr(nset, *i) && (yset[0] == L'\0' || wcschr(yset, *i))) {
-				ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
+
+				/* only add if not being ignored */
+				if (!ignore)
+					ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
+
 				i++;
 				vsize--;
 			}
 
-			/* null terminate */
-			ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
-
-			if (!ignore)
+			if (!ignore) {
+				/* null terminate and push */
+				ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
 				mpdm_push(r, MPDM_ENS(ptr, size));
-			else
-				free(ptr);
+			}
 		}
 		else
 		/* test for literals in the format string */
