@@ -1059,6 +1059,9 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 						tmp[n++] = *f;
 				}
 
+				/* skip the ] */
+				f++;
+
 				tmp[n] = L'\0';
 
 				wcscpy(inv ? nset : yset, tmp);

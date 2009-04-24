@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
 
     stress.c - Stress tests for MPDM.
 
@@ -1177,6 +1177,35 @@ void test_ulc(void)
 }
 
 
+void test_scanf(void)
+{
+	mpdm_t v;
+
+	v = mpdm_scanf(MPDM_LS(L"%d %d"), MPDM_LS(L"1234 5678"));
+	do_test("mpdm_scanf_1.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"1234")) == 0);
+	do_test("mpdm_scanf_1.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"5678")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%s %f %d"), MPDM_LS(L"this 12.34 5678"));
+	do_test("mpdm_scanf_2.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"this")) == 0);
+	do_test("mpdm_scanf_2.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"12.34")) == 0);
+	do_test("mpdm_scanf_2.3", mpdm_cmp(mpdm_aget(v, 2), MPDM_LS(L"5678")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%s %*f %d"), MPDM_LS(L"this 12.34 5678"));
+	do_test("mpdm_scanf_3.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"this")) == 0);
+	do_test("mpdm_scanf_3.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"5678")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%4d%4d%2d%10d"), MPDM_LS(L"12341234121234567890"));
+	do_test("mpdm_scanf_4.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"1234")) == 0);
+	do_test("mpdm_scanf_4.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"1234")) == 0);
+	do_test("mpdm_scanf_4.3", mpdm_cmp(mpdm_aget(v, 2), MPDM_LS(L"12")) == 0);
+	do_test("mpdm_scanf_4.4", mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"1234567890")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%[abc]%s"), MPDM_LS(L"ccbaabcdaaa and more"));
+	do_test("mpdm_scanf_5.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"ccbaabc")) == 0);
+	do_test("mpdm_scanf_5.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"daaa")) == 0);
+}
+
+
 int main(int argc, char *argv[])
 {
 	if (argc > 1) {
@@ -1206,6 +1235,7 @@ int main(int argc, char *argv[])
 	test_misc();
 	test_sprintf();
 	test_ulc();
+	test_scanf();
 
 	benchmark();
 
