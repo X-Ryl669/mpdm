@@ -1218,6 +1218,10 @@ void test_scanf(void)
 
 	v = mpdm_scanf(MPDM_LS(L"%*[^/]/* %s */"), MPDM_LS(L"this is code /* comment */ more code"));
 	do_test("mpdm_scanf_9.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"comment")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%d%%%d"), MPDM_LS(L"1234%5678"));
+	do_test("mpdm_scanf_10.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"1234")) == 0);
+	do_test("mpdm_scanf_10.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"5678")) == 0);
 }
 
 

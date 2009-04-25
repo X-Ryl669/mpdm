@@ -982,7 +982,7 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 
 			f++;
 
-			/* an asterisk? don't use next value */
+			/* an asterisk? don't return next value */
 			if (*f == L'*') {
 				ignore = 1;
 				f++;
@@ -995,7 +995,7 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 				f++;
 			}
 
-			/* if no size, set it to an arbitrary limit */
+			/* if no size, set it to an arbitrary big limit */
 			if (!vsize)
 				vsize = 0xfffffff;
 
@@ -1018,6 +1018,13 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 			/* non-space string */
 			if (cmd == L's')
 				wcscpy(nset, L" \t");
+			else
+			/* percent sign */
+			if (cmd == L'%') {
+				vsize = 1;
+				ignore = 1;
+				wcscpy(yset, L"%");
+			}
 			else
 			/* raw set */
 			if (cmd == L'[') {
@@ -1068,7 +1075,9 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str)
 			}
 
 			/* now fill the dynamic string */
-			while (vsize && !wcschr(nset, *i) && (yset[0] == L'\0' || wcschr(yset, *i))) {
+			while (vsize &&
+			       !wcschr(nset, *i) &&
+			       (yset[0] == L'\0' || wcschr(yset, *i))) {
 
 				/* only add if not being ignored */
 				if (!ignore)
