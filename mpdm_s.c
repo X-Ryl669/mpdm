@@ -966,6 +966,7 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 #define SCANF_BUF_SIZE 1024
 static wchar_t scanf_yset[SCANF_BUF_SIZE];
 static wchar_t scanf_nset[SCANF_BUF_SIZE];
+static wchar_t scanf_mark[SCANF_BUF_SIZE];
 
 mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 {
@@ -983,9 +984,10 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			wchar_t cmd;
 			int vsize = 0;
 			int ignore = 0;
+			int msize = 0;
 
 			/* empty all buffers */
-			scanf_yset[0] = scanf_nset[0] = L'\0';
+			scanf_yset[0] = scanf_nset[0] = scanf_mark[0] = L'\0';
 
 			f++;
 
@@ -1040,6 +1042,35 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 				mpdm_push(r, MPDM_I(i - (wchar_t *)str->data));
 			}
 			else
+			/* string upto a mark */
+			if (cmd == L'S') {
+				wchar_t *tmp = f;
+
+				/* fill the mark upto another command */
+				while (*tmp) {
+					if (*tmp == L'%') {
+						tmp++;
+
+						/* is it an 'n'? ignore and go on */
+						if (*tmp == L'n') {
+							tmp++;
+							continue;
+						}
+						else
+						if (*tmp == L'%')
+							scanf_mark[msize++] = *tmp;
+						else
+							break;
+					}
+					else
+						scanf_mark[msize++] = *tmp;
+
+					tmp++;
+				}
+
+				scanf_mark[msize] = L'\0';
+			}
+			else
 			/* raw set */
 			if (cmd == L'[') {
 				int n = 0;
@@ -1088,7 +1119,8 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			/* now fill the dynamic string */
 			while (vsize &&
 			       !wcschr(scanf_nset, *i) &&
-			       (scanf_yset[0] == L'\0' || wcschr(scanf_yset, *i))) {
+			       (scanf_yset[0] == L'\0' || wcschr(scanf_yset, *i)) &&
+			       (msize == 0 || wcsncmp(i, scanf_mark, msize) != 0)) {
 
 				/* only add if not being ignored */
 				if (!ignore)

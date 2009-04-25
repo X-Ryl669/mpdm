@@ -1226,6 +1226,13 @@ void test_scanf(void)
 	v = mpdm_scanf(MPDM_LS(L"%*[abc]%n%*[^ ]%n"), MPDM_LS(L"ccbaabcxaaae and more"), 0);
 	do_test("mpdm_scanf_11.1", mpdm_ival(mpdm_aget(v, 0)) == 7);
 	do_test("mpdm_scanf_11.2", mpdm_ival(mpdm_aget(v, 1)) == 12);
+
+	v = mpdm_scanf(MPDM_LS(L"/* %S */"), MPDM_LS(L"/* inside the comment */"), 0);
+	do_test("mpdm_scanf_12.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"inside the comment")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"/* %S */%s"), MPDM_LS(L"/* inside the comment */outside"), 0);
+	do_test("mpdm_scanf_13.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"inside the comment")) == 0);
+	do_test("mpdm_scanf_13.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"outside")) == 0);
 }
 
 
