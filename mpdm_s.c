@@ -977,7 +977,7 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 	i += offset;
 	r = MPDM_A(0);
 
-	while (*i && *f) {
+	while (*f) {
 		if (*f == L'%') {
 			wchar_t *ptr = NULL;
 			int size = 0;
