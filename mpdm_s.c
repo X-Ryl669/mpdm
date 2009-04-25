@@ -968,7 +968,7 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 	wchar_t *f = (wchar_t *)fmt->data;
 	mpdm_t r;
 
-	f += offset;
+	i += offset;
 	r = MPDM_A(0);
 
 	while (*i && *f) {
