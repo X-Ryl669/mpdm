@@ -963,8 +963,9 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 
 
 /* working buffers */
-static wchar_t scanf_yset[1024];
-static wchar_t scanf_nset[1024];
+#define SCANF_BUF_SIZE 1024
+static wchar_t scanf_yset[SCANF_BUF_SIZE];
+static wchar_t scanf_nset[SCANF_BUF_SIZE];
 
 mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 {
@@ -1041,50 +1042,47 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			else
 			/* raw set */
 			if (cmd == L'[') {
-				int inv = 0;
-				wchar_t tmp[1024];
 				int n = 0;
+				wchar_t *set = scanf_yset;
 
 				/* is it an inverse set? */
 				if (*f == L'^') {
-					inv = 1;
+					set = scanf_nset;
 					f++;
 				}
 
 				/* first one is a ]? add it */
 				if (*f == L']') {
-					tmp[n++] = *f;
+					set[n++] = *f;
 					f++;
 				}
 
 				/* now build the set */
-				for (; n < sizeof(tmp) - 1 && *f && *f != L']'; f++) {
+				for (; n < SCANF_BUF_SIZE - 1 && *f && *f != L']'; f++) {
 					/* is it a range? */
 					if (*f == L'-') {
 						f++;
 
 						/* start or end? hyphen itself */
 						if (n == 0 || *f == L']')
-							tmp[n++] = L'-';
+							set[n++] = L'-';
 						else {
 							/* pick previous char */
-							wchar_t c = tmp[n - 1];
+							wchar_t c = set[n - 1];
 
 							/* fill */
-							while (n < sizeof(tmp) - 1 && c < *f)
-								tmp[n++] = ++c;
+							while (n < SCANF_BUF_SIZE - 1 && c < *f)
+								set[n++] = ++c;
 						}
 					}
 					else
-						tmp[n++] = *f;
+						set[n++] = *f;
 				}
 
 				/* skip the ] */
 				f++;
 
-				tmp[n] = L'\0';
-
-				wcscpy(inv ? scanf_nset : scanf_yset, tmp);
+				set[n] = L'\0';
 			}
 
 			/* now fill the dynamic string */
