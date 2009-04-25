@@ -1222,6 +1222,10 @@ void test_scanf(void)
 	v = mpdm_scanf(MPDM_LS(L"%d%%%d"), MPDM_LS(L"1234%5678"), 0);
 	do_test("mpdm_scanf_10.1", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"1234")) == 0);
 	do_test("mpdm_scanf_10.2", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"5678")) == 0);
+
+	v = mpdm_scanf(MPDM_LS(L"%*[abc]%n%*[^ ]%n"), MPDM_LS(L"ccbaabcxaaae and more"), 0);
+	do_test("mpdm_scanf_11.1", mpdm_ival(mpdm_aget(v, 0)) == 7);
+	do_test("mpdm_scanf_11.2", mpdm_ival(mpdm_aget(v, 1)) == 12);
 }
 
 

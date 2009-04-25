@@ -1020,11 +1020,18 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			if (cmd == L's')
 				wcscpy(nset, L" \t");
 			else
-			/* percent sign */
+			/* verbatim percent sign */
 			if (cmd == L'%') {
 				vsize = 1;
 				ignore = 1;
 				wcscpy(yset, L"%");
+			}
+			else
+			/* position */
+			if (cmd == L'n') {
+				vsize = 0;
+				ignore = 1;
+				mpdm_push(r, MPDM_I(i - (wchar_t *)str->data));
 			}
 			else
 			/* raw set */
