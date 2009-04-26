@@ -4,7 +4,6 @@ MPDM Release Notes
 1.0.7
 -----
 
- * New function mpdm_scanf().
  * Fixed a bug when processing backslashes in the substitution
    string in sregex(), that made them dissappear if they were
    not escaping an ampersand.
