@@ -960,3 +960,191 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 
 	return r;
 }
+
+
+/* working buffers */
+#define SCANF_BUF_SIZE 1024
+static wchar_t scanf_yset[SCANF_BUF_SIZE];
+static wchar_t scanf_nset[SCANF_BUF_SIZE];
+static wchar_t scanf_mark[SCANF_BUF_SIZE];
+
+mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
+{
+	wchar_t *i = (wchar_t *)str->data;
+	wchar_t *f = (wchar_t *)fmt->data;
+	mpdm_t r;
+
+	i += offset;
+	r = MPDM_A(0);
+
+	while (*f) {
+		if (*f == L'%') {
+			wchar_t *ptr = NULL;
+			int size = 0;
+			wchar_t cmd;
+			int vsize = 0;
+			int ignore = 0;
+			int msize = 0;
+
+			/* empty all buffers */
+			scanf_yset[0] = scanf_nset[0] = scanf_mark[0] = L'\0';
+
+			f++;
+
+			/* an asterisk? don't return next value */
+			if (*f == L'*') {
+				ignore = 1;
+				f++;
+			}
+
+			/* does it have a size? */
+			while (wcschr(L"0123456789", *f)) {
+				vsize *= 10;
+				vsize += *f - L'0';
+				f++;
+			}
+
+			/* if no size, set it to an arbitrary big limit */
+			if (!vsize)
+				vsize = 0xfffffff;
+
+			/* now *f should contain a command */
+			cmd = *f;
+			f++;
+
+			/* is it a number? */
+			if (wcschr(L"udixf", cmd)) {
+				wcscpy(scanf_yset, L"0123456789");
+
+				if (cmd != 'u')
+					wcscat(scanf_yset, L"-");
+				if (cmd == 'x')
+					wcscat(scanf_yset, L"xabcdefABCDEF");
+				if (cmd == 'f')
+					wcscat(scanf_yset, L".");
+			}
+			else
+			/* non-space string */
+			if (cmd == L's')
+				wcscpy(scanf_nset, L" \t");
+			else
+			/* verbatim percent sign */
+			if (cmd == L'%') {
+				vsize = 1;
+				ignore = 1;
+				wcscpy(scanf_yset, L"%");
+			}
+			else
+			/* position */
+			if (cmd == L'n') {
+				vsize = 0;
+				ignore = 1;
+				mpdm_push(r, MPDM_I(i - (wchar_t *)str->data));
+			}
+			else
+			/* string upto a mark */
+			if (cmd == L'S') {
+				wchar_t *tmp = f;
+
+				/* fill the mark upto another command */
+				while (*tmp) {
+					if (*tmp == L'%') {
+						tmp++;
+
+						/* is it an 'n'? ignore and go on */
+						if (*tmp == L'n') {
+							tmp++;
+							continue;
+						}
+						else
+						if (*tmp == L'%')
+							scanf_mark[msize++] = *tmp;
+						else
+							break;
+					}
+					else
+						scanf_mark[msize++] = *tmp;
+
+					tmp++;
+				}
+
+				scanf_mark[msize] = L'\0';
+			}
+			else
+			/* raw set */
+			if (cmd == L'[') {
+				int n = 0;
+				wchar_t *set = scanf_yset;
+
+				/* is it an inverse set? */
+				if (*f == L'^') {
+					set = scanf_nset;
+					f++;
+				}
+
+				/* first one is a ]? add it */
+				if (*f == L']') {
+					set[n++] = *f;
+					f++;
+				}
+
+				/* now build the set */
+				for (; n < SCANF_BUF_SIZE - 1 && *f && *f != L']'; f++) {
+					/* is it a range? */
+					if (*f == L'-') {
+						f++;
+
+						/* start or end? hyphen itself */
+						if (n == 0 || *f == L']')
+							set[n++] = L'-';
+						else {
+							/* pick previous char */
+							wchar_t c = set[n - 1];
+
+							/* fill */
+							while (n < SCANF_BUF_SIZE - 1 && c < *f)
+								set[n++] = ++c;
+						}
+					}
+					else
+						set[n++] = *f;
+				}
+
+				/* skip the ] */
+				f++;
+
+				set[n] = L'\0';
+			}
+
+			/* now fill the dynamic string */
+			while (vsize &&
+			       !wcschr(scanf_nset, *i) &&
+			       (scanf_yset[0] == L'\0' || wcschr(scanf_yset, *i)) &&
+			       (msize == 0 || wcsncmp(i, scanf_mark, msize) != 0)) {
+
+				/* only add if not being ignored */
+				if (!ignore)
+					ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
+
+				i++;
+				vsize--;
+			}
+
+			if (!ignore && size) {
+				/* null terminate and push */
+				ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+				mpdm_push(r, MPDM_ENS(ptr, size));
+			}
+		}
+		else
+		/* test for literals in the format string */
+		if (*i == *f) {
+			i++;
+			f++;
+		}
+		else
+			break;
+	}
+
+	return r;
+}
