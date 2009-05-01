@@ -396,7 +396,18 @@ else
 		echo "#define CONFOPT_REALPATH 1" >> config.h
 		echo "realpath()"
 	else
-		echo No
+		# try now _fullpath
+		echo "#include <stdlib.h>" > .tmp.c
+		echo "int main(void) { char tmp[2048]; _fullpath(tmp, \"file\", _MAX_PATH); return 0; }" >> .tmp.c
+
+		$CC .tmp.c -o .tmp.o 2>> .config.log
+
+		if [ $? = 0 ] ; then
+			echo "#define CONFOPT_FULLPATH 1" >> config.h
+			echo "_fullpath()"
+		else
+			echo "No"
+		fi
 	fi
 fi
 

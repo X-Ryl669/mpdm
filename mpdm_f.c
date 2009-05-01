@@ -1267,6 +1267,15 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 		}
 #endif
 
+#ifdef CONFOPT_FULLPATH
+		{
+			char tmp[_MAX_PATH + 1];
+
+			if (_fullpath(tmp, (char *)fn->data, _MAX_PATH) != NULL)
+				mpdm_aset(r, MPDM_MBS(tmp), 13);
+		}
+#endif
+
 	}
 	else
 		store_syserr();
