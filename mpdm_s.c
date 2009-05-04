@@ -962,7 +962,7 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 }
 
 
-/* working buffers */
+/* scanf working buffers */
 #define SCANF_BUF_SIZE 1024
 static wchar_t scanf_yset[SCANF_BUF_SIZE];
 static wchar_t scanf_nset[SCANF_BUF_SIZE];
@@ -973,13 +973,13 @@ struct {
 	wchar_t *yset;
 	wchar_t *nset;
 } scanf_sets[] = {
-	{ L's',		L"",			L" \t" },
-	{ L'u',		L"0123456789",		L"" },
-	{ L'd',		L"-0123456789",		L"" },
-	{ L'i',		L"-0123456789",		L"" },
-	{ L'f',		L"-0123456789.",	L"" },
-	{ L'x',		L"-xabcdefABCDEF",	L"" },
-	{ L'\0',	NULL,			NULL },
+	{ L's',		L"",				L" \t" },
+	{ L'u',		L"0123456789",			L"" },
+	{ L'd',		L"-0123456789",			L"" },
+	{ L'i',		L"-0123456789",			L"" },
+	{ L'f',		L"-0123456789.",		L"" },
+	{ L'x',		L"-0123456789xabcdefABCDEF",	L"" },
+	{ L'\0',	NULL,				NULL },
 };
 
 mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
