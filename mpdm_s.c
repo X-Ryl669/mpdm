@@ -1105,6 +1105,21 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 						}
 					}
 					else
+					/* is it another command? */
+					if (*f == L'%') {
+						int i;
+
+						f++;
+						for (i = 0; scanf_sets[i].cmd; i++) {
+							if (*f == scanf_sets[i].cmd) {
+								set[n] = L'\0';
+								wcscat(set, scanf_sets[i].yset);
+								n += wcslen(scanf_sets[i].yset);
+								break;
+							}
+						}
+					}
+					else
 						set[n++] = *f;
 				}
 
