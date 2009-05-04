@@ -968,6 +968,20 @@ static wchar_t scanf_yset[SCANF_BUF_SIZE];
 static wchar_t scanf_nset[SCANF_BUF_SIZE];
 static wchar_t scanf_mark[SCANF_BUF_SIZE];
 
+struct {
+	wchar_t cmd;
+	wchar_t *yset;
+	wchar_t *nset;
+} scanf_sets[] = {
+	{ L's',		L"",			L" \t" },
+	{ L'u',		L"0123456789",		L"" },
+	{ L'd',		L"-0123456789",		L"" },
+	{ L'i',		L"-0123456789",		L"" },
+	{ L'f',		L"-0123456789.",	L"" },
+	{ L'x',		L"-xabcdefABCDEF",	L"" },
+	{ L'\0',	NULL,			NULL },
+};
+
 mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 {
 	wchar_t *i = (wchar_t *)str->data;
@@ -1012,30 +1026,14 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			cmd = *f;
 			f++;
 
-			/* is it a number? */
-			if (wcschr(L"udixf", cmd)) {
-				wcscpy(scanf_yset, L"0123456789");
-
-				if (cmd != 'u')
-					wcscat(scanf_yset, L"-");
-				if (cmd == 'x')
-					wcscat(scanf_yset, L"xabcdefABCDEF");
-				if (cmd == 'f')
-					wcscat(scanf_yset, L".");
-			}
-			else
-			/* non-space string */
-			if (cmd == L's')
-				wcscpy(scanf_nset, L" \t");
-			else
-			/* verbatim percent sign */
+			/* is it a verbatim percent sign? */
 			if (cmd == L'%') {
 				vsize = 1;
 				ignore = 1;
 				wcscpy(scanf_yset, L"%");
 			}
 			else
-			/* position */
+			/* a position? */
 			if (cmd == L'n') {
 				vsize = 0;
 				ignore = 1;
@@ -1114,6 +1112,19 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 				f++;
 
 				set[n] = L'\0';
+			}
+			else
+			/* a standard set? */
+			{
+				int n;
+
+				for (n = 0; scanf_sets[n].cmd != L'\0'; n++) {
+					if (cmd == scanf_sets[n].cmd) {
+						wcscpy(scanf_yset, scanf_sets[n].yset);
+						wcscpy(scanf_nset, scanf_sets[n].nset);
+						break;
+					}
+				}
 			}
 
 			/* now fill the dynamic string */
