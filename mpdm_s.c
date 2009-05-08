@@ -1163,6 +1163,14 @@ mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			}
 		}
 		else
+		if (*f == L' ' || *f == L'\t') {
+			/* if it's a blank, sync to next non-blank */
+			f++;
+
+			while (*i == L' ' || *i == L'\t')
+				i++;
+		}
+		else
 		/* test for literals in the format string */
 		if (*i == *f) {
 			i++;
