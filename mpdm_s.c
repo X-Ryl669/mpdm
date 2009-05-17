@@ -982,7 +982,7 @@ struct {
 	{ L'\0',	NULL,				NULL },
 };
 
-mpdm_t mpdm_scanf(const mpdm_t fmt, const mpdm_t str, int offset)
+mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 {
 	wchar_t *i = (wchar_t *)str->data;
 	wchar_t *f = (wchar_t *)fmt->data;
