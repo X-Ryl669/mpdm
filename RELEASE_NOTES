@@ -4,7 +4,7 @@ MPDM Release Notes
 1.0.8
 -----
 
- * New function mpdm_scanf().
+ * New function mpdm_sscanf().
 
 1.0.7
 -----
