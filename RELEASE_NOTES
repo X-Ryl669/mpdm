@@ -5,6 +5,8 @@ MPDM Release Notes
 -----
 
  * New function mpdm_sscanf().
+ * Fixed mpdm_encoding() to allow again empty strings as its
+   argument to fall back to default encoding.
 
 1.0.7
 -----
