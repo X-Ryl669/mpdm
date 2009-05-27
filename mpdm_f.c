@@ -1139,7 +1139,7 @@ int mpdm_encoding(mpdm_t charset)
 	mpdm_t v = NULL;
 
 	/* NULL encoding? done */
-	if (charset == NULL) {
+	if (mpdm_size(charset) == 0) {
 		mpdm_hset_s(mpdm_root(), L"ENCODING", NULL);
 		return 0;
 	}
