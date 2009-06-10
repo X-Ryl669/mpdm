@@ -7,6 +7,8 @@ MPDM Release Notes
  * New function mpdm_sscanf().
  * Fixed mpdm_encoding() to allow again empty strings as its
    argument to fall back to default encoding.
+ * Improved file encoding autodetection by looking at the
+   UTF BOM marks.
 
 1.0.7
 -----

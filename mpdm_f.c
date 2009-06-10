@@ -715,6 +715,68 @@ static int write_utf32(struct mpdm_file *f, const wchar_t * str)
 }
 
 
+static wchar_t *read_auto(struct mpdm_file *f, int *s)
+/* autodetects different encodings based on the BOM */
+{
+	/* by default, multibyte reading */
+	f->f_read = read_mbs;
+
+	/* not reading from a FILE? no autodetection possible */
+	if (f->in != NULL) {
+		int c;
+
+		c = get_char(f);
+
+		if (c == 0xff) {
+			/* can be utf32le or utf16le */
+			if (get_char(f) == 0xfe) {
+				/* if next 2 chars are 0x00, it's utf32; otherwise utf16 */
+				if (get_char(f) == 0x00 && get_char(f) == 0x00) {
+					f->f_read = read_utf32le;
+					goto got_encoding;
+				}
+				else {
+					/* rewind to 3rd character */
+					fseek(f->in, 2, 0);
+					f->f_read = read_utf16le;
+					goto got_encoding;
+				}
+			}
+		}
+		else
+		if (c == 0x00) {
+			/* can be utf32be */
+			if (get_char(f) == 0x00 && get_char(f) == 0xfe && get_char(f) == 0xff) {
+				f->f_read = read_utf32be;
+				goto got_encoding;
+			}
+		}
+		else
+		if (c == 0xfe) {
+			/* can be utf16be */
+			if (get_char(f) == 0xff) {
+				f->f_read = read_utf16be;
+				goto got_encoding;
+			}
+		}
+		else
+		if (c == 0xef) {
+			/* can be utf8 with BOM */
+			if (get_char(f) == 0xbb && get_char(f) == 0xbf) {
+				f->f_read = read_utf8;
+				goto got_encoding;
+			}
+		}
+
+		/* none of the above; restart */
+		fseek(f->in, 0, 0);
+	}
+
+got_encoding:
+	return f->f_read(f, s);
+}
+
+
 static mpdm_t new_mpdm_file(void)
 /* creates a new file value */
 {
@@ -728,7 +790,7 @@ static mpdm_t new_mpdm_file(void)
 	memset(fs, '\0', sizeof(struct mpdm_file));
 
 	/* default I/O functions */
-	fs->f_read = read_mbs;
+	fs->f_read = read_auto;
 	fs->f_write = write_wcs;
 
 #ifdef CONFOPT_ICONV
