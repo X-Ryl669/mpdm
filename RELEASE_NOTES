@@ -8,7 +8,8 @@ MPDM Release Notes
  * Fixed mpdm_encoding() to allow again empty strings as its
    argument to fall back to default encoding.
  * Improved file encoding autodetection by looking at the
-   UTF BOM marks.
+   UTF BOM marks. The detected encoding is stored in the
+   `DETECTED_ENCODING' root key.
 
 1.0.7
 -----
