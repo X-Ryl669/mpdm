@@ -411,6 +411,45 @@ static int write_utf8(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
+static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s)
+/* utf-8 reader with BOM detection */
+{
+	wchar_t *enc = L"";
+
+	f->f_read = NULL;
+
+	/* autodetection */
+	if (get_char(f) == 0xef && get_char(f) == 0xbb && get_char(f) == 0xbf)
+		enc = L"utf-8bom";
+	else {
+		enc = L"utf-8";
+		fseek(f->in, 0, 0);
+	}
+
+	mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
+
+	/* we're utf-8 from now on */
+	f->f_read = read_utf8;
+
+	return f->f_read(f, s);
+}
+
+
+static int write_utf8_bom(struct mpdm_file *f, const wchar_t * str)
+/* crappy, ad-hoc utf-8 writer with BOM */
+{
+	/* store the BOM */
+	put_char(0xef, f);
+	put_char(0xbb, f);
+	put_char(0xbf, f);
+
+	/* we're utf-8 from now on */
+	f->f_write = write_utf8;
+
+	return f->f_write(f, str);
+}
+
+
 static wchar_t *read_iso8859_1(const struct mpdm_file *f, int *s)
 /* crappy, ad-hoc iso8859-1 reader */
 {
@@ -784,7 +823,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 		if (c == 0xef) {
 			/* can be utf8 with BOM */
 			if (get_char(f) == 0xbb && get_char(f) == 0xbf) {
-				enc = L"utf-8";
+				enc = L"utf-8bom";
 				f->f_read = read_utf8;
 				goto got_encoding;
 			}
@@ -845,8 +884,13 @@ static mpdm_t new_mpdm_file(void)
 #endif				/* CONFOPT_ICONV */
 
 		if (wcscmp(enc, L"utf-8") == 0) {
-			fs->f_read = read_utf8;
+			fs->f_read = read_utf8_bom;
 			fs->f_write = write_utf8;
+		}
+		else
+		if (wcscmp(enc, L"utf-8bom") == 0) {
+			fs->f_read = read_utf8_bom;
+			fs->f_write = write_utf8_bom;
 		}
 		else
 		if (wcscmp(enc, L"iso8859-1") == 0) {
@@ -1177,6 +1221,8 @@ static mpdm_t embedded_encodings(void)
 		L"utf32",	NULL,
 		L"ucs-4",	NULL,
 		L"ucs4",	NULL,
+		L"utf-8bom",	L"utf-8bom",
+		L"utf8bom",	NULL,
 		NULL,		NULL
 	};
 
