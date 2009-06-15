@@ -870,19 +870,6 @@ static mpdm_t new_mpdm_file(void)
 
 		wchar_t *enc = mpdm_string(e);
 
-#ifdef CONFOPT_ICONV
-		mpdm_t cs = MPDM_2MBS(e->data);
-
-		if ((fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) -1 &&
-		    (fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data)) != (iconv_t) -1) {
-
-			fs->f_read = read_iconv;
-			fs->f_write = write_iconv;
-
-			return v;
-		}
-#endif				/* CONFOPT_ICONV */
-
 		if (wcscmp(enc, L"utf-8") == 0) {
 			fs->f_read = read_utf8_bom;
 			fs->f_write = write_utf8;
@@ -926,6 +913,18 @@ static mpdm_t new_mpdm_file(void)
 		if (wcscmp(enc, L"utf-32") == 0) {
 			fs->f_read = read_utf32;
 			fs->f_write = write_utf32;
+		}
+		else {
+#ifdef CONFOPT_ICONV
+			mpdm_t cs = MPDM_2MBS(e->data);
+
+			if ((fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) -1 &&
+			    (fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data)) != (iconv_t) -1) {
+
+				fs->f_read = read_iconv;
+				fs->f_write = write_iconv;
+			}
+#endif				/* CONFOPT_ICONV */
 		}
 	}
 
