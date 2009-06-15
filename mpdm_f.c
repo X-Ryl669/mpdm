@@ -610,7 +610,7 @@ static wchar_t *read_utf16(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf16(struct mpdm_file *f, const wchar_t * str)
+static int write_utf16le_bom(struct mpdm_file *f, const wchar_t * str)
 {
 	/* store the LE signature */
 	put_char(0xff, f);
@@ -618,6 +618,19 @@ static int write_utf16(struct mpdm_file *f, const wchar_t * str)
 
 	/* we're 16le from now on */
 	f->f_write = write_utf16le;
+
+	return f->f_write(f, str);
+}
+
+
+static int write_utf16be_bom(struct mpdm_file *f, const wchar_t * str)
+{
+	/* store the LE signature */
+	put_char(0xfe, f);
+	put_char(0xff, f);
+
+	/* we're 16be from now on */
+	f->f_write = write_utf16be;
 
 	return f->f_write(f, str);
 }
@@ -749,7 +762,7 @@ static wchar_t *read_utf32(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf32(struct mpdm_file *f, const wchar_t * str)
+static int write_utf32le_bom(struct mpdm_file *f, const wchar_t * str)
 {
 	/* store the LE signature */
 	put_char(0xff, f);
@@ -759,6 +772,21 @@ static int write_utf32(struct mpdm_file *f, const wchar_t * str)
 
 	/* we're 32le from now on */
 	f->f_write = write_utf32le;
+
+	return f->f_write(f, str);
+}
+
+
+static int write_utf32be_bom(struct mpdm_file *f, const wchar_t * str)
+{
+	/* store the BE signature */
+	put_char(0, f);
+	put_char(0, f);
+	put_char(0xfe, f);
+	put_char(0xff, f);
+
+	/* we're 32be from now on */
+	f->f_write = write_utf32be;
 
 	return f->f_write(f, str);
 }
@@ -883,32 +911,32 @@ static mpdm_t new_mpdm_file(void)
 		else
 		if (wcscmp(enc, L"utf-16le") == 0) {
 			fs->f_read = read_utf16le;
-			fs->f_write = write_utf16le;
+			fs->f_write = write_utf16le_bom;
 		}
 		else
 		if (wcscmp(enc, L"utf-16be") == 0) {
 			fs->f_read = read_utf16be;
-			fs->f_write = write_utf16be;
+			fs->f_write = write_utf16be_bom;
 		}
 		else
 		if (wcscmp(enc, L"utf-16") == 0) {
 			fs->f_read = read_utf16;
-			fs->f_write = write_utf16;
+			fs->f_write = write_utf16le_bom;
 		}
 		else
 		if (wcscmp(enc, L"utf-32le") == 0) {
 			fs->f_read = read_utf32le;
-			fs->f_write = write_utf32le;
+			fs->f_write = write_utf32le_bom;
 		}
 		else
 		if (wcscmp(enc, L"utf-32be") == 0) {
 			fs->f_read = read_utf32be;
-			fs->f_write = write_utf32be;
+			fs->f_write = write_utf32be_bom;
 		}
 		else
 		if (wcscmp(enc, L"utf-32") == 0) {
 			fs->f_read = read_utf32;
-			fs->f_write = write_utf32;
+			fs->f_write = write_utf32le_bom;
 		}
 		else {
 #ifdef CONFOPT_ICONV
