@@ -890,7 +890,12 @@ static mpdm_t new_mpdm_file(void)
 		return NULL;
 	}
 
-	if ((e = mpdm_hget_s(mpdm_root(), L"ENCODING")) != NULL) {
+	e = mpdm_hget_s(mpdm_root(), L"ENCODING");
+
+	if (mpdm_size(e) == 0)
+		e = mpdm_hget_s(mpdm_root(), L"TEMP_ENCODING");
+
+	if (mpdm_size(e)) {
 
 		wchar_t *enc = mpdm_string(e);
 
@@ -950,6 +955,8 @@ static mpdm_t new_mpdm_file(void)
 			}
 #endif				/* CONFOPT_ICONV */
 		}
+
+		mpdm_hset_s(mpdm_root(), L"TEMP_ENCODING", NULL);
 	}
 
 	return v;
