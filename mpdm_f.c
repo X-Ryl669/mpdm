@@ -585,25 +585,24 @@ static int write_utf16be(const struct mpdm_file *f, const wchar_t * str)
 static wchar_t *read_utf16(struct mpdm_file *f, int *s)
 {
 	int c1, c2;
-	wchar_t *enc = L"";
+	wchar_t *enc = L"utf-16le";
 
-	f->f_read = NULL;
+	/* assume little-endian */
+	f->f_read = read_utf16le;
 
 	/* autodetection */
 	c1 = get_char(f);
 	c2 = get_char(f);
 
-	if (c1 == 0xff && c2 == 0xfe) {
-		enc = L"utf-16le";
-		f->f_read = read_utf16le;
-	}
-	else
 	if (c1 == 0xfe && c2 == 0xff) {
 		enc = L"utf-16be";
 		f->f_read = read_utf16be;
 	}
 	else
-		return NULL;
+	if (c1 != 0xff || c2 != 0xfe) {
+		/* no BOM; rewind and hope */
+		fseek(f->in, 0, 0);
+	}
 
 	mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
 
@@ -725,9 +724,9 @@ static int write_utf32be(const struct mpdm_file *f, const wchar_t * str)
 static wchar_t *read_utf32(struct mpdm_file *f, int *s)
 {
 	int c1, c2, c3, c4;
-	wchar_t *enc = L"";
+	wchar_t *enc = L"utf-32le";
 
-	f->f_read = NULL;
+	f->f_read = read_utf32le;
 
 	/* autodetection */
 	c1 = get_char(f);
@@ -735,17 +734,14 @@ static wchar_t *read_utf32(struct mpdm_file *f, int *s)
 	c3 = get_char(f);
 	c4 = get_char(f);
 
-	if (c1 == 0xff && c2 == 0xfe && c3 == 0 && c4 == 0) {
-		enc = L"utf-32le";
-		f->f_read = read_utf32le;
-	}
-	else
 	if (c1 == 0 && c2 == 0 && c3 == 0xfe && c4 == 0xff) {
 		enc = L"utf-32be";
 		f->f_read = read_utf32be;
 	}
-	else
-		return NULL;
+	if (c1 != 0xff || c2 != 0xfe || c3 != 0 || c4 != 0) {
+		/* no BOM; assume le and hope */
+		fseek(f->in, 0, 0);
+	}
 
 	mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
 
