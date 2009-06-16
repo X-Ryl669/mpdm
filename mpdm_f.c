@@ -423,7 +423,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s)
 		enc = L"utf-8bom";
 	else {
 		enc = L"utf-8";
-		fseek(f->in, 0, 0);
+		fseek(f->in, 0, SEEK_SET);
 	}
 
 	mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
@@ -601,7 +601,7 @@ static wchar_t *read_utf16(struct mpdm_file *f, int *s)
 	else
 	if (c1 != 0xff || c2 != 0xfe) {
 		/* no BOM; rewind and hope */
-		fseek(f->in, 0, 0);
+		fseek(f->in, 0, SEEK_SET);
 	}
 
 	mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
@@ -753,7 +753,7 @@ static wchar_t *read_utf32(struct mpdm_file *f, int *s)
 	}
 	if (c1 != 0xff || c2 != 0xfe || c3 != 0 || c4 != 0) {
 		/* no BOM; assume le and hope */
-		fseek(f->in, 0, 0);
+		fseek(f->in, 0, SEEK_SET);
 	}
 
 	mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
@@ -801,7 +801,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 	f->f_read = read_mbs;
 
 	/* ensure seeking is possible */
-	if (f->in != NULL && fseek(f->in, 0, 2) != -1) {
+	if (f->in != NULL && fseek(f->in, 0, SEEK_CUR) != -1) {
 		int c;
 
 		c = get_char(f);
@@ -817,7 +817,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 				}
 				else {
 					/* rewind to 3rd character */
-					fseek(f->in, 2, 0);
+					fseek(f->in, 2, SEEK_SET);
 
 					enc = L"utf-16le";
 					f->f_read = read_utf16le;
@@ -854,7 +854,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 		}
 
 		/* none of the above; restart */
-		fseek(f->in, 0, 0);
+		fseek(f->in, 0, SEEK_SET);
 	}
 
 got_encoding:
