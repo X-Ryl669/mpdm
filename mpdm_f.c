@@ -334,7 +334,7 @@ static int write_iconv(struct mpdm_file *f, const wchar_t * str)
 #define UTF8_BYTE() if((c = get_char(f)) == EOF) break
 
 static wchar_t *read_utf8(struct mpdm_file *f, int *s)
-/* crappy, ad-hoc utf8 reader */
+/* utf8 reader */
 {
 	wchar_t *ptr = NULL;
 	wchar_t wc;
@@ -382,7 +382,7 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 
 
 static int write_utf8(struct mpdm_file *f, const wchar_t * str)
-/* crappy, ad-hoc utf8 writer */
+/* utf8 writer */
 {
 	int cnt = 0;
 	wchar_t wc;
@@ -436,7 +436,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s)
 
 
 static int write_utf8_bom(struct mpdm_file *f, const wchar_t * str)
-/* crappy, ad-hoc utf-8 writer with BOM */
+/* utf-8 writer with BOM */
 {
 	/* store the BOM */
 	put_char(0xef, f);
@@ -451,7 +451,7 @@ static int write_utf8_bom(struct mpdm_file *f, const wchar_t * str)
 
 
 static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
-/* crappy, ad-hoc iso8859-1 reader */
+/* iso8859-1 reader */
 {
 	wchar_t *ptr = NULL;
 	wchar_t wc;
@@ -481,7 +481,7 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
 
 
 static int write_iso8859_1(struct mpdm_file *f, const wchar_t * str)
-/* crappy, ad-hoc iso8859-1 writer */
+/* iso8859-1 writer */
 {
 	int cnt = 0;
 	wchar_t wc;
@@ -625,7 +625,7 @@ static int write_utf16le_bom(struct mpdm_file *f, const wchar_t * str)
 
 static int write_utf16be_bom(struct mpdm_file *f, const wchar_t * str)
 {
-	/* store the LE signature */
+	/* store the BE signature */
 	put_char(0xfe, f);
 	put_char(0xff, f);
 
