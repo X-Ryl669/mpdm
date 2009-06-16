@@ -869,8 +869,6 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 				p = c;
 			}
 
-			printf("n: %d, c: %d\n", n, c);
-
 			if (n && c != EOF) {
 				enc = L"iso8859-1";
 				f->f_read = read_iso8859_1;
