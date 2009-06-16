@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
 
     mpdm_f.c - File management
 
@@ -850,6 +850,30 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 				enc = L"utf-8bom";
 				f->f_read = read_utf8;
 				goto got_encoding;
+			}
+		}
+		else {
+			/* unknown; try if a first bunch of chars are valid UTF-8 */
+			int p = c;
+			int n = 10000;
+
+			while (--n && (c = get_char(f)) != EOF) {
+				if ((c & 0xc0) == 0x80) {
+					if ((p & 0xc0) != 0xc0 && (p & 0x80) == 0x00)
+						break;
+				}
+				else
+				if ((p & 0xc0) == 0xc0)
+					break;
+
+				p = c;
+			}
+
+			printf("n: %d, c: %d\n", n, c);
+
+			if (n && c != EOF) {
+				enc = L"iso8859-1";
+				f->f_read = read_iso8859_1;
 			}
 		}
 
