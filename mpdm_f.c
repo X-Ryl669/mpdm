@@ -800,8 +800,8 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 	/* by default, multibyte reading */
 	f->f_read = read_mbs;
 
-	/* not reading from a FILE? no autodetection possible */
-	if (f->in != NULL) {
+	/* ensure seeking is possible */
+	if (f->in != NULL && fseek(f->in, 0, 2) != -1) {
 		int c;
 
 		c = get_char(f);
