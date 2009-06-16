@@ -77,8 +77,8 @@ struct mpdm_file {
 	FILE *in;
 	FILE *out;
 
-	wchar_t * (* f_read) (const struct mpdm_file *, int *);
-	int	  (* f_write)(const struct mpdm_file *, const wchar_t *);
+	wchar_t * (* f_read) (struct mpdm_file *, int *);
+	int	  (* f_write)(struct mpdm_file *, const wchar_t *);
 
 #ifdef CONFOPT_ICONV
 	iconv_t ic_enc;
@@ -107,7 +107,7 @@ static void store_syserr(void)
 }
 
 
-static int get_char(const struct mpdm_file *f)
+static int get_char(struct mpdm_file *f)
 /* reads a character from a file structure */
 {
 	int c = EOF;
@@ -134,7 +134,7 @@ static int get_char(const struct mpdm_file *f)
 }
 
 
-static int put_buf(const char *ptr, int s, const struct mpdm_file *f)
+static int put_buf(const char *ptr, int s, struct mpdm_file *f)
 /* writes s bytes in the buffer in ptr to f */
 {
 #ifdef CONFOPT_WIN32
@@ -155,7 +155,7 @@ static int put_buf(const char *ptr, int s, const struct mpdm_file *f)
 }
 
 
-static int put_char(int c, const struct mpdm_file *f)
+static int put_char(int c, struct mpdm_file *f)
 /* writes a character in a file structure */
 {
 	char tmp = c;
@@ -167,7 +167,7 @@ static int put_char(int c, const struct mpdm_file *f)
 }
 
 
-static wchar_t *read_mbs(const struct mpdm_file *f, int *s)
+static wchar_t *read_mbs(struct mpdm_file *f, int *s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
 	wchar_t *ptr = NULL;
@@ -213,7 +213,7 @@ static wchar_t *read_mbs(const struct mpdm_file *f, int *s)
 }
 
 
-static int write_wcs(const struct mpdm_file *f, const wchar_t * str)
+static int write_wcs(struct mpdm_file *f, const wchar_t * str)
 /* writes a wide string to an struct mpdm_file */
 {
 	int s;
@@ -229,7 +229,7 @@ static int write_wcs(const struct mpdm_file *f, const wchar_t * str)
 
 #ifdef CONFOPT_ICONV
 
-static wchar_t *read_iconv(const struct mpdm_file *f, int *s)
+static wchar_t *read_iconv(struct mpdm_file *f, int *s)
 /* reads a multibyte string transforming with iconv */
 {
 	char tmp[128];
@@ -286,7 +286,7 @@ static wchar_t *read_iconv(const struct mpdm_file *f, int *s)
 }
 
 
-static int write_iconv(const struct mpdm_file *f, const wchar_t * str)
+static int write_iconv(struct mpdm_file *f, const wchar_t * str)
 /* writes a wide string to a stream using iconv */
 {
 	char tmp[128];
@@ -333,7 +333,7 @@ static int write_iconv(const struct mpdm_file *f, const wchar_t * str)
 
 #define UTF8_BYTE() if((c = get_char(f)) == EOF) break
 
-static wchar_t *read_utf8(const struct mpdm_file *f, int *s)
+static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 /* crappy, ad-hoc utf8 reader */
 {
 	wchar_t *ptr = NULL;
@@ -381,7 +381,7 @@ static wchar_t *read_utf8(const struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf8(const struct mpdm_file *f, const wchar_t * str)
+static int write_utf8(struct mpdm_file *f, const wchar_t * str)
 /* crappy, ad-hoc utf8 writer */
 {
 	int cnt = 0;
@@ -450,7 +450,7 @@ static int write_utf8_bom(struct mpdm_file *f, const wchar_t * str)
 }
 
 
-static wchar_t *read_iso8859_1(const struct mpdm_file *f, int *s)
+static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
 /* crappy, ad-hoc iso8859-1 reader */
 {
 	wchar_t *ptr = NULL;
@@ -480,7 +480,7 @@ static wchar_t *read_iso8859_1(const struct mpdm_file *f, int *s)
 }
 
 
-static int write_iso8859_1(const struct mpdm_file *f, const wchar_t * str)
+static int write_iso8859_1(struct mpdm_file *f, const wchar_t * str)
 /* crappy, ad-hoc iso8859-1 writer */
 {
 	int cnt = 0;
@@ -494,7 +494,7 @@ static int write_iso8859_1(const struct mpdm_file *f, const wchar_t * str)
 }
 
 
-static wchar_t *read_utf16ae(const struct mpdm_file *f, int *s, int le)
+static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
 /* utf16 reader, ANY ending */
 {
 	wchar_t *ptr = NULL;
@@ -535,7 +535,7 @@ static wchar_t *read_utf16ae(const struct mpdm_file *f, int *s, int le)
 }
 
 
-static int write_utf16ae(const struct mpdm_file *f, const wchar_t * str, int le)
+static int write_utf16ae(struct mpdm_file *f, const wchar_t * str, int le)
 /* utf16 writer, ANY ending */
 {
 	int cnt = 0;
@@ -558,25 +558,25 @@ static int write_utf16ae(const struct mpdm_file *f, const wchar_t * str, int le)
 }
 
 
-static wchar_t *read_utf16le(const struct mpdm_file *f, int *s)
+static wchar_t *read_utf16le(struct mpdm_file *f, int *s)
 {
 	return read_utf16ae(f, s, 1);
 }
 
 
-static int write_utf16le(const struct mpdm_file *f, const wchar_t * str)
+static int write_utf16le(struct mpdm_file *f, const wchar_t * str)
 {
 	return write_utf16ae(f, str, 1);
 }
 
 
-static wchar_t *read_utf16be(const struct mpdm_file *f, int *s)
+static wchar_t *read_utf16be(struct mpdm_file *f, int *s)
 {
 	return read_utf16ae(f, s, 0);
 }
 
 
-static int write_utf16be(const struct mpdm_file *f, const wchar_t * str)
+static int write_utf16be(struct mpdm_file *f, const wchar_t * str)
 {
 	return write_utf16ae(f, str, 0);
 }
@@ -636,7 +636,7 @@ static int write_utf16be_bom(struct mpdm_file *f, const wchar_t * str)
 }
 
 
-static wchar_t *read_utf32ae(const struct mpdm_file *f, int *s, int le)
+static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
 /* utf32 reader, ANY ending */
 {
 	wchar_t *ptr = NULL;
@@ -683,7 +683,7 @@ static wchar_t *read_utf32ae(const struct mpdm_file *f, int *s, int le)
 }
 
 
-static int write_utf32ae(const struct mpdm_file *f, const wchar_t * str, int le)
+static int write_utf32ae(struct mpdm_file *f, const wchar_t * str, int le)
 /* utf32 writer, ANY ending */
 {
 	int cnt = 0;
@@ -710,25 +710,25 @@ static int write_utf32ae(const struct mpdm_file *f, const wchar_t * str, int le)
 }
 
 
-static wchar_t *read_utf32le(const struct mpdm_file *f, int *s)
+static wchar_t *read_utf32le(struct mpdm_file *f, int *s)
 {
 	return read_utf32ae(f, s, 1);
 }
 
 
-static int write_utf32le(const struct mpdm_file *f, const wchar_t * str)
+static int write_utf32le(struct mpdm_file *f, const wchar_t * str)
 {
 	return write_utf32ae(f, str, 1);
 }
 
 
-static wchar_t *read_utf32be(const struct mpdm_file *f, int *s)
+static wchar_t *read_utf32be(struct mpdm_file *f, int *s)
 {
 	return read_utf32ae(f, s, 0);
 }
 
 
-static int write_utf32be(const struct mpdm_file *f, const wchar_t * str)
+static int write_utf32be(struct mpdm_file *f, const wchar_t * str)
 {
 	return write_utf32ae(f, str, 0);
 }
@@ -1114,7 +1114,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 	mpdm_t v = NULL;
 	wchar_t *ptr;
 	int s;
-	const struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
 	if (fs == NULL)
 		return NULL;
@@ -1132,7 +1132,7 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
 {
 	int c;
 	wchar_t tmp[2];
-	const struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
 	if (fs == NULL || (c = get_char(fs)) == EOF)
 		return NULL;
@@ -1147,7 +1147,7 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
 
 mpdm_t mpdm_putchar(const mpdm_t fd, const mpdm_t c)
 {
-	const struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 	const wchar_t *ptr = mpdm_string(c);
 
 	if (fs == NULL || put_char(*ptr, fs) == -1)
@@ -1168,7 +1168,7 @@ mpdm_t mpdm_putchar(const mpdm_t fd, const mpdm_t c)
  */
 int mpdm_write(const mpdm_t fd, const mpdm_t v)
 {
-	const struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 	int ret = -1;
 
 	if (fs == NULL)
@@ -1182,7 +1182,7 @@ int mpdm_write(const mpdm_t fd, const mpdm_t v)
 
 int mpdm_fseek(const mpdm_t fd, long offset, int whence)
 {
-	const struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
 	return fseek(fs->in, offset, whence);
 }
@@ -1190,7 +1190,7 @@ int mpdm_fseek(const mpdm_t fd, long offset, int whence)
 
 long mpdm_ftell(const mpdm_t fd)
 {
-	const struct mpdm_file *fs = fd->data;
+	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
 	return ftell(fs->in);
 }
@@ -1201,7 +1201,7 @@ FILE * mpdm_get_filehandle(const mpdm_t fd)
 	FILE * f = NULL;
 
 	if (fd->flags & MPDM_FILE) {
-		const struct mpdm_file *fs = fd->data;
+		struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 		f = fs->in;
 	}
 
@@ -1720,7 +1720,7 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 
 static int sysdep_pclose(const mpdm_t v)
 {
-	const struct mpdm_file *fs = v->data;
+	struct mpdm_file *fs = v->data;
 
 	if (fs->hin != NULL)
 		CloseHandle(fs->hin);
@@ -1797,7 +1797,7 @@ static int sysdep_pclose(const mpdm_t v)
 /* unix-style pipe close */
 {
 	int s;
-	const struct mpdm_file *fs = v->data;
+	struct mpdm_file *fs = (struct mpdm_file *)v->data;
 
 	if (fs->in != NULL)
 		fclose(fs->in);
