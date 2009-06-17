@@ -853,30 +853,43 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 			}
 		}
 		else {
-			/* unknown; try if a first bunch of chars are valid UTF-8 */
+			/* try if a first bunch of chars are valid UTF-8 */
 			int p = c;
 			int n = 10000;
+			int u = 0;
 
 			while (--n && (c = get_char(f)) != EOF) {
 				if ((c & 0xc0) == 0x80) {
-					if ((p & 0xc0) != 0xc0 && (p & 0x80) == 0x00)
+					if ((p & 0xc0) == 0xc0)
+						u++;
+					else
+					if ((p & 0x80) == 0x00) {
+						u = -1;
 						break;
+					}
 				}
 				else
-				if ((p & 0xc0) == 0xc0)
+				if ((p & 0xc0) == 0xc0) {
+					u = -1;
 					break;
+				}
 
 				p = c;
 			}
 
-			if (n && c != EOF) {
+			if (u < 0) {
+				/* invalid utf-8; fall back to 8bit */
 				enc = L"8bit";
 				f->f_read = read_iso8859_1;
 			}
-			else {
+			else
+			if (u > 0) {
+				/* utf-8 sequences found */
 				enc = L"utf-8";
 				f->f_read = read_utf8;
 			}
+
+			/* 7 bit ASCII: do nothing */
 		}
 
 		/* none of the above; restart */
