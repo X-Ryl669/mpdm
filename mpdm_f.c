@@ -873,6 +873,10 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 				enc = L"8bit";
 				f->f_read = read_iso8859_1;
 			}
+			else {
+				enc = L"utf-8";
+				f->f_read = read_utf8;
+			}
 		}
 
 		/* none of the above; restart */
