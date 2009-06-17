@@ -870,7 +870,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 			}
 
 			if (n && c != EOF) {
-				enc = L"iso8859-1";
+				enc = L"8bit";
 				f->f_read = read_iso8859_1;
 			}
 		}
@@ -931,7 +931,8 @@ static mpdm_t new_mpdm_file(void)
 			fs->f_write = write_utf8_bom;
 		}
 		else
-		if (wcscmp(enc, L"iso8859-1") == 0) {
+		if (wcscmp(enc, L"iso8859-1") == 0 ||
+			wcscmp(enc, L"8bit") == 0) {
 			fs->f_read = read_iso8859_1;
 			fs->f_write = write_iso8859_1;
 		}
