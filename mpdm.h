@@ -47,9 +47,9 @@ struct mpdm_val {
 	int flags;		/* value flags */
 	int ref;		/* reference count */
 	int size;		/* data size */
-	const void *data;	/* the real data */
 	int ival;		/* cached integer value */
 	double rval;		/* cache real value */
+	const void *data;	/* the real data */
 	mpdm_t prev;		/* prev in chain */
 	mpdm_t next;		/* next in chain */
 };

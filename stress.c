@@ -1255,6 +1255,8 @@ int main(int argc, char *argv[])
 
 	mpdm_startup();
 
+	printf("sizeof(struct mpdm_val): %ld\n", (long) sizeof(struct mpdm_val));
+
 	test_basic();
 	test_array();
 	test_hash();
