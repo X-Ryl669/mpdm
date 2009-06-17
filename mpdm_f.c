@@ -1256,6 +1256,7 @@ static mpdm_t embedded_encodings(void)
 		L"utf8",	NULL,
 		L"iso8859-1",	L"iso8859-1",
 		L"iso-8859-1",	NULL,
+		L"8bit",	NULL,
 		L"latin1",	NULL,
 		L"latin-1",	NULL,
 		L"utf-16le",	L"utf-16le",
