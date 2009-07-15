@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
 
     mpdm_a.c - Array management
 
@@ -626,6 +626,10 @@ mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
 	int n;
 	wchar_t *ptr = NULL;
 	int l = 0;
+
+	/* if a is not an array, return it as is */
+	if (!MPDM_IS_ARRAY(a))
+		return a;
 
 	/* adds the first string */
 	ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
