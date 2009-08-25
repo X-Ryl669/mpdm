@@ -4,7 +4,9 @@ Minimum Profit Data Manager (MPDM) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1111: Document mpdm_scanf().
+ * 1111: Document mpdm_sscanf().
+ * 1112: Document the `DETECTED_ENCODING' variable.
+ * 1113: Document the `TEMP_ENCODING' variable.
 
 Open Bugs
 ---------
