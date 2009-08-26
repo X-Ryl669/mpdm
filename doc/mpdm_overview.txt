@@ -9,8 +9,6 @@ data no longer useful, as well as help for operating system abstraction
 and portability, regular expressions, string manipulation, character set
 conversions, localization and file I/O access.
 
-MPSL (Minimum Profit Scripting Language) is implemented on top of MPDM.
-
 Values
 ------
 
@@ -127,38 +125,55 @@ special function returns the number of key/value pairs stored in the hash:
  /* prints the number of buckets (probably 31) */
  printf("%d\n", mpdm_size(en2es));
 
-Scalars
-~~~~~~~
-
 Arrays
-~~~~~~
+------
+
+To be written.
 
 Hashes
-~~~~~~
+------
+
+To be written.
 
 The 'garbage collector'
 -----------------------
 
+To be written.
+
 Executable values
 -----------------
+
+To be written.
 
 Regular expressions
 -------------------
 
+To be written.
+
 File I/O
 --------
+
+To be written.
 
 Charset conversions
 -------------------
 
+To be written.
+
 Localization
 ------------
+
+To be written.
 
 Environment variables
 ---------------------
 
+To be written.
+
 MPDM_NULL_HASH
 ~~~~~~~~~~~~~~
+
+To be written.
 
 ----
 Angel Ortega <angel@triptico.com>

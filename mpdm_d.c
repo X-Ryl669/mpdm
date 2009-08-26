@@ -114,7 +114,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 
 
 /**
- * mpdm_dumper - Returns a visual representation of a complex value
+ * mpdm_dumper - Returns a visual representation of a complex value.
  * @v: The value
  *
  * Returns a visual representation of a complex value.

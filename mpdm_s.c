@@ -814,7 +814,7 @@ int mpdm_wcwidth(wchar_t c)
 
 
 /**
- * mpdm_sprintf - Formats a sprintf()-like string
+ * mpdm_sprintf - Formats a sprintf()-like string.
  * @fmt: the string format
  * @args: an array of values
  *
@@ -934,7 +934,7 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 
 
 /**
- * mpdm_ulc - Converts a string to uppercase or lowecase
+ * mpdm_ulc - Converts a string to uppercase or lowecase.
  * @s: the string
  * @u: convert to uppercase (1) or to lowercase (0).
  *
@@ -983,17 +983,17 @@ struct {
 };
 
 /**
- * mpdm_sscanf - Extracts data like sscanf()
+ * mpdm_sscanf - Extracts data like sscanf().
  * @fmt: the string format
  * @str: the string to be parsed
  * @offset: the character offset to start scanning
  *
  * Extracts data from a string using a special format pattern, very
  * much like the scanf() series of functions in the C library. Apart
- * from the standard percent-sign-commands (%s, %u, %d, %i, %f, %x,
- * %n, %[, with optional size and * to ignore), it implements %S,
+ * from the standard percent-sign-commands (s, u, d, i, f, x,
+ * n, [, with optional size and * to ignore), it implements S,
  * to match a string of characters upto what follows in the format
- * string. Also, the %[ set of characters can include other % formats.
+ * string. Also, the [ set of characters can include other % formats.
  *
  * Returns an array with the extracted values. If %n is used, the
  * position in the scanned string is returned as the value.
