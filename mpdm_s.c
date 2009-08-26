@@ -982,6 +982,23 @@ struct {
 	{ L'\0',	NULL,				NULL },
 };
 
+/**
+ * mpdm_sscanf - Extracts data like sscanf()
+ * @fmt: the string format
+ * @str: the string to be parsed
+ * @offset: the character offset to start scanning
+ *
+ * Extracts data from a string using a special format pattern, very
+ * much like the scanf() series of functions in the C library. Apart
+ * from the standard percent-sign-commands (%s, %u, %d, %i, %f, %x,
+ * %n, %[, with optional size and * to ignore), it implements %S,
+ * to match a string of characters upto what follows in the format
+ * string. Also, the %[ set of characters can include other % formats.
+ *
+ * Returns an array with the extracted values. If %n is used, the
+ * position in the scanned string is returned as the value.
+ * [Strings]
+ */
 mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 {
 	wchar_t *i = (wchar_t *)str->data;
