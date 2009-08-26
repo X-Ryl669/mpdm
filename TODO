@@ -4,8 +4,7 @@ Minimum Profit Data Manager (MPDM) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1112: Document the `DETECTED_ENCODING' variable.
- * 1113: Document the `TEMP_ENCODING' variable.
+None!
 
 Open Bugs
 ---------
@@ -238,5 +237,9 @@ Closed
  * 1110: Win32 file globbing fails when a leading directory is specified
    (Wed, 25 Mar 2009 17:04:29 +0100).
  * 1111: Document mpdm_sscanf() (Wed, 26 Aug 2009 09:07:01 +0200).
+ * 1112: Document the `DETECTED_ENCODING' variable
+   (Wed, 26 Aug 2009 09:40:03 +0200).
+ * 1113: Document the `TEMP_ENCODING' variable
+   (Wed, 26 Aug 2009 09:40:03 +0200).
 
 Email bugs to angel@triptico.com

@@ -1080,6 +1080,15 @@ mpdm_t mpdm_new_f(FILE * f)
  * Opens a file. If @filename can be open in the specified @mode, an
  * mpdm_t value will be returned containing the file descriptor, or NULL
  * otherwise.
+ *
+ * If the file is open for reading, some charset detection methods are
+ * used. If any of them is successful, its name is stored in the
+ * DETECTED_ENCODING element of the mpdm_root() hash. This value is
+ * suitable to be copied over ENCODING or TEMP_ENCODING.
+ *
+ * If the file is open for writing, the encoding to be used is read from
+ * the ENCODING element of mpdm_root() and, if not set, from the
+ * TEMP_ENCODING one. The latter will always be deleted afterwards.
  * [File Management]
  */
 mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
@@ -1330,6 +1339,10 @@ static mpdm_t embedded_encodings(void)
  * and converted on each read / write. If charset is NULL, it
  * is reverted to default charset conversion (i.e. the one defined
  * in the locale).
+ *
+ * This function stores the @charset value into the ENCODING item
+ * of the mpdm_root() hash.
+ *
  * Returns a negative number if @charset is unsupported, or zero
  * if no errors were found.
  * [File Management]
