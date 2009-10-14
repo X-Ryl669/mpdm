@@ -583,13 +583,29 @@ int mpdm_ival(mpdm_t v)
 			   correctly parse octal and hexadecimal
 			   numbers, they are tried as special cases */
 			if (tmp[0] == '0') {
+				if (tmp[1] == 'b' || tmp[1] == 'B') {
+					/* binary number */
+					fmt = NULL;
+					char *ptr = &tmp[2];
+
+					while (*ptr == '0' || *ptr == '1') {
+						i <<= 1;
+
+						if (*ptr == '1')
+							i |= 1;
+
+						ptr++;
+					}
+				}
+				else
 				if (tmp[1] == 'x' || tmp[1] == 'X')
 					fmt = "%x";
 				else
 					fmt = "%o";
 			}
 
-			sscanf(tmp, fmt, &i);
+			if (fmt != NULL)
+				sscanf(tmp, fmt, &i);
 		}
 
 		mpdm_set_ival(v, i);
