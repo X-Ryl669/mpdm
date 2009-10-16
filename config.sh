@@ -78,7 +78,7 @@ echo "# automatically created by config.sh - do not modify" > makefile.opts
 if [ "$CC" = "" ] ; then
 	CC=cc
 	# if CC is unset, try if gcc is available
-	which gcc > /dev/null
+	which gcc > /dev/null 2>&1
 
 	if [ $? = 0 ] ; then
 		CC=gcc
@@ -416,7 +416,7 @@ echo -n "Testing if Grutatxt is installed... "
 
 DOCS="\$(ADD_DOCS)"
 
-if which grutatxt > /dev/null ; then
+if which grutatxt > /dev/null 2>&1 ; then
 	echo "OK"
 	echo "GRUTATXT=yes" >> makefile.opts
 	DOCS="$DOCS \$(GRUTATXT_DOCS)"
@@ -427,7 +427,7 @@ fi
 
 # test for mp_doccer
 echo -n "Testing if mp_doccer is installed... "
-MP_DOCCER=$(which mp_doccer || which mp-doccer)
+MP_DOCCER=$(which mp_doccer > /dev/null 2>&1 || which mp-doccer > /dev/null 2>&1)
 
 if [ $? = 0 ] ; then
 
