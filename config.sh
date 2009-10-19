@@ -427,7 +427,7 @@ fi
 
 # test for mp_doccer
 echo -n "Testing if mp_doccer is installed... "
-MP_DOCCER=$(which mp_doccer > /dev/null 2>&1 || which mp-doccer > /dev/null 2>&1)
+MP_DOCCER=$(which mp_doccer||which mp-doccer)
 
 if [ $? = 0 ] ; then
 
