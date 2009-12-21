@@ -51,21 +51,31 @@
 	Code
 ********************/
 
-void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
-/* pokes (adds) org into dst, which is a dynamic string, making it grow */
+void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize)
 {
 	if (org != NULL && osize) {
-		/* makes room for the new string */
-		if ((dst = realloc(dst, (*dsize + osize) * esize)) != NULL) {
-			/* copies it */
-			memcpy((char *)dst + (*dsize * esize), org, osize * esize);
-
-			/* adds to final size */
+		/* enough room? */
+		if (*offset + osize > *dsize) {
+			/* no; enlarge */
 			*dsize += osize;
+
+			dst = realloc(dst, *dsize * esize);
 		}
+
+		memcpy((char *)dst + (*offset * esize), org, osize * esize);
+		*offset += osize;
 	}
 
 	return dst;
+}
+
+
+void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
+/* pokes (adds) org into dst, which is a dynamic string, making it grow */
+{
+	int offset = *dsize;
+
+	return mpdm_poke_o(dst, dsize, &offset, org, osize, esize);
 }
 
 
