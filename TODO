@@ -33,6 +33,11 @@ Pending Enhancements
    values to be swept are immediately found. On the other side, mpdm_ref()
    and mpdm_unref() will be much expensive, as they will en/dequeue values
    depending of v->ref 0 or 1.
+ * 1115: Invert mpdm_split() arguments.
+ * 1116: Invert mpdm_join() arguments.
+ * 1117: Invert mpdm_sscanf() arguments.
+ * 1118: Invert mpdm_regex() arguments.
+ * 1119: Invert mpdm_sregex() arguments.
 
 Closed
 ------
