@@ -6,6 +6,8 @@ MPDM Release Notes
 
  * mpdm_ival() now accepts numbers prefixed by 0b as binary
    numbers.
+ * Fixed mpdm_sset() when the previous-to-last value to be
+   assigned is executable (this is bug 1114).
 
 1.0.8
 -----

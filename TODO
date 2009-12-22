@@ -241,5 +241,7 @@ Closed
    (Wed, 26 Aug 2009 09:40:03 +0200).
  * 1113: Document the `TEMP_ENCODING' variable
    (Wed, 26 Aug 2009 09:40:03 +0200).
+ * 1114: Fixed mpdm_sset() when the previous-to-last value to be
+   assigned is executable (Tue, 22 Dec 2009 10:05:12 +0100).
 
 Email bugs to angel@triptico.com

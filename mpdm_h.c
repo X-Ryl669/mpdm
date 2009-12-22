@@ -332,6 +332,10 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
 	/* if want to set, do it */
 	if (s && r != NULL) {
+		/* resolve executable values again */
+		while (MPDM_IS_EXEC(r))
+			r = mpdm_exec(r, NULL);
+
 		if (r->flags & MPDM_HASH)
 			r = mpdm_hset(r, mpdm_aget(p, n), v);
 		else {
