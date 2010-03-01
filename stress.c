@@ -1172,6 +1172,9 @@ void test_sprintf(void)
 
 	w = mpdm_sprintf(MPDM_LS(L"%d%%"), v);
 	do_test("sprintf 4.1", mpdm_cmp(w, MPDM_LS(L"75%")) == 0);
+
+	w = mpdm_sprintf(MPDM_LS(L"%b"), v);
+	do_test("sprintf 5.1", mpdm_cmp(w, MPDM_LS(L"1001011")) == 0);
 }
 
 

@@ -4,8 +4,10 @@ MPDM Release Notes
 1.0.9
 -----
 
- * mpdm_ival() now accepts numbers prefixed by 0b as binary
+ * mpdm_ival() now accepts numbers prefixed by `0b' as binary
    numbers.
+ * Similarly, mpdm_sprintf() now accepts the `%b' code to
+   print a value as a binary number.
  * Fixed mpdm_sset() when the previous-to-last value to be
    assigned is executable (this is bug 1114).
 

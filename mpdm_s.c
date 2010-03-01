@@ -923,6 +923,30 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 				c = mpdm_ival(v);
 				break;
 
+			case 'b':
+
+				ptr = tmp;
+				unsigned int mask = 0x8000;
+				int p = 0;
+
+				while (mask) {
+					if (mask & (unsigned int) mpdm_ival(v)) {
+						*ptr++ = '1';
+						p = 1;
+					}
+					else
+					if (p)
+						*ptr++ = '0';
+
+					mask >>= 1;
+				}
+
+				if (ptr == tmp)
+					*ptr++ = '0';
+
+				*ptr = '\0';
+				break;
+
 			case '%':
 
 				/* percent sign */
