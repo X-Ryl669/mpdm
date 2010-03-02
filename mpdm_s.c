@@ -926,9 +926,10 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 			case 'b':
 
 				ptr = tmp;
-				unsigned int mask = 0x8000;
+				unsigned int mask;
 				int p = 0;
 
+				mask = 1 << ((sizeof(int) * 8) - 1);
 				while (mask) {
 					if (mask & (unsigned int) mpdm_ival(v)) {
 						*ptr++ = '1';
