@@ -277,20 +277,15 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_keys(const mpdm_t h)
 {
-	int n, m, i;
-	mpdm_t b;
-	mpdm_t a;
+	int n, c;
+	mpdm_t a, k, v;
 
 	/* create an array with the same number of elements */
 	a = MPDM_A(mpdm_hsize(h));
 
-	/* sequentially fill with keys */
-	for (n = i = 0; n < mpdm_size(h); n++) {
-		if ((b = mpdm_aget(h, n)) != NULL) {
-			for (m = 0; m < mpdm_size(b); m += 2)
-				mpdm_aset(a, mpdm_aget(b, m), i++);
-		}
-	}
+	c = n = 0;
+	while (mpdm_iterator(h, &c, &k, &v))
+		mpdm_aset(a, k, n++);
 
 	return a;
 }
@@ -318,6 +313,9 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 {
 	if (MPDM_IS_HASH(h)) {
 		int bi, ei;
+
+		if (!mpdm_size(h))
+			return 0;
 
 		/* get bucket and element index */
 		bi = (*context) % mpdm_size(h);
