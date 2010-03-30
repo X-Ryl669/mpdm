@@ -10,6 +10,7 @@ MPDM Release Notes
    print a value as a binary number.
  * Fixed mpdm_sset() when the previous-to-last value to be
    assigned is executable (this is bug 1114).
+ * New function mpdm_iterator().
 
 1.0.8
 -----
