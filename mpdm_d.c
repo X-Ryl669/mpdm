@@ -87,19 +87,14 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 	ptr = mpdm_pokews(ptr, size, L"\n");
 
 	if (v != NULL) {
-		/* if it's a hash, iterate it using hkeys
-		   (and not assuming a hash is an array) */
+		/* if it's a hash, iterate it */
 		if (v->flags & MPDM_HASH) {
-			mpdm_t w;
-			mpdm_t t;
+			int c = 0;
+			mpdm_t k, w;
 
-			w = mpdm_keys(v);
-
-			for (n = 0; n < mpdm_size(w); n++) {
-				t = mpdm_aget(w, n);
-
-				ptr = dump_1(t, l + 1, ptr, size);
-				ptr = dump_1(mpdm_hget(v, t), l + 2, ptr, size);
+			while (mpdm_iterator(v, &c, &k, &w)) {
+				ptr = dump_1(k, l + 1, ptr, size);
+				ptr = dump_1(w, l + 2, ptr, size);
 			}
 		}
 		else
