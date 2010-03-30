@@ -296,6 +296,64 @@ mpdm_t mpdm_keys(const mpdm_t h)
 }
 
 
+/**
+ * mpdm_interator - Iterates through the content of a hash or array.
+ * @h: the hash (or array)
+ * @context: A pointer to an opaque context
+ * @v1: a pointer to a value
+ * @v2: another pointer to a value
+ *
+ * Iterates through the content of a hash, filling the @v1 and @v2
+ * pointers with key-value pairs on each call until the hash is
+ * exhausted. If @h is an array, only the @v1 pointer is filled.
+ *
+ * The @context pointer to integer is opaque and should be
+ * initialized to zero on the first call.
+ *
+ * Returns 0 if no more data is left in @h.
+ * [Hashes]
+ * [Arrays]
+ */
+int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
+{
+	if (MPDM_IS_HASH(h)) {
+		int bi, ei;
+
+		/* get bucket and element index */
+		bi = (*context) % mpdm_size(h);
+		ei = (*context) / mpdm_size(h);
+
+		while (bi < mpdm_size(h)) {
+			mpdm_t b;
+
+			/* if bucket is empty or there is no more elements in it, pick next */
+			if ((b = mpdm_aget(h, bi)) == NULL || ei >= mpdm_size(b)) {
+				ei = 0;
+				bi++;
+				continue;
+			}
+
+			/* get pair */
+			*v1 = mpdm_aget(b, ei++);
+			*v2 = mpdm_aget(b, ei++);
+
+			/* update context */
+			*context = (ei * mpdm_size(h)) + bi;
+			return 1;
+		}
+	}
+	else
+	if (MPDM_IS_ARRAY(h)) {
+		if (*context < mpdm_size(h)) {
+			*v1 = mpdm_aget(h, (*context)++);
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+
 static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 {
 	int n;
