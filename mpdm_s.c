@@ -890,6 +890,7 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 			switch (t_fmt[m - 1]) {
 			case 'd':
 			case 'i':
+			case 'u':
 			case 'x':
 			case 'X':
 			case 'o':
