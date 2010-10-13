@@ -67,9 +67,6 @@ int mpdm_destroy(mpdm_t v)
 	if (v->ref || v->flags & MPDM_DELETED)
 		return 0;
 
-	/* account one value less */
-	mpdm->count--;
-
 	cleanup_value(v);
 
 	/* mark as deleted */
@@ -85,6 +82,9 @@ int mpdm_destroy(mpdm_t v)
 		/* if it's the current one, move to next */
 		if (mpdm->cur == w)
 			mpdm->cur = w->next;
+
+		/* account one value less */
+		mpdm->count--;
 
 		/* add to the deleted values queue */
 		w->next = mpdm->del;
@@ -203,9 +203,8 @@ void mpdm_sweep(int count)
 		count = mpdm->count;
 
 	for (; count > 0 && mpdm->count > mpdm->low_threshold; count--) {
-		/* destroy it or skip it */
-		if (!mpdm_destroy(mpdm->cur))
-			mpdm->cur = mpdm->cur->next;
+		mpdm_destroy(mpdm->cur);
+		mpdm->cur = mpdm->cur->next;
 	}
 }
 
