@@ -393,7 +393,7 @@ static mpdm_t MPDM(const mpdm_t args)
 /* accesor / mutator for MPDM internal data */
 {
 	mpdm_t v = mpdm_aget(args, 0);
-	int n, c = 0;
+	int n, c = 0, d = 0;
 
 	if (v != NULL) {
 		mpdm_t w;
@@ -409,10 +409,16 @@ static mpdm_t MPDM(const mpdm_t args)
 			mpdm->hash_buckets = mpdm_ival(w);
 	}
 
-	/* loop all values counting the references ones */
-	for (n = mpdm->count, v = mpdm->cur; n > 0; n--, v = v->next)
-		if (v->ref == 0)
+	/* loop all values counting the unreferenced and deleted ones */
+	for (n = mpdm->count, v = mpdm->cur; n > 0; n--, v = v->next) {
+		if (v->ref)
+			continue;
+
+		if (v->flags & MPDM_DELETED)
+			d++;
+		else
 			c++;
+	}
 
 	/* now collect all information */
 	v = MPDM_H(0);
@@ -424,6 +430,7 @@ static mpdm_t MPDM(const mpdm_t args)
 	mpdm_hset_s(v, L"memory_usage", MPDM_I(mpdm->memory_usage));
 	mpdm_hset_s(v, L"hash_buckets", MPDM_I(mpdm->hash_buckets));
 	mpdm_hset_s(v, L"unreferenced", MPDM_I(c));
+	mpdm_hset_s(v, L"deleted", MPDM_I(d));
 
 	return v;
 }
