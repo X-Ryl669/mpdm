@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     mpdm_t.c - Basic value management
 
@@ -61,6 +61,8 @@ static void cleanup_value(mpdm_t v)
 int mpdm_destroy(mpdm_t v)
 /* destroys a value */
 {
+	mpdm_t w;
+
 	/* if still referenced or deleted, do nothing */
 	if (v->ref || v->flags & MPDM_DELETED)
 		return 0;
@@ -73,17 +75,21 @@ int mpdm_destroy(mpdm_t v)
 	/* mark as deleted */
 	v->flags |= MPDM_DELETED;
 
-	/* dequeue */
-	v->next->prev = v->prev;
-	v->prev->next = v->next;
+	/* try to dequeue next one */
+	w = v->next;
 
-	/* if it's the current one, move to next */
-	if (mpdm->cur == v)
-		mpdm->cur = v->next;
+	if (w->flags & MPDM_DELETED) {
+		/* dequeue */
+		v->next = w->next;
 
-	/* add to the deleted values queue */
-	v->next = mpdm->del;
-	mpdm->del = v;
+		/* if it's the current one, move to next */
+		if (mpdm->cur == w)
+			mpdm->cur = w->next;
+
+		/* add to the deleted values queue */
+		w->next = mpdm->del;
+		mpdm->del = w;
+	}
 
 	return 1;
 }
@@ -117,12 +123,10 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
 
 	/* add to the circular list */
 	if (mpdm->cur == NULL)
-		v->next = v->prev = v;
+		v->next = v;
 	else {
-		v->prev = mpdm->cur;
 		v->next = mpdm->cur->next;
-
-		v->prev->next = v->next->prev = v;
+		mpdm->cur->next = v;
 	}
 
 	mpdm->cur = v->next;

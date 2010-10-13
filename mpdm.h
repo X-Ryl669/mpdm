@@ -50,7 +50,6 @@ struct mpdm_val {
 	int ival;		/* cached integer value */
 	double rval;		/* cache real value */
 	const void *data;	/* the real data */
-	mpdm_t prev;		/* prev in chain */
 	mpdm_t next;		/* next in chain */
 };
 
