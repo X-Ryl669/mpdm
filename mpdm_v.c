@@ -32,17 +32,15 @@
 
 #include "mpdm.h"
 
-/*******************
-	Data
-********************/
+
+/** data **/
 
 /* control structure */
 
 struct mpdm_control *mpdm = NULL;
 
-/*******************
-	Code
-********************/
+
+/** code **/
 
 static void cleanup_value(mpdm_t v)
 /* cleans a value */
@@ -67,6 +65,14 @@ int mpdm_destroy(mpdm_t v)
 	if (v->ref || v->flags & MPDM_DELETED)
 		return 0;
 
+	/* account one value less */
+	mpdm->count--;
+
+	cleanup_value(v);
+
+	/* mark as deleted */
+	v->flags |= MPDM_DELETED;
+
 	/* dequeue */
 	v->next->prev = v->prev;
 	v->prev->next = v->next;
@@ -75,17 +81,9 @@ int mpdm_destroy(mpdm_t v)
 	if (mpdm->cur == v)
 		mpdm->cur = v->next;
 
-	/* account one value less */
-	mpdm->count--;
-
 	/* add to the deleted values queue */
 	v->next = mpdm->del;
 	mpdm->del = v;
-
-	cleanup_value(v);
-
-	/* mark as deleted */
-	v->flags |= MPDM_DELETED;
 
 	return 1;
 }
