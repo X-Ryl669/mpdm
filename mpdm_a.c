@@ -445,12 +445,12 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 		if ((v = mpdm_aget(a, n * step)) == NULL)
 			break;
 
-		c = mpdm_cmp(k, v);
+		c = mpdm_cmp(v, k);
 
 		if (c == 0)
 			return n * step;
 		else
-		if (c < 0)
+		if (c > 0)
 			t = n - 1;
 		else
 			b = n + 1;
