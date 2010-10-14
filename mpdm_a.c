@@ -363,7 +363,7 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 }
 
 
-static int seek(const mpdm_t a, const mpdm_t k, wchar_t *ks, int step)
+static int seek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step)
 {
 	int n;
 
@@ -420,6 +420,42 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
 }
 
 
+static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, int *pos)
+{
+	int b, t, n, c;
+
+	/* avoid stupid steps */
+	if (step <= 0)
+		step = 1;
+
+	b = 0;
+	t = (mpdm_size(a) - 1) / step;
+
+	while (t >= b) {
+		mpdm_t v;
+
+		n = (b + t) / 2;
+		if ((v = mpdm_aget(a, n * step)) == NULL)
+			break;
+
+		c = ks ? mpdm_cmp_s(v, ks) : mpdm_cmp(v, k);
+
+		if (c == 0)
+			return n * step;
+		else
+		if (c > 0)
+			t = n - 1;
+		else
+			b = n + 1;
+	}
+
+	if (pos != NULL)
+		*pos = b * step;
+
+	return -1;
+}
+
+
 /**
  * mpdm_bseek - Seeks a value in an array (binary).
  * @a: the ordered array
@@ -439,36 +475,7 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
  */
 int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 {
-	int b, t, n, c;
-
-	/* avoid stupid steps */
-	if (step <= 0)
-		step = 1;
-
-	b = 0;
-	t = (mpdm_size(a) - 1) / step;
-
-	while (t >= b) {
-		mpdm_t v;
-
-		n = (b + t) / 2;
-		if ((v = mpdm_aget(a, n * step)) == NULL)
-			break;
-
-		c = mpdm_cmp(v, k);
-
-		if (c == 0)
-			return n * step;
-		else
-		if (c > 0)
-			t = n - 1;
-		else
-			b = n + 1;
-	}
-
-	if (pos != NULL)
-		*pos = b * step;
-	return -1;
+	return bseek(a, k, NULL, step, pos);
 }
 
 
@@ -489,9 +496,9 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek_s(const mpdm_t a, const wchar_t * k, int step, int *pos)
+int mpdm_bseek_s(const mpdm_t a, const wchar_t *k, int step, int *pos)
 {
-	return mpdm_bseek(a, MPDM_LS(k), step, pos);
+	return bseek(a, NULL, k, step, pos);
 }
 
 
