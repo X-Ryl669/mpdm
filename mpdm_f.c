@@ -1600,9 +1600,12 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	mpdm_t sp = NULL;
 
 	if (mpdm_size(base))
-		sp = mpdm_strcat(base, MPDM_LS(L"/"));
+		sp = mpdm_strcat_s(base, L"/");
 
-	sp = mpdm_strcat(sp, mpdm_size(spec) == 0 ? MPDM_LS(L"*.*") : spec);
+	if (mpdm_size(spec) == 0)
+		sp = mpdm_strcat_s(sp, L"*.*");
+	else
+		sp = mpdm_strcat(sp, spec);
 
 	/* delete repeated directory delimiters */
 	sp = mpdm_sregex(MPDM_LS(L"@[\\/]+@g"), sp, MPDM_LS(L"/"), 0);
@@ -1630,7 +1633,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
 			/* if it's a directory, add a / */
 			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				w = mpdm_strcat(w, MPDM_LS(L"/"));
+				w = mpdm_strcat_s(w, L"/");
 				mpdm_push(d, w);
 			}
 			else
@@ -1651,9 +1654,12 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
 	/* build full path */
 	if (mpdm_size(base))
-		v = mpdm_strcat(base, MPDM_LS(L"/"));
+		v = mpdm_strcat_s(base, L"/");
 
-	v = mpdm_strcat(v, mpdm_size(spec) == 0 ? MPDM_LS(L"*") : spec);
+	if (mpdm_size(spec) == 0)
+		v = mpdm_strcat_s(v, L"*");
+	else
+		v = mpdm_strcat(v, spec);
 
 	/* delete repeated directory delimiters */
 	v = mpdm_sregex(MPDM_LS(L"@/{2,}@g"), v, MPDM_LS(L"/"), 0);
