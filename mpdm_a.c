@@ -565,6 +565,57 @@ mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
 
 
 /**
+ * mpdm_split_s - Separates a string into an array of pieces (string version).
+ * @s: the separator
+ * @v: the value to be separated
+ *
+ * Separates the @v string value into an array of pieces, using @s
+ * as a separator.
+ *
+ * If the separator is NULL, the string is splitted by characters.
+ *
+ * If the string does not contain the separator, an array holding 
+ * the complete string is returned.
+ * [Arrays]
+ * [Strings]
+ */
+mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
+{
+	mpdm_t w;
+	const wchar_t *ptr;
+	wchar_t *sptr;
+	int ss;
+
+	/* nothing to split? */
+	if (v == NULL)
+		return NULL;
+
+	w = MPDM_A(0);
+
+	/* NULL separator? special case: split string in characters */
+	if (s == NULL) {
+		for (ptr = mpdm_string(v); ptr && *ptr != '\0'; ptr++)
+			mpdm_push(w, MPDM_NS(ptr, 1));
+
+		return w;
+	}
+
+	ss = wcslen(s);
+
+	/* travels the string finding separators and creating new values */
+	for (ptr = v->data;
+		     *ptr != L'\0' && (sptr = wcsstr(ptr, s)) != NULL;
+		     ptr = sptr + ss)
+		mpdm_push(w, MPDM_NS(ptr, sptr - ptr));
+
+	/* add last part */
+	mpdm_push(w, MPDM_S(ptr));
+
+	return w;
+}
+
+
+/**
  * mpdm_split - Separates a string into an array of pieces.
  * @s: the separator
  * @v: the value to be separated
@@ -581,34 +632,12 @@ mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
  */
 mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
 {
-	mpdm_t w;
-	const wchar_t *ptr;
-	wchar_t *sptr;
+	wchar_t *ss = NULL;
 
-	/* nothing to split? */
-	if (v == NULL)
-		return NULL;
+	if (s != NULL)
+		ss = (wchar_t *)s->data;
 
-	w = MPDM_A(0);
-
-	/* NULL separator? special case: split string in characters */
-	if (s == NULL) {
-		for (ptr = mpdm_string(v); ptr && *ptr != '\0'; ptr++)
-			mpdm_push(w, MPDM_NS(ptr, 1));
-
-		return w;
-	}
-
-	/* travels the string finding separators and creating new values */
-	for (ptr = v->data;
-	     *ptr != L'\0' && (sptr = wcsstr(ptr, s->data)) != NULL;
-	     ptr = sptr + mpdm_size(s))
-		mpdm_push(w, MPDM_NS(ptr, sptr - ptr));
-
-	/* add last part */
-	mpdm_push(w, MPDM_S(ptr));
-
-	return w;
+	return mpdm_split_s(ss, v);
 }
 
 
