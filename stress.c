@@ -164,6 +164,11 @@ void test_basic(void)
 	do_test("mpdm_rval() for hexadecimal numbers", mpdm_ival(v) == 127.0);
 
 	do_test("Two NULLs are equal", mpdm_cmp(NULL, NULL) == 0);
+
+	v = MPDM_LS(L"hahaha");
+	do_test("mpdm_cmp_s 1", mpdm_cmp_s(v, L"hahaha") == 0);
+	do_test("mpdm_cmp_s 2", mpdm_cmp_s(v, L"aahaha") > 0);
+	do_test("mpdm_cmp_s 3", mpdm_cmp_s(v, L"zahaha") < 0);
 }
 
 mpdm_t sort_cb(mpdm_t args)
