@@ -363,6 +363,29 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 }
 
 
+static int seek(const mpdm_t a, const mpdm_t k, wchar_t *ks, int step)
+{
+	int n;
+
+	/* avoid stupid steps */
+	if (step <= 0)
+		step = 1;
+
+	for (n = 0; n < mpdm_size(a); n += step) {
+		int r;
+
+		mpdm_t v = mpdm_aget(a, n);
+
+		r = ks ? mpdm_cmp_s(v, ks) : mpdm_cmp(v, k);
+
+		if (r == 0)
+			return n;
+	}
+
+	return -1;
+}
+
+
 /**
  * mpdm_seek - Seeks a value in an array (sequential).
  * @a: the array
@@ -376,20 +399,7 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
  */
 int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
 {
-	int n;
-
-	/* avoid stupid steps */
-	if (step <= 0)
-		step = 1;
-
-	for (n = 0; n < mpdm_size(a); n += step) {
-		mpdm_t v = mpdm_aget(a, n);
-
-		if (mpdm_cmp(v, k) == 0)
-			return n;
-	}
-
-	return -1;
+	return seek(a, k, NULL, step);
 }
 
 
@@ -404,9 +414,9 @@ int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
  * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step)
+int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
 {
-	return mpdm_seek(a, MPDM_LS(k), step);
+	return seek(a, NULL, k, step);
 }
 
 
