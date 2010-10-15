@@ -659,7 +659,7 @@ mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
 
 
 /**
- * mpdm_join - Joins all elements of an array into one.
+ * mpdm_join_s - Joins all elements of an array into one (string version).
  * @s: joiner string
  * @a: array to be joined
  *
@@ -667,7 +667,7 @@ mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
+mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 {
 	int n;
 	wchar_t *ptr = NULL;
@@ -682,7 +682,7 @@ mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
 
 	for (n = 1; n < mpdm_size(a); n++) {
 		/* add separator */
-		ptr = mpdm_pokev(ptr, &l, s);
+		ptr = mpdm_pokews(ptr, &l, s);
 
 		/* add element */
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
@@ -693,4 +693,19 @@ mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
 
 	ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
 	return MPDM_ENS(ptr, l - 1);
+}
+
+
+/**
+ * mpdm_join - Joins all elements of an array into one.
+ * @s: joiner string
+ * @a: array to be joined
+ *
+ * Joins all elements from @a into one string, using @s as a glue.
+ * [Arrays]
+ * [Strings]
+ */
+mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
+{
+	return mpdm_join_s(s ? mpdm_string(s) : NULL, a);
 }

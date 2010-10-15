@@ -106,6 +106,7 @@ mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t asort_cb);
 
 mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v);
 mpdm_t mpdm_split(const mpdm_t s, const mpdm_t a);
+mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a);
 mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a);
 
 void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);

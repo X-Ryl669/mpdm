@@ -82,6 +82,9 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
 /* adds a wide string to dst using mpdm_poke() */
 {
+	if (str == NULL)
+		return dst;
+
 	return mpdm_poke(dst, dsize, str, wcslen(str), sizeof(wchar_t));
 }
 
