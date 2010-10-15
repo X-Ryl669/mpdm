@@ -564,6 +564,35 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 
 
 /**
+ * mpdm_strcat_sn - Concatenates two strings (string with size version).
+ * @s1: the first string
+ * @s2: the second string
+ * @size: the size of the second string
+ *
+ * Returns a new string formed by the concatenation of @s1 and @s2.
+ * [Strings]
+ */
+mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
+{
+	wchar_t *ptr = NULL;
+	int s = 0;
+
+	if (s1 == NULL && s2 == NULL)
+		return NULL;
+
+	ptr = mpdm_pokev(ptr, &s, s1);
+	ptr = mpdm_pokewsn(ptr, &s, s2, size);
+
+	/* if no characters were added, returns an empty string */
+	if (ptr == NULL)
+		return MPDM_LS(L"");
+
+	ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
+	return MPDM_ENS(ptr, s - 1);
+}
+
+
+/**
  * mpdm_strcat_s - Concatenates two strings (string version).
  * @s1: the first string
  * @s2: the second string
@@ -573,21 +602,7 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
  */
 mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
 {
-	wchar_t *ptr = NULL;
-	int s = 0;
-
-	if (s1 == NULL && s2 == NULL)
-		return NULL;
-
-	ptr = mpdm_pokev(ptr, &s, s1);
-	ptr = mpdm_pokews(ptr, &s, s2);
-
-	/* if no characters were added, returns an empty string */
-	if (ptr == NULL)
-		return MPDM_LS(L"");
-
-	ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
-	return MPDM_ENS(ptr, s - 1);
+	return mpdm_strcat_sn(s1, s2, s2 ? wcslen(s2) : 0);
 }
 
 
