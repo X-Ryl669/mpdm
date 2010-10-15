@@ -306,13 +306,13 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 		int n = wptr - sptr;
 
 		/* add the leading part */
-		r = mpdm_strcat(r, MPDM_NS(sptr, n));
+		r = mpdm_strcat_sn(r, sptr, n);
 
 		if (*wptr == L'\\') {
 			if (*(wptr + 1) == L'&' || *(wptr + 1) == L'\\')
 				wptr++;
 
-			r = mpdm_strcat(r, MPDM_NS(wptr, 1));
+			r = mpdm_strcat_sn(r, wptr, 1);
 		}
 		else
 		if (*wptr == '&')
@@ -325,7 +325,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 		r = s;
 	else {
 		/* add the rest of the string */
-		r = mpdm_strcat(r, MPDM_S(sptr));
+		r = mpdm_strcat_s(r, sptr);
 	}
 
 	return r;
