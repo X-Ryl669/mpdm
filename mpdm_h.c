@@ -181,18 +181,7 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
 }
 
 
-/**
- * mpdm_hset - Sets a value in a hash.
- * @h: the hash
- * @k: the key
- * @v: the value
- *
- * Sets the value @v to the key @k in the hash @h. Returns
- * the previous value of the key, or NULL if the key was
- * previously undefined.
- * [Hashes]
- */
-mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
+static mpdm_t hset(mpdm_t h, mpdm_t k, const wchar_t *ks, mpdm_t v)
 {
 	mpdm_t b;
 	int n;
@@ -201,17 +190,20 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 	if (mpdm_size(h) == 0)
 		mpdm_expand(h, 0, mpdm->hash_buckets);
 
-	n = HASH_BUCKET(h, k);
+	n = ks ? HASH_BUCKET_S(h, ks) : HASH_BUCKET(h, k);
 
 	if ((b = mpdm_aget(h, n)) != NULL) {
 		int pos;
 
 		/* bucket exists; try to find the key there */
-		if ((n = mpdm_bseek(b, k, 2, &pos)) < 0) {
+		n = ks ? mpdm_bseek_s(b, ks, 2, &pos) : mpdm_bseek(b, k, 2, &pos);
+
+		if (n < 0) {
 			/* the pair does not exist: create it */
 			n = pos;
 			mpdm_expand(b, n, 2);
-			mpdm_aset(b, k, n);
+
+			mpdm_aset(b, ks ? MPDM_S(ks) : k, n);
 		}
 	}
 	else {
@@ -225,10 +217,27 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 		n = 0;
 
 		/* insert the key */
-		mpdm_aset(b, k, n);
+		mpdm_aset(b, ks ? MPDM_S(ks) : k, n);
 	}
 
 	return mpdm_aset(b, v, n + 1);
+}
+
+
+/**
+ * mpdm_hset - Sets a value in a hash.
+ * @h: the hash
+ * @k: the key
+ * @v: the value
+ *
+ * Sets the value @v to the key @k in the hash @h. Returns
+ * the previous value of the key, or NULL if the key was
+ * previously undefined.
+ * [Hashes]
+ */
+mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
+{
+	return hset(h, k, NULL, v);
 }
 
 
@@ -243,9 +252,9 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  * previously undefined.
  * [Hashes]
  */
-mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t * k, mpdm_t v)
+mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
 {
-	return mpdm_hset(h, MPDM_LS(k), v);
+	return hset(h, NULL, k, v);
 }
 
 

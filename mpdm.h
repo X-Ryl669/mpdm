@@ -139,10 +139,10 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2);
 
 int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
-mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t * k);
+mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
 int mpdm_exists(const mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
-mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t * k, mpdm_t v);
+mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
 int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2);
