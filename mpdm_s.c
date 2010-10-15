@@ -79,13 +79,23 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 }
 
 
+wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
+/* adds a wide string to dst using mpdm_poke() with size */
+{
+	if (str)
+		dst = mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
+
+	return dst;
+}
+
+
 wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
 /* adds a wide string to dst using mpdm_poke() */
 {
-	if (str == NULL)
-		return dst;
+	if (str)
+		dst = mpdm_pokewsn(dst, dsize, str, wcslen(str));
 
-	return mpdm_poke(dst, dsize, str, wcslen(str), sizeof(wchar_t));
+	return dst;
 }
 
 
