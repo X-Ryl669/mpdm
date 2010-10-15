@@ -82,9 +82,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 	}
 
 	/* add the visual representation of the value */
-	wptr = mpdm_string(v);
-	ptr = mpdm_pokews(ptr, size, wptr);
-	ptr = mpdm_pokews(ptr, size, L"\n");
+	ptr = mpdm_pokev(ptr, size, v);
+	ptr = mpdm_pokewsn(ptr, size, L"\n", 1);
 
 	if (v != NULL) {
 		/* if it's a hash, iterate it */

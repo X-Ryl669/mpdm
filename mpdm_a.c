@@ -672,6 +672,7 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 	int n;
 	wchar_t *ptr = NULL;
 	int l = 0;
+	int ss;
 
 	/* if a is not an array, return it as is */
 	if (!MPDM_IS_ARRAY(a))
@@ -680,9 +681,11 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 	/* adds the first string */
 	ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
 
+	ss = s ? wcslen(s) : 0;
+
 	for (n = 1; n < mpdm_size(a); n++) {
 		/* add separator */
-		ptr = mpdm_pokews(ptr, &l, s);
+		ptr = mpdm_pokewsn(ptr, &l, s, ss);
 
 		/* add element */
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
