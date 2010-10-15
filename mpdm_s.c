@@ -601,10 +601,7 @@ mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
  */
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
 {
-	if (s2 == NULL)
-		return s1;
-
-	return mpdm_strcat_s(s1, mpdm_string(s2));
+	return mpdm_strcat_s(s1, s2 ? mpdm_string(s2) : NULL);
 }
 
 
