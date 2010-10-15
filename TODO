@@ -38,6 +38,8 @@ Pending Enhancements
  * 1117: Invert mpdm_sscanf() arguments.
  * 1118: Invert mpdm_regex() arguments.
  * 1119: Invert mpdm_sregex() arguments.
+ * 1120: Drop completely the garbage collection and convert it to a pure
+   reference-counting system.
 
 Closed
 ------
