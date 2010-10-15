@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     mpdm_s.c - String management
 
@@ -43,13 +43,7 @@
 #include "mpdm.h"
 
 
-/*******************
-	Data
-********************/
-
-/*******************
-	Code
-********************/
+/** code **/
 
 void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize)
 {

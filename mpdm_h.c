@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     mpdm_h.c - Hash management
 
@@ -32,9 +32,7 @@
 
 #include "mpdm.h"
 
-/*******************
-	Code
-********************/
+/** code **/
 
 /* prototype for the one-time wrapper hash function */
 static int switch_hash_func(const wchar_t *, int);

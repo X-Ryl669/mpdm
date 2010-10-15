@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     mpdm_a.c - Array management
 
@@ -33,17 +33,13 @@
 #include "mpdm.h"
 
 
-/*******************
-	Data
-********************/
+/** data **/
 
 /* sorting callback code */
 static mpdm_t sort_cb = NULL;
 
 
-/*******************
-	Code
-********************/
+/** code **/
 
 mpdm_t mpdm_new_a(int flags, int size)
 /* creates a new array value */

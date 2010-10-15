@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     mpdm_f.c - File management
 
@@ -95,9 +95,7 @@ struct mpdm_file {
 extern int errno;
 
 
-/*******************
-	Code
-********************/
+/** code **/
 
 
 static void store_syserr(void)

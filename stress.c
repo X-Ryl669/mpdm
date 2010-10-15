@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2009 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     stress.c - Stress tests for MPDM.
 
@@ -42,9 +42,8 @@ int i_failed_msgs = 0;
 int do_benchmarks = 0;
 int do_multibyte_sregex_tests = 0;
 
-/*******************
-	Code
-********************/
+
+/** code **/
 
 void do_test(char *str, int ok)
 {

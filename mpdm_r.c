@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     mpdm_r.c - Regular expressions
 
@@ -44,9 +44,8 @@
 #include "gnu_regex.h"
 #endif
 
-/*******************
-	Data
-********************/
+
+/** data **/
 
 /* matching of the last regex */
 
@@ -57,9 +56,8 @@ int mpdm_regex_size = 0;
 
 int mpdm_sregex_count = 0;
 
-/*******************
-	Code
-********************/
+
+/** code **/
 
 static wchar_t *regex_flags(const mpdm_t r)
 {
