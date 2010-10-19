@@ -762,24 +762,31 @@ mpdm_t mpdm_gettext(const mpdm_t str)
 	if ((v = mpdm_hget(i18n, str)) == NULL) {
 #ifdef CONFOPT_GETTEXT
 		char *s;
+		mpdm_t t;
 
 		/* convert to mbs */
-		v = MPDM_2MBS(str->data);
+		t = mpdm_ref(MPDM_2MBS(str->data));
 
 		/* ask gettext for it */
-		s = gettext((char *) v->data);
+		s = gettext((char *) t->data);
 
 		/* create new value only if it's different */
-		if (s != v->data) {
+		if (s != t->data) {
 			v = MPDM_MBS(s);
 
 			/* store in the cache */
 			mpdm_hset(i18n, str, v);
 		}
 		else
-#endif				/* CONFOPT_GETTEXT */
-
 			v = str;
+
+		mpdm_unref(t);
+
+#else				/* CONFOPT_GETTEXT */
+
+		v = str;
+
+#endif				/* CONFOPT_GETTEXT */
 	}
 
 	return v;
@@ -809,14 +816,17 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 	mpdm_t dt;
 
 	/* convert both to mbs,s */
-	dm = MPDM_2MBS(dom->data);
-	dt = MPDM_2MBS(data->data);
+	dm = mpdm_ref(MPDM_2MBS(dom->data));
+	dt = mpdm_ref(MPDM_2MBS(data->data));
 
 	/* bind and set domain */
 	bindtextdomain((char *) dm->data, (char *) dt->data);
 	textdomain((char *) dm->data);
 
 	mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+
+	mpdm_unref(dt);
+	mpdm_unref(dm);
 
 	ret = 1;
 
