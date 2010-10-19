@@ -196,8 +196,9 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 	p = (mpdm_t *) a->data;
 
 	/* assigns and references */
+	mpdm_ref(e);
 	v = mpdm_unref(p[offset]);
-	p[offset] = mpdm_ref(e);
+	p[offset] = e;
 
 	return v;
 }
