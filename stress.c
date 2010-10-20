@@ -378,6 +378,19 @@ void test_hash(void)
     mpdm_dump(v);
     mpdm_dump(h);
 
+	i = 0;
+	for (n = 0; n < 1000; n++) {
+		if (mpdm_hget_s(h, L"ok") != NULL)
+			i++;
+	}
+	printf("i: %d\n", i);
+	do_test("hget_s 1.2", i == 1000);
+
+	if (i != 1000)
+		mpdm_hget_s(h, L"ok");
+
+	do_test("hget 1.2.1", mpdm_hget(h, MPDM_LS(L"ok")) != NULL);
+
 	mpdm_hset_s(h, L"ok", MPDM_I(777));
 
 	v = mpdm_hget_s(h, L"ok");
