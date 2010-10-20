@@ -261,25 +261,16 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
  * the end of the array (so a value of -1 means delete the
  * last element of the array).
  *
- * Returns the deleted element.
+ * Always returns NULL (version prior to 1.0.10 used to return
+ * the deleted element).
  * [Arrays]
  */
 mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
-	mpdm_t v;
+	if (mpdm_size(a))
+        mpdm_collapse(a, wrap_offset(a, offset), 1);
 
-	if (a == NULL || mpdm_size(a) == 0)
-		return NULL;
-
-	offset = wrap_offset(a, offset);
-
-	/* gets current value */
-	v = mpdm_aget(a, offset);
-
-	/* shrinks the array */
-	mpdm_collapse(a, offset, 1);
-
-	return v;
+	return NULL;
 }
 
 
@@ -290,12 +281,16 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
  * Extracts the first element of the array. The array
  * is shrinked by one.
  *
- * Returns the deleted element.
+ * Returns the element.
  * [Arrays]
  */
 mpdm_t mpdm_shift(mpdm_t a)
 {
-	return mpdm_adel(a, 0);
+    mpdm_t v = mpdm_aget(a, 0);
+
+	mpdm_adel(a, 0);
+
+    return v;
 }
 
 
@@ -324,8 +319,11 @@ mpdm_t mpdm_push(mpdm_t a, mpdm_t e)
  */
 mpdm_t mpdm_pop(mpdm_t a)
 {
-	/* deletes from the end */
-	return mpdm_adel(a, -1);
+    mpdm_t v = mpdm_aget(a, -1);
+
+	mpdm_adel(a, -1);
+
+    return v;
 }
 
 
