@@ -87,35 +87,37 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
 		/* not found; regex must be compiled */
 
 		/* convert to mbs */
-		rmb = MPDM_2MBS(r->data);
-
+		rmb = mpdm_ref(MPDM_2MBS(r->data));
 		regex = (char *) rmb->data;
-		if ((flags = strrchr(regex, *regex)) == NULL)
-			return NULL;
 
-		if (strchr(flags, 'i') != NULL)
-			f |= REG_ICASE;
-		if (strchr(flags, 'm') != NULL)
-			f |= REG_NEWLINE;
+		if ((flags = strrchr(regex, *regex)) != NULL) {
 
-		regex++;
-		*flags = '\0';
+    		if (strchr(flags, 'i') != NULL)
+    			f |= REG_ICASE;
+    		if (strchr(flags, 'm') != NULL)
+    			f |= REG_NEWLINE;
 
-		if (!regcomp(&re, regex, f)) {
-			void *ptr;
+    		regex++;
+    		*flags = '\0';
 
-			if ((ptr = malloc(sizeof(regex_t))) != NULL) {
-				/* copies */
-				memcpy(ptr, &re, sizeof(regex_t));
+    		if (!regcomp(&re, regex, f)) {
+    			void *ptr;
 
-				/* create value */
-				c = mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
+    			if ((ptr = malloc(sizeof(regex_t))) != NULL) {
+    				/* copies */
+    				memcpy(ptr, &re, sizeof(regex_t));
 
-				/* stores */
-				mpdm_hset(regex_cache, r, c);
-			}
-		}
-	}
+    				/* create value */
+    				c = mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
+
+    				/* stores */
+    				mpdm_hset(regex_cache, r, c);
+    			}
+    		}
+    	}
+
+        mpdm_unref(rmb);
+    }
 
 	return c;
 }
