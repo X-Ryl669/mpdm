@@ -1099,8 +1099,8 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 		return NULL;
 
 	/* convert to mbs,s */
-	fn = MPDM_2MBS(filename->data);
-	m = MPDM_2MBS(mode->data);
+	fn = mpdm_ref(MPDM_2MBS(filename->data));
+	m = mpdm_ref(MPDM_2MBS(mode->data));
 
 	if ((f = fopen((char *) fn->data, (char *) m->data)) == NULL)
 		store_syserr();
@@ -1118,6 +1118,9 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 		}
 #endif
 	}
+
+    mpdm_unref(m);
+    mpdm_unref(fn);
 
 	return MPDM_F(f);
 }
@@ -1361,7 +1364,7 @@ int mpdm_encoding(mpdm_t charset)
 #ifdef CONFOPT_ICONV
 	{
 		iconv_t ic;
-		mpdm_t cs = MPDM_2MBS(charset->data);
+		mpdm_t cs = mpdm_ref(MPDM_2MBS(charset->data));
 
 		/* tries to create an iconv encoder and decoder for this charset */
 
@@ -1380,6 +1383,8 @@ int mpdm_encoding(mpdm_t charset)
 				ret = 0;
 			}
 		}
+
+        mpdm_unref(cs);
 	}
 #endif				/* CONFOPT_ICONV */
 
@@ -1406,10 +1411,12 @@ int mpdm_unlink(const mpdm_t filename)
 	mpdm_t fn;
 
 	/* convert to mbs */
-	fn = MPDM_2MBS(filename->data);
+	fn = mpdm_ref(MPDM_2MBS(filename->data));
 
 	if ((ret = unlink((char *) fn->data)) == -1)
 		store_syserr();
+
+    mpdm_unref(fn);
 
 	return ret;
 }
@@ -1440,7 +1447,7 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 	struct stat s;
 	mpdm_t fn;
 
-	fn = MPDM_2MBS(filename->data);
+	fn = mpdm_ref(MPDM_2MBS(filename->data));
 
 	if (stat((char *) fn->data, &s) != -1) {
 		r = MPDM_A(14);
@@ -1490,6 +1497,7 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 		}
 #endif
 
+        mpdm_unref(fn);
 	}
 	else
 		store_syserr();
@@ -1512,10 +1520,12 @@ int mpdm_chmod(const mpdm_t filename, mpdm_t perms)
 {
 	int r = -1;
 
-	mpdm_t fn = MPDM_2MBS(filename->data);
+	mpdm_t fn = mpdm_ref(MPDM_2MBS(filename->data));
 
 	if ((r = chmod((char *) fn->data, mpdm_ival(perms))) == -1)
 		store_syserr();
+
+    mpdm_unref(fn);
 
 	return r;
 }
@@ -1532,10 +1542,12 @@ int mpdm_chdir(const mpdm_t dir)
 {
 	int r = -1;
 
-	mpdm_t fn = MPDM_2MBS(dir->data);
+	mpdm_t fn = mpdm_ref(MPDM_2MBS(dir->data));
 
 	if ((r = chdir((char *) fn->data)) == -1)
 		store_syserr();
+
+    mpdm_unref(fn);
 
 	return r;
 }
@@ -1556,10 +1568,12 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
 
 #ifdef CONFOPT_CHOWN
 
-	mpdm_t fn = MPDM_2MBS(filename->data);
+	mpdm_t fn = mpdm_ref(MPDM_2MBS(filename->data));
 
 	if ((r = chown((char *) fn->data, mpdm_ival(uid), mpdm_ival(gid))) == -1)
 		store_syserr();
+
+    mpdm_unref(fn);
 
 #endif				/* CONFOPT_CHOWN */
 
@@ -1699,8 +1713,8 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	if (v != NULL) {
 		int n;
 
-		d = mpdm_sort(d, 1);
-		f = mpdm_sort(f, 1);
+		mpdm_sort(d, 1);
+		mpdm_sort(f, 1);
 
 		/* transfer all data in d and f */
 		for (n = 0; n < mpdm_size(d); n++)
@@ -1895,8 +1909,8 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 		return NULL;
 
 	/* convert to mbs,s */
-	pr = MPDM_2MBS(prg->data);
-	md = MPDM_2MBS(mode->data);
+	pr = mpdm_ref(MPDM_2MBS(prg->data));
+	md = mpdm_ref(MPDM_2MBS(mode->data));
 
 	/* get the mode */
 	m = (char *) md->data;
@@ -1913,6 +1927,9 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 		destroy_mpdm_file(v);
 		v = NULL;
 	}
+
+    mpdm_unref(md);
+    mpdm_unref(pr);
 
 	return v;
 }
