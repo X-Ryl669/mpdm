@@ -371,7 +371,9 @@ void test_hash(void)
 	do_test("exists 1", mpdm_exists(h, MPDM_LS(L"ok")));
 	do_test("exists 2", !mpdm_exists(h, MPDM_LS(L"notok")));
 
+	mpdm_dump(h);
 	v = mpdm_hget_s(h, L"ok");
+	printf("v %s\n", v == NULL ? "is NULL" : "is NOT NULL");
 	do_test("hget_s 1", mpdm_ival(v) == 666);
     mpdm_dump(v);
     mpdm_dump(h);
