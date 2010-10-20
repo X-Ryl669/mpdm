@@ -825,8 +825,8 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args)
 	/* to avoid destroying args */
 	a = mpdm_clone(args);
 
-	/* unshift first argument */
-	v = mpdm_adel(a, 0);
+	/* shift first argument */
+	v = mpdm_shift(a);
 	t = mpdm_ival(v);
 
 	for (n = 0; n < mpdm_size(c); n++) {
@@ -834,7 +834,7 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args)
 		o = mpdm_aget(c, n);
 
 		/* gets next value */
-		v = mpdm_adel(a, 0);
+		v = mpdm_shift(a);
 
 		switch (*(wchar_t *) o->data) {
 		case '+':
