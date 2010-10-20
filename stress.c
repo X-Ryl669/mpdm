@@ -45,11 +45,11 @@ int do_multibyte_sregex_tests = 0;
 
 /** code **/
 
-void do_test(char *str, int ok)
+void _do_test(char *str, int ok, int src_line)
 {
 	char tmp[1024];
 
-	sprintf(tmp, "%s: %s\n", str, ok ? "OK!" : "*** Failed ***");
+	sprintf(tmp, "%s: %s (line %d)\n", str, ok ? "OK!" : "*** Failed ***", src_line);
 	printf(tmp);
 
 	tests++;
@@ -60,6 +60,7 @@ void do_test(char *str, int ok)
 		failed_msgs[i_failed_msgs++] = strdup(tmp);
 }
 
+#define do_test(str, ok) _do_test(str, ok, __LINE__)
 
 /* tests */
 
