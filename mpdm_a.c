@@ -507,9 +507,13 @@ static int sort_cmp(const void *s1, const void *s2)
 		ret = mpdm_cmp(*(mpdm_t *) s1, *(mpdm_t *) s2);
 	else {
 		/* executes the callback and converts to integer */
-		ret = mpdm_ival(mpdm_exec_2(sort_cb,
+		mpdm_t t = mpdm_ref(mpdm_exec_2(sort_cb,
 					    (mpdm_t) * ((mpdm_t *) s1),
-					    (mpdm_t) * ((mpdm_t *) s2)));
+					    (mpdm_t) * ((mpdm_t *) s2))
+        );
+
+        ret = mpdm_ival(t);
+        mpdm_unref(t);
 	}
 
 	return ret;
