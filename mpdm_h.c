@@ -229,8 +229,8 @@ static mpdm_t hset(mpdm_t h, mpdm_t k, const wchar_t *ks, mpdm_t v)
  * @v: the value
  *
  * Sets the value @v to the key @k in the hash @h. Returns
- * the previous value of the key, or NULL if the key was
- * previously undefined.
+ * the new value (versions prior to 1.0.10 returned the old
+ * value).
  * [Hashes]
  */
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
@@ -246,8 +246,8 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  * @v: the value
  *
  * Sets the value @v to the key @k in the hash @h. Returns
- * the previous value of the key, or NULL if the key was
- * previously undefined.
+ * the new value (versions prior to 1.0.10 returned the old
+ * value).
  * [Hashes]
  */
 mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
@@ -261,29 +261,24 @@ mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
  * @h: the hash
  * @k: the key
  *
- * Deletes the key @k from the hash @h. Returns the previous
- * value, or NULL if the key was not defined.
+ * Deletes the key @k from the hash @h. Returns NULL
+ * (versions prior to 1.0.10 returned the deleted value).
  * [Hashes]
  */
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
 {
-	mpdm_t v = NULL;
 	mpdm_t b;
 	int n;
 
 	if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
 		/* bucket exists */
 		if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0) {
-			/* the pair exists: set key and value to NULL */
-			mpdm_aset(b, NULL, n);
-			v = mpdm_aset(b, NULL, n + 1);
-
 			/* collapse the bucket */
 			mpdm_collapse(b, n, 2);
 		}
 	}
 
-	return v;
+	return NULL;
 }
 
 

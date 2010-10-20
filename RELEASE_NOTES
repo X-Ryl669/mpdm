@@ -4,7 +4,8 @@ MPDM Release Notes
 1.0.10
 ------
 
- * mpdm_adel() no longer returns the deleted element.
+ * mpdm_adel() and mpdm_hdel() no longer return the deleted element.
+ * mpdm_aset() and mpdm_hset() no longer return the old element.
  * New functions mpdm_strcat_sn(), mpdm_pokewsn(),
    mpdm_join_s(), mpdm_split_s(), mpdm_cmp_s(), mpdm_strcat_s().
  * Some refactoring to diminish memory usage (no more `prev'

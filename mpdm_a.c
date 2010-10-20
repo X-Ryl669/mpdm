@@ -174,12 +174,12 @@ mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
  * @offset: the subscript of the element
  *
  * Sets the element of the array @a at @offset to be the @e value.
- * Returns the previous element.
+ * Returns the new element (versions prior to 1.0.10 returned the
+ * old element).
  * [Arrays]
  */
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 {
-	mpdm_t v;
 	mpdm_t *p;
 
 	offset = wrap_offset(a, offset);
@@ -197,10 +197,10 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 
 	/* assigns and references */
 	mpdm_ref(e);
-	v = mpdm_unref(p[offset]);
+	mpdm_unref(p[offset]);
 	p[offset] = e;
 
-	return v;
+    return e;
 }
 
 
