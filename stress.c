@@ -200,9 +200,9 @@ void test_array(void)
 	mpdm_dump(a);
 	do_test("a->size == 7", (a->size == 7));
 
-/*	v = mpdm_aset(a, NULL, 3);
-	do_test("v->ref == 0", (v->ref == 0));
-	mpdm_dump(a);*/
+    v = mpdm_aget(a, 3);
+	mpdm_aset(a, NULL, 3);
+	mpdm_dump(a);
 
 	a = mpdm_sort(a, 1);
 	do_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
@@ -341,8 +341,7 @@ void test_hash(void)
 
 	printf("h's size: %d\n", mpdm_hsize(h));
 
-	v = mpdm_hdel(h, MPDM_LS(L"mp"));
-	do_test("hdel", mpdm_ival(v) == 6);
+	mpdm_hdel(h, MPDM_LS(L"mp"));
 	do_test("hsize 5", mpdm_hsize(h) == 102);
 
 /*
