@@ -523,7 +523,8 @@ static int sort_cmp(const void *s1, const void *s2)
  *
  * Sorts the array. @step is the number of elements to group together.
  *
- * Returns the sorted array (the original one is left untouched).
+ * Returns the same array, sorted (versions prior to 1.0.10 returned
+ * a new array).
  * [Arrays]
  */
 mpdm_t mpdm_sort(const mpdm_t a, int step)
@@ -544,35 +545,31 @@ mpdm_t mpdm_sort(const mpdm_t a, int step)
  * argument. It must return a signed numerical mpdm_t value indicating
  * the sorting order.
  *
- * Returns the sorted array (the original one is left untouched).
+ * Returns the same array, sorted (versions prior to 1.0.10 returned
+ * a new array).
  * [Arrays]
  */
-mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t cb)
+mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 {
-	mpdm_t n;
-
 	if (a == NULL)
 		return NULL;
-
-	/* creates a copy to be sorted */
-	n = mpdm_clone(a);
 
 	sort_cb = cb;
 
 	/* references the array and the code, as the latter
 	   can include anything (including sweeping) */
-	mpdm_ref(n);
+	mpdm_ref(a);
 	mpdm_ref(sort_cb);
 
-	qsort((mpdm_t *)n->data, mpdm_size(n) / step, sizeof(mpdm_t) * step, sort_cmp);
+	qsort((mpdm_t *)a->data, mpdm_size(a) / step, sizeof(mpdm_t) * step, sort_cmp);
 
 	/* unreferences */
 	mpdm_unref(sort_cb);
-	mpdm_unref(n);
+	mpdm_unref(a);
 
 	sort_cb = NULL;
 
-	return n;
+	return a;
 }
 
 

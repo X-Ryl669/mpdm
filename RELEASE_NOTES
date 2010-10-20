@@ -6,6 +6,7 @@ MPDM Release Notes
 
  * mpdm_adel() and mpdm_hdel() no longer return the deleted element.
  * mpdm_aset() and mpdm_hset() no longer return the old element.
+ * mpdm_sort() sorts the array instead of returning a new one.
  * New functions mpdm_strcat_sn(), mpdm_pokewsn(),
    mpdm_join_s(), mpdm_split_s(), mpdm_cmp_s(), mpdm_strcat_s().
  * Some refactoring to diminish memory usage (no more `prev'

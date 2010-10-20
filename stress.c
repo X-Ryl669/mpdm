@@ -204,20 +204,20 @@ void test_array(void)
 	mpdm_aset(a, NULL, 3);
 	mpdm_dump(a);
 
-	a = mpdm_sort(a, 1);
+	mpdm_sort(a, 1);
 	do_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
 
 	mpdm_aset(a, v, 0);
 	v = mpdm_aget(a, 3);
 	do_test("v is referenced again", (v != NULL && v->ref > 0));
 
-	a = mpdm_sort(a, 1);
+	mpdm_sort(a, 1);
 	do_test("mpdm_asort() works (1)", mpdm_cmp(mpdm_aget(a, 0), MPDM_LS(L"friday")) == 0);
 	do_test("mpdm_asort() works (2)",
 		mpdm_cmp(mpdm_aget(a, 6), MPDM_LS(L"wednesday")) == 0);
 
 	/* asort_cb sorts reversely */
-	a = mpdm_sort_cb(a, 1, MPDM_X(sort_cb));
+	mpdm_sort_cb(a, 1, MPDM_X(sort_cb));
 
 	do_test("mpdm_asort_cb() works (1)",
 		mpdm_cmp(mpdm_aget(a, 6), MPDM_LS(L"friday")) == 0);

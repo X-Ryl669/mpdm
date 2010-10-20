@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2007 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -101,8 +101,8 @@ int mpdm_seek(const mpdm_t a, const mpdm_t k, int step);
 int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step);
 int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos);
 int mpdm_bseek_s(const mpdm_t a, const wchar_t * k, int step, int *pos);
-mpdm_t mpdm_sort(const mpdm_t a, int step);
-mpdm_t mpdm_sort_cb(const mpdm_t a, int step, mpdm_t asort_cb);
+mpdm_t mpdm_sort(mpdm_t a, int step);
+mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 
 mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v);
 mpdm_t mpdm_split(const mpdm_t s, const mpdm_t a);
