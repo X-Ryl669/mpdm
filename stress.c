@@ -373,6 +373,8 @@ void test_hash(void)
 
 	v = mpdm_hget_s(h, L"ok");
 	do_test("hget_s 1", mpdm_ival(v) == 666);
+    mpdm_dump(v);
+    mpdm_dump(h);
 
 	mpdm_hset_s(h, L"ok", MPDM_I(777));
 
