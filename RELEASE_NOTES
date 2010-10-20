@@ -1,6 +1,14 @@
 MPDM Release Notes
 ==================
 
+1.0.10
+------
+
+ * New functions mpdm_strcat_sn(), mpdm_pokewsn(),
+   mpdm_join_s(), mpdm_split_s(), mpdm_cmp_s(), mpdm_strcat_s().
+ * Some refactoring to diminish memory usage (no more `prev'
+   pointers in the value list, less residual values).
+
 1.0.9
 -----
 
