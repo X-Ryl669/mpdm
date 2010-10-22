@@ -1309,7 +1309,7 @@ static mpdm_t embedded_encodings(void)
 
 	if ((e = mpdm_hget_s(mpdm_root(), L"EMBEDDED_ENCODINGS")) == NULL) {
 		int n;
-		wchar_t *p = NULL;
+		mpdm_t p = NULL;
 
 		e = MPDM_H(0);
 
@@ -1317,10 +1317,10 @@ static mpdm_t embedded_encodings(void)
 			mpdm_t v = MPDM_S(e2e[n]);
 
 			if (e2e[n + 1] != NULL)
-				p = e2e[n + 1];
+				p = MPDM_S(e2e[n + 1]);
 
-			mpdm_hset(e, v, MPDM_S(p));
-			mpdm_hset(e, mpdm_ulc(v, 1), MPDM_S(p));
+			mpdm_hset(e, v, p);
+			mpdm_hset(e, mpdm_ulc(v, 1), p);
 		}
 
 		mpdm_hset_s(mpdm_root(), L"EMBEDDED_ENCODINGS", e);
