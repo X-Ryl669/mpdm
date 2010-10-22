@@ -1611,22 +1611,33 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	mpdm_t s = NULL;
 	mpdm_t sp = NULL;
 
+    /* add base */
 	if (mpdm_size(base))
 		sp = mpdm_strcat_s(base, L"/");
 
+    /* add spec */
+    w = mpdm_ref(sp);
+
 	if (mpdm_size(spec) == 0)
-		sp = mpdm_strcat_s(sp, L"*.*");
+		sp = mpdm_strcat_s(w, L"*.*");
 	else
-		sp = mpdm_strcat(sp, spec);
+		sp = mpdm_strcat(w, spec);
+
+    mpdm_unref(w);
 
 	/* delete repeated directory delimiters */
-	sp = mpdm_sregex(MPDM_LS(L"@[\\/]+@g"), sp, MPDM_LS(L"/"), 0);
+    w = mpdm_ref(sp);
+	sp = mpdm_sregex(MPDM_LS(L"@[\\/]+@g"), w, MPDM_LS(L"/"), 0);
+    mpdm_unref(w);
 
-	sp = MPDM_2MBS(sp->data);
+    w = mpdm_ref(sp);
+	sp = MPDM_2MBS(w->data);
+    mpdm_unref(w);
 
 	v = MPDM_A(0);
-	d = MPDM_A(0);
-	f = MPDM_A(0);
+	d = mpdm_ref(MPDM_A(0));
+	f = mpdm_ref(MPDM_A(0));
+    mpdm_ref(sp);
 
 	if ((h = FindFirstFile((char *) sp->data, &fd)) != INVALID_HANDLE_VALUE) {
 		/* if spec includes a directory, store in s */
@@ -1645,7 +1656,10 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
 			/* if it's a directory, add a / */
 			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				w = mpdm_strcat_s(w, L"/");
+                mpdm_t t = mpdm_ref(w);
+				w = mpdm_strcat_s(t, L"/");
+                mpdm_unref(t);
+
 				mpdm_push(d, w);
 			}
 			else
@@ -1656,6 +1670,8 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 		FindClose(h);
 	}
 
+    mpdm_unref(sp);
+
 #endif
 
 #if CONFOPT_GLOB_H
@@ -1663,28 +1679,37 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	/* glob.h support */
 	glob_t globbuf;
 	const char *ptr;
+    mpdm_t w;
 
 	/* build full path */
 	if (mpdm_size(base))
 		v = mpdm_strcat_s(base, L"/");
 
+    w = mpdm_ref(v);
+
 	if (mpdm_size(spec) == 0)
-		v = mpdm_strcat_s(v, L"*");
+		v = mpdm_strcat_s(w, L"*");
 	else
-		v = mpdm_strcat(v, spec);
+		v = mpdm_strcat(w, spec);
+
+    mpdm_unref(w);
 
 	/* delete repeated directory delimiters */
-	v = mpdm_sregex(MPDM_LS(L"@/{2,}@g"), v, MPDM_LS(L"/"), 0);
+    w = mpdm_ref(v);
+	v = mpdm_sregex(MPDM_LS(L"@/{2,}@g"), w, MPDM_LS(L"/"), 0);
+    mpdm_unref(w);
 
-	v = MPDM_2MBS(v->data);
+    w = mpdm_ref(v);
+	v = MPDM_2MBS(w->data);
+    mpdm_unref(w);
 
 	ptr = v->data;
 
 	globbuf.gl_offs = 1;
 
 	v = MPDM_A(0);
-	d = MPDM_A(0);
-	f = MPDM_A(0);
+	d = mpdm_ref(MPDM_A(0));
+	f = mpdm_ref(MPDM_A(0));
 
 	if (glob(ptr, GLOB_MARK, NULL, &globbuf) == 0) {
 		int n;
@@ -1721,6 +1746,9 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 			mpdm_push(v, mpdm_aget(d, n));
 		for (n = 0; n < mpdm_size(f); n++)
 			mpdm_push(v, mpdm_aget(f, n));
+
+        mpdm_unref(f);
+        mpdm_unref(d);
 	}
 
 	return v;
