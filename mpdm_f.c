@@ -1756,7 +1756,7 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	int ret;
-	struct mpdm_file *fs = v->data;
+	struct mpdm_file *fs = (struct mpdm_file *) v->data;
 
 	/* init all */
 	pr[0] = pr[1] = pw[0] = pw[1] = NULL;
@@ -1792,7 +1792,7 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 
 static int sysdep_pclose(const mpdm_t v)
 {
-	struct mpdm_file *fs = v->data;
+	struct mpdm_file *fs = (struct mpdm_file *)v->data;
 
 	if (fs->hin != NULL)
 		CloseHandle(fs->hin);
