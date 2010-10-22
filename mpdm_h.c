@@ -371,6 +371,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 {
 	int n;
 	mpdm_t p;
+    mpdm_t w = NULL;
 
 	if (r == NULL)
 		r = mpdm_root();
@@ -379,13 +380,16 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	if (k->flags & MPDM_MULTIPLE)
 		p = k;
 	else
-		p = mpdm_split_s(L".", k);
+		w = p = mpdm_split_s(L".", k);
 
 	for (n = 0; n < mpdm_size(p) - s; n++) {
 
 		/* is executable? run it and take its output */
-		while (MPDM_IS_EXEC(r))
-			r = mpdm_exec(r, NULL);
+		while (MPDM_IS_EXEC(r)) {
+            mpdm_t t = mpdm_ref(r);
+			r = mpdm_exec(t, NULL);
+            mpdm_unref(t);
+        }
 
 		if (MPDM_IS_HASH(r))
 			r = mpdm_hget(r, mpdm_aget(p, n));
@@ -404,8 +408,11 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	/* if want to set, do it */
 	if (s && r != NULL) {
 		/* resolve executable values again */
-		while (MPDM_IS_EXEC(r))
-			r = mpdm_exec(r, NULL);
+		while (MPDM_IS_EXEC(r)) {
+            mpdm_t t = mpdm_ref(r);
+			r = mpdm_exec(t, NULL);
+            mpdm_unref(t);
+        }
 
 		if (r->flags & MPDM_HASH)
 			r = mpdm_hset(r, mpdm_aget(p, n), v);
@@ -414,6 +421,8 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 			r = mpdm_aset(r, v, i);
 		}
 	}
+
+    mpdm_unref(w);
 
 	return r;
 }
