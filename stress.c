@@ -62,7 +62,29 @@ void _do_test(char *str, int ok, int src_line)
 
 #define do_test(str, ok) _do_test(str, ok, __LINE__)
 
-/* tests */
+#define C { int CC = mpdm->count
+#define T(i) do_test("v counter", CC + i == mpdm->count); } 
+
+/** tests **/
+
+void test_counter(void)
+{
+    mpdm_t v, w;
+
+    C; v = MPDM_S(L"hi"); T(1);
+
+    C; w = MPDM_A(0); T(1);
+
+    C; mpdm_push(w, v); T(0);
+
+    C; mpdm_adel(w, 0); T(0); /* should fail in 2.x */
+
+    C; mpdm_queue(w, v, 10); T(0);
+
+    C; v = MPDM_S(L"this is a phrase"); T(1);
+    C; w = mpdm_split_s(L" ", v); T(5);
+}
+
 
 void test_basic(void)
 {
@@ -1292,6 +1314,7 @@ int main(int argc, char *argv[])
 
 	printf("sizeof(struct mpdm_val): %ld\n", (long) sizeof(struct mpdm_val));
 
+    test_counter();
 	test_basic();
 	test_array();
 	test_hash();
