@@ -323,14 +323,10 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 		sptr = wptr + 1;
 	}
 
-	if (optr == NULL)
-		r = s;
-	else {
-		/* add the rest of the string */
-        optr = mpdm_pokews(optr, &osize, sptr);
-        optr = mpdm_pokewsn(optr, &osize, L"", 1);
-        r = MPDM_ENS(optr, osize);
-	}
+    /* add the rest of the string */
+    optr = mpdm_pokews(optr, &osize, sptr);
+    optr = mpdm_pokewsn(optr, &osize, L"", 1);
+    r = MPDM_ENS(optr, osize);
 
 	return r;
 }
@@ -371,7 +367,8 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 {
 	mpdm_t cr;
-	mpdm_t o = v;
+    wchar_t *optr = NULL;
+    int osize = 0;
 
 	if (r == NULL) {
 		/* return last count */
@@ -393,7 +390,7 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 			global = wcschr(global, 'g');
 
 		/* store the first part */
-		o = MPDM_NS(v->data, offset);
+        optr = mpdm_pokewsn(optr, &osize, v->data, offset);
 
 		/* convert to mbs */
 		if ((ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL)) == NULL)
@@ -413,44 +410,61 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 			if (f) {
 				/* creates a string from the beginning
 				   to the start of the match */
-				t = MPDM_NMBS(ptr + i, rm.rm_so);
-				o = mpdm_strcat(o, t);
+				t = mpdm_ref(MPDM_NMBS(ptr + i, rm.rm_so));
+                optr = mpdm_pokev(optr, &osize, t);
 
 				/* store offset of substitution */
 				mpdm_regex_offset = mpdm_size(t) + offset;
+
+                mpdm_unref(t);
 
 				/* get the matched part */
 				t = MPDM_NMBS(ptr + i + rm.rm_so, rm.rm_eo - rm.rm_so);
 
 				/* is s an executable value? */
 				if (MPDM_IS_EXEC(s)) {
-					/* protect o from sweeping */
-					mpdm_ref(o);
+                    mpdm_t v = mpdm_ref(t);
 
 					/* execute s, with t as argument */
-					t = mpdm_exec_1(s, t);
+					t = mpdm_exec_1(s, v);
 
-					mpdm_unref(o);
+					mpdm_unref(v);
 				}
 				else
 					/* is s a hash? use match as key */
 				if (MPDM_IS_HASH(s)) {
 					mpdm_t v = mpdm_hget(s, t);
 
+                    mpdm_ref(t);
+
 					/* is the value executable? */
-					if (MPDM_IS_EXEC(v))
-						v = mpdm_exec_1(v, t);
+					if (MPDM_IS_EXEC(v)) {
+                        mpdm_t w = mpdm_ref(v);
+
+						v = mpdm_exec_1(w, t);
+
+                        mpdm_unref(w);
+                    }
+
+                    mpdm_unref(t);
 
 					t = v;
 				}
-				else
-					t = expand_ampersands(s, t);
+				else {
+                    mpdm_t v = mpdm_ref(t);
+					t = expand_ampersands(s, v);
+                    mpdm_unref(v);
+                }
 
 				/* appends the substitution string */
-				o = mpdm_strcat(o, t);
+                mpdm_ref(t);
+
+                optr = mpdm_pokev(optr, &osize, t);
 
 				/* store size of substitution */
 				mpdm_regex_size = mpdm_size(t);
+
+                mpdm_unref(t);
 
 				i += rm.rm_eo;
 
@@ -461,11 +475,15 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 		} while (f && global);
 
 		/* no (more) matches; convert and append the rest */
-		t = MPDM_MBS(ptr + i);
-		o = mpdm_strcat(o, t);
+		t = mpdm_ref(MPDM_MBS(ptr + i));
+        optr = mpdm_pokev(optr, &osize, t);
+        mpdm_unref(t);
 
 		free(ptr);
 	}
 
-	return o;
+    /* NULL-terminate */
+    optr = mpdm_pokewsn(optr, &osize, L"", 1);
+
+    return MPDM_ENS(optr, osize);
 }
