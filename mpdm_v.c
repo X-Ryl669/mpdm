@@ -172,8 +172,17 @@ mpdm_t mpdm_ref(mpdm_t v)
  */
 mpdm_t mpdm_unref(mpdm_t v)
 {
-	if (v != NULL)
+	if (v != NULL) {
 		v->ref--;
+
+#ifdef DESTROY_ON_UNREF
+		if (v->ref <= 0) {
+			mpdm_destroy(v);
+			v = NULL;
+		}
+#endif
+	}
+
 	return v;
 }
 
@@ -344,8 +353,8 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 				r = func(args);
 		}
 
-		mpdm_unref(args);
-		mpdm_unref(c);
+		mpdm_unrefnd(args);
+		mpdm_unrefnd(c);
 	}
 
 	return r;

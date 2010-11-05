@@ -286,11 +286,11 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
  */
 mpdm_t mpdm_shift(mpdm_t a)
 {
-    mpdm_t v = mpdm_aget(a, 0);
+    mpdm_t v = mpdm_ref(mpdm_aget(a, 0));
 
 	mpdm_adel(a, 0);
 
-    return v;
+    return mpdm_unrefnd(v);
 }
 
 
@@ -319,11 +319,11 @@ mpdm_t mpdm_push(mpdm_t a, mpdm_t e)
  */
 mpdm_t mpdm_pop(mpdm_t a)
 {
-    mpdm_t v = mpdm_aget(a, -1);
+    mpdm_t v = mpdm_ref(mpdm_aget(a, -1));
 
 	mpdm_adel(a, -1);
 
-    return v;
+    return mpdm_unrefnd(v);
 }
 
 
@@ -572,8 +572,8 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 	qsort((mpdm_t *)a->data, mpdm_size(a) / step, sizeof(mpdm_t) * step, sort_cmp);
 
 	/* unreferences */
-	mpdm_unref(sort_cb);
-	mpdm_unref(a);
+	mpdm_unrefnd(sort_cb);
+	mpdm_unrefnd(a);
 
 	sort_cb = NULL;
 
