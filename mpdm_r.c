@@ -360,8 +360,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
  * set to the offset of the matched string and the size of the
  * replaced string, respectively.
  *
- * Returns the modified string, or the original one if no substitutions
- * were done.
+ * Always returns a new string (either modified or an exact copy).
  * [Regular Expressions]
  */
 mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
