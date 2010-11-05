@@ -179,6 +179,22 @@ mpdm_t mpdm_unref(mpdm_t v)
 
 
 /**
+ * mpdm_unrefnd - Decrements the reference count of a value, without destroy.
+ * @v: the value
+ *
+ * Decrements the reference count of a value, without destroying
+ * the value if it's unreferenced.
+ * [Value Management]
+ */
+mpdm_t mpdm_unrefnd(mpdm_t v)
+{
+	if (v != NULL)
+		v->ref--;
+	return v;
+}
+
+
+/**
  * mpdm_sweep - Sweeps unreferenced values.
  * @count: number of values to be swept
  *
