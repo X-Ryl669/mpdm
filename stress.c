@@ -790,9 +790,9 @@ void test_regex(void)
 	do_test("multi-regex 3.1", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
 	do_test("multi-regex 3.2", mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"value")) == 0);
 
-	v = mpdm_regex(w, MPDM_LS(L"key= "), 0);
+/*	v = mpdm_regex(w, MPDM_LS(L"key= "), 0);
 	do_test("multi-regex 4", v == NULL);
-
+*/
 	printf("Multiple line regexes\n");
 	w = MPDM_LS(L"/* this is\na C-like comment */");
 	v = mpdm_regex(MPDM_LS(L"|/\\*.+\\*/|"), w, 0);
@@ -1301,6 +1301,8 @@ void test_scanf(void)
 }
 
 
+void (*func)(void) = NULL;
+
 int main(int argc, char *argv[])
 {
 	if (argc > 1) {
@@ -1313,6 +1315,8 @@ int main(int argc, char *argv[])
 	mpdm_startup();
 
 	printf("sizeof(struct mpdm_val): %ld\n", (long) sizeof(struct mpdm_val));
+	printf("sizeof(void *): %d\n", sizeof(void *));
+	printf("sizeof(void (*func)(void)): %d\n", sizeof(func));
 
     test_counter();
 	test_basic();
