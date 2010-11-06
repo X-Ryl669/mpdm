@@ -11,7 +11,9 @@ MPDM Release Notes
    mpdm_join_s(), mpdm_split_s(), mpdm_cmp_s(), mpdm_strcat_s().
  * Some refactoring to diminish memory usage (no more `prev'
    pointers in the value list, less residual values).
- * mpdm_regex() always return a list in global searches.
+ * mpdm_regex() always return an array in global searches (maybe
+   an empty one) and if searching for an array of regexes (maybe
+   be a partial one).
 
 1.0.9
 -----

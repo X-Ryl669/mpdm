@@ -244,19 +244,16 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 		/* multiple value; try sequentially all regexes,
 		   moving the offset forward */
 
-		w = MPDM_A(mpdm_size(r));
+		w = MPDM_A(0);
 
 		for (n = 0; n < mpdm_size(r); n++) {
 			t = mpdm_regex(mpdm_aget(r, n), v, offset);
 
-			/* if not found, invalid all search and exit */
-			if (t == NULL) {
-				w = NULL;
+			if (t == NULL)
 				break;
-			}
 
 			/* found; store and move forward */
-			mpdm_aset(w, t, n);
+			mpdm_push(w, t);
 			offset = mpdm_regex_offset + mpdm_regex_size;
 		}
 	}
