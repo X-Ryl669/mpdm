@@ -293,13 +293,13 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
 mpdm_t mpdm_keys(const mpdm_t h)
 {
 	int n, c;
-	mpdm_t a, k, v;
+	mpdm_t a, k;
 
 	/* create an array with the same number of elements */
 	a = MPDM_A(mpdm_hsize(h));
 
 	c = n = 0;
-	while (mpdm_iterator(h, &c, &k, &v))
+	while (mpdm_iterator(h, &c, &k, NULL))
 		mpdm_aset(a, k, n++);
 
 	return a;
@@ -316,6 +316,7 @@ mpdm_t mpdm_keys(const mpdm_t h)
  * Iterates through the content of a hash, filling the @v1 and @v2
  * pointers with key-value pairs on each call until the hash is
  * exhausted. If @h is an array, only the @v1 pointer is filled.
+ * @v1 and @v2 pointers can be NULL.
  *
  * The @context pointer to integer is opaque and should be
  * initialized to zero on the first call.
@@ -326,6 +327,14 @@ mpdm_t mpdm_keys(const mpdm_t h)
  */
 int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 {
+	mpdm_t w1, w2;
+
+	if (v1 == NULL)
+		v1 = &w1;
+
+	if (v2 == NULL)
+		v2 = &w2;
+
 	if (MPDM_IS_HASH(h)) {
 		int bi, ei;
 
