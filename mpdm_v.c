@@ -76,7 +76,7 @@ int mpdm_destroy(mpdm_t v)
 	/* try to dequeue next one */
 	w = v->next;
 
-	if (w->flags & MPDM_DELETED) {
+	if (w && w->flags & MPDM_DELETED) {
 		/* dequeue */
 		v->next = w->next;
 
