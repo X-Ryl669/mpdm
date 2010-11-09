@@ -460,6 +460,10 @@ static mpdm_t MPDM(const mpdm_t args)
 	mpdm_hset_s(v, L"unreferenced", MPDM_I(c));
 	mpdm_hset_s(v, L"deleted", MPDM_I(d));
 
+#ifdef DESTROY_ON_UNREF
+	mpdm_hset_s(v, L"destroy_on_unref",MPDM_I(1));
+#endif
+
 	return v;
 }
 
