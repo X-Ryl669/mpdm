@@ -782,7 +782,7 @@ void test_regex(void)
     do_test("sregex output size 3", v->size == 5);
 
     v = MPDM_LS(L"holo");
-    v = mpdm_sregex(MPDM_LS(L"/o/"), v, MPDM_LS(L"!!"), 0);
+    v = mpdm_sregex(MPDM_LS(L"/o/g"), v, MPDM_LS(L"!!"), 0);
     do_test("sregex output size 4", v->size == 6);
 
 	/* multiple regex tests */
