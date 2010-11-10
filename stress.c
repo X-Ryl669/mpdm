@@ -781,6 +781,10 @@ void test_regex(void)
     v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, MPDM_LS(L"!"), 0);
     do_test("sregex output size 3", v->size == 5);
 
+    v = MPDM_LS(L"holo");
+    v = mpdm_sregex(MPDM_LS(L"/o/"), v, MPDM_LS(L"!!"), 0);
+    do_test("sregex output size 4", v->size == 6);
+
 	/* multiple regex tests */
 	w = MPDM_A(0);
 
@@ -1310,6 +1314,8 @@ void test_scanf(void)
 
 	v = mpdm_sscanf(MPDM_LS(L"%*S\"%[^\n\"]\""), MPDM_LS(L"a \"bbb\" c;"), 0);
 	do_test("mpdm_sscanf_16", mpdm_cmp(mpdm_aget(v, 0), MPDM_LS(L"bbb")) == 0);
+
+    do_test("mpdm_sscanf_17", mpdm_aget(v, 0)->size == 3);
 }
 
 
