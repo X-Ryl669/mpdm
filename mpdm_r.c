@@ -319,7 +319,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
     /* add the rest of the string */
     optr = mpdm_pokews(optr, &osize, sptr);
     optr = mpdm_pokewsn(optr, &osize, L"", 1);
-    r = MPDM_ENS(optr, osize);
+    r = MPDM_ENS(optr, osize - 1);
 
 	return r;
 }
@@ -477,5 +477,5 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
     /* NULL-terminate */
     optr = mpdm_pokewsn(optr, &osize, L"", 1);
 
-    return MPDM_ENS(optr, osize);
+    return MPDM_ENS(optr, osize - 1);
 }
