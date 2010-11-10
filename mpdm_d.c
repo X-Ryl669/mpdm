@@ -125,7 +125,7 @@ mpdm_t mpdm_dumper(const mpdm_t v)
 	ptr = mpdm_dump_1(v, 0, NULL, &size);
 	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
 
-	return MPDM_ENS(ptr, size);
+	return MPDM_ENS(ptr, size - 1);
 }
 
 
