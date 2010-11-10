@@ -1295,7 +1295,7 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 			if (!ignore && size) {
 				/* null terminate and push */
 				ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
-				mpdm_push(r, MPDM_ENS(ptr, size));
+				mpdm_push(r, MPDM_ENS(ptr, size - 1));
 			}
 		}
 		else
