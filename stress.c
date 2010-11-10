@@ -769,6 +769,18 @@ void test_regex(void)
 	do_test("escaped \\ in sregex target",
 		mpdm_cmp(v, MPDM_LS(L"\\this \\string \\has \\many \\words")) == 0);
 
+    v = MPDM_LS(L"hola ");
+    v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, MPDM_LS(L""), 0);
+    do_test("sregex output size 1", v->size == 4);
+
+    v = MPDM_LS(L"hola ");
+    v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, NULL, 0);
+    do_test("sregex output size 2", v->size == 4);
+
+    v = MPDM_LS(L"hola ");
+    v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, MPDM_LS(L"!"), 0);
+    do_test("sregex output size 3", v->size == 5);
+
 	/* multiple regex tests */
 	w = MPDM_A(0);
 
