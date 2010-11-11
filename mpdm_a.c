@@ -562,23 +562,22 @@ mpdm_t mpdm_sort(const mpdm_t a, int step)
  */
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 {
-	if (a == NULL)
-		return NULL;
+	if (a != NULL) {
+		sort_cb = cb;
 
-	sort_cb = cb;
+		/* references the array and the code, as the latter
+		   can include anything (including sweeping) */
+		mpdm_ref(a);
+		mpdm_ref(sort_cb);
 
-	/* references the array and the code, as the latter
-	   can include anything (including sweeping) */
-	mpdm_ref(a);
-	mpdm_ref(sort_cb);
+		qsort((mpdm_t *)a->data, mpdm_size(a) / step, sizeof(mpdm_t) * step, sort_cmp);
 
-	qsort((mpdm_t *)a->data, mpdm_size(a) / step, sizeof(mpdm_t) * step, sort_cmp);
+		/* unreferences */
+		mpdm_unrefnd(sort_cb);
+		mpdm_unrefnd(a);
 
-	/* unreferences */
-	mpdm_unrefnd(sort_cb);
-	mpdm_unrefnd(a);
-
-	sort_cb = NULL;
+		sort_cb = NULL;
+	}
 
 	return a;
 }
