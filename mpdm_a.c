@@ -600,35 +600,33 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
  */
 mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
 {
-	mpdm_t w;
+	mpdm_t w = NULL;
 	const wchar_t *ptr;
-	wchar_t *sptr;
-	int ss;
 
-	/* nothing to split? */
-	if (v == NULL)
-		return NULL;
+	if (v != NULL) {
+		w = MPDM_A(0);
 
-	w = MPDM_A(0);
+		/* NULL separator? special case: split string in characters */
+		if (s == NULL) {
+			for (ptr = mpdm_string(v); ptr && *ptr != '\0'; ptr++)
+				mpdm_push(w, MPDM_NS(ptr, 1));
+		}
+		else {
+			wchar_t *sptr;
+			int ss;
 
-	/* NULL separator? special case: split string in characters */
-	if (s == NULL) {
-		for (ptr = mpdm_string(v); ptr && *ptr != '\0'; ptr++)
-			mpdm_push(w, MPDM_NS(ptr, 1));
+			ss = wcslen(s);
 
-		return w;
+			/* travels the string finding separators and creating new values */
+			for (ptr = v->data;
+				     *ptr != L'\0' && (sptr = wcsstr(ptr, s)) != NULL;
+				     ptr = sptr + ss)
+				mpdm_push(w, MPDM_NS(ptr, sptr - ptr));
+
+			/* add last part */
+			mpdm_push(w, MPDM_S(ptr));
+		}
 	}
-
-	ss = wcslen(s);
-
-	/* travels the string finding separators and creating new values */
-	for (ptr = v->data;
-		     *ptr != L'\0' && (sptr = wcsstr(ptr, s)) != NULL;
-		     ptr = sptr + ss)
-		mpdm_push(w, MPDM_NS(ptr, sptr - ptr));
-
-	/* add last part */
-	mpdm_push(w, MPDM_S(ptr));
 
 	return w;
 }
