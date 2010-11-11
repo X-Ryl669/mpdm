@@ -922,29 +922,32 @@ void test_exec(void)
 	x = MPDM_X(dumper);
 
 	/* a simple value */
+	mpdm_ref(x);
 	mpdm_exec(x, NULL);
 	mpdm_exec(x, x);
+	mpdm_unref(x);
 
-	x = MPDM_X(sum);
-	w = MPDM_A(3);
+	x = mpdm_ref(MPDM_X(sum));
+	w = mpdm_ref(MPDM_A(3));
 	mpdm_aset(w, MPDM_I(100), 0);
 	mpdm_aset(w, MPDM_I(220), 1);
 	mpdm_aset(w, MPDM_I(333), 2);
 
 	do_test("exec 0", mpdm_ival(mpdm_exec(x, w)) == 653);
+	x = mpdm_unref(x);
 
 	mpdm_push(w, MPDM_I(1));
 
 	/* multiple executable value: vm and compiler support */
 
 	/* calculator 'script' */
-	p = MPDM_A(0);
+	p = mpdm_ref(MPDM_A(0));
 	mpdm_push(p, MPDM_LS(L"+"));
 	mpdm_push(p, MPDM_LS(L"-"));
 	mpdm_push(p, MPDM_LS(L"+"));
 
 	/* the value */
-	x = MPDM_A(2);
+	x = mpdm_ref(MPDM_A(2));
 	x->flags |= MPDM_EXEC;
 
 	mpdm_aset(x, MPDM_X(calculator), 0);
@@ -952,8 +955,10 @@ void test_exec(void)
 
 	do_test("exec 1", mpdm_ival(mpdm_exec(x, w)) == -12);
 
+	mpdm_unref(p);
+
 	/* another 'script', different operations with the same values */
-	p = MPDM_A(0);
+	p = mpdm_ref(MPDM_A(0));
 	mpdm_push(p, MPDM_LS(L"*"));
 	mpdm_push(p, MPDM_LS(L"/"));
 	mpdm_push(p, MPDM_LS(L"+"));
@@ -961,6 +966,9 @@ void test_exec(void)
 	mpdm_aset(x, p, 1);
 
 	do_test("exec 2", mpdm_ival(mpdm_exec(x, w)) == 67);
+	x = mpdm_unref(x);
+	p = mpdm_unref(p);
+	w = mpdm_unref(w);
 }
 
 

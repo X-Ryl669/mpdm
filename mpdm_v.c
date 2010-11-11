@@ -353,8 +353,8 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 				r = func(args);
 		}
 
-		mpdm_unrefnd(args);
-		mpdm_unrefnd(c);
+		mpdm_unref(args);
+		mpdm_unref(c);
 	}
 
 	return r;
@@ -363,43 +363,31 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
 {
-	mpdm_t r;
-	mpdm_t a = mpdm_ref(MPDM_A(1));
+	mpdm_t a = MPDM_A(1);
 
 	mpdm_aset(a, a1, 0);
-	r = mpdm_exec(c, a);
-	mpdm_unref(a);
-
-	return r;
+	return mpdm_exec(c, a);
 }
 
 
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 {
-	mpdm_t r;
-	mpdm_t a = mpdm_ref(MPDM_A(2));
+	mpdm_t a = MPDM_A(2);
 
 	mpdm_aset(a, a1, 0);
 	mpdm_aset(a, a2, 1);
-	r = mpdm_exec(c, a);
-	mpdm_unref(a);
-
-	return r;
+	return mpdm_exec(c, a);
 }
 
 
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 {
-	mpdm_t r;
-	mpdm_t a = mpdm_ref(MPDM_A(3));
+	mpdm_t a = MPDM_A(3);
 
 	mpdm_aset(a, a1, 0);
 	mpdm_aset(a, a2, 1);
 	mpdm_aset(a, a3, 2);
-	r = mpdm_exec(c, a);
-	mpdm_unref(a);
-
-	return r;
+	return mpdm_exec(c, a);
 }
 
 
