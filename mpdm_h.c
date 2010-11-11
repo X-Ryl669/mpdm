@@ -331,6 +331,7 @@ mpdm_t mpdm_keys(const mpdm_t h)
  */
 int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 {
+	int ret = 0;
 	mpdm_t w1, w2;
 
 	if (v1 == NULL)
@@ -342,41 +343,40 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 	if (MPDM_IS_HASH(h)) {
 		int bi, ei;
 
-		if (!mpdm_size(h))
-			return 0;
+		if (mpdm_size(h)) {
+			/* get bucket and element index */
+			bi = (*context) % mpdm_size(h);
+			ei = (*context) / mpdm_size(h);
 
-		/* get bucket and element index */
-		bi = (*context) % mpdm_size(h);
-		ei = (*context) / mpdm_size(h);
+			while (ret == 0 && bi < mpdm_size(h)) {
+				mpdm_t b;
 
-		while (bi < mpdm_size(h)) {
-			mpdm_t b;
+				/* if bucket is empty or there is no more elements in it, pick next */
+				if ((b = mpdm_aget(h, bi)) == NULL || ei >= mpdm_size(b)) {
+					ei = 0;
+					bi++;
+					continue;
+				}
 
-			/* if bucket is empty or there is no more elements in it, pick next */
-			if ((b = mpdm_aget(h, bi)) == NULL || ei >= mpdm_size(b)) {
-				ei = 0;
-				bi++;
-				continue;
+				/* get pair */
+				*v1 = mpdm_aget(b, ei++);
+				*v2 = mpdm_aget(b, ei++);
+
+				/* update context */
+				*context = (ei * mpdm_size(h)) + bi;
+				ret = 1;
 			}
-
-			/* get pair */
-			*v1 = mpdm_aget(b, ei++);
-			*v2 = mpdm_aget(b, ei++);
-
-			/* update context */
-			*context = (ei * mpdm_size(h)) + bi;
-			return 1;
 		}
 	}
 	else
 	if (MPDM_IS_ARRAY(h)) {
 		if (*context < mpdm_size(h)) {
 			*v1 = mpdm_aget(h, (*context)++);
-			return 1;
+			ret = 1;
 		}
 	}
 
-	return 0;
+	return ret;
 }
 
 
