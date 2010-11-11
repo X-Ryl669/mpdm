@@ -1971,34 +1971,42 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 	char *m;
 	int rw = 0;
 
-	if (prg == NULL || mode == NULL)
-		return NULL;
+	mpdm_ref(prg);
+	mpdm_ref(mode);
 
-	if ((v = new_mpdm_file()) == NULL)
-		return NULL;
+	if (prg != NULL && mode != NULL) {
 
-	/* convert to mbs,s */
-	pr = mpdm_ref(MPDM_2MBS(prg->data));
-	md = mpdm_ref(MPDM_2MBS(mode->data));
+		v = new_mpdm_file();
 
-	/* get the mode */
-	m = (char *) md->data;
+		/* convert to mbs,s */
+		pr = mpdm_ref(MPDM_2MBS(prg->data));
+		md = mpdm_ref(MPDM_2MBS(mode->data));
 
-	/* set the mode */
-	if (m[0] == 'r')
-		rw = 0x01;
-	if (m[0] == 'w')
-		rw = 0x02;
-	if (m[1] == '+')
-		rw = 0x03;	/* r+ or w+ */
+		/* get the mode */
+		m = (char *) md->data;
 
-	if (!sysdep_popen(v, (char *) pr->data, rw)) {
-		destroy_mpdm_file(v);
-		v = NULL;
+		/* set the mode */
+		if (m[0] == 'r')
+			rw = 0x01;
+		if (m[0] == 'w')
+			rw = 0x02;
+		if (m[1] == '+')
+			rw = 0x03;	/* r+ or w+ */
+
+		if (!sysdep_popen(v, (char *) pr->data, rw)) {
+			destroy_mpdm_file(v);
+			mpdm_unref(mpdm_ref(v));
+			v = NULL;
+		}
+
+	    mpdm_unref(md);
+	    mpdm_unref(pr);
 	}
+	else
+		v = NULL;
 
-    mpdm_unref(md);
-    mpdm_unref(pr);
+	mpdm_unref(mode);
+	mpdm_unref(prg);
 
 	return v;
 }
