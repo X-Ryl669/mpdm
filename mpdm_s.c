@@ -832,6 +832,9 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 {
 	int ret = 0;
 
+	mpdm_ref(dom);
+	mpdm_ref(data);
+
 #ifdef CONFOPT_GETTEXT
 
 	mpdm_t dm;
@@ -900,6 +903,9 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 	}
 
 #endif				/* CONFOPT_WIN32 */
+
+	mpdm_unref(data);
+	mpdm_unref(dom);
 
 	return ret;
 }
