@@ -673,26 +673,27 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 	wchar_t *ptr = NULL;
 	int l = 0;
 	int ss;
+	mpdm_t r = NULL;
 
-	/* if a is not an array, return it as is */
-	if (!MPDM_IS_ARRAY(a))
-		return a;
+	if (MPDM_IS_ARRAY(a)) {
+		/* adds the first string */
+		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
 
-	/* adds the first string */
-	ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
+		ss = s ? wcslen(s) : 0;
 
-	ss = s ? wcslen(s) : 0;
+		for (n = 1; n < mpdm_size(a); n++) {
+			/* add separator */
+			ptr = mpdm_pokewsn(ptr, &l, s, ss);
 
-	for (n = 1; n < mpdm_size(a); n++) {
-		/* add separator */
-		ptr = mpdm_pokewsn(ptr, &l, s, ss);
+			/* add element */
+			ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
+		}
 
-		/* add element */
-		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
+		ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
+		r = MPDM_ENS(ptr, l - 1);
 	}
 
-	ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
-	return MPDM_ENS(ptr, l - 1);
+	return r;
 }
 
 
