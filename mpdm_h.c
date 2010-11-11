@@ -387,61 +387,65 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 {
 	int n;
-	mpdm_t p;
-    mpdm_t w = NULL;
+	mpdm_t p, w;
 
 	if (r == NULL)
 		r = mpdm_root();
 
+	mpdm_ref(r);
+	mpdm_ref(k);
+	mpdm_ref(v);
+
 	/* splits the path, if needed */
 	if (k->flags & MPDM_MULTIPLE)
-		p = k;
+		p = mpdm_ref(k);
 	else
-		w = p = mpdm_split_s(L".", k);
+		p = mpdm_ref(mpdm_split_s(L".", k));
+
+	w = r;
 
 	for (n = 0; n < mpdm_size(p) - s; n++) {
 
 		/* is executable? run it and take its output */
-		while (MPDM_IS_EXEC(r)) {
-            mpdm_t t = mpdm_ref(r);
-			r = mpdm_exec(t, NULL);
-            mpdm_unref(t);
-        }
+		while (MPDM_IS_EXEC(w))
+			w = mpdm_exec(w, NULL);
 
-		if (MPDM_IS_HASH(r))
-			r = mpdm_hget(r, mpdm_aget(p, n));
+		if (MPDM_IS_HASH(w))
+			w = mpdm_hget(w, mpdm_aget(p, n));
 		else
-		if (MPDM_IS_ARRAY(r)) {
+		if (MPDM_IS_ARRAY(w)) {
 			int i = mpdm_ival(mpdm_aget(p, n));
-			r = mpdm_aget(r, i);
+			w = mpdm_aget(w, i);
 		}
-		else
-			r = NULL;
+		else {
+			mpdm_unref(mpdm_ref(w));
+			w = NULL;
+		}
 
-		if (r == NULL)
+		if (w == NULL)
 			break;
 	}
 
 	/* if want to set, do it */
-	if (s && r != NULL) {
+	if (s && w != NULL) {
 		/* resolve executable values again */
-		while (MPDM_IS_EXEC(r)) {
-            mpdm_t t = mpdm_ref(r);
-			r = mpdm_exec(t, NULL);
-            mpdm_unref(t);
-        }
+		while (MPDM_IS_EXEC(w))
+			w = mpdm_exec(w, NULL);
 
-		if (r->flags & MPDM_HASH)
-			r = mpdm_hset(r, mpdm_aget(p, n), v);
+		if (w->flags & MPDM_HASH)
+			w = mpdm_hset(w, mpdm_aget(p, n), v);
 		else {
 			int i = mpdm_ival(mpdm_aget(p, n));
-			r = mpdm_aset(r, v, i);
+			w = mpdm_aset(w, v, i);
 		}
 	}
 
-    mpdm_unref(w);
+    mpdm_unref(p);
+	mpdm_unref(v);
+	mpdm_unref(k);
+	mpdm_unref(r);
 
-	return r;
+	return w;
 }
 
 
