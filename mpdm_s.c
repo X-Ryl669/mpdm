@@ -364,21 +364,25 @@ wchar_t *mpdm_string(const mpdm_t v)
 {
 	static wchar_t wtmp[32];
 	char tmp[32];
+	static wchar_t *ret;
 
 	/* if it's NULL, return a constant */
 	if (v == NULL)
-		return L"[NULL]";
-
+		ret = L"[NULL]";
+	else
 	/* if it's a string, return it */
 	if (v->flags & MPDM_STRING)
-		return (wchar_t *) v->data;
+		ret = (wchar_t *) v->data;
+	else {
+		/* otherwise, return a visual representation */
+		snprintf(tmp, sizeof(tmp), "%p", v);
+		mbstowcs(wtmp, tmp, sizeof(wtmp));
+		wtmp[(sizeof(wtmp) / sizeof(wchar_t)) - 1] = L'\0';
 
-	/* otherwise, return a visual representation */
-	snprintf(tmp, sizeof(tmp), "%p", v);
-	mbstowcs(wtmp, tmp, sizeof(wtmp));
-	wtmp[(sizeof(wtmp) / sizeof(wchar_t)) - 1] = L'\0';
+		ret = wtmp;
+	}
 
-	return wtmp;
+	return ret;
 }
 
 
