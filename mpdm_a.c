@@ -103,25 +103,23 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 	mpdm_t *p;
 
 	/* sanity checks */
-	if (num <= 0)
-		return a;
+	if (num > 0) {
+		/* add size */
+		a->size += num;
 
-	/* add size */
-	a->size += num;
+		/* expand */
+		p = (mpdm_t *) realloc((mpdm_t *)a->data, a->size * sizeof(mpdm_t));
 
-	/* expand, or fail */
-	if ((p = (mpdm_t *) realloc((mpdm_t *)a->data, a->size * sizeof(mpdm_t))) == NULL)
-		return NULL;
+		/* moves up from top of the array */
+		for (n = a->size - 1; n >= offset + num; n--)
+			p[n] = p[n - num];
 
-	/* moves up from top of the array */
-	for (n = a->size - 1; n >= offset + num; n--)
-		p[n] = p[n - num];
+		/* fills the new space with blanks */
+		for (; n >= offset; n--)
+			p[n] = NULL;
 
-	/* fills the new space with blanks */
-	for (; n >= offset; n--)
-		p[n] = NULL;
-
-	a->data = p;
+		a->data = p;
+	}
 
 	return a;
 }
