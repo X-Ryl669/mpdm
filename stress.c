@@ -92,6 +92,7 @@ void test_basic(void)
 	double r;
 	mpdm_t v;
 	mpdm_t w;
+    mpdm_t t;
 
 	v = MPDM_S(L"65536");
 	mpdm_dump(v);
@@ -113,19 +114,25 @@ void test_basic(void)
 
 	do_test("Partial string values", mpdm_cmp(v, MPDM_LS(L" is ")) == 0);
 
-	v = MPDM_S(L"MUAHAHAHA!");
-	do_test("Testing mpdm_clone semantics 1", mpdm_clone(v) == v);
+	v = mpdm_ref(MPDM_S(L"MUAHAHAHA!"));
+    w = mpdm_ref(mpdm_clone(v));
+	do_test("Testing mpdm_clone semantics 1", w == v);
+    mpdm_unref(v);
+    mpdm_unref(w);
 
-	v = MPDM_A(2);
+	v = mpdm_ref(MPDM_A(2));
 	mpdm_aset(v, MPDM_S(L"evil"), 0);
 	mpdm_aset(v, MPDM_S(L"dead"), 1);
-	w = mpdm_clone(v);
+	w = mpdm_ref(mpdm_clone(v));
 
 	do_test("Testing mpdm_clone semantics 2.1", w != v);
 
-	v = mpdm_aget(v, 0);
-	do_test("Testing mpdm_clone semantics 2.2", v->ref > 1);
-	do_test("Testing mpdm_clone semantics 2.3", mpdm_aget(w, 0) == v);
+	t = mpdm_aget(v, 0);
+	do_test("Testing mpdm_clone semantics 2.2", t->ref > 1);
+	do_test("Testing mpdm_clone semantics 2.3", mpdm_aget(w, 0) == t);
+
+    mpdm_unref(w);
+    mpdm_unref(v);
 
 	/* mbs / wcs tests */
 	v = MPDM_MBS("This is (was) a multibyte string");
@@ -301,7 +308,8 @@ void test_array(void)
 	mpdm_aset(a, MPDM_I(10), 0);
 	mpdm_aset(a, MPDM_I(60), 1);
 
-	v = mpdm_clone(a);
+    mpdm_ref(a);
+	v = mpdm_ref(mpdm_clone(a));
 	do_test("mpdm_cmp: array clones are equal", mpdm_cmp(a, v) == 0);
 
 	mpdm_adel(v, -1);
@@ -309,6 +317,9 @@ void test_array(void)
 
 	mpdm_push(v, MPDM_I(80));
 	do_test("mpdm_cmp: 2# element is bigger, so array is bigger", mpdm_cmp(a, v) < 0);
+
+    mpdm_unref(v);
+    mpdm_unref(a);
 }
 
 
@@ -877,6 +888,8 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args)
 	mpdm_t a;
 	mpdm_t o;
 
+    mpdm_ref(args);
+
 	/* to avoid destroying args */
 	a = mpdm_clone(args);
 
@@ -906,6 +919,8 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args)
 			break;
 		}
 	}
+
+    mpdm_unref(args);
 
 	return (MPDM_I(t));
 }

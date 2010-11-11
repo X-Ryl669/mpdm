@@ -263,10 +263,18 @@ int mpdm_size(const mpdm_t v)
  */
 mpdm_t mpdm_clone(const mpdm_t v)
 {
-	if (MPDM_IS_ARRAY(v))
-		return mpdm_aclone(v);
+    mpdm_t r;
 
-	return v;
+    mpdm_ref(v);
+
+	if (MPDM_IS_ARRAY(v))
+		r = mpdm_aclone(v);
+    else
+        r = v;
+
+    mpdm_unref(v);
+
+	return r;
 }
 
 
