@@ -1423,6 +1423,8 @@ int mpdm_unlink(const mpdm_t filename)
 	int ret;
 	mpdm_t fn;
 
+	mpdm_ref(filename);
+
 	/* convert to mbs */
 	fn = mpdm_ref(MPDM_2MBS(filename->data));
 
@@ -1430,6 +1432,7 @@ int mpdm_unlink(const mpdm_t filename)
 		store_syserr();
 
     mpdm_unref(fn);
+	mpdm_unref(filename);
 
 	return ret;
 }
@@ -1455,6 +1458,8 @@ int mpdm_unlink(const mpdm_t filename)
 mpdm_t mpdm_stat(const mpdm_t filename)
 {
 	mpdm_t r = NULL;
+
+	mpdm_ref(filename);
 
 #ifdef CONFOPT_SYS_STAT_H
 	struct stat s;
@@ -1517,6 +1522,8 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 
 #endif				/* CONFOPT_SYS_STAT_H */
 
+	mpdm_unref(filename);
+
 	return r;
 }
 
@@ -1533,12 +1540,17 @@ int mpdm_chmod(const mpdm_t filename, mpdm_t perms)
 {
 	int r = -1;
 
+	mpdm_ref(filename);
+	mpdm_ref(perms);
+
 	mpdm_t fn = mpdm_ref(MPDM_2MBS(filename->data));
 
 	if ((r = chmod((char *) fn->data, mpdm_ival(perms))) == -1)
 		store_syserr();
 
     mpdm_unref(fn);
+	mpdm_unref(perms);
+	mpdm_unref(filename);
 
 	return r;
 }
@@ -1555,12 +1567,14 @@ int mpdm_chdir(const mpdm_t dir)
 {
 	int r = -1;
 
+	mpdm_ref(dir);
 	mpdm_t fn = mpdm_ref(MPDM_2MBS(dir->data));
 
 	if ((r = chdir((char *) fn->data)) == -1)
 		store_syserr();
 
     mpdm_unref(fn);
+	mpdm_unref(dir);
 
 	return r;
 }
@@ -1579,6 +1593,10 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
 {
 	int r = -1;
 
+	mpdm_ref(filename);
+	mpdm_ref(uid);
+	mpdm_ref(gid);
+
 #ifdef CONFOPT_CHOWN
 
 	mpdm_t fn = mpdm_ref(MPDM_2MBS(filename->data));
@@ -1589,6 +1607,10 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
     mpdm_unref(fn);
 
 #endif				/* CONFOPT_CHOWN */
+
+	mpdm_unref(gid);
+	mpdm_unref(uid);
+	mpdm_unref(filename);
 
 	return r;
 }
