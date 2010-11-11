@@ -305,33 +305,38 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
     int osize = 0;
 	mpdm_t r = NULL;
 
-	if (s == NULL)
-		return s;
+	mpdm_ref(s);
+	mpdm_ref(t);
 
-	while ((wptr = wcschr(sptr, L'\\')) != NULL ||
-		(wptr = wcschr(sptr, L'&')) != NULL) {
-		int n = wptr - sptr;
+	if (s != NULL) {
+		while ((wptr = wcschr(sptr, L'\\')) != NULL ||
+			(wptr = wcschr(sptr, L'&')) != NULL) {
+			int n = wptr - sptr;
 
-		/* add the leading part */
-        optr = mpdm_pokewsn(optr, &osize, sptr, n);
+			/* add the leading part */
+    	    optr = mpdm_pokewsn(optr, &osize, sptr, n);
 
-		if (*wptr == L'\\') {
-			if (*(wptr + 1) == L'&' || *(wptr + 1) == L'\\')
-				wptr++;
+			if (*wptr == L'\\') {
+				if (*(wptr + 1) == L'&' || *(wptr + 1) == L'\\')
+					wptr++;
 
-            optr = mpdm_pokewsn(optr, &osize, wptr, 1);
+	            optr = mpdm_pokewsn(optr, &osize, wptr, 1);
+			}
+			else
+			if (*wptr == '&')
+	            optr = mpdm_pokev(optr, &osize, t);
+
+			sptr = wptr + 1;
 		}
-		else
-		if (*wptr == '&')
-            optr = mpdm_pokev(optr, &osize, t);
 
-		sptr = wptr + 1;
+	    /* add the rest of the string */
+	    optr = mpdm_pokews(optr, &osize, sptr);
+	    optr = mpdm_pokewsn(optr, &osize, L"", 1);
+	    r = MPDM_ENS(optr, osize - 1);
 	}
 
-    /* add the rest of the string */
-    optr = mpdm_pokews(optr, &osize, sptr);
-    optr = mpdm_pokewsn(optr, &osize, L"", 1);
-    r = MPDM_ENS(optr, osize - 1);
+	mpdm_unref(t);
+	mpdm_unref(s);
 
 	return r;
 }
