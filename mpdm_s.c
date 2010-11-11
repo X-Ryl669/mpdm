@@ -947,6 +947,9 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 	int l = 0, n = 0;
 	wchar_t c;
 
+	mpdm_ref(fmt);
+	mpdm_ref(args);
+
 	/* loop all characters */
 	while ((c = *i++) != L'\0') {
 		int m = 0;
@@ -1073,6 +1076,9 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 
 	/* null-terminate */
 	o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
+
+	mpdm_unref(args);
+	mpdm_unref(fmt);
 
 	return MPDM_ENS(o, l - 1);
 }
