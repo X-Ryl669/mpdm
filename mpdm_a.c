@@ -653,12 +653,19 @@ mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
  */
 mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
 {
+	mpdm_t r;
 	wchar_t *ss = NULL;
+
+	mpdm_ref(s);
 
 	if (s != NULL)
 		ss = (wchar_t *)s->data;
 
-	return mpdm_split_s(ss, v);
+	r = mpdm_split_s(ss, v);
+
+	mpdm_unref(s);
+
+	return r;
 }
 
 
