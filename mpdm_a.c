@@ -210,17 +210,20 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
  */
 mpdm_t mpdm_aget(const mpdm_t a, int offset)
 {
+	mpdm_t r;
 	mpdm_t *p;
 
 	offset = wrap_offset(a, offset);
 
 	/* boundary checks */
-	if (offset < 0 || offset >= mpdm_size(a))
-		return NULL;
+	if (offset >= 0 && offset < mpdm_size(a)) {
+		p = (mpdm_t *) a->data;
+		r = p[offset];
+	}
+	else
+		r = NULL;
 
-	p = (mpdm_t *) a->data;
-
-	return p[offset];
+	return r;
 }
 
 
