@@ -691,9 +691,6 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
 	}
 
-	if (ptr == NULL)
-		return NULL;
-
 	ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
 	return MPDM_ENS(ptr, l - 1);
 }
