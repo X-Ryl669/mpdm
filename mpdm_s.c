@@ -774,9 +774,11 @@ mpdm_t mpdm_gettext(const mpdm_t str)
 	mpdm_t v;
 	mpdm_t i18n = NULL;
 
-	/* gets the cache, if any */
+	/* gets the cache */
 	if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
-		return str;
+		i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+
+	mpdm_ref(str);
 
 	/* try first the cache */
 	if ((v = mpdm_hget(i18n, str)) == NULL) {
@@ -790,13 +792,8 @@ mpdm_t mpdm_gettext(const mpdm_t str)
 		/* ask gettext for it */
 		s = gettext((char *) t->data);
 
-		/* create new value only if it's different */
-		if (s != t->data) {
+		if (s != t->data)
 			v = MPDM_MBS(s);
-
-			/* store in the cache */
-			mpdm_hset(i18n, str, v);
-		}
 		else
 			v = str;
 
@@ -807,7 +804,12 @@ mpdm_t mpdm_gettext(const mpdm_t str)
 		v = str;
 
 #endif				/* CONFOPT_GETTEXT */
+
+		/* store in the cache */
+		mpdm_hset(i18n, str, v);
 	}
+
+	mpdm_unref(str);
 
 	return v;
 }
