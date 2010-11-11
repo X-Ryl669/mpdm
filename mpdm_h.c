@@ -334,6 +334,8 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 	int ret = 0;
 	mpdm_t w1, w2;
 
+	mpdm_ref(h);
+
 	if (v1 == NULL)
 		v1 = &w1;
 
@@ -375,6 +377,8 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
 			ret = 1;
 		}
 	}
+
+	mpdm_unref(h);
 
 	return ret;
 }
