@@ -94,7 +94,7 @@ void test_basic(void)
 	mpdm_t w;
     mpdm_t t;
 
-	v = MPDM_S(L"65536");
+	v = mpdm_ref(MPDM_S(L"65536"));
 	mpdm_dump(v);
 	i = mpdm_ival(v);
 
@@ -104,6 +104,8 @@ void test_basic(void)
 	r = mpdm_rval(v);
 	do_test("r == 65536", (r == 65536.0));
 	do_test("v has MPDM_RVAL", (v->flags & MPDM_RVAL));
+
+	mpdm_unref(v);
 
 	printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
 	printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
@@ -147,10 +149,11 @@ void test_basic(void)
 	mpdm_dump(v);
 	printf("(Previous value will only show on an Unicode terminal)\n");
 
-	v = MPDM_R(3.1416);
+	v = mpdm_ref(MPDM_R(3.1416));
 	mpdm_dump(v);
 	do_test("rval 1", mpdm_rval(v) == 3.1416);
 	do_test("ival 1", mpdm_ival(v) == 3);
+	mpdm_unref(v);
 
 	v = MPDM_R(777777.0 / 2.0);
 	mpdm_dump(v);

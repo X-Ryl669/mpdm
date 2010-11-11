@@ -99,7 +99,9 @@ wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v)
 	if (v != NULL) {
 		const wchar_t *ptr = mpdm_string(v);
 
+		mpdm_ref(v);
 		dst = mpdm_pokews(dst, dsize, ptr);
+		mpdm_unref(v);
 	}
 
 	return dst;

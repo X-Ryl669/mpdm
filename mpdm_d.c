@@ -45,6 +45,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 	int n;
 	wchar_t *wptr;
 
+	mpdm_ref(v);
+
 	/* indent */
 	for (n = 0; n < l; n++)
 		ptr = mpdm_pokews(ptr, size, L"  ");
@@ -102,6 +104,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 				ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
 		}
 	}
+
+	mpdm_unrefnd(v);
 
 	return ptr;
 }
