@@ -591,10 +591,6 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
 	ptr = mpdm_pokev(ptr, &s, s1);
 	ptr = mpdm_pokewsn(ptr, &s, s2, size);
 
-	/* if no characters were added, returns an empty string */
-	if (ptr == NULL)
-		return MPDM_LS(L"");
-
 	ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
 	return MPDM_ENS(ptr, s - 1);
 }
