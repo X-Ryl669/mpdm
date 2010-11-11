@@ -1096,7 +1096,11 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 {
 	mpdm_t r = NULL;
 	wchar_t *optr;
-	int i = mpdm_size(s);
+	int i;
+
+	mpdm_ref(s);
+
+	i = mpdm_size(s);
 
 	if ((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL) {
 		wchar_t *iptr = mpdm_string(s);
@@ -1108,6 +1112,8 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 		optr[n] = L'\0';
 		r = MPDM_ENS(optr, i);
 	}
+
+	mpdm_unref(s);
 
 	return r;
 }

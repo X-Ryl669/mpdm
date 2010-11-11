@@ -1285,11 +1285,14 @@ void test_sprintf(void)
 
 void test_ulc(void)
 {
-	mpdm_t v = MPDM_S(L"string");
-	mpdm_t w = mpdm_ulc(v, 1);
+	mpdm_t v = mpdm_ref(MPDM_S(L"string"));
+	mpdm_t w = mpdm_ref(mpdm_ulc(v, 1));
 
 	do_test("mpdm_ulc 1", mpdm_cmp(mpdm_ulc(v, 1), w) == 0);
 	do_test("mpdm_ulc 2", mpdm_cmp(mpdm_ulc(w, 0), v) == 0);
+
+	mpdm_unref(w);
+	mpdm_unref(v);
 }
 
 
