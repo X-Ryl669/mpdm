@@ -404,18 +404,19 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 
 	/* same values? */
 	if (v1 == v2)
-		return 0;
-
+		r = 0;
+	else
 	/* is any value NULL? */
 	if (v1 == NULL)
-		return -1;
+		r = -1;
+	else
 	if (v2 == NULL)
-		return 1;
-
+		r = 1;
+	else
 	/* different values, but same content? (unlikely) */
 	if (v1->data == v2->data)
-		return 0;
-
+		r = 0;
+	else
 	if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
 		r = wcscoll((wchar_t *) v1->data, (wchar_t *) v2->data);
 	else
