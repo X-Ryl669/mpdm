@@ -474,6 +474,7 @@ void test_splice(void)
 		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"foo")) == 0));
 
 	v = MPDM_LS(L"I'm testing");
+	mpdm_ref(v);
 
 	w = mpdm_splice(v, NULL, 0, -1);
 	do_test("splice with negative del (1)",
@@ -495,6 +496,7 @@ void test_splice(void)
 	w = mpdm_splice(v, NULL, 4, -20);
 	do_test("splice with out-of-bounds negative del",
 		(mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm testing")) == 0));
+	mpdm_unref(v);
 }
 
 

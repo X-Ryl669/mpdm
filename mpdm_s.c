@@ -492,6 +492,9 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 	int ins = 0;
 	wchar_t *ptr;
 
+	mpdm_ref(v);
+	mpdm_ref(i);
+
 	if (v != NULL) {
 		os = mpdm_size(v);
 
@@ -526,8 +529,7 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 		ns = os + ins - del;
 		r = offset + del;
 
-		if ((n = MPDM_NS(NULL, ns)) == NULL)
-			return NULL;
+		n = MPDM_NS(NULL, ns);
 
 		ptr = (wchar_t *)n->data;
 
@@ -561,6 +563,9 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 
 	mpdm_aset(w, n, 0);
 	mpdm_aset(w, d, 1);
+
+	mpdm_unref(i);
+	mpdm_unref(v);
 
 	return w;
 }
