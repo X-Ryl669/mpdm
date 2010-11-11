@@ -1188,16 +1188,18 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
 {
 	int c;
 	wchar_t tmp[2];
+	mpdm_t r = NULL;
 	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
-	if (fs == NULL || (c = get_char(fs)) == EOF)
-		return NULL;
+	if (fs != NULL && (c = get_char(fs)) != EOF) {
+		/* get the char as-is */
+		tmp[0] = (wchar_t) c;
+		tmp[1] = L'\0';
 
-	/* get the char as-is */
-	tmp[0] = (wchar_t) c;
-	tmp[1] = L'\0';
+		r = MPDM_S(tmp);
+	}
 
-	return MPDM_S(tmp);
+	return r;
 }
 
 
@@ -1205,11 +1207,14 @@ mpdm_t mpdm_putchar(const mpdm_t fd, const mpdm_t c)
 {
 	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 	const wchar_t *ptr = mpdm_string(c);
+	mpdm_t r;
+
+	r = c;
 
 	if (fs == NULL || put_char(*ptr, fs) == -1)
-		return NULL;
+		r = NULL;
 
-	return c;
+	return r;
 }
 
 
@@ -1227,10 +1232,8 @@ int mpdm_write(const mpdm_t fd, const mpdm_t v)
 	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 	int ret = -1;
 
-	if (fs == NULL)
-		return -1;
-
-	ret = fs->f_write(fs, mpdm_string(v));
+	if (fs != NULL)
+		ret = fs->f_write(fs, mpdm_string(v));
 
 	return ret;
 }
