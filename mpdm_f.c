@@ -1364,14 +1364,16 @@ int mpdm_encoding(mpdm_t charset)
 	mpdm_t e = embedded_encodings();
 	mpdm_t v = NULL;
 
+	mpdm_ref(charset);
+
 	/* NULL encoding? done */
 	if (mpdm_size(charset) == 0) {
 		mpdm_hset_s(mpdm_root(), L"ENCODING", NULL);
-		return 0;
+		ret = 0;
 	}
 
 #ifdef CONFOPT_ICONV
-	{
+	else {
 		iconv_t ic;
 		mpdm_t cs = mpdm_ref(MPDM_2MBS(charset->data));
 
@@ -1402,6 +1404,8 @@ int mpdm_encoding(mpdm_t charset)
 
 	if (ret == 0)
 		mpdm_hset_s(mpdm_root(), L"ENCODING", v);
+
+	mpdm_unref(charset);
 
 	return ret;
 }
