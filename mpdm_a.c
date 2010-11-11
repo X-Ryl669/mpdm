@@ -723,5 +723,11 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
  */
 mpdm_t mpdm_join(const mpdm_t s, const mpdm_t a)
 {
-	return mpdm_join_s(s ? mpdm_string(s) : NULL, a);
+	mpdm_t r;
+
+	mpdm_ref(s);
+	r = mpdm_join_s(s ? mpdm_string(s) : NULL, a);
+	mpdm_unref(s);
+
+	return r;
 }
