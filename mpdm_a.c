@@ -604,6 +604,8 @@ mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
 	const wchar_t *ptr;
 
 	if (v != NULL) {
+		mpdm_ref(v);
+
 		w = MPDM_A(0);
 
 		/* NULL separator? special case: split string in characters */
@@ -626,6 +628,8 @@ mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
 			/* add last part */
 			mpdm_push(w, MPDM_S(ptr));
 		}
+
+		mpdm_unref(v);
 	}
 
 	return w;
