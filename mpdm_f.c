@@ -1091,36 +1091,42 @@ mpdm_t mpdm_new_f(FILE * f)
  */
 mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 {
-	FILE *f;
+	FILE *f = NULL;
 	mpdm_t fn;
 	mpdm_t m;
 
-	if (filename == NULL || mode == NULL)
-		return NULL;
+	mpdm_ref(filename);
+	mpdm_ref(mode);
 
-	/* convert to mbs,s */
-	fn = mpdm_ref(MPDM_2MBS(filename->data));
-	m = mpdm_ref(MPDM_2MBS(mode->data));
+	if (filename != NULL && mode != NULL) {
 
-	if ((f = fopen((char *) fn->data, (char *) m->data)) == NULL)
-		store_syserr();
-	else {
-#if defined(CONFOPT_SYS_STAT_H) && defined(S_ISDIR) && defined(EISDIR)
-		struct stat s;
+		/* convert to mbs,s */
+		fn = mpdm_ref(MPDM_2MBS(filename->data));
+		m = mpdm_ref(MPDM_2MBS(mode->data));
 
-		/* test if the open file is a directory */
-		if (fstat(fileno(f), &s) != -1 && S_ISDIR(s.st_mode)) {
-			/* it's a directory; fail */
-			errno = EISDIR;
+		if ((f = fopen((char *) fn->data, (char *) m->data)) == NULL)
 			store_syserr();
-			fclose(f);
-			f = NULL;
-		}
+		else {
+#if defined(CONFOPT_SYS_STAT_H) && defined(S_ISDIR) && defined(EISDIR)
+			struct stat s;
+
+			/* test if the open file is a directory */
+			if (fstat(fileno(f), &s) != -1 && S_ISDIR(s.st_mode)) {
+				/* it's a directory; fail */
+				errno = EISDIR;
+				store_syserr();
+				fclose(f);
+				f = NULL;
+			}
 #endif
+		}
+
+	    mpdm_unref(m);
+	    mpdm_unref(fn);
 	}
 
-    mpdm_unref(m);
-    mpdm_unref(fn);
+	mpdm_unref(mode);
+	mpdm_unref(filename);
 
 	return MPDM_F(f);
 }
