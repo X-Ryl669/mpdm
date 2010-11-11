@@ -70,6 +70,8 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
 	mpdm_t c = NULL;
 	mpdm_t regex_cache = NULL;
 
+	mpdm_ref(r);
+
 	/* if cache does not exist, create it */
 	if ((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL) {
 		regex_cache = MPDM_H(0);
@@ -119,6 +121,8 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
         mpdm_unref(rmb);
     }
 
+	mpdm_unref(r);
+
 	return c;
 }
 
@@ -128,6 +132,9 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
 {
 	mpdm_t w = NULL;
 	mpdm_t cr;
+
+	mpdm_ref(r);
+	mpdm_ref(v);
 
 	/* no matching yet */
 	mpdm_regex_offset = -1;
@@ -180,6 +187,9 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
 		free(ptr);
 	}
 
+	mpdm_unref(v);
+	mpdm_unref(r);
+
 	return w;
 }
 
@@ -220,6 +230,9 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 {
 	mpdm_t w = NULL;
 
+	mpdm_ref(r);
+	mpdm_ref(v);
+
 	/* special case: if r is NULL, return previous match */
 	if (r == NULL) {
 		/* if previous regex was successful... */
@@ -229,56 +242,55 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
 			mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
 			mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
 		}
-
-		return w;
 	}
-
-	/* if the string to be tested is NULL, return NULL */
-	if (v == NULL)
-		return NULL;
-
-	if (r->flags & MPDM_MULTIPLE) {
-		int n;
-		mpdm_t t;
-
-		/* multiple value; try sequentially all regexes,
-		   moving the offset forward */
-
-		w = MPDM_A(0);
-
-		for (n = 0; n < mpdm_size(r); n++) {
-			t = mpdm_regex(mpdm_aget(r, n), v, offset);
-
-			if (t == NULL)
-				break;
-
-			/* found; store and move forward */
-			mpdm_push(w, t);
-			offset = mpdm_regex_offset + mpdm_regex_size;
-		}
-	}
-	else {
-		wchar_t *global;
-
-		/* takes pointer to 'global' flag */
-		if ((global = regex_flags(r)) != NULL)
-			global = wcschr(global, 'g');
-
-		if (global != NULL) {
+	else
+	if (v != NULL) {
+		if (r->flags & MPDM_MULTIPLE) {
+			int n;
 			mpdm_t t;
 
-			/* match sequentially until done */
+			/* multiple value; try sequentially all regexes,
+			   moving the offset forward */
+
 			w = MPDM_A(0);
 
-			while ((t = regex1(r, v, offset)) != NULL) {
-				mpdm_push(w, t);
+			for (n = 0; n < mpdm_size(r); n++) {
+				t = mpdm_regex(mpdm_aget(r, n), v, offset);
 
+				if (t == NULL)
+					break;
+
+				/* found; store and move forward */
+				mpdm_push(w, t);
 				offset = mpdm_regex_offset + mpdm_regex_size;
 			}
 		}
-		else
-			w = regex1(r, v, offset);
+		else {
+			wchar_t *global;
+
+			/* takes pointer to 'global' flag */
+			if ((global = regex_flags(r)) != NULL)
+				global = wcschr(global, 'g');
+
+			if (global != NULL) {
+				mpdm_t t;
+
+				/* match sequentially until done */
+				w = MPDM_A(0);
+
+				while ((t = regex1(r, v, offset)) != NULL) {
+					mpdm_push(w, t);
+
+					offset = mpdm_regex_offset + mpdm_regex_size;
+				}
+			}
+			else
+				w = regex1(r, v, offset);
+		}
 	}
+
+	mpdm_unref(v);
+	mpdm_unref(r);
 
 	return w;
 }

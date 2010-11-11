@@ -815,23 +815,35 @@ void test_regex(void)
 	mpdm_push(w, MPDM_LS(L"/[^ \t]+/"));
 	mpdm_push(w, MPDM_LS(L"/[ \t]*$/"));
 
+	mpdm_ref(w);
+
 	v = mpdm_regex(w, MPDM_LS(L"key=value"), 0);
+	mpdm_ref(v);
 	do_test("multi-regex 1.1", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
 	do_test("multi-regex 1.2", mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"value")) == 0);
+	mpdm_unref(v);
 
 	v = mpdm_regex(w, MPDM_LS(L" key = value"), 0);
+	mpdm_ref(v);
 	do_test("multi-regex 2.1", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
 	do_test("multi-regex 2.2", mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"value")) == 0);
+	mpdm_unref(v);
 
 	v = mpdm_regex(w, MPDM_LS(L"\t\tkey\t=\tvalue  "), 0);
+	mpdm_ref(v);
 	do_test("multi-regex 3.1", mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
 	do_test("multi-regex 3.2", mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"value")) == 0);
+	mpdm_unref(v);
+
+	mpdm_unref(w);
 
 /*	v = mpdm_regex(w, MPDM_LS(L"key= "), 0);
 	do_test("multi-regex 4", v == NULL);
 */
 	printf("Multiple line regexes\n");
 	w = MPDM_LS(L"/* this is\na C-like comment */");
+	mpdm_ref(w);
+
 	v = mpdm_regex(MPDM_LS(L"|/\\*.+\\*/|"), w, 0);
 	do_test("Multiline regex 1", mpdm_cmp(v, w) == 0);
 
@@ -840,10 +852,12 @@ void test_regex(void)
 
 	v = mpdm_regex(MPDM_LS(L"/is$/m"), w, 0);
 	do_test("Multiline regex 3", mpdm_cmp(v, MPDM_LS(L"is")) == 0);
+	mpdm_unref(w);
 
 	printf("Pitfalls on multibyte locales (f.e. utf-8)\n");
 
 	w = MPDM_LS(L"-\x03a9-");
+	mpdm_ref(w);
 
 	v = mpdm_regex(MPDM_LS(L"/-$/"), w, 0);
 	do_test("Multibyte environment regex 1", mpdm_cmp(v, MPDM_LS(L"-")) == 0);
@@ -859,6 +873,8 @@ void test_regex(void)
 	}
 	else
 		printf("Multibyte sregex test omitted; activate with -m\n");
+
+	mpdm_unref(w);
 
 	/* 'last' flag tests */
 	v = MPDM_LS(L"this string has many words");
