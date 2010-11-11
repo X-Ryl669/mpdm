@@ -624,7 +624,13 @@ mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
  */
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
 {
-	return mpdm_strcat_s(s1, s2 ? mpdm_string(s2) : NULL);
+	mpdm_t r;
+
+	mpdm_ref(s2);
+	r = mpdm_strcat_s(s1, s2 ? mpdm_string(s2) : NULL);
+	mpdm_unref(s2);
+
+	return r;
 }
 
 
