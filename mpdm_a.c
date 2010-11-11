@@ -363,13 +363,15 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 
 static int seek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step)
 {
-	int n;
+	int n, o;
 
 	/* avoid stupid steps */
 	if (step <= 0)
 		step = 1;
 
-	for (n = 0; n < mpdm_size(a); n += step) {
+	o = -1;
+
+	for (n = 0; o == -1 && n < mpdm_size(a); n += step) {
 		int r;
 
 		mpdm_t v = mpdm_aget(a, n);
@@ -377,10 +379,10 @@ static int seek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step)
 		r = ks ? mpdm_cmp_s(v, ks) : mpdm_cmp(v, k);
 
 		if (r == 0)
-			return n;
+			o = n;
 	}
 
-	return -1;
+	return o;
 }
 
 
