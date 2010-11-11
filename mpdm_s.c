@@ -584,15 +584,19 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
 {
 	wchar_t *ptr = NULL;
 	int s = 0;
+	mpdm_t r;
 
 	if (s1 == NULL && s2 == NULL)
-		return NULL;
+		r = NULL;
+	else {
+		ptr = mpdm_pokev(ptr, &s, s1);
+		ptr = mpdm_pokewsn(ptr, &s, s2, size);
 
-	ptr = mpdm_pokev(ptr, &s, s1);
-	ptr = mpdm_pokewsn(ptr, &s, s2, size);
+		ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
+		r = MPDM_ENS(ptr, s - 1);
+	}
 
-	ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
-	return MPDM_ENS(ptr, s - 1);
+	return r;
 }
 
 
