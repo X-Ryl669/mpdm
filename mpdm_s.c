@@ -648,55 +648,56 @@ mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
  */
 int mpdm_ival(mpdm_t v)
 {
-	if (v == NULL)
-		return 0;
+	int i = 0;
 
-	/* if there is no cached integer, calculate it */
-	if (!(v->flags & MPDM_IVAL)) {
-		int i = 0;
+	if (v != NULL) {
+		/* if there is no cached integer, calculate it */
+		if (!(v->flags & MPDM_IVAL)) {
+			/* if it's a string, calculate it; other
+			   values will have an ival of 0 */
+			if (v->flags & MPDM_STRING) {
+				char tmp[32];
+				char *fmt = "%i";
 
-		/* if it's a string, calculate it; other
-		   values will have an ival of 0 */
-		if (v->flags & MPDM_STRING) {
-			char tmp[32];
-			char *fmt = "%i";
+				wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+				tmp[sizeof(tmp) - 1] = '\0';
 
-			wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-			tmp[sizeof(tmp) - 1] = '\0';
+				/* workaround for mingw32: as it doesn't
+				   correctly parse octal and hexadecimal
+				   numbers, they are tried as special cases */
+				if (tmp[0] == '0') {
+					if (tmp[1] == 'b' || tmp[1] == 'B') {
+						/* binary number */
+						fmt = NULL;
+						char *ptr = &tmp[2];
 
-			/* workaround for mingw32: as it doesn't
-			   correctly parse octal and hexadecimal
-			   numbers, they are tried as special cases */
-			if (tmp[0] == '0') {
-				if (tmp[1] == 'b' || tmp[1] == 'B') {
-					/* binary number */
-					fmt = NULL;
-					char *ptr = &tmp[2];
+						while (*ptr == '0' || *ptr == '1') {
+							i <<= 1;
 
-					while (*ptr == '0' || *ptr == '1') {
-						i <<= 1;
+							if (*ptr == '1')
+								i |= 1;
 
-						if (*ptr == '1')
-							i |= 1;
-
-						ptr++;
+							ptr++;
+						}
 					}
+					else
+					if (tmp[1] == 'x' || tmp[1] == 'X')
+						fmt = "%x";
+					else
+						fmt = "%o";
 				}
-				else
-				if (tmp[1] == 'x' || tmp[1] == 'X')
-					fmt = "%x";
-				else
-					fmt = "%o";
+
+				if (fmt != NULL)
+					sscanf(tmp, fmt, &i);
 			}
 
-			if (fmt != NULL)
-				sscanf(tmp, fmt, &i);
+			mpdm_set_ival(v, i);
 		}
 
-		mpdm_set_ival(v, i);
+		i = v->ival;
 	}
 
-	return v->ival;
+	return i;
 }
 
 
@@ -714,44 +715,45 @@ int mpdm_ival(mpdm_t v)
  */
 double mpdm_rval(mpdm_t v)
 {
-	if (v == NULL)
-		return 0;
+	double r = 0.0;
 
-	/* if there is no cached double, calculate it */
-	if (!(v->flags & MPDM_RVAL)) {
-		double r = 0.0;
+	if (v != NULL) {
+		/* if there is no cached double, calculate it */
+		if (!(v->flags & MPDM_RVAL)) {
+			/* if it's a string, calculate it; other
+			   values will have an rval of 0.0 */
+			if (v->flags & MPDM_STRING) {
+				char tmp[128];
+				char *prev_locale;
 
-		/* if it's a string, calculate it; other
-		   values will have an rval of 0.0 */
-		if (v->flags & MPDM_STRING) {
-			char tmp[128];
-			char *prev_locale;
+				wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+				tmp[sizeof(tmp) - 1] = '\0';
 
-			wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-			tmp[sizeof(tmp) - 1] = '\0';
+				/* if the number starts with 0, it's
+				   an octal or hexadecimal number; just
+				   take the integer value and cast it */
+				if (tmp[0] == '0' && tmp[1] != '.')
+					r = (double) mpdm_ival(v);
+				else {
+					/* set locale to C for non locale-dependent
+					   floating point conversion */
+					prev_locale = setlocale(LC_NUMERIC, "C");
 
-			/* if the number starts with 0, it's
-			   an octal or hexadecimal number; just
-			   take the integer value and cast it */
-			if (tmp[0] == '0' && tmp[1] != '.')
-				r = (double) mpdm_ival(v);
-			else {
-				/* set locale to C for non locale-dependent
-				   floating point conversion */
-				prev_locale = setlocale(LC_NUMERIC, "C");
+					/* read */
+					sscanf(tmp, "%lf", &r);
 
-				/* read */
-				sscanf(tmp, "%lf", &r);
-
-				/* set previous locale */
-				setlocale(LC_NUMERIC, prev_locale);
+					/* set previous locale */
+					setlocale(LC_NUMERIC, prev_locale);
+				}
 			}
+
+			mpdm_set_rval(v, r);
 		}
 
-		mpdm_set_rval(v, r);
+		r = v->rval;
 	}
 
-	return v->rval;
+	return r;
 }
 
 
