@@ -1637,6 +1637,9 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 	mpdm_t f = NULL;
 	mpdm_t v = NULL;
 
+	mpdm_ref(spec);
+	mpdm_ref(base);
+
 #ifdef CONFOPT_WIN32
 
 	WIN32_FIND_DATA fd;
@@ -1785,6 +1788,9 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
         mpdm_unref(f);
         mpdm_unref(d);
 	}
+
+	mpdm_unref(base);
+	mpdm_unref(spec);
 
 	return v;
 }
