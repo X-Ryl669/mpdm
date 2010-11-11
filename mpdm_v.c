@@ -416,8 +416,12 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2)
 static mpdm_t MPDM(const mpdm_t args)
 /* accesor / mutator for MPDM internal data */
 {
-	mpdm_t v = mpdm_aget(args, 0);
+	mpdm_t v;
 	int n, c = 0, d = 0;
+
+    mpdm_ref(args);
+
+    v = mpdm_aget(args, 0);
 
 	if (v != NULL) {
 		mpdm_t w;
@@ -459,6 +463,8 @@ static mpdm_t MPDM(const mpdm_t args)
 #ifdef DESTROY_ON_UNREF
 	mpdm_hset_s(v, L"destroy_on_unref",MPDM_I(1));
 #endif
+
+    mpdm_unref(args);
 
 	return v;
 }
