@@ -422,7 +422,7 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
 
 static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, int *pos)
 {
-	int b, t, n, c;
+	int b, t, n, c, o;
 
 	/* avoid stupid steps */
 	if (step <= 0)
@@ -431,7 +431,9 @@ static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, in
 	b = 0;
 	t = (mpdm_size(a) - 1) / step;
 
-	while (t >= b) {
+	o = -1;
+
+	while (o == -1 && t >= b) {
 		mpdm_t v;
 
 		n = (b + t) / 2;
@@ -441,7 +443,7 @@ static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, in
 		c = ks ? mpdm_cmp_s(v, ks) : mpdm_cmp(v, k);
 
 		if (c == 0)
-			return n * step;
+			o = n * step;
 		else
 		if (c > 0)
 			t = n - 1;
@@ -452,7 +454,7 @@ static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, in
 	if (pos != NULL)
 		*pos = b * step;
 
-	return -1;
+	return o;
 }
 
 
