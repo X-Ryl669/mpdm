@@ -1162,6 +1162,9 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 	wchar_t *f = (wchar_t *)fmt->data;
 	mpdm_t r;
 
+	mpdm_ref(fmt);
+	mpdm_ref(str);
+
 	i += offset;
 	r = MPDM_A(0);
 
@@ -1353,6 +1356,9 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 		else
 			break;
 	}
+
+	mpdm_unref(str);
+	mpdm_unref(fmt);
 
 	return r;
 }
