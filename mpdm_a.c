@@ -140,30 +140,27 @@ mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
 	int n;
 	mpdm_t *p;
 
-	/* sanity checks */
-	if (num <= 0)
-		return a;
+	if (num > 0) {
+		/* don't try to delete beyond the limit */
+		if (offset + num > a->size)
+			num = a->size - offset;
 
-	/* don't try to delete beyond the limit */
-	if (offset + num > a->size)
-		num = a->size - offset;
+		p = (mpdm_t *) a->data;
 
-	p = (mpdm_t *) a->data;
+		/* unrefs the about-to-be-deleted elements */
+		for (n = offset; n < offset + num; n++)
+			mpdm_unref(p[n]);
 
-	/* unrefs the about-to-be-deleted elements */
-	for (n = offset; n < offset + num; n++)
-		mpdm_unref(p[n]);
+		/* array is now shorter */
+		a->size -= num;
 
-	/* array is now shorter */
-	a->size -= num;
+		/* moves down the elements */
+		for (n = offset; n < a->size; n++)
+			p[n] = p[n + num];
 
-	/* moves down the elements */
-	for (n = offset; n < a->size; n++)
-		p[n] = p[n + num];
-
-	/* finally shrinks the memory block */
-	if ((a->data = realloc(p, a->size * sizeof(mpdm_t))) == NULL)
-		return NULL;
+		/* finally shrinks the memory block */
+		a->data = realloc(p, a->size * sizeof(mpdm_t));
+	}
 
 	return a;
 }
