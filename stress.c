@@ -569,10 +569,12 @@ void test_join(void)
 	printf("mpdm_join test\n\n");
 
 	/* separator */
-	s = MPDM_LS(L"--");
+	s = mpdm_ref(MPDM_LS(L"--"));
 
 	w = MPDM_A(1);
 	mpdm_aset(w, MPDM_S(L"ce"), 0);
+
+	mpdm_ref(w);
 
 	v = mpdm_join(NULL, w);
 	do_test("1 elem, no separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
@@ -590,6 +592,9 @@ void test_join(void)
 
 	v = mpdm_join(NULL, w);
 	do_test("3 elems, no separator", (mpdm_cmp(v, MPDM_LS(L"cen'estpas")) == 0));
+
+	mpdm_unref(w);
+	mpdm_unref(s);
 }
 
 

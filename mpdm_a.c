@@ -686,6 +686,8 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 	int ss;
 	mpdm_t r = NULL;
 
+	mpdm_ref(a);
+
 	if (MPDM_IS_ARRAY(a)) {
 		/* adds the first string */
 		ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
@@ -703,6 +705,8 @@ mpdm_t mpdm_join_s(const wchar_t *s, const mpdm_t a)
 		ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
 		r = MPDM_ENS(ptr, l - 1);
 	}
+
+	mpdm_unref(a);
 
 	return r;
 }
