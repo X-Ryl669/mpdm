@@ -183,21 +183,18 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 
 	offset = wrap_offset(a, offset);
 
-	/* boundary checks */
-	if (offset < 0)
-		return NULL;
+	if (offset >= 0) {
+		/* if the array is shorter than offset, expand to make room for it */
+		if (offset >= mpdm_size(a))
+			mpdm_expand(a, mpdm_size(a), offset - mpdm_size(a) + 1);
 
-	/* if the array is shorter than offset, expand to make room for it */
-	if (offset >= mpdm_size(a))
-		if (mpdm_expand(a, mpdm_size(a), offset - mpdm_size(a) + 1) == NULL)
-			return NULL;
+		p = (mpdm_t *) a->data;
 
-	p = (mpdm_t *) a->data;
-
-	/* assigns and references */
-	mpdm_ref(e);
-	mpdm_unref(p[offset]);
-	p[offset] = e;
+		/* assigns and references */
+		mpdm_ref(e);
+		mpdm_unref(p[offset]);
+		p[offset] = e;
+	}
 
     return e;
 }
