@@ -378,121 +378,121 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 	mpdm_t cr;
     wchar_t *optr = NULL;
     int osize = 0;
+	mpdm_t o = NULL;
+
+	mpdm_ref(r);
+	mpdm_ref(v);
+	mpdm_ref(s);
 
 	if (r == NULL) {
 		/* return last count */
-		return MPDM_I(mpdm_sregex_count);
+		o = MPDM_I(mpdm_sregex_count);
 	}
+	else
+	if (v != NULL) {
+		/* compile the regex */
+		if ((cr = mpdm_regcomp(r)) != NULL) {
+			char *ptr;
+			int f, i = 0;
+			wchar_t *global;
+			mpdm_t t;
 
-	if (v == NULL)
-		return NULL;
+			/* takes pointer to global flag */
+			if ((global = regex_flags(r)) !=NULL)
+				global = wcschr(global, 'g');
 
-	/* compile the regex */
-	if ((cr = mpdm_regcomp(r)) != NULL) {
-		char *ptr;
-		int f, i = 0;
-		wchar_t *global;
-		mpdm_t t;
+			/* store the first part */
+	        optr = mpdm_pokewsn(optr, &osize, v->data, offset);
 
-		/* takes pointer to global flag */
-		if ((global = regex_flags(r)) !=NULL)
-			global = wcschr(global, 'g');
+			/* convert to mbs */
+			ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL);
 
-		/* store the first part */
-        optr = mpdm_pokewsn(optr, &osize, v->data, offset);
+			/* reset count */
+			mpdm_sregex_count = 0;
+			mpdm_regex_offset = -1;
 
-		/* convert to mbs */
-		if ((ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL)) == NULL)
-			return NULL;
+			do {
+				regmatch_t rm;
 
-		/* reset count */
-		mpdm_sregex_count = 0;
-		mpdm_regex_offset = -1;
+				/* try match */
+				f = !regexec((regex_t *) cr->data, ptr + i,
+					     1, &rm, offset > 0 ? REG_NOTBOL : 0);
 
-		do {
-			regmatch_t rm;
+				if (f) {
+					/* creates a string from the beginning
+					   to the start of the match */
+					t = mpdm_ref(MPDM_NMBS(ptr + i, rm.rm_so));
+	                optr = mpdm_pokev(optr, &osize, t);
 
-			/* try match */
-			f = !regexec((regex_t *) cr->data, ptr + i,
-				     1, &rm, offset > 0 ? REG_NOTBOL : 0);
+					/* store offset of substitution */
+					mpdm_regex_offset = mpdm_size(t) + offset;
 
-			if (f) {
-				/* creates a string from the beginning
-				   to the start of the match */
-				t = mpdm_ref(MPDM_NMBS(ptr + i, rm.rm_so));
-                optr = mpdm_pokev(optr, &osize, t);
+	                mpdm_unref(t);
 
-				/* store offset of substitution */
-				mpdm_regex_offset = mpdm_size(t) + offset;
+					/* get the matched part */
+					t = MPDM_NMBS(ptr + i + rm.rm_so, rm.rm_eo - rm.rm_so);
 
-                mpdm_unref(t);
-
-				/* get the matched part */
-				t = MPDM_NMBS(ptr + i + rm.rm_so, rm.rm_eo - rm.rm_so);
-
-				/* is s an executable value? */
-				if (MPDM_IS_EXEC(s)) {
-                    mpdm_t v = mpdm_ref(t);
-
-					/* execute s, with t as argument */
-					t = mpdm_exec_1(s, v);
-
-					mpdm_unref(v);
-				}
-				else
+					/* is s an executable value? */
+					if (MPDM_IS_EXEC(s)) {
+						/* execute s, with t as argument */
+						t = mpdm_exec_1(s, t);
+					}
+					else
 					/* is s a hash? use match as key */
-				if (MPDM_IS_HASH(s)) {
-					mpdm_t v = mpdm_hget(s, t);
+					if (MPDM_IS_HASH(s)) {
+						mpdm_t v = mpdm_hget(s, t);
 
-                    mpdm_ref(t);
+	                    mpdm_ref(t);
 
-					/* is the value executable? */
-					if (MPDM_IS_EXEC(v)) {
-                        mpdm_t w = mpdm_ref(v);
+						/* is the value executable? */
+						if (MPDM_IS_EXEC(v)) {
+	                        mpdm_t w = mpdm_ref(v);
 
-						v = mpdm_exec_1(w, t);
+							v = mpdm_exec_1(w, t);
 
-                        mpdm_unref(w);
-                    }
+	                        mpdm_unref(w);
+	                    }
 
-                    mpdm_unref(t);
+	                    mpdm_unref(t);
 
-					t = v;
+						t = v;
+					}
+					else
+						t = expand_ampersands(s, t);
+
+					/* appends the substitution string */
+	                mpdm_ref(t);
+
+	                optr = mpdm_pokev(optr, &osize, t);
+
+					/* store size of substitution */
+					mpdm_regex_size = mpdm_size(t);
+
+	                mpdm_unref(t);
+
+					i += rm.rm_eo;
+
+					/* one more substitution */
+					mpdm_sregex_count++;
 				}
-				else {
-                    mpdm_t v = mpdm_ref(t);
-					t = expand_ampersands(s, v);
-                    mpdm_unref(v);
-                }
+			} while (f && global);
 
-				/* appends the substitution string */
-                mpdm_ref(t);
+			/* no (more) matches; convert and append the rest */
+			t = MPDM_MBS(ptr + i);
+	        optr = mpdm_pokev(optr, &osize, t);
 
-                optr = mpdm_pokev(optr, &osize, t);
+			free(ptr);
+		}
 
-				/* store size of substitution */
-				mpdm_regex_size = mpdm_size(t);
+	    /* NULL-terminate */
+	    optr = mpdm_pokewsn(optr, &osize, L"", 1);
 
-                mpdm_unref(t);
-
-				i += rm.rm_eo;
-
-				/* one more substitution */
-				mpdm_sregex_count++;
-			}
-
-		} while (f && global);
-
-		/* no (more) matches; convert and append the rest */
-		t = mpdm_ref(MPDM_MBS(ptr + i));
-        optr = mpdm_pokev(optr, &osize, t);
-        mpdm_unref(t);
-
-		free(ptr);
+	    o = MPDM_ENS(optr, osize - 1);
 	}
 
-    /* NULL-terminate */
-    optr = mpdm_pokewsn(optr, &osize, L"", 1);
+	mpdm_unref(s);
+	mpdm_unref(v);
+	mpdm_unref(r);
 
-    return MPDM_ENS(optr, osize - 1);
+	return o;
 }
