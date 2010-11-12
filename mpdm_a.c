@@ -345,17 +345,16 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 	mpdm_t v = NULL;
 
 	/* zero size is nonsense */
-	if (size == 0)
-		return NULL;
+	if (size) {
+		/* loop until a has the desired size */
+		while (mpdm_size(a) > size)
+	        mpdm_adel(a, 0);
 
-	/* loop until a has the desired size */
-	while (mpdm_size(a) > size)
-        mpdm_adel(a, 0);
+	    if (mpdm_size(a) == size)
+	    	v = mpdm_shift(a);
 
-    if (mpdm_size(a) == size)
-    	v = mpdm_shift(a);
-
-	mpdm_push(a, e);
+		mpdm_push(a, e);
+	}
 
 	return v;
 }
