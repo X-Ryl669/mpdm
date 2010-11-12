@@ -263,6 +263,7 @@ void test_array(void)
 
 	/* test queues */
 	a = MPDM_A(0);
+    mpdm_ref(a);
 
 	/* add several values */
 	for (n = 0; n < 10; n++)
@@ -285,6 +286,7 @@ void test_array(void)
 
 	do_test("queue size should be 5", a->size == 5);
 	do_test("last taken value should be 8", mpdm_ival(v) == 8);
+    mpdm_unref(a);
 
 	a = MPDM_A(4);
 	mpdm_aset(a, MPDM_I(666), 6000);

@@ -344,6 +344,9 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 {
 	mpdm_t v = NULL;
 
+    mpdm_ref(a);
+    mpdm_ref(e);
+
 	/* zero size is nonsense */
 	if (size) {
 		/* loop until a has the desired size */
@@ -355,6 +358,9 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 
 		mpdm_push(a, e);
 	}
+
+    mpdm_unref(e);
+    mpdm_unref(a);
 
 	return v;
 }
