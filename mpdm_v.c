@@ -451,6 +451,8 @@ static mpdm_t MPDM(const mpdm_t args)
 	/* now collect all information */
 	v = MPDM_H(0);
 
+    mpdm_ref(v);
+
 	mpdm_hset_s(v, L"version", MPDM_MBS(VERSION));
 	mpdm_hset_s(v, L"count", MPDM_I(mpdm->count));
 	mpdm_hset_s(v, L"low_threshold", MPDM_I(mpdm->low_threshold));
@@ -465,6 +467,8 @@ static mpdm_t MPDM(const mpdm_t args)
 #endif
 
     mpdm_unref(args);
+
+    mpdm_unrefnd(v);
 
 	return v;
 }

@@ -107,6 +107,9 @@ static mpdm_t hget(const mpdm_t h, const mpdm_t k, const wchar_t *ks)
 	mpdm_t v = NULL;
 	int n = 0;
 
+    mpdm_ref(h);
+    mpdm_ref(k);
+
 	if (mpdm_size(h)) {
 		/* if hash is not empty... */
 		if (ks) {
@@ -121,6 +124,9 @@ static mpdm_t hget(const mpdm_t h, const mpdm_t k, const wchar_t *ks)
 		if (n >= 0)
 			v = mpdm_aget(b, n + 1);
 	}
+
+    mpdm_unref(k);
+    mpdm_unref(h);
 
 	return v;
 }
