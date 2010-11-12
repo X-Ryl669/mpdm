@@ -170,6 +170,9 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
 	int n;
 	int ret = 0;
 
+    mpdm_ref(h);
+    mpdm_ref(k);
+
 	if (mpdm_size(h)) {
 		/* if hash is not empty... */
 		if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
@@ -178,6 +181,9 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
 				ret = 1;
 		}
 	}
+
+    mpdm_unref(k);
+    mpdm_unref(h);
 
 	return ret;
 }

@@ -391,6 +391,7 @@ void test_hash(void)
 */
 	/* use of non-strings as hashes */
 	h = MPDM_H(0);
+    mpdm_ref(h);
 
 	v = MPDM_A(0);
 	mpdm_hset(h, v, MPDM_I(1234));
@@ -434,6 +435,8 @@ void test_hash(void)
 
 	v = mpdm_hget_s(h, L"ok");
 	do_test("hget_s + hset_s", mpdm_ival(v) == 777);
+
+    mpdm_unref(h);
 }
 
 
