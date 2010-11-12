@@ -75,9 +75,13 @@ mpdm_t mpdm_aclone(const mpdm_t v)
 	/* creates a similar value */
 	w = mpdm_new_a(v->flags, v->size);
 
+    mpdm_ref(w);
+
 	/* fills each element with duplicates of the original */
 	for (n = 0; n < w->size; n++)
 		mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+
+    mpdm_unrefnd(w);
 
 	mpdm_unref(v);
 
