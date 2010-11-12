@@ -333,6 +333,7 @@ void test_hash(void)
 	int i, n;
 
 	h = MPDM_H(0);
+    mpdm_ref(h);
 
 	do_test("hsize 1", mpdm_hsize(h) == 0);
 
@@ -379,6 +380,8 @@ void test_hash(void)
 
 	mpdm_hdel(h, MPDM_LS(L"mp"));
 	do_test("hsize 5", mpdm_hsize(h) == 102);
+
+    mpdm_unref(h);
 
 /*
 	mpdm_dump(h);

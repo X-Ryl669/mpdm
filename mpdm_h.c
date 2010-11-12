@@ -88,10 +88,14 @@ int mpdm_hsize(const mpdm_t h)
 	int n;
 	int ret = 0;
 
+    mpdm_ref(h);
+
 	for (n = 0; n < mpdm_size(h); n++) {
 		mpdm_t b = mpdm_aget(h, n);
 		ret += mpdm_size(b);
 	}
+
+    mpdm_unref(h);
 
 	return ret / 2;
 }
