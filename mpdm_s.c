@@ -650,6 +650,8 @@ int mpdm_ival(mpdm_t v)
 {
 	int i = 0;
 
+    mpdm_ref(v);
+
 	if (v != NULL) {
 		/* if there is no cached integer, calculate it */
 		if (!(v->flags & MPDM_IVAL)) {
@@ -697,6 +699,8 @@ int mpdm_ival(mpdm_t v)
 		i = v->ival;
 	}
 
+    mpdm_unref(v);
+
 	return i;
 }
 
@@ -716,6 +720,8 @@ int mpdm_ival(mpdm_t v)
 double mpdm_rval(mpdm_t v)
 {
 	double r = 0.0;
+
+    mpdm_ref(v);
 
 	if (v != NULL) {
 		/* if there is no cached double, calculate it */
@@ -752,6 +758,8 @@ double mpdm_rval(mpdm_t v)
 
 		r = v->rval;
 	}
+
+    mpdm_unref(v);
 
 	return r;
 }
