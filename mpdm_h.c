@@ -191,8 +191,12 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
 
 static mpdm_t hset(mpdm_t h, mpdm_t k, const wchar_t *ks, mpdm_t v)
 {
-	mpdm_t b;
+	mpdm_t b, r;
 	int n;
+
+    mpdm_ref(h);
+    mpdm_ref(k);
+    mpdm_ref(v);
 
 	/* if hash is empty, create an optimal number of buckets */
 	if (mpdm_size(h) == 0)
@@ -228,7 +232,13 @@ static mpdm_t hset(mpdm_t h, mpdm_t k, const wchar_t *ks, mpdm_t v)
 		mpdm_aset(b, ks ? MPDM_S(ks) : k, n);
 	}
 
-	return mpdm_aset(b, v, n + 1);
+	r = mpdm_aset(b, v, n + 1);
+
+    mpdm_unref(v);
+    mpdm_unref(k);
+    mpdm_unref(h);
+
+    return r;
 }
 
 

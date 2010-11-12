@@ -1320,7 +1320,7 @@ static mpdm_t embedded_encodings(void)
 		int n;
 		mpdm_t p = NULL;
 
-		e = MPDM_H(0);
+		e = mpdm_ref(MPDM_H(0));
 
 		for (n = 0; e2e[n] != NULL; n += 2) {
 			mpdm_t v = MPDM_S(e2e[n]);
@@ -1333,6 +1333,8 @@ static mpdm_t embedded_encodings(void)
 		}
 
 		mpdm_hset_s(mpdm_root(), L"EMBEDDED_ENCODINGS", e);
+
+        mpdm_unref(e);
 	}
 
 	return e;

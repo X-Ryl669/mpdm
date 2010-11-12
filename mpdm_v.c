@@ -477,6 +477,8 @@ static mpdm_t build_env(void)
 	char **ptr;
 	mpdm_t e = MPDM_H(0);
 
+    mpdm_ref(e);
+
 	for (ptr = environ; *ptr != NULL; ptr++) {
 		char *eq = strchr(*ptr, '=');
 
@@ -489,6 +491,8 @@ static mpdm_t build_env(void)
 			mpdm_hset(e, k, v);
 		}
 	}
+
+    mpdm_unrefnd(e);
 
 	return e;
 }
