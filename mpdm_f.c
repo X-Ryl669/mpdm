@@ -1472,6 +1472,8 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 	if (stat((char *) fn->data, &s) != -1) {
 		r = MPDM_A(14);
 
+        mpdm_ref(r);
+
 		mpdm_aset(r, MPDM_I(s.st_dev), 0);
 		mpdm_aset(r, MPDM_I(s.st_ino), 1);
 		mpdm_aset(r, MPDM_I(s.st_mode), 2);
@@ -1516,6 +1518,8 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 				mpdm_aset(r, MPDM_MBS(tmp), 13);
 		}
 #endif
+
+        mpdm_unrefnd(r);
 
         mpdm_unref(fn);
 	}
