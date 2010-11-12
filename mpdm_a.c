@@ -364,6 +364,9 @@ static int seek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step)
 {
 	int n, o;
 
+    mpdm_ref(a);
+    mpdm_ref(k);
+
 	/* avoid stupid steps */
 	if (step <= 0)
 		step = 1;
@@ -380,6 +383,9 @@ static int seek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step)
 		if (r == 0)
 			o = n;
 	}
+
+    mpdm_unref(k);
+    mpdm_unref(a);
 
 	return o;
 }
