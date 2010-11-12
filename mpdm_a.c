@@ -266,8 +266,12 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
  */
 mpdm_t mpdm_adel(mpdm_t a, int offset)
 {
+    mpdm_ref(a);
+
 	if (mpdm_size(a))
         mpdm_collapse(a, wrap_offset(a, offset), 1);
+
+    mpdm_unref(a);
 
 	return NULL;
 }
@@ -285,11 +289,17 @@ mpdm_t mpdm_adel(mpdm_t a, int offset)
  */
 mpdm_t mpdm_shift(mpdm_t a)
 {
-    mpdm_t v = mpdm_ref(mpdm_aget(a, 0));
+    mpdm_t r;
 
+    mpdm_ref(a);
+
+    r = mpdm_ref(mpdm_aget(a, 0));
 	mpdm_adel(a, 0);
+    mpdm_unrefnd(r);
 
-    return mpdm_unrefnd(v);
+    mpdm_unref(a);
+
+    return r;
 }
 
 
@@ -318,11 +328,17 @@ mpdm_t mpdm_push(mpdm_t a, mpdm_t e)
  */
 mpdm_t mpdm_pop(mpdm_t a)
 {
-    mpdm_t v = mpdm_ref(mpdm_aget(a, -1));
+    mpdm_t r;
 
+    mpdm_ref(a);
+
+    r = mpdm_ref(mpdm_aget(a, -1));
 	mpdm_adel(a, -1);
+    r = mpdm_unrefnd(r);
 
-    return mpdm_unrefnd(v);
+    mpdm_unref(a);
+
+    return r;
 }
 
 

@@ -925,7 +925,7 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args)
     mpdm_ref(args);
 
 	/* to avoid destroying args */
-	a = mpdm_clone(args);
+	a = mpdm_ref(mpdm_clone(args));
 
 	/* shift first argument */
 	v = mpdm_shift(a);
@@ -954,6 +954,7 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args)
 		}
 	}
 
+    mpdm_unref(a);
     mpdm_unref(args);
 
 	return (MPDM_I(t));
