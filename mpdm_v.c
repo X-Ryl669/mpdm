@@ -371,31 +371,52 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
 {
+    mpdm_t r;
 	mpdm_t a = MPDM_A(1);
 
+    mpdm_ref(a);
 	mpdm_aset(a, a1, 0);
-	return mpdm_exec(c, a);
+
+	r= mpdm_exec(c, a);
+
+    mpdm_unref(a);
+
+    return r;
 }
 
 
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 {
+    mpdm_t r;
 	mpdm_t a = MPDM_A(2);
 
+    mpdm_ref(a);
 	mpdm_aset(a, a1, 0);
 	mpdm_aset(a, a2, 1);
-	return mpdm_exec(c, a);
+
+	r = mpdm_exec(c, a);
+
+    mpdm_unref(a);
+
+    return r;
 }
 
 
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 {
+    mpdm_t r;
 	mpdm_t a = MPDM_A(3);
 
+    mpdm_ref(a);
 	mpdm_aset(a, a1, 0);
 	mpdm_aset(a, a2, 1);
 	mpdm_aset(a, a3, 2);
-	return mpdm_exec(c, a);
+
+	r = mpdm_exec(c, a);
+
+    mpdm_unref(a);
+
+    return r;
 }
 
 
@@ -406,8 +427,12 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2)
 	x = MPDM_A(2);
 	x->flags |= MPDM_EXEC;
 
+    mpdm_ref(x);
+
 	mpdm_aset(x, MPDM_X(a1), 0);
 	mpdm_aset(x, a2, 1);
+
+    mpdm_unrefnd(x);
 
 	return x;
 }

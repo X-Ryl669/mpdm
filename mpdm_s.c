@@ -565,8 +565,10 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 	/* creates the output array */
 	w = MPDM_A(2);
 
+    mpdm_ref(w);
 	mpdm_aset(w, n, 0);
 	mpdm_aset(w, d, 1);
+    mpdm_unrefnd(w);
 
 	mpdm_unref(i);
 	mpdm_unref(v);
@@ -1181,6 +1183,7 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 
 	i += offset;
 	r = MPDM_A(0);
+    mpdm_ref(r);
 
 	while (*f) {
 		if (*f == L'%') {
@@ -1373,6 +1376,8 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 
 	mpdm_unref(str);
 	mpdm_unref(fmt);
+
+    mpdm_unrefnd(r);
 
 	return r;
 }

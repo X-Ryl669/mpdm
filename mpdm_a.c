@@ -185,6 +185,9 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 {
 	mpdm_t *p;
 
+    mpdm_ref(a);
+    mpdm_ref(e);
+
 	offset = wrap_offset(a, offset);
 
 	if (offset >= 0) {
@@ -199,6 +202,9 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 		mpdm_unref(p[offset]);
 		p[offset] = e;
 	}
+
+    mpdm_unref(e);
+    mpdm_unref(a);
 
     return e;
 }
@@ -244,11 +250,17 @@ mpdm_t mpdm_aget(const mpdm_t a, int offset)
  */
 mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
 {
+    mpdm_ref(a);
+    mpdm_ref(e);
+
 	offset = wrap_offset(a, offset);
 
 	/* open room and set value */
-	if (mpdm_expand(a, offset, 1))
-		mpdm_aset(a, e, offset);
+	mpdm_expand(a, offset, 1);
+	mpdm_aset(a, e, offset);
+
+    mpdm_unref(e);
+    mpdm_unref(a);
 
 	return e;
 }
@@ -317,8 +329,16 @@ mpdm_t mpdm_shift(mpdm_t a)
  */
 mpdm_t mpdm_push(mpdm_t a, mpdm_t e)
 {
+    mpdm_t r;
+
+    mpdm_ref(a);
+
 	/* inserts at the end */
-	return mpdm_ins(a, e, mpdm_size(a));
+	r = mpdm_ins(a, e, mpdm_size(a));
+
+    mpdm_unref(a);
+
+    return r;
 }
 
 
@@ -641,6 +661,7 @@ mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
 		mpdm_ref(v);
 
 		w = MPDM_A(0);
+        mpdm_ref(w);
 
 		/* NULL separator? special case: split string in characters */
 		if (s == NULL) {
@@ -662,6 +683,8 @@ mpdm_t mpdm_split_s(const wchar_t *s, const mpdm_t v)
 			/* add last part */
 			mpdm_push(w, MPDM_S(ptr));
 		}
+
+        mpdm_unrefnd(w);
 
 		mpdm_unref(v);
 	}

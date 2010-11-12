@@ -220,6 +220,8 @@ void test_array(void)
 	mpdm_t v;
 
 	a = MPDM_A(0);
+    mpdm_ref(a);
+
 	do_test("a->size == 0", (a->size == 0));
 
 	mpdm_push(a, MPDM_LS(L"sunday"));
@@ -233,6 +235,7 @@ void test_array(void)
 	do_test("a->size == 7", (a->size == 7));
 
     v = mpdm_aget(a, 3);
+    mpdm_ref(v);
 	mpdm_aset(a, NULL, 3);
 	mpdm_dump(a);
 
@@ -240,6 +243,8 @@ void test_array(void)
 	do_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
 
 	mpdm_aset(a, v, 0);
+    mpdm_unref(v);
+
 	v = mpdm_aget(a, 3);
 	do_test("v is referenced again", (v != NULL && v->ref > 0));
 
@@ -260,6 +265,8 @@ void test_array(void)
 	v = mpdm_aget(a, 3);
 	mpdm_collapse(a, 3, 1);
 	do_test("acollapse unrefs values", (v->ref < n));
+
+    mpdm_unref(a);
 
 	/* test queues */
 	a = MPDM_A(0);
@@ -289,6 +296,7 @@ void test_array(void)
     mpdm_unref(a);
 
 	a = MPDM_A(4);
+    mpdm_ref(a);
 	mpdm_aset(a, MPDM_I(666), 6000);
 
 	do_test("array should have been automatically expanded", mpdm_size(a) == 6001);
@@ -307,6 +315,8 @@ void test_array(void)
 	v = MPDM_A(0);
 	mpdm_push(v, MPDM_I(100));
 	mpdm_pop(v);
+
+    mpdm_unref(a);
 
 	/* array comparisons with mpdm_cmp() */
 	a = MPDM_A(2);
@@ -585,9 +595,8 @@ void test_join(void)
 	s = mpdm_ref(MPDM_LS(L"--"));
 
 	w = MPDM_A(1);
-	mpdm_aset(w, MPDM_S(L"ce"), 0);
-
 	mpdm_ref(w);
+	mpdm_aset(w, MPDM_S(L"ce"), 0);
 
 	v = mpdm_join(NULL, w);
 	do_test("1 elem, no separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
@@ -816,14 +825,13 @@ void test_regex(void)
 
 	/* multiple regex tests */
 	w = MPDM_A(0);
+	mpdm_ref(w);
 
 	mpdm_push(w, MPDM_LS(L"/^[ \t]*/"));
 	mpdm_push(w, MPDM_LS(L"/[^ \t=]+/"));
 	mpdm_push(w, MPDM_LS(L"/[ \t]*=[ \t]*/"));
 	mpdm_push(w, MPDM_LS(L"/[^ \t]+/"));
 	mpdm_push(w, MPDM_LS(L"/[ \t]*$/"));
-
-	mpdm_ref(w);
 
 	v = mpdm_regex(w, MPDM_LS(L"key=value"), 0);
 	mpdm_ref(v);
@@ -1245,9 +1253,9 @@ void test_sprintf(void)
 	printf("sprintf tests\n");
 
 	v = MPDM_A(0);
+	mpdm_ref(v);
 	mpdm_push(v, MPDM_I(100));
 	mpdm_push(v, MPDM_LS(L"beers"));
-	mpdm_ref(v);
 
 	w = mpdm_sprintf(MPDM_LS(L"%d %s for me"), v);
 	do_test("sprintf 1", mpdm_cmp(w, MPDM_LS(L"100 beers for me")) == 0);
@@ -1264,8 +1272,8 @@ void test_sprintf(void)
 	mpdm_unref(v);
 
 	v = MPDM_A(0);
-	mpdm_push(v, MPDM_R(3.1416));
 	mpdm_ref(v);
+	mpdm_push(v, MPDM_R(3.1416));
 
 	w = mpdm_sprintf(MPDM_LS(L"Value for PI is %6.4f"), v);
 	do_test("sprintf 2.1", mpdm_cmp(w, MPDM_LS(L"Value for PI is 3.1416")) == 0);
@@ -1276,8 +1284,8 @@ void test_sprintf(void)
 	mpdm_unref(v);
 
 	v = MPDM_A(0);
-	mpdm_push(v, MPDM_LS(L"stress"));
 	mpdm_ref(v);
+	mpdm_push(v, MPDM_LS(L"stress"));
 
 	w = mpdm_sprintf(MPDM_LS(L"This is a |%10s| test"), v);
 	do_test("sprintf 3.1", mpdm_cmp(w, MPDM_LS(L"This is a |    stress| test")) == 0);
@@ -1288,16 +1296,16 @@ void test_sprintf(void)
 	mpdm_unref(v);
 
 	v = MPDM_A(0);
-	mpdm_push(v, MPDM_I(0x263a));
 	mpdm_ref(v);
+	mpdm_push(v, MPDM_I(0x263a));
 
 	w = mpdm_sprintf(MPDM_LS(L"%c"), v);
 	do_test("sprintf 3.3", mpdm_cmp(w, MPDM_LS(L"\x263a")) == 0);
 	mpdm_unref(v);
 
 	v = MPDM_A(0);
-	mpdm_push(v, MPDM_I(75));
 	mpdm_ref(v);
+	mpdm_push(v, MPDM_I(75));
 
 	w = mpdm_sprintf(MPDM_LS(L"%d%%"), v);
 	do_test("sprintf 4.1", mpdm_cmp(w, MPDM_LS(L"75%")) == 0);

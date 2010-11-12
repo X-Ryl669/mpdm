@@ -1785,6 +1785,8 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 		mpdm_sort(d, 1);
 		mpdm_sort(f, 1);
 
+        mpdm_ref(v);
+
 		/* transfer all data in d and f */
 		for (n = 0; n < mpdm_size(d); n++)
 			mpdm_push(v, mpdm_aget(d, n));
@@ -1793,6 +1795,8 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
         mpdm_unref(f);
         mpdm_unref(d);
+
+        mpdm_unrefnd(v);
 	}
 
 	mpdm_unref(base);
