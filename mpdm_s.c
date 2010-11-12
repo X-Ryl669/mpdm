@@ -454,10 +454,14 @@ int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
 {
 	int r;
 
+    mpdm_ref(v1);
+
 	if (MPDM_IS_STRING(v1))
 		r = wcscoll((wchar_t *) v1->data, v2);
 	else
 		r = (int) ((wchar_t *)v1->data - v2);
+
+    mpdm_unref(v1);
 
 	return r;
 }
