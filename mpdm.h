@@ -25,19 +25,29 @@
 extern "C" {
 #endif
 
-/* structural flags */
-#define MPDM_STRING	0x00000001	/* data can be string-compared */
-#define MPDM_MULTIPLE	0x00000002	/* data is multiple */
-#define MPDM_FREE	0x00000004	/* free data at destroy */
-#define MPDM_DELETED	0x00000008	/* value is deleted */
+enum {
+    _MPDM_STRING,
+    _MPDM_MULTIPLE,
+    _MPDM_FREE,
+    _MPDM_DELETED,
+    _MPDM_IVAL,
+    _MPDM_RVAL,
+    _MPDM_HASH,
+    _MPDM_FILE,
+    _MPDM_EXEC
+};
 
-#define MPDM_IVAL	0x00000010	/* integer value cached in .ival */
-#define MPDM_RVAL	0x00000020	/* real value cached in .rval */
-
-/* 'informative' flags */
-#define MPDM_HASH	0x00010000	/* data is a hash */
-#define MPDM_FILE	0x00020000	/* data is a FILE * */
-#define MPDM_EXEC	0x00040000	/* data is 'executable' */
+enum {
+    MPDM_STRING     = (1<<_MPDM_STRING),    /* data can be string-compared */
+    MPDM_MULTIPLE   = (1<<_MPDM_MULTIPLE),  /* data is multiple */
+    MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
+    MPDM_DELETED    = (1<<_MPDM_DELETED),   /* value is deleted */
+    MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
+    MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
+    MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
+    MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a FILE * */
+    MPDM_EXEC       = (1<<_MPDM_EXEC)       /* data is 'executable' */
+};
 
 /* mpdm values */
 typedef struct mpdm_val *mpdm_t;
