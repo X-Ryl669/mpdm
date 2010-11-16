@@ -320,10 +320,10 @@ void test_array(void)
 
 	/* array comparisons with mpdm_cmp() */
 	a = MPDM_A(2);
+    mpdm_ref(a);
 	mpdm_aset(a, MPDM_I(10), 0);
 	mpdm_aset(a, MPDM_I(60), 1);
 
-    mpdm_ref(a);
 	v = mpdm_ref(mpdm_clone(a));
 	do_test("mpdm_cmp: array clones are equal", mpdm_cmp(a, v) == 0);
 
