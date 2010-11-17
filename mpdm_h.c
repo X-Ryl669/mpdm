@@ -444,7 +444,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
 		/* is executable? run it and take its output */
 		while (MPDM_IS_EXEC(w))
-			w = mpdm_exec(w, NULL);
+			w = mpdm_exec(w, NULL, NULL);
 
 		if (MPDM_IS_HASH(w))
 			w = mpdm_hget(w, mpdm_aget(p, n));
@@ -466,7 +466,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 	if (s && w != NULL) {
 		/* resolve executable values again */
 		while (MPDM_IS_EXEC(w))
-			w = mpdm_exec(w, NULL);
+			w = mpdm_exec(w, NULL, NULL);
 
 		if (w->flags & MPDM_HASH)
 			w = mpdm_hset(w, mpdm_aget(p, n), v);

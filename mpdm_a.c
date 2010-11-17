@@ -573,7 +573,9 @@ static int sort_cmp(const void *s1, const void *s2)
 		/* executes the callback and converts to integer */
 		ret = mpdm_ival(mpdm_exec_2(sort_cb,
 					    (mpdm_t) * ((mpdm_t *) s1),
-					    (mpdm_t) * ((mpdm_t *) s2))
+					    (mpdm_t) * ((mpdm_t *) s2),
+						NULL
+			)
         );
 	}
 

@@ -32,6 +32,8 @@
 
 #include "mpdm.h"
 
+#define DESTROY_ON_UNREF
+
 
 /** data **/
 
@@ -318,49 +320,55 @@ mpdm_t mpdm_set_rval(mpdm_t v, double rval)
  * mpdm_exec - Executes an executable value.
  * @c: the code value
  * @args: the arguments
+ * @ctxt: the context
  *
  * Executes an executable value. If @c is a scalar value, its data
  * should be a pointer to a directly executable C function with a
- * prototype of mpdm_t func(mpdm_t args); if it's a multiple one,
- * the first value's data should be a pointer to a directly executable C
- * function with a prototype of mpdm_t func(mpdm_t b, mpdm_t args) and
+ * prototype of mpdm_t func(mpdm_t args, mpdm_t ctxt); if it's a multiple
+ * one, the first value's data should be a pointer to a directly executable
+ * C function with a prototype of
+ * mpdm_t func(mpdm_t b, mpdm_t args, mpdm_t ctxt) and
  * the second value will be passed as the @b argument. This value is used
  * to store bytecode or so when implementing virtual machines or compilers.
+ * The @ctxt is meant to be used as a special context to implement local
+ * symbol tables and such. Its meaning is free and can be NULL.
  *
  * Returns the return value of the code. If @c is NULL or not executable,
  * returns NULL.
  * [Value Management]
  */
-mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
+mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
 	mpdm_t r = NULL;
 
 	if (c != NULL && (c->flags & MPDM_EXEC)) {
 		mpdm_ref(c);
 		mpdm_ref(args);
+		mpdm_ref(ctxt);
 
 		if (c->flags & MPDM_MULTIPLE) {
 			mpdm_t x;
-			mpdm_t(*func) (mpdm_t, mpdm_t);
+			mpdm_t(*func) (mpdm_t, mpdm_t, mpdm_t);
 
 			/* value is multiple; first element is the
-			   2 argument version of the executable function,
-			   next its optional additional information and
-			   finally the arguments */
+			   3 argument version of the executable function,
+			   next its optional additional information,
+			   the arguments and the context */
 			x = mpdm_aget(c, 0);
 
-			if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (x->data)) != NULL)
-				r = func(mpdm_aget(c, 1), args);
+			if ((func = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
+				r = func(mpdm_aget(c, 1), args, ctxt);
 		}
 		else {
-			mpdm_t(*func) (mpdm_t);
+			mpdm_t(*func) (mpdm_t, mpdm_t);
 
-			/* value is scalar; c is the 1 argument
+			/* value is scalar; c is the 2 argument
 			   version of the executable function */
-			if ((func = (mpdm_t(*)(mpdm_t)) (c->data)) != NULL)
-				r = func(args);
+			if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
+				r = func(args, ctxt);
 		}
 
+		mpdm_unref(ctxt);
 		mpdm_unref(args);
 		mpdm_unref(c);
 	}
@@ -369,7 +377,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args)
 }
 
 
-mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
+mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 {
     mpdm_t r;
 	mpdm_t a = MPDM_A(1);
@@ -377,7 +385,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
     mpdm_ref(a);
 	mpdm_aset(a, a1, 0);
 
-	r= mpdm_exec(c, a);
+	r= mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -385,7 +393,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1)
 }
 
 
-mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
+mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 {
     mpdm_t r;
 	mpdm_t a = MPDM_A(2);
@@ -394,7 +402,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 	mpdm_aset(a, a1, 0);
 	mpdm_aset(a, a2, 1);
 
-	r = mpdm_exec(c, a);
+	r = mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -402,7 +410,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2)
 }
 
 
-mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
+mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 {
     mpdm_t r;
 	mpdm_t a = MPDM_A(3);
@@ -412,7 +420,7 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 	mpdm_aset(a, a2, 1);
 	mpdm_aset(a, a3, 2);
 
-	r = mpdm_exec(c, a);
+	r = mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -420,7 +428,7 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3)
 }
 
 
-mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2)
+mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2)
 {
 	mpdm_t x;
 
@@ -438,7 +446,7 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2)
 }
 
 
-static mpdm_t MPDM(const mpdm_t args)
+static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
 /* accesor / mutator for MPDM internal data */
 {
 	mpdm_t v;

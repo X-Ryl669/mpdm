@@ -90,10 +90,10 @@ int mpdm_size(const mpdm_t v);
 mpdm_t mpdm_clone(const mpdm_t v);
 mpdm_t mpdm_root(void);
 
-mpdm_t mpdm_exec(mpdm_t c, mpdm_t args);
-mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1);
-mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2);
-mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3);
+mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
+mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt);
+mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt);
+mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt);
 
 mpdm_t mpdm_new_a(int flags, int size);
 mpdm_t mpdm_aclone(const mpdm_t v);
@@ -149,7 +149,7 @@ double mpdm_rval(mpdm_t v);
 mpdm_t mpdm_set_ival(mpdm_t v, int ival);
 mpdm_t mpdm_set_rval(mpdm_t v, double rval);
 
-mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t), mpdm_t a2);
+mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2);
 
 int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);

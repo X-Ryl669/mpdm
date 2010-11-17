@@ -899,7 +899,7 @@ void test_regex(void)
 }
 
 
-static mpdm_t dumper(mpdm_t args)
+static mpdm_t dumper(mpdm_t args, mpdm_t ctxt)
 /* executable value */
 {
 	mpdm_dump(args);
@@ -907,7 +907,7 @@ static mpdm_t dumper(mpdm_t args)
 }
 
 
-static mpdm_t sum(mpdm_t args)
+static mpdm_t sum(mpdm_t args, mpdm_t ctxt)
 /* executable value: sum all args */
 {
 	int n, t = 0;
@@ -921,8 +921,8 @@ static mpdm_t sum(mpdm_t args)
 }
 
 
-static mpdm_t calculator(mpdm_t c, mpdm_t args)
-/* 2 argument version: calculator. c contains a 'script' to
+static mpdm_t calculator(mpdm_t c, mpdm_t args, mpdm_t ctxt)
+/* 3 argument version: calculator. c contains a 'script' to
    do things with the arguments */
 {
 	int n, t;
@@ -981,8 +981,8 @@ void test_exec(void)
 
 	/* a simple value */
 	mpdm_ref(x);
-	mpdm_exec(x, NULL);
-	mpdm_exec(x, x);
+	mpdm_exec(x, NULL, NULL);
+	mpdm_exec(x, x, NULL);
 	mpdm_unref(x);
 
 	x = mpdm_ref(MPDM_X(sum));
@@ -991,7 +991,7 @@ void test_exec(void)
 	mpdm_aset(w, MPDM_I(220), 1);
 	mpdm_aset(w, MPDM_I(333), 2);
 
-	do_test("exec 0", mpdm_ival(mpdm_exec(x, w)) == 653);
+	do_test("exec 0", mpdm_ival(mpdm_exec(x, w, NULL)) == 653);
 	x = mpdm_unref(x);
 
 	mpdm_push(w, MPDM_I(1));
@@ -1011,7 +1011,7 @@ void test_exec(void)
 	mpdm_aset(x, MPDM_X(calculator), 0);
 	mpdm_aset(x, p, 1);
 
-	do_test("exec 1", mpdm_ival(mpdm_exec(x, w)) == -12);
+	do_test("exec 1", mpdm_ival(mpdm_exec(x, w, NULL)) == -12);
 
 	mpdm_unref(p);
 
@@ -1023,7 +1023,7 @@ void test_exec(void)
 
 	mpdm_aset(x, p, 1);
 
-	do_test("exec 2", mpdm_ival(mpdm_exec(x, w)) == 67);
+	do_test("exec 2", mpdm_ival(mpdm_exec(x, w, NULL)) == 67);
 	x = mpdm_unref(x);
 	p = mpdm_unref(p);
 	w = mpdm_unref(w);
