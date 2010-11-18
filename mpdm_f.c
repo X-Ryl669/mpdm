@@ -1143,6 +1143,8 @@ mpdm_t mpdm_close(mpdm_t fd)
 {
 	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 
+	mpdm_ref(fd);
+
 	if ((fd->flags & MPDM_FILE) && fs != NULL) {
 		if (fs->in != NULL)
 			fclose(fs->in);
@@ -1153,7 +1155,9 @@ mpdm_t mpdm_close(mpdm_t fd)
 		destroy_mpdm_file(fd);
 	}
 
-	return NULL;
+	fd = mpdm_unref(fd);
+
+	return fd;
 }
 
 
