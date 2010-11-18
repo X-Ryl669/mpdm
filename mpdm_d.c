@@ -105,7 +105,23 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 		}
 	}
 
-	mpdm_unrefnd(v);
+	mpdm_unref(v);
+
+	return ptr;
+}
+
+
+static wchar_t *do_dump(mpdm_t v, int *size)
+{
+	wchar_t *ptr;
+
+	/* if no dumper plugin is defined, fall back to default */
+	if (mpdm_dump_1 == NULL)
+		mpdm_dump_1 = dump_1;
+
+	*size = 0;
+	ptr = mpdm_dump_1(v, 0, NULL, size);
+	ptr = mpdm_pokewsn(ptr, size, L"", 1);
 
 	return ptr;
 }
@@ -122,12 +138,7 @@ mpdm_t mpdm_dumper(const mpdm_t v)
 	int size = 0;
 	wchar_t *ptr;
 
-	/* if no dumper plugin is defined, fall back to default */
-	if (mpdm_dump_1 == NULL)
-		mpdm_dump_1 = dump_1;
-
-	ptr = mpdm_dump_1(v, 0, NULL, &size);
-	ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+	ptr = do_dump(v, &size);
 
 	return MPDM_ENS(ptr, size - 1);
 }
@@ -142,11 +153,16 @@ mpdm_t mpdm_dumper(const mpdm_t v)
  */
 void mpdm_dump(const mpdm_t v)
 {
-	mpdm_t w;
+	int size = 0;
+	wchar_t *ptr;
 
-	w = mpdm_dumper(v);
-	mpdm_write_wcs(stdout, mpdm_string(w));
-	mpdm_destroy(w);
+	mpdm_ref(v);
+
+	ptr = do_dump(v, &size);
+	mpdm_write_wcs(stdout, ptr);
+	free(ptr);
+
+	mpdm_unrefnd(v);
 }
 
 
@@ -158,23 +174,27 @@ void mpdm_dump(const mpdm_t v)
 void mpdm_dump_unref(void)
 {
 	mpdm_t v;
-	int count, unref;
+	int count, unref, del;
 
 	/* loop all values */
 	v = mpdm->cur;
 	count = mpdm->count;
-	unref = 0;
+	unref = del = 0;
 
 	printf("** Unreferenced values:\n");
 
 	while (count--) {
-		if (v->ref == 0) {
-			mpdm_dump(v);
-			unref++;
+		if (v->ref <= 0) {
+			if (v->flags & MPDM_DELETED)
+				del++;
+			else {
+				mpdm_dump(v);
+				unref++;
+			}
 		}
 
 		v = v->next;
 	}
 
-	printf("** Total unreferenced: %d\n", unref);
+	printf("** Total unreferenced/deleted: %d/%d\n", unref, del);
 }
