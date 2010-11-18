@@ -64,7 +64,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
 					(v->flags & MPDM_EXEC ? 'X' : '-')),
 				v->flags & MPDM_HASH ? 'H' :
 					(v->flags & MPDM_MULTIPLE ? 'M' : '-'),
-				v->flags & MPDM_FREE ? 'A' : '-',
+				v->flags & MPDM_REGEX ? 'r' :
+					(v->flags & MPDM_FREE ? 'A' : '-'),
 				v->flags & MPDM_IVAL ? 'I' :
 					(v->flags & MPDM_RVAL ? 'R' : '-')
 		    	);

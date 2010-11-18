@@ -110,7 +110,7 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
     				memcpy(ptr, &re, sizeof(regex_t));
 
     				/* create value */
-    				c = mpdm_new(MPDM_FREE, ptr, sizeof(regex_t));
+    				c = mpdm_new(MPDM_FREE | MPDM_REGEX, ptr, sizeof(regex_t));
 
     				/* stores */
     				mpdm_hset(regex_cache, r, c);

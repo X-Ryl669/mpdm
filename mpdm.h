@@ -34,7 +34,8 @@ enum {
     _MPDM_RVAL,
     _MPDM_HASH,
     _MPDM_FILE,
-    _MPDM_EXEC
+    _MPDM_EXEC,
+	_MPDM_REGEX
 };
 
 enum {
@@ -46,7 +47,8 @@ enum {
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
     MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a FILE * */
-    MPDM_EXEC       = (1<<_MPDM_EXEC)       /* data is 'executable' */
+    MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
+    MPDM_REGEX      = (1<<_MPDM_REGEX)      /* data is a compiled regex */
 };
 
 /* mpdm values */
