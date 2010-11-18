@@ -1259,7 +1259,7 @@ FILE * mpdm_get_filehandle(const mpdm_t fd)
 {
 	FILE * f = NULL;
 
-	if (fd->flags & MPDM_FILE) {
+	if (fd->flags & MPDM_FILE && fd->data != NULL) {
 		struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 		f = fs->in;
 	}
