@@ -1152,6 +1152,7 @@ void bench_hash(int i, mpdm_t l, int buckets)
 
 	printf("Hash of %d buckets: \n", buckets);
 	h = MPDM_H(buckets);
+	mpdm_ref(h);
 
 	timer(0);
 	for (n = 0; n < i; n++) {
@@ -1159,6 +1160,9 @@ void bench_hash(int i, mpdm_t l, int buckets)
 		mpdm_hset(h, v, v);
 	}
 	timer(-1);
+
+	mpdm_unref(h);
+
 /*
 	printf("Bucket usage:\n");
 	for(n=0;n < mpdm_size(h);n++)
