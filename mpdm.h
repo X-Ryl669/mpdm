@@ -241,6 +241,7 @@ int mpdm_startup(void);
 void mpdm_shutdown(void);
 
 void mpdm_sleep(int msecs);
+mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
 #ifdef __cplusplus
 }

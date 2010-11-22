@@ -108,3 +108,59 @@ void mpdm_sem_wait(mpdm_t sem)
 void mpdm_sem_post(mpdm_t sem)
 {
 }
+
+
+/** threads **/
+
+#ifdef CONFOPT_WIN32
+DWORD WINAPI win32_thread(LPVOID param)
+{
+	mpdm_t a;
+
+	a = (mpdm_t) param;
+
+	/* ignore return value */
+	mpdm_unref(mpdm_ref(mpdm_exec(mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2))));
+
+	/* was referenced in mpdm_exec_thread() */
+	mpdm_unref(a);
+
+	return 0;
+}
+#endif
+
+mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
+{
+	mpdm_t a;
+	mpdm_t r = NULL;
+	char *ptr = NULL;
+	int size;
+
+	if (ctxt == NULL)
+		ctxt = MPDM_A(0);
+
+	/* to be unreferenced at thread stop */
+	a = mpdm_ref(MPDM_A(3));
+
+	mpdm_aset(a, c, 0);
+	mpdm_aset(a, args, 1);
+	mpdm_aset(a, ctxt, 2);
+
+#ifdef CONFOPT_WIN32
+	HANDLE t;
+
+	t = CreateThread(NULL, 0, win32_thread, a, 0, NULL);
+
+	if (t != NULL) {
+		size = sizeof(HANDLE);
+		ptr = malloc(sizeof(size));
+		memcpy(ptr, &t, sizeof(size));
+	}
+
+#endif
+
+	if (ptr != NULL)
+		r = mpdm_new(MPDM_FREE, ptr, size);
+
+	return r;
+}

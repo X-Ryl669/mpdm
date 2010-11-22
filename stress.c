@@ -1410,6 +1410,48 @@ void test_scanf(void)
 }
 
 
+mpdm_t the_thread(mpdm_t args, mpdm_t ctxt)
+/* running from a thread */
+{
+	mpdm_t fn = mpdm_ref(MPDM_LS(L"thread.txt"));
+	mpdm_t f;
+
+	if ((f = mpdm_open(fn, MPDM_LS(L"w"))) != NULL) {
+		int n;
+
+		for (n = 0; n < 1000; n++) {
+			mpdm_write(f, MPDM_I(n));
+			mpdm_write(f, MPDM_LS(L"\n"));
+		}
+
+		mpdm_close(f);
+	}
+
+	return NULL;
+}
+
+
+void test_thread(void)
+{
+	mpdm_t fn = mpdm_ref(MPDM_LS(L"thread.txt"));
+	mpdm_t x, v;
+
+	mpdm_unlink(fn);
+
+	x = mpdm_ref(MPDM_X(the_thread));
+
+	v = mpdm_exec_thread(x, NULL, NULL);
+
+	printf("Giving time for the thread to finish...\n");
+	mpdm_ref(v);
+	mpdm_sleep(1000);
+	mpdm_unref(v);
+
+	mpdm_unref(x);
+	mpdm_unref(fn);
+}
+
+
 void (*func)(void) = NULL;
 
 int main(int argc, char *argv[])
@@ -1447,6 +1489,7 @@ int main(int argc, char *argv[])
 	test_sprintf();
 	test_ulc();
 	test_scanf();
+	test_thread();
 
 	benchmark();
 
