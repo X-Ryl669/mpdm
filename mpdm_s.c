@@ -402,6 +402,9 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 {
 	int r;
 
+    mpdm_ref(v1);
+    mpdm_ref(v2);
+
 	/* same values? */
 	if (v1 == v2)
 		r = 0;
@@ -437,6 +440,9 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 	else
 		/* in any other case, compare just pointers */
 		r = (int) ((char *)v1->data - (char *)v2->data);
+
+    mpdm_unref(v2);
+    mpdm_unref(v1);
 
 	return r;
 }
