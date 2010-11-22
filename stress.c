@@ -1410,11 +1410,16 @@ void test_scanf(void)
 }
 
 
+mpdm_t mutex = NULL;
+int t_finished = -1;
+
 mpdm_t the_thread(mpdm_t args, mpdm_t ctxt)
 /* running from a thread */
 {
 	mpdm_t fn = mpdm_ref(MPDM_LS(L"thread.txt"));
 	mpdm_t f;
+
+	printf("thread: start writing from thread\n");
 
 	if ((f = mpdm_open(fn, MPDM_LS(L"w"))) != NULL) {
 		int n;
@@ -1427,6 +1432,14 @@ mpdm_t the_thread(mpdm_t args, mpdm_t ctxt)
 		mpdm_close(f);
 	}
 
+	printf("thread: finished writing from thread\n");
+
+	mpdm_mutex_lock(mutex);
+	t_finished = 1;
+	mpdm_mutex_unlock(mutex);
+
+	printf("thread: t_finished set\n");
+
 	return NULL;
 }
 
@@ -1435,18 +1448,40 @@ void test_thread(void)
 {
 	mpdm_t fn = mpdm_ref(MPDM_LS(L"thread.txt"));
 	mpdm_t x, v;
+	int done;
 
 	mpdm_unlink(fn);
 
+	/* create the executable value */
 	x = mpdm_ref(MPDM_X(the_thread));
+
+	/* create a mutex */
+	mutex = mpdm_ref(mpdm_new_mutex());
+
+	t_finished = 0;
 
 	v = mpdm_exec_thread(x, NULL, NULL);
 
-	printf("Giving time for the thread to finish...\n");
+	printf("parent: waiting for the thread to finish...\n");
 	mpdm_ref(v);
-	mpdm_sleep(1000);
+
+	done = 0;
+	while (!done) {
+		mpdm_sleep(10);
+
+		mpdm_mutex_lock(mutex);
+
+		if (t_finished > 0)
+			done = 1;
+
+		mpdm_mutex_unlock(mutex);
+	}
+
+	printf("parent: thread said it has finished.\n");
+
 	mpdm_unref(v);
 
+	mpdm_unref(mutex);
 	mpdm_unref(x);
 	mpdm_unref(fn);
 }

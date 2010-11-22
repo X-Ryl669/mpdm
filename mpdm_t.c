@@ -48,6 +48,21 @@
 
 /** code **/
 
+static mpdm_t t_new_val(int flags, void *ptr, int size)
+{
+	mpdm_t r = NULL;
+
+	if (ptr != NULL) {
+		char *ptr2 = malloc(size);
+		memcpy(ptr2, ptr, size);
+
+		r = mpdm_new(MPDM_FREE | flags, ptr2, size);
+	}
+
+	return r;
+}
+
+
 /**
  * mpdm_sleep - Sleeps a number of milliseconds.
  * @msecs: the milliseconds to sleep
@@ -78,17 +93,44 @@ void mpdm_sleep(int msecs)
 
 mpdm_t mpdm_new_mutex(void)
 {
-    return NULL;
+	mpdm_t r = NULL;
+	char *ptr = NULL;
+	int size = 0;
+
+#ifdef CONFOPT_WIN32
+	HANDLE h;
+
+	h = CreateMutex(NULL, FALSE, NULL);
+
+	if (h != NULL) {
+		size = sizeof(h);
+		ptr = (char *)&h;
+	}
+#endif
+
+	r = t_new_val(0, ptr, size);
+
+    return r;
 }
 
 
 void mpdm_mutex_lock(mpdm_t mutex)
 {
+#ifdef CONFOPT_WIN32
+	HANDLE *h = (HANDLE *)mutex->data;
+
+	WaitForSingleObject(*h, INFINITE);
+#endif
 }
 
 
 void mpdm_mutex_unlock(mpdm_t mutex)
 {
+#ifdef CONFOPT_WIN32
+	HANDLE *h = (HANDLE *)mutex->data;
+
+	ReleaseMutex(*h);
+#endif
 }
 
 
@@ -149,7 +191,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 	mpdm_t a;
 	mpdm_t r = NULL;
 	char *ptr = NULL;
-	int size;
+	int size = 0;
 
 	if (ctxt == NULL)
 		ctxt = MPDM_A(0);
@@ -167,9 +209,8 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 	t = CreateThread(NULL, 0, win32_thread, a, 0, NULL);
 
 	if (t != NULL) {
-		size = sizeof(HANDLE);
-		ptr = malloc(size);
-		memcpy(ptr, &t, size);
+		size = sizeof(t);
+		ptr = (char *)&t;
 	}
 
 #endif
@@ -179,14 +220,12 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     if (pthread_create(&pt, NULL, pthreads_thread, a) == 0) {
         size = sizeof(pthread_t);
-        ptr = malloc(size);
-        memcpy(ptr, &pt, size);
+        ptr = (char *)&pt;
     }
 
 #endif
 
-	if (ptr != NULL)
-		r = mpdm_new(MPDM_FREE, ptr, size);
+	r = t_new_val(0, ptr, size);
 
 	return r;
 }
