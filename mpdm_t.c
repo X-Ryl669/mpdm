@@ -173,6 +173,16 @@ mpdm_t mpdm_new_sem(int init_value)
 
 #endif
 
+#ifdef CONFOPT_POSIXSEMS
+    sem_t s;
+
+    if (sem_init(&s, 0, init_value) == 0) {
+        size = sizeof(s);
+        ptr = (char *)&s;
+    }
+
+#endif
+
     return t_new_val(0, ptr, size);
 }
 
@@ -184,6 +194,12 @@ void mpdm_sem_wait(mpdm_t sem)
 
 	WaitForSingleObject(*h, INFINITE);
 #endif
+
+#ifdef CONFOPT_POSIXSEMS
+    sem_t *s = (sem_t *)sem->data;
+
+    sem_wait(s);
+#endif
 }
 
 
@@ -193,6 +209,12 @@ void mpdm_sem_post(mpdm_t sem)
 	HANDLE *h = (HANDLE *)sem->data;
 
     ReleaseSemaphore(*h, 1, NULL);
+#endif
+
+#ifdef CONFOPT_POSIXSEMS
+    sem_t *s = (sem_t *)sem->data;
+
+    sem_post(s);
 #endif
 }
 

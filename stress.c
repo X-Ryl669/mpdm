@@ -1526,6 +1526,8 @@ void test_sem(void)
 
     mpdm_sem_post(sem);
 
+    mpdm_sleep(10);
+
     mpdm_unref(v);
     mpdm_unref(sem);
     mpdm_unref(x);
