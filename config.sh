@@ -131,6 +131,7 @@ else
 		echo "#define CONFOPT_WIN32 1" >> config.h
 		echo "OK"
 		WITHOUT_UNIX_GLOB=1
+        WITH_WIN32=1
 	else
 		echo "No"
 	fi
@@ -409,6 +410,21 @@ else
 			echo "No"
 		fi
 	fi
+fi
+
+if [ "$WITH_WIN32" != 1 ] ; then
+    echo -n "Testing for nanosleep()... "
+    echo "#include <time.h>" > .tmp.c
+    echo "int main(void) { struct timespec ts; ts.tv_sec = 1; ts.tv_nsec = 0; nanosleep(&ts, NULL); return 0; }" >> .tmp.c
+
+    $CC .tmp.c -o .tmp.o 2>> .config.log
+
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_NANOSLEEP 1" >> config.h
+        echo "OK"
+    else
+        echo "No"
+    fi
 fi
 
 # test for Grutatxt

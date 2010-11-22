@@ -240,6 +240,8 @@ mpdm_t mpdm_app_dir(void);
 int mpdm_startup(void);
 void mpdm_shutdown(void);
 
+void mpdm_sleep(int msecs);
+
 #ifdef __cplusplus
 }
 #endif
