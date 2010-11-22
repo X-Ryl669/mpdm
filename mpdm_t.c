@@ -35,6 +35,14 @@
 #include <windows.h>
 #endif
 
+#ifdef CONFOPT_PTHREADS
+#include <pthread.h>
+#endif
+
+#ifdef CONFOPT_POSIXSEMS
+#include <semaphore.h>
+#endif
+
 #include "mpdm.h"
 
 
@@ -63,4 +71,40 @@ void mpdm_sleep(int msecs)
 
     nanosleep(&ts, NULL);
 #endif
+}
+
+
+/** mutexes **/
+
+mpdm_t mpdm_new_mutex(void)
+{
+    return NULL;
+}
+
+
+void mpdm_mutex_lock(mpdm_t mutex)
+{
+}
+
+
+void mpdm_mutex_unlock(mpdm_t mutex)
+{
+}
+
+
+/** semaphores **/
+
+mpdm_t mpdm_new_sem(void)
+{
+    return NULL;
+}
+
+
+void mpdm_sem_wait(mpdm_t sem)
+{
+}
+
+
+void mpdm_sem_post(mpdm_t sem)
+{
 }
