@@ -91,6 +91,12 @@ void mpdm_sleep(int msecs)
 
 /** mutexes **/
 
+/**
+ * mpdm_new_mutex - Creates a new mutex.
+ *
+ * Creates a new mutex.
+ * [Threading]
+ */
 mpdm_t mpdm_new_mutex(void)
 {
 	mpdm_t r = NULL;
@@ -124,6 +130,14 @@ mpdm_t mpdm_new_mutex(void)
 }
 
 
+/**
+ * mpdm_mutex_lock - Locks a mutex.
+ * @mutex: the mutex to be locked
+ *
+ * Locks a mutex. If the mutex is not already locked,
+ * it waits until it is.
+ * [Threading]
+ */
 void mpdm_mutex_lock(mpdm_t mutex)
 {
 #ifdef CONFOPT_WIN32
@@ -140,6 +154,14 @@ void mpdm_mutex_lock(mpdm_t mutex)
 }
 
 
+/**
+ * mpdm_mutex_unlock - Unlocks a mutex.
+ * @mutex: the mutex to be unlocked
+ *
+ * Unlocks a previously locked mutex. The thread
+ * unlocking the mutex must be the one who locked it.
+ * [Threading]
+ */
 void mpdm_mutex_unlock(mpdm_t mutex)
 {
 #ifdef CONFOPT_WIN32
@@ -158,6 +180,13 @@ void mpdm_mutex_unlock(mpdm_t mutex)
 
 /** semaphores **/
 
+/**
+ * mpdm_new_semaphore - Creates a new semaphore.
+ * @init_value: the initial value of the semaphore.
+ *
+ * Creates a new semaphore with an @init_value.
+ * [Threading]
+ */
 mpdm_t mpdm_new_sem(int init_value)
 {
     char *ptr = NULL;
@@ -187,6 +216,14 @@ mpdm_t mpdm_new_sem(int init_value)
 }
 
 
+/**
+ * mpdm_sem_wait - Waits for a semaphore to be ready.
+ * @sem: the semaphore to wait onto
+ *
+ * Waits for the value of a semaphore to be > 0. If it's
+ * not, the thread waits until it is.
+ * [Threading]
+ */
 void mpdm_sem_wait(mpdm_t sem)
 {
 #ifdef CONFOPT_WIN32
@@ -203,6 +240,13 @@ void mpdm_sem_wait(mpdm_t sem)
 }
 
 
+/**
+ * mpdm_sem_post - Increments the value of a semaphore.
+ * @sem: the semaphore to increment
+ *
+ * Increments by 1 the value of a semaphore.
+ * [Threading]
+ */
 void mpdm_sem_post(mpdm_t sem)
 {
 #ifdef CONFOPT_WIN32
@@ -253,6 +297,19 @@ void *pthreads_thread(void *args)
 }
 #endif
 
+/**
+ * mpdm_exec_thread - Runs an executable value in a new thread.
+ * @c: the executable value
+ * @args: executable arguments
+ * @ctxt: the context
+ *
+ * Runs the @c executable value in a new thread. The code
+ * starts executing immediately. The @args and @ctxt arguments
+ * are sent to the executable value as arguments.
+ *
+ * Returns a handle for the thread.
+ * [Threading]
+ */
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
 	mpdm_t a;
