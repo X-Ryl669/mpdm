@@ -1450,6 +1450,8 @@ void test_thread(void)
 	mpdm_t x, v;
 	int done;
 
+    printf("Testing threads and mutexes...\n");
+
 	mpdm_unlink(fn);
 
 	/* create the executable value */
@@ -1484,6 +1486,49 @@ void test_thread(void)
 	mpdm_unref(mutex);
 	mpdm_unref(x);
 	mpdm_unref(fn);
+}
+
+
+mpdm_t sem = NULL;
+
+mpdm_t sem_thread(mpdm_t args, mpdm_t ctxt)
+{
+    printf("thread: waiting for semaphore...\n");
+
+    mpdm_sem_wait(sem);
+
+    printf("thread: got semaphore.\n");
+
+    return NULL;
+}
+
+
+void test_sem(void)
+{
+    mpdm_t x, v;
+
+    printf("Testing threads and semaphores...\n");
+
+	/* create the executable value */
+	x = mpdm_ref(MPDM_X(sem_thread));
+
+    /* creates the semaphore */
+    sem = mpdm_ref(mpdm_new_sem(0));
+
+    printf("parent: launching thread.\n");
+
+    v = mpdm_exec_thread(x, NULL, NULL);
+    mpdm_ref(v);
+
+    mpdm_sleep(10);
+
+    printf("parent: posting semaphore.\n");
+
+    mpdm_sem_post(sem);
+
+    mpdm_unref(v);
+    mpdm_unref(sem);
+    mpdm_unref(x);
 }
 
 
@@ -1525,6 +1570,7 @@ int main(int argc, char *argv[])
 	test_ulc();
 	test_scanf();
 	test_thread();
+    test_sem();
 
 	benchmark();
 

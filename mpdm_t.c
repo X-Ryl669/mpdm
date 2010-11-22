@@ -158,19 +158,42 @@ void mpdm_mutex_unlock(mpdm_t mutex)
 
 /** semaphores **/
 
-mpdm_t mpdm_new_sem(void)
+mpdm_t mpdm_new_sem(int init_value)
 {
-    return NULL;
+    char *ptr = NULL;
+    int size = 0;
+
+#ifdef CONFOPT_WIN32
+    HANDLE h;
+
+    if ((h = CreateSemaphore(NULL, init_value, 0x7fffffff, NULL)) != NULL) {
+        size = sizeof(h);
+        ptr = (char *)&h;
+    }
+
+#endif
+
+    return t_new_val(0, ptr, size);
 }
 
 
 void mpdm_sem_wait(mpdm_t sem)
 {
+#ifdef CONFOPT_WIN32
+	HANDLE *h = (HANDLE *)sem->data;
+
+	WaitForSingleObject(*h, INFINITE);
+#endif
 }
 
 
 void mpdm_sem_post(mpdm_t sem)
 {
+#ifdef CONFOPT_WIN32
+	HANDLE *h = (HANDLE *)sem->data;
+
+    ReleaseSemaphore(*h, 1, NULL);
+#endif
 }
 
 

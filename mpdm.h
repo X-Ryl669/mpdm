@@ -246,6 +246,10 @@ mpdm_t mpdm_new_mutex(void);
 void mpdm_mutex_lock(mpdm_t mutex);
 void mpdm_mutex_unlock(mpdm_t mutex);
 
+mpdm_t mpdm_new_sem(int init_value);
+void mpdm_sem_wait(mpdm_t sem);
+void mpdm_sem_post(mpdm_t sem);
+
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
 #ifdef __cplusplus
