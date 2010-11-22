@@ -427,6 +427,22 @@ if [ "$WITH_WIN32" != 1 ] ; then
     fi
 fi
 
+if [ "$WITH_WIN32" != 1 ] ; then
+    echo -n "Testing for POSIX threads... "
+    echo "#include <pthread.h>" > .tmp.c
+    echo "int main(void) { pthread_t t; return 0; }" >> .tmp.c
+
+    $CC .tmp.c -o .tmp.o 2>> .config.log
+
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_PTHREADS 1" >> config.h
+        echo "-pthread" >> config.ldflags
+        echo "OK"
+    else
+        echo "No"
+    fi
+fi
+
 # test for Grutatxt
 echo -n "Testing if Grutatxt is installed... "
 
