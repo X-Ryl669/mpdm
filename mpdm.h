@@ -181,7 +181,7 @@ mpdm_t mpdm_close(mpdm_t fd);
 mpdm_t mpdm_read(const mpdm_t fd);
 int mpdm_write(const mpdm_t fd, const mpdm_t v);
 mpdm_t mpdm_getchar(const mpdm_t fd);
-mpdm_t mpdm_putchar(const mpdm_t fd, const mpdm_t c);
+int mpdm_putchar(const mpdm_t fd, const mpdm_t c);
 int mpdm_fseek(const mpdm_t fd, long offset, int whence);
 long mpdm_ftell(const mpdm_t fd);
 FILE * mpdm_get_filehandle(const mpdm_t fd);

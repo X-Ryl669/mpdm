@@ -1207,16 +1207,18 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
 }
 
 
-mpdm_t mpdm_putchar(const mpdm_t fd, const mpdm_t c)
+int mpdm_putchar(const mpdm_t fd, const mpdm_t c)
 {
 	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 	const wchar_t *ptr = mpdm_string(c);
-	mpdm_t r;
+	int r = 1;
 
-	r = c;
+    mpdm_ref(c);
 
 	if (fs == NULL || put_char(*ptr, fs) == -1)
-		r = NULL;
+		r = 0;
+
+    mpdm_unref(c);
 
 	return r;
 }
@@ -1236,8 +1238,12 @@ int mpdm_write(const mpdm_t fd, const mpdm_t v)
 	struct mpdm_file *fs = (struct mpdm_file *)fd->data;
 	int ret = -1;
 
+    mpdm_ref(v);
+
 	if (fs != NULL)
 		ret = fs->f_write(fs, mpdm_string(v));
+
+    mpdm_unref(v);
 
 	return ret;
 }

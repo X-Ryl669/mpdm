@@ -1038,6 +1038,7 @@ void test_encoding(void)
 	const wchar_t *ptr;
 
 	v = MPDM_MBS("?Espa?a!\n");
+    mpdm_ref(v);
 
 	printf("\nLocale encoding tests (will look bad if terminal is not ISO-8859-1)\n\n");
 
@@ -1092,6 +1093,7 @@ void test_encoding(void)
 	mpdm_close(f);
 
 	mpdm_encoding(NULL);
+    mpdm_unref(v);
 }
 
 
