@@ -2041,14 +2041,16 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
  */
 mpdm_t mpdm_pclose(mpdm_t fd)
 {
-	mpdm_t r = NULL;
+    mpdm_ref(fd);
 
 	if ((fd->flags & MPDM_FILE) && fd->data != NULL) {
 		r = MPDM_I(sysdep_pclose(fd));
 		destroy_mpdm_file(fd);
 	}
 
-	return r;
+    fd = mpdm_unref(fd);
+
+	return fd;
 }
 
 
