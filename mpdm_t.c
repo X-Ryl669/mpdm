@@ -108,6 +108,16 @@ mpdm_t mpdm_new_mutex(void)
 	}
 #endif
 
+#ifdef CONFOPT_PTHREADS
+    pthread_mutex_t m;
+
+    if (pthread_mutex_init(&m, NULL) == 0) {
+        size = sizeof(m);
+        ptr = (char *)&m;
+    }
+
+#endif
+
 	r = t_new_val(0, ptr, size);
 
     return r;
@@ -121,6 +131,12 @@ void mpdm_mutex_lock(mpdm_t mutex)
 
 	WaitForSingleObject(*h, INFINITE);
 #endif
+
+#ifdef CONFOPT_PTHREADS
+    pthread_mutex_t *m = (pthread_mutex_t *)mutex->data;
+
+    pthread_mutex_lock(m);
+#endif
 }
 
 
@@ -130,6 +146,12 @@ void mpdm_mutex_unlock(mpdm_t mutex)
 	HANDLE *h = (HANDLE *)mutex->data;
 
 	ReleaseMutex(*h);
+#endif
+
+#ifdef CONFOPT_PTHREADS
+    pthread_mutex_t *m = (pthread_mutex_t *)mutex->data;
+
+    pthread_mutex_unlock(m);
 #endif
 }
 
