@@ -430,13 +430,31 @@ fi
 if [ "$WITH_WIN32" != 1 ] ; then
     echo -n "Testing for POSIX threads... "
     echo "#include <pthread.h>" > .tmp.c
-    echo "int main(void) { pthread_t t; return 0; }" >> .tmp.c
+    echo "int main(void) { pthread_t t; pthread_create(&t, NULL, NULL, NULL); return 0; }" >> .tmp.c
 
-    $CC .tmp.c -o .tmp.o 2>> .config.log
+    TMP_LDFLAGS="-pthread"
+    $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
 
     if [ $? = 0 ] ; then
         echo "#define CONFOPT_PTHREADS 1" >> config.h
-        echo "-pthread" >> config.ldflags
+        echo $TMP_LDFLAGS >> config.ldflags
+        WITH_PTHREADS=1
+        echo "OK"
+    else
+        echo "No"
+    fi
+fi
+
+if [ "$WITH_WIN32" != 1 -a "$WITH_PTHREADS" = 1 ] ; then
+    echo -n "Testing for POSIX semaphores... "
+    echo "#include <semaphore.h>" > .tmp.c
+    echo "int main(void) { sem_t s; sem_init(&s, 0, 0); return 0; }" >> .tmp.c
+
+    TMP_LDFLAGS="-pthread"
+    $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_POSIXSEMS 1" >> config.h
         echo "OK"
     else
         echo "No"
