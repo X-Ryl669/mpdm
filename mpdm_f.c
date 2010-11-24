@@ -1530,11 +1530,11 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 #endif
 
         mpdm_unrefnd(r);
-
-        mpdm_unref(fn);
 	}
 	else
 		store_syserr();
+
+    mpdm_unref(fn);
 
 #endif				/* CONFOPT_SYS_STAT_H */
 
