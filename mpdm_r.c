@@ -438,9 +438,10 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
 					else
 					/* is s a hash? use match as key */
 					if (MPDM_IS_HASH(s)) {
-						mpdm_t v = mpdm_hget(s, t);
+						mpdm_t v;
 
 	                    mpdm_ref(t);
+						v = mpdm_hget(s, t);
 
 						/* is the value executable? */
 						if (MPDM_IS_EXEC(v)) {
