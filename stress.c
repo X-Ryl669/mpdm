@@ -198,9 +198,11 @@ void test_basic(void)
 	do_test("Two NULLs are equal", mpdm_cmp(NULL, NULL) == 0);
 
 	v = MPDM_LS(L"hahaha");
+    mpdm_ref(v);
 	do_test("mpdm_cmp_s 1", mpdm_cmp_s(v, L"hahaha") == 0);
 	do_test("mpdm_cmp_s 2", mpdm_cmp_s(v, L"aahaha") > 0);
 	do_test("mpdm_cmp_s 3", mpdm_cmp_s(v, L"zahaha") < 0);
+    mpdm_unref(v);
 }
 
 mpdm_t sort_cb(mpdm_t args)
@@ -313,8 +315,10 @@ void test_array(void)
 	do_test("negative offsets in arrays 3", mpdm_ival(v) == 888);
 
 	v = MPDM_A(0);
+    mpdm_ref(v);
 	mpdm_push(v, MPDM_I(100));
 	mpdm_pop(v);
+    mpdm_unref(v);
 
     mpdm_unref(a);
 
@@ -524,6 +528,7 @@ void test_strcat(void)
 	mpdm_t w;
 
 	w = MPDM_LS(L"something");
+    mpdm_ref(w);
 
 	v = mpdm_strcat(NULL, NULL);
 	do_test("mpdm_strcat(NULL, NULL) returns NULL", v == NULL);
@@ -533,8 +538,10 @@ void test_strcat(void)
 
 	v = mpdm_strcat(w, NULL);
 	do_test("mpdm_strcat(w, NULL) returns w", mpdm_cmp(v, w) == 0);
+    mpdm_unref(w);
 
 	w = MPDM_LS(L"");
+    mpdm_ref(w);
 	v = mpdm_strcat(NULL, w);
 	do_test("mpdm_strcat(NULL, \"\") returns \"\"", mpdm_cmp(v, w) == 0);
 
@@ -544,6 +551,7 @@ void test_strcat(void)
 	v = mpdm_strcat(w, w);
 	do_test("mpdm_strcat(\"\", \"\") returns \"\"", mpdm_cmp(v, w) == 0);
 
+    mpdm_unref(w);
 }
 
 
@@ -660,6 +668,8 @@ void test_file(void)
 	mpdm_t v;
 	mpdm_t eol = MPDM_LS(L"\n");
 
+    mpdm_ref(eol);
+
 	f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"));
 
 	if (f == NULL) {
@@ -699,6 +709,8 @@ void test_file(void)
 	printf("Glob:\n");
 	v = mpdm_glob(NULL, NULL);
 	mpdm_dump(v);
+
+    mpdm_unref(eol);
 }
 
 
@@ -723,10 +735,12 @@ void test_regex(void)
 	do_test("regex 4", v == NULL);
 
 	w = MPDM_LS(L"Hell street, 666");
+    mpdm_ref(w);
 	v = mpdm_regex(MPDM_LS(L"/[0-9]+/"), w, 0);
-	do_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
 
 	mpdm_dump(v);
+
+	do_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
 
 	v = mpdm_regex(MPDM_LS(L"/regex/"), MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
 	do_test("regex 6.1 (case sensitive)", v == NULL);
@@ -1551,7 +1565,7 @@ int main(int argc, char *argv[])
 	printf("sizeof(void *): %d\n", sizeof(void *));
 	printf("sizeof(void (*func)(void)): %d\n", sizeof(func));
 
-    test_counter();
+/*    test_counter();*/
 	test_basic();
 	test_array();
 	test_hash();
