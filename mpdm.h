@@ -29,7 +29,6 @@ enum {
     _MPDM_STRING,
     _MPDM_MULTIPLE,
     _MPDM_FREE,
-    _MPDM_DELETED,
     _MPDM_IVAL,
     _MPDM_RVAL,
     _MPDM_HASH,
@@ -45,7 +44,6 @@ enum {
     MPDM_STRING     = (1<<_MPDM_STRING),    /* data can be string-compared */
     MPDM_MULTIPLE   = (1<<_MPDM_MULTIPLE),  /* data is multiple */
     MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
-    MPDM_DELETED    = (1<<_MPDM_DELETED),   /* value is deleted */
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
@@ -62,27 +60,22 @@ typedef struct mpdm_val *mpdm_t;
 
 /* a value */
 struct mpdm_val {
-	int flags;		/* value flags */
-	int ref;		/* reference count */
-	int size;		/* data size */
-	int ival;		/* cached integer value */
-	double rval;		/* cache real value */
-	const void *data;	/* the real data */
-	mpdm_t next;		/* next in chain */
+    int flags;          /* value flags */
+    int ref;            /* reference count */
+    int size;           /* data size */
+    int ival;           /* cached integer value */
+    double rval;        /* cache real value */
+    const void *data;   /* the real data */
+    mpdm_t next;        /* next in chain */
 };
 
 
 /* the main control structure */
 struct mpdm_control {
-	mpdm_t root;		/* the root hash */
-	mpdm_t cur;		/* current value (circular list) */
-	mpdm_t del;		/* list of deleted values */
-
-	int count;		/* total count of values */
-	int low_threshold;	/* minimum number of values to start sweeping */
-	int default_sweep;	/* default swept values on mpdm_sweep(0) */
-	int memory_usage;	/* approximate total memory used */
-	int hash_buckets;	/* default hash buckets */
+    mpdm_t root;        /* the root hash */
+    mpdm_t del;         /* list of deleted values */
+    int count;          /* total count of values */
+    int hash_buckets;   /* default hash buckets */
 };
 
 extern struct mpdm_control *mpdm;
@@ -91,7 +84,6 @@ mpdm_t mpdm_new(int flags, const void *data, int size);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 mpdm_t mpdm_unrefnd(mpdm_t v);
-int mpdm_destroy(mpdm_t v);
 void mpdm_sweep(int count);
 
 int mpdm_size(const mpdm_t v);
@@ -218,33 +210,32 @@ mpdm_t mpdm_app_dir(void);
 
 /* value type testing macros */
 
-#define MPDM_IS_ARRAY(v)  ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
-#define MPDM_IS_HASH(v)   ((v != NULL) && ((v)->flags) & MPDM_HASH)
-#define MPDM_IS_EXEC(v)   ((v != NULL) && ((v)->flags) & MPDM_EXEC)
-#define MPDM_IS_STRING(v) ((v != NULL) && ((v)->flags) & MPDM_STRING)
+#define MPDM_IS_ARRAY(v)    ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
+#define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
+#define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
+#define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
 
 /* value creation utility macros */
 
-#define MPDM_A(n)	mpdm_new_a(0,n)
-#define MPDM_H(n)	mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
-#define MPDM_LS(s)	mpdm_new_wcs(0, s, -1, 0)
-#define MPDM_S(s)	mpdm_new_wcs(0, s, -1, 1)
-#define MPDM_NS(s,n)	mpdm_new_wcs(0, s, n, 1)
-#define MPDM_ENS(s,n)	mpdm_new(MPDM_STRING|MPDM_FREE, s, n)
+#define MPDM_A(n)       mpdm_new_a(0,n)
+#define MPDM_H(n)       mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
+#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 0)
+#define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
+#define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
+#define MPDM_ENS(s,n)   mpdm_new(MPDM_STRING|MPDM_FREE, s, n)
+#define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
 
-#define MPDM_I(i)	mpdm_new_i((i))
-#define MPDM_R(r)	mpdm_new_r((r))
-#define MPDM_P(p)	mpdm_new(0,(void *)p, 0, NULL)
-#define MPDM_MBS(s)	mpdm_new_mbstowcs(0, s, -1)
-#define MPDM_NMBS(s,n)	mpdm_new_mbstowcs(0, s, n)
-#define MPDM_2MBS(s)	mpdm_new_wcstombs(0, s)
+#define MPDM_I(i)       mpdm_new_i((i))
+#define MPDM_R(r)       mpdm_new_r((r))
+#define MPDM_P(p)       mpdm_new(0,(void *)p, 0, NULL)
+#define MPDM_MBS(s)     mpdm_new_mbstowcs(0, s, -1)
+#define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(0, s, n)
+#define MPDM_2MBS(s)    mpdm_new_wcstombs(0, s)
 
-#define MPDM_X(f)	mpdm_new(MPDM_EXEC, (const void *)f, 0)
-#define MPDM_X2(f,b)	mpdm_xnew(f,b)
+#define MPDM_X(f)       mpdm_new(MPDM_EXEC, (const void *)f, 0)
+#define MPDM_X2(f,b)    mpdm_xnew(f,b)
 
-#define MPDM_F(f)	mpdm_new_f(f)
-
-#define MPDM_C(f,p,s) mpdm_new_copy(f,p,s)
+#define MPDM_F(f)       mpdm_new_f(f)
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);

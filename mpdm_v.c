@@ -32,8 +32,6 @@
 
 #include "mpdm.h"
 
-#define DESTROY_ON_UNREF
-
 
 /** data **/
 
@@ -53,48 +51,11 @@ static void cleanup_value(mpdm_t v)
 
 	/* free data if needed */
 	if (v->data != NULL && v->flags & MPDM_FREE) {
-		mpdm->memory_usage -= v->size;
 		free((void *)v->data);
 		v->data = NULL;
 	}
-}
 
-
-int mpdm_destroy(mpdm_t v)
-/* destroys a value */
-{
-	int ret = 0;
-	mpdm_t w;
-
-	if (v->ref == 0 && !(v->flags & MPDM_DELETED)) {
-		cleanup_value(v);
-
-		/* mark as deleted */
-		v->flags |= MPDM_DELETED;
-
-		ret = 1;
-	}
-
-	/* try to dequeue next one */
-	w = v->next;
-
-	if (w && w->flags & MPDM_DELETED) {
-		/* dequeue */
-		v->next = w->next;
-
-		/* if it's the current one, move to next */
-		if (mpdm->cur == w)
-			mpdm->cur = w->next;
-
-		/* account one value less */
-		mpdm->count--;
-
-		/* add to the deleted values queue */
-		w->next = mpdm->del;
-		mpdm->del = w;
-	}
-
-	return ret;
+    free(v);
 }
 
 
@@ -118,28 +79,11 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
 	mpdm_t v = NULL;
 
 	/* alloc */
-	if ((v = mpdm->del) != NULL)
-		mpdm->del = v->next;
-	else
 	if ((v = malloc(sizeof(struct mpdm_val))) == NULL)
 		return NULL;
 
-	/* add to the circular list */
-	if (mpdm->cur == NULL)
-		v->next = v;
-	else {
-		v->next = mpdm->cur->next;
-		mpdm->cur->next = v;
-	}
-
-	mpdm->cur = v->next;
-
 	/* account one value more */
 	mpdm->count++;
-
-	/* count memory if data is dynamic */
-	if (flags & MPDM_FREE)
-		mpdm->memory_usage += size;
 
 	v->flags = flags;
 	v->ref = 0;
@@ -177,12 +121,10 @@ mpdm_t mpdm_unref(mpdm_t v)
 	if (v != NULL) {
 		v->ref--;
 
-#ifdef DESTROY_ON_UNREF
 		if (v->ref <= 0) {
-			mpdm_destroy(v);
+			cleanup_value(v);
 			v = NULL;
 		}
-#endif
 	}
 
 	return v;
@@ -218,22 +160,6 @@ mpdm_t mpdm_unrefnd(mpdm_t v)
  */
 void mpdm_sweep(int count)
 {
-	/* if count is zero, sweep 'some' values */
-	if (count == 0) {
-		if (mpdm->default_sweep < 0)
-			count = mpdm->count / -mpdm->default_sweep;
-		else
-			count = mpdm->default_sweep;
-	}
-
-	/* if count is -1, sweep all */
-	if (count == -1)
-		count = mpdm->count;
-
-	for (; count > 0 && mpdm->count > mpdm->low_threshold; count--) {
-		mpdm_destroy(mpdm->cur);
-		mpdm->cur = mpdm->cur->next;
-	}
 }
 
 
@@ -246,11 +172,13 @@ void mpdm_sweep(int count)
  */
 int mpdm_size(const mpdm_t v)
 {
-	/* NULL values have no size */
-	if (v == NULL)
-		return 0;
+    int r = 0;
 
-	return v->size;
+	/* NULL values have no size */
+	if (v != NULL)
+		r = v->size;
+
+	return r;
 }
 
 
@@ -341,10 +269,11 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
 	mpdm_t r = NULL;
 
+	mpdm_ref(c);
+	mpdm_ref(args);
+	mpdm_ref(ctxt);
+
 	if (c != NULL && (c->flags & MPDM_EXEC)) {
-		mpdm_ref(c);
-		mpdm_ref(args);
-		mpdm_ref(ctxt);
 
 		if (c->flags & MPDM_MULTIPLE) {
 			mpdm_t x;
@@ -367,11 +296,11 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 			if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
 				r = func(args, ctxt);
 		}
+    }
 
-		mpdm_unref(ctxt);
-		mpdm_unref(args);
-		mpdm_unref(c);
-	}
+	mpdm_unref(ctxt);
+	mpdm_unref(args);
+	mpdm_unref(c);
 
 	return r;
 }
@@ -385,7 +314,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
     mpdm_ref(a);
 	mpdm_aset(a, a1, 0);
 
-	r= mpdm_exec(c, a, ctxt);
+	r = mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -465,7 +394,6 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
 /* accesor / mutator for MPDM internal data */
 {
 	mpdm_t v;
-	int n, c = 0, d = 0;
 
     mpdm_ref(args);
 
@@ -475,25 +403,8 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
 		mpdm_t w;
 
 		/* do changes */
-		if ((w = mpdm_hget_s(v, L"low_threshold")) != NULL && mpdm_ival(w) > 0)
-			mpdm->low_threshold = mpdm_ival(w);
-
-		if ((w = mpdm_hget_s(v, L"default_sweep")) != NULL)
-			mpdm->default_sweep = mpdm_ival(w);
-
 		if ((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
 			mpdm->hash_buckets = mpdm_ival(w);
-	}
-
-	/* loop all values counting the unreferenced and deleted ones */
-	for (n = mpdm->count, v = mpdm->cur; n > 0; n--, v = v->next) {
-		if (v->ref)
-			continue;
-
-		if (v->flags & MPDM_DELETED)
-			d++;
-		else
-			c++;
 	}
 
 	/* now collect all information */
@@ -501,18 +412,10 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
 
     mpdm_ref(v);
 
-	mpdm_hset_s(v, L"version", MPDM_MBS(VERSION));
-	mpdm_hset_s(v, L"count", MPDM_I(mpdm->count));
-	mpdm_hset_s(v, L"low_threshold", MPDM_I(mpdm->low_threshold));
-	mpdm_hset_s(v, L"default_sweep", MPDM_I(mpdm->default_sweep));
-	mpdm_hset_s(v, L"memory_usage", MPDM_I(mpdm->memory_usage));
-	mpdm_hset_s(v, L"hash_buckets", MPDM_I(mpdm->hash_buckets));
-	mpdm_hset_s(v, L"unreferenced", MPDM_I(c));
-	mpdm_hset_s(v, L"deleted", MPDM_I(d));
-
-#ifdef DESTROY_ON_UNREF
-	mpdm_hset_s(v, L"destroy_on_unref",MPDM_I(1));
-#endif
+	mpdm_hset_s(v, L"version",             MPDM_MBS(VERSION));
+	mpdm_hset_s(v, L"count",               MPDM_I(mpdm->count));
+	mpdm_hset_s(v, L"hash_buckets",        MPDM_I(mpdm->hash_buckets));
+	mpdm_hset_s(v, L"destroy_on_unref",    MPDM_I(1));
 
     mpdm_unref(args);
 
@@ -568,8 +471,6 @@ int mpdm_startup(void)
 		memset(mpdm, '\0', sizeof(struct mpdm_control));
 
 		/* sets the defaults */
-		mpdm->low_threshold = 16;
-		mpdm->default_sweep = -50000;
 		mpdm->hash_buckets = 31;
 
 		/* sets the locale */
