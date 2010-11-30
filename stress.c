@@ -416,8 +416,10 @@ void test_hash(void)
 	v = MPDM_H(0);
 	mpdm_hset(h, v, MPDM_I(9876));
 	v = MPDM_A(0);
+	mpdm_ref(v);
 	mpdm_hset(h, v, MPDM_I(6543));
 	i = mpdm_ival(mpdm_hget(h, v));
+	mpdm_unref(v);
 
 	mpdm_dump(h);
 	do_test("hash: using non-strings as hash keys", (i == 6543));
