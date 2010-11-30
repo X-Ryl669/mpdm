@@ -103,18 +103,8 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
     		*flags = '\0';
 
     		if (!regcomp(&re, regex, f)) {
-    			void *ptr;
-
-    			if ((ptr = malloc(sizeof(regex_t))) != NULL) {
-    				/* copies */
-    				memcpy(ptr, &re, sizeof(regex_t));
-
-    				/* create value */
-    				c = mpdm_new(MPDM_FREE | MPDM_REGEX, ptr, sizeof(regex_t));
-
-    				/* stores */
-    				mpdm_hset(regex_cache, r, c);
-    			}
+                c = MPDM_C(MPDM_REGEX, &re, sizeof(regex_t));
+   				mpdm_hset(regex_cache, r, c);
     		}
     	}
 

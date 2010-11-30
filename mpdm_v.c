@@ -446,6 +446,21 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2)
 }
 
 
+mpdm_t mpdm_new_copy(int flags, void *ptr, int size)
+{
+	mpdm_t r = NULL;
+
+	if (ptr != NULL) {
+		char *ptr2 = malloc(size);
+		memcpy(ptr2, ptr, size);
+
+		r = mpdm_new(MPDM_FREE | flags, ptr2, size);
+	}
+
+	return r;
+}
+
+
 static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
 /* accesor / mutator for MPDM internal data */
 {
@@ -730,6 +745,19 @@ void mpdm_shutdown(void)
  * [Value Creation]
  */
 /** mpdm_t MPDM_X(mpdm_t (* func)(mpdm_t args)); */
+/* ; */
+
+/**
+ * MPDM_C - Creates a new value with a copy of a buffer.
+ * @flags: additional flags
+ * @ptr: pointer to data
+ * @size: data size
+ *
+ * Create a new value with a copy of a buffer. The value will store a copy
+ * of @ptr and have the additional @flags.
+ * [Value Creation]
+ */
+/** mpdm_t MPDM_C(int flags, void *ptr, int size); */
 /* ; */
 
 /**

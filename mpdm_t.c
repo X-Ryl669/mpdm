@@ -48,21 +48,6 @@
 
 /** code **/
 
-static mpdm_t t_new_val(int flags, void *ptr, int size)
-{
-	mpdm_t r = NULL;
-
-	if (ptr != NULL) {
-		char *ptr2 = malloc(size);
-		memcpy(ptr2, ptr, size);
-
-		r = mpdm_new(MPDM_FREE | flags, ptr2, size);
-	}
-
-	return r;
-}
-
-
 /**
  * mpdm_sleep - Sleeps a number of milliseconds.
  * @msecs: the milliseconds to sleep
@@ -124,7 +109,7 @@ mpdm_t mpdm_new_mutex(void)
 
 #endif
 
-	r = t_new_val(0, ptr, size);
+	r = MPDM_C(0, ptr, size);
 
     return r;
 }
@@ -212,7 +197,7 @@ mpdm_t mpdm_new_sem(int init_value)
 
 #endif
 
-    return t_new_val(0, ptr, size);
+    return MPDM_C(0, ptr, size);
 }
 
 
@@ -349,7 +334,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 #endif
 
-	r = t_new_val(0, ptr, size);
+	r = MPDM_C(0, ptr, size);
 
 	return r;
 }

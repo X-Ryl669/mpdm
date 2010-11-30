@@ -152,6 +152,7 @@ mpdm_t mpdm_set_ival(mpdm_t v, int ival);
 mpdm_t mpdm_set_rval(mpdm_t v, double rval);
 
 mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2);
+mpdm_t mpdm_new_copy(int flags, void *ptr, int size);
 
 int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
@@ -236,6 +237,8 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_X2(f,b)	mpdm_xnew(f,b)
 
 #define MPDM_F(f)	mpdm_new_f(f)
+
+#define MPDM_C(f,p,s) mpdm_new_copy(f,p,s)
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
