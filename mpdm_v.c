@@ -55,6 +55,8 @@ static void cleanup_value(mpdm_t v)
 		v->data = NULL;
 	}
 
+    mpdm->count--;
+
     free(v);
 }
 
