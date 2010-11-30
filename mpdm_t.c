@@ -109,7 +109,7 @@ mpdm_t mpdm_new_mutex(void)
 
 #endif
 
-	r = MPDM_C(0, ptr, size);
+	r = MPDM_C(MPDM_MUTEX, ptr, size);
 
     return r;
 }
@@ -197,7 +197,7 @@ mpdm_t mpdm_new_sem(int init_value)
 
 #endif
 
-    return MPDM_C(0, ptr, size);
+    return MPDM_C(MPDM_SEMAPHORE, ptr, size);
 }
 
 
@@ -334,7 +334,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 #endif
 
-	r = MPDM_C(0, ptr, size);
+	r = MPDM_C(MPDM_THREAD, ptr, size);
 
 	return r;
 }

@@ -35,7 +35,10 @@ enum {
     _MPDM_HASH,
     _MPDM_FILE,
     _MPDM_EXEC,
-	_MPDM_REGEX
+	_MPDM_REGEX,
+    _MPDM_MUTEX,
+    _MPDM_SEMAPHORE,
+    _MPDM_THREAD
 };
 
 enum {
@@ -48,7 +51,10 @@ enum {
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
     MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a FILE * */
     MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
-    MPDM_REGEX      = (1<<_MPDM_REGEX)      /* data is a compiled regex */
+    MPDM_REGEX      = (1<<_MPDM_REGEX),     /* data is a compiled regex */
+    MPDM_MUTEX      = (1<<_MPDM_MUTEX),     /* data is a mutex */
+    MPDM_SEMAPHORE  = (1<<_MPDM_SEMAPHORE), /* data is a semaphore */
+    MPDM_THREAD     = (1<<_MPDM_THREAD)     /* data is a thread handle */
 };
 
 /* mpdm values */
