@@ -84,7 +84,6 @@ void mpdm_sleep(int msecs)
  */
 mpdm_t mpdm_new_mutex(void)
 {
-	mpdm_t r = NULL;
 	char *ptr = NULL;
 	int size = 0;
 
@@ -109,9 +108,7 @@ mpdm_t mpdm_new_mutex(void)
 
 #endif
 
-	r = MPDM_C(MPDM_MUTEX, ptr, size);
-
-    return r;
+	return MPDM_C(MPDM_MUTEX, ptr, size);
 }
 
 
@@ -172,7 +169,7 @@ void mpdm_mutex_unlock(mpdm_t mutex)
  * Creates a new semaphore with an @init_value.
  * [Threading]
  */
-mpdm_t mpdm_new_sem(int init_value)
+mpdm_t mpdm_new_semaphore(int init_value)
 {
     char *ptr = NULL;
     int size = 0;
@@ -202,14 +199,14 @@ mpdm_t mpdm_new_sem(int init_value)
 
 
 /**
- * mpdm_sem_wait - Waits for a semaphore to be ready.
+ * mpdm_semaphore_wait - Waits for a semaphore to be ready.
  * @sem: the semaphore to wait onto
  *
  * Waits for the value of a semaphore to be > 0. If it's
  * not, the thread waits until it is.
  * [Threading]
  */
-void mpdm_sem_wait(mpdm_t sem)
+void mpdm_semaphore_wait(mpdm_t sem)
 {
 #ifdef CONFOPT_WIN32
 	HANDLE *h = (HANDLE *)sem->data;
@@ -226,13 +223,13 @@ void mpdm_sem_wait(mpdm_t sem)
 
 
 /**
- * mpdm_sem_post - Increments the value of a semaphore.
+ * mpdm_semaphore_post - Increments the value of a semaphore.
  * @sem: the semaphore to increment
  *
  * Increments by 1 the value of a semaphore.
  * [Threading]
  */
-void mpdm_sem_post(mpdm_t sem)
+void mpdm_semaphore_post(mpdm_t sem)
 {
 #ifdef CONFOPT_WIN32
 	HANDLE *h = (HANDLE *)sem->data;
@@ -298,7 +295,6 @@ void *pthreads_thread(void *args)
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
 	mpdm_t a;
-	mpdm_t r = NULL;
 	char *ptr = NULL;
 	int size = 0;
 
@@ -334,7 +330,5 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 #endif
 
-	r = MPDM_C(MPDM_THREAD, ptr, size);
-
-	return r;
+	return MPDM_C(MPDM_THREAD, ptr, size);
 }

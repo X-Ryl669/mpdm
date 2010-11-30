@@ -1495,7 +1495,7 @@ mpdm_t sem_thread(mpdm_t args, mpdm_t ctxt)
 {
     printf("thread: waiting for semaphore...\n");
 
-    mpdm_sem_wait(sem);
+    mpdm_semaphore_wait(sem);
 
     printf("thread: got semaphore.\n");
 
@@ -1513,7 +1513,7 @@ void test_sem(void)
 	x = mpdm_ref(MPDM_X(sem_thread));
 
     /* creates the semaphore */
-    sem = mpdm_ref(mpdm_new_sem(0));
+    sem = mpdm_ref(mpdm_new_semaphore(0));
 
     printf("parent: launching thread.\n");
 
@@ -1524,7 +1524,7 @@ void test_sem(void)
 
     printf("parent: posting semaphore.\n");
 
-    mpdm_sem_post(sem);
+    mpdm_semaphore_post(sem);
 
     mpdm_sleep(10);
 
