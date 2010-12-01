@@ -115,7 +115,8 @@ mpdm_t mpdm_ref(mpdm_t v)
  * mpdm_unref - Decrements the reference count of a value.
  * @v: the value
  *
- * Decrements the reference count of a value.
+ * Decrements the reference count of a value. If the reference
+ * count of the value reaches 0, it's destroyed.
  * [Value Management]
  */
 mpdm_t mpdm_unref(mpdm_t v)
@@ -153,7 +154,8 @@ mpdm_t mpdm_unrefnd(mpdm_t v)
  * mpdm_size - Returns the size of an element.
  * @v: the element
  *
- * Returns the size of an element.
+ * Returns the size of an element. It does not change the
+ * reference count of the value.
  * [Value Management]
  */
 int mpdm_size(const mpdm_t v)
@@ -210,6 +212,14 @@ mpdm_t mpdm_root(void)
 }
 
 
+/**
+ * mpdm_set_ival - Sets the integer value
+ * @v: the value
+ * @ival: the integer
+ *
+ * Sets the integer value for @v. It does not change
+ * the reference count of @v.
+ */
 mpdm_t mpdm_set_ival(mpdm_t v, int ival)
 /* sets an integer value to a value */
 {
@@ -220,6 +230,14 @@ mpdm_t mpdm_set_ival(mpdm_t v, int ival)
 }
 
 
+/**
+ * mpdm_set_rval - Sets the real value
+ * @v: the value
+ * @rval: the real
+ *
+ * Sets the real value for @v. It does not change
+ * the reference count of @v.
+ */
 mpdm_t mpdm_set_rval(mpdm_t v, double rval)
 /* sets a real value to a value */
 {
