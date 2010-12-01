@@ -213,7 +213,7 @@ mpdm_t mpdm_root(void)
 
 
 /**
- * mpdm_set_ival - Sets the integer value
+ * mpdm_set_ival - Sets the integer value.
  * @v: the value
  * @ival: the integer
  *
@@ -231,7 +231,7 @@ mpdm_t mpdm_set_ival(mpdm_t v, int ival)
 
 
 /**
- * mpdm_set_rval - Sets the real value
+ * mpdm_set_rval - Sets the real value.
  * @v: the value
  * @rval: the real
  *
@@ -245,6 +245,39 @@ mpdm_t mpdm_set_rval(mpdm_t v, double rval)
 	v->rval = rval;
 
 	return v;
+}
+
+
+/**
+ * mpdm_void - Refs then unrefs a value.
+ * @v: the value
+ *
+ * References and unreferences a value. To be used to receive
+ * the output of mpdm_exec() in case of it being void (i.e.
+ * its return value ignored).
+ */
+void mpdm_void(mpdm_t v)
+{
+	mpdm_ref(v);
+	mpdm_unref(v);
+}
+
+
+/**
+ * mpdm_is_null - Returns 1 if a value is NULL.
+ * @v: the value
+ *
+ * Returns 1 if a value is NULL. The reference count is touched.
+ */
+int mpdm_is_null(mpdm_t v)
+{
+	int r;
+
+	mpdm_ref(v);
+	r = v == NULL ? 1 : 0;
+	mpdm_unref(v);
+
+	return r;
 }
 
 

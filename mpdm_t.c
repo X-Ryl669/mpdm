@@ -250,11 +250,7 @@ void mpdm_semaphore_post(mpdm_t sem)
 static void thread_caller(mpdm_t a)
 {
 	/* ignore return value */
-	mpdm_unref(
-        mpdm_ref(
-            mpdm_exec(mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2))
-        )
-    );
+	mpdm_void(mpdm_exec(mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2)));
 
 	/* was referenced in mpdm_exec_thread() */
 	mpdm_unref(a);
