@@ -162,13 +162,3 @@ void mpdm_dump(const mpdm_t v)
 
 	mpdm_unrefnd(v);
 }
-
-
-/**
- * mpdm_dump_unref - Dumps all unreferenced values.
- *
- * Dumps all unreferenced values.
- */
-void mpdm_dump_unref(void)
-{
-}

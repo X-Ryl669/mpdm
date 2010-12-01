@@ -164,7 +164,6 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2);
 extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size);
 mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
-void mpdm_dump_unref(void);
 
 #define MPDM_SGET(r, k) mpdm_sget((r), MPDM_LS((k)))
 #define MPDM_SSET(r, k, v) mpdm_sset((r), MPDM_LS((k)), (v))
