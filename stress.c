@@ -659,8 +659,6 @@ void test_sym(void)
 	i = mpdm_ival(v);
 
 	do_test("auto_indent == 16384", (i == 16384));
-
-	mpdm_sweep(-1);
 }
 
 
@@ -1186,7 +1184,6 @@ void bench_hash(int i, mpdm_t l, int buckets)
 	for(n=0;n < mpdm_size(h);n++)
 		printf("\t%d: %d\n", n, mpdm_size(mpdm_aget(h, n)));
 */
-	mpdm_sweep(-1);
 }
 
 
@@ -1591,20 +1588,6 @@ int main(int argc, char *argv[])
     test_sem();
 
 	benchmark();
-
-/*	mpdm_dump_unref();*/
-
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-	mpdm_sweep(-1);
-
-/*	mpdm_dump_unref();*/
 
 	mpdm_shutdown();
 

@@ -150,22 +150,6 @@ mpdm_t mpdm_unrefnd(mpdm_t v)
 
 
 /**
- * mpdm_sweep - Sweeps unreferenced values.
- * @count: number of values to be swept
- *
- * Destroys values with a reference count of 0. @count is the
- * number of values to be checked for deletion; special values of
- * @count are -1, that forces a check of all currently known values
- * (can be time-consuming) and 0, which tells mpdm_sweep() to check a
- * small group of them on each call.
- * [Value Management]
- */
-void mpdm_sweep(int count)
-{
-}
-
-
-/**
  * mpdm_size - Returns the size of an element.
  * @v: the element
  *
