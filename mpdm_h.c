@@ -101,37 +101,6 @@ int mpdm_hsize(const mpdm_t h)
 }
 
 
-static mpdm_t hget(const mpdm_t h, const mpdm_t k, const wchar_t *ks)
-{
-	mpdm_t b;
-	mpdm_t v = NULL;
-	int n = 0;
-
-    mpdm_ref(h);
-    mpdm_ref(k);
-
-	if (mpdm_size(h)) {
-		/* if hash is not empty... */
-		if (ks) {
-			if ((b = mpdm_aget(h, HASH_BUCKET_S(h, ks))) != NULL)
-				n = mpdm_bseek_s(b, ks, 2, NULL);
-		}
-		else {
-			if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
-				n = mpdm_bseek(b, k, 2, NULL);
-		}
-
-		if (n >= 0)
-			v = mpdm_aget(b, n + 1);
-	}
-
-    mpdm_unref(k);
-    mpdm_unref(h);
-
-	return v;
-}
-
-
 /**
  * mpdm_hget - Gets a value from a hash.
  * @h: the hash
@@ -143,7 +112,26 @@ static mpdm_t hget(const mpdm_t h, const mpdm_t k, const wchar_t *ks)
  */
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
 {
-	return hget(h, k, NULL);
+	mpdm_t b;
+	mpdm_t v = NULL;
+	int n = 0;
+
+    mpdm_ref(h);
+    mpdm_ref(k);
+
+	if (mpdm_size(h)) {
+		/* if hash is not empty... */
+		if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
+			n = mpdm_bseek(b, k, 2, NULL);
+
+		if (n >= 0)
+			v = mpdm_aget(b, n + 1);
+	}
+
+    mpdm_unref(k);
+    mpdm_unref(h);
+
+	return v;
 }
 
 
@@ -158,7 +146,7 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
 {
-	return hget(h, NULL, k);
+	return mpdm_hget(h, MPDM_S(k));
 }
 
 
