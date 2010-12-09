@@ -183,59 +183,6 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
 }
 
 
-static mpdm_t hset(mpdm_t h, mpdm_t k, const wchar_t *ks, mpdm_t v)
-{
-	mpdm_t b, r;
-	int n;
-
-    mpdm_ref(h);
-    mpdm_ref(k);
-    mpdm_ref(v);
-
-	/* if hash is empty, create an optimal number of buckets */
-	if (mpdm_size(h) == 0)
-		mpdm_expand(h, 0, mpdm->hash_buckets);
-
-	n = ks ? HASH_BUCKET_S(h, ks) : HASH_BUCKET(h, k);
-
-	if ((b = mpdm_aget(h, n)) != NULL) {
-		int pos;
-
-		/* bucket exists; try to find the key there */
-		n = ks ? mpdm_bseek_s(b, ks, 2, &pos) : mpdm_bseek(b, k, 2, &pos);
-
-		if (n < 0) {
-			/* the pair does not exist: create it */
-			n = pos;
-			mpdm_expand(b, n, 2);
-
-			mpdm_aset(b, ks ? MPDM_S(ks) : k, n);
-		}
-	}
-	else {
-		/* the bucket does not exist; create it */
-		b = MPDM_A(2);
-
-		/* put the bucket into the hash */
-		mpdm_aset(h, b, n);
-
-		/* offset 0 */
-		n = 0;
-
-		/* insert the key */
-		mpdm_aset(b, ks ? MPDM_S(ks) : k, n);
-	}
-
-	r = mpdm_aset(b, v, n + 1);
-
-    mpdm_unref(v);
-    mpdm_unref(k);
-    mpdm_unref(h);
-
-    return r;
-}
-
-
 /**
  * mpdm_hset - Sets a value in a hash.
  * @h: the hash
@@ -249,7 +196,54 @@ static mpdm_t hset(mpdm_t h, mpdm_t k, const wchar_t *ks, mpdm_t v)
  */
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 {
-	return hset(h, k, NULL, v);
+	mpdm_t b, r;
+	int n;
+
+    mpdm_ref(h);
+    mpdm_ref(k);
+    mpdm_ref(v);
+
+	/* if hash is empty, create an optimal number of buckets */
+	if (mpdm_size(h) == 0)
+		mpdm_expand(h, 0, mpdm->hash_buckets);
+
+	n = HASH_BUCKET(h, k);
+
+	if ((b = mpdm_aget(h, n)) != NULL) {
+		int pos;
+
+		/* bucket exists; try to find the key there */
+		n = mpdm_bseek(b, k, 2, &pos);
+
+		if (n < 0) {
+			/* the pair does not exist: create it */
+			n = pos;
+			mpdm_expand(b, n, 2);
+
+			mpdm_aset(b, k, n);
+		}
+	}
+	else {
+		/* the bucket does not exist; create it */
+		b = MPDM_A(2);
+
+		/* put the bucket into the hash */
+		mpdm_aset(h, b, n);
+
+		/* offset 0 */
+		n = 0;
+
+		/* insert the key */
+		mpdm_aset(b, k, n);
+	}
+
+	r = mpdm_aset(b, v, n + 1);
+
+    mpdm_unref(v);
+    mpdm_unref(k);
+    mpdm_unref(h);
+
+    return r;
 }
 
 
@@ -266,7 +260,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  */
 mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
 {
-	return hset(h, NULL, k, v);
+	return mpdm_hset(h, MPDM_S(k), v);
 }
 
 
