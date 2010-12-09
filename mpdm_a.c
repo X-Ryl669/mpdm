@@ -465,7 +465,24 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
 }
 
 
-static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, int *pos)
+/**
+ * mpdm_bseek - Seeks a value in an array (binary).
+ * @a: the ordered array
+ * @k: the key
+ * @step: number of elements to step
+ * @pos: the position where the element should be, if it's not found
+ *
+ * Seeks the value @k in the @a array in increments of @step.
+ * The array should be sorted to work correctly. A complete search
+ * should use a step of 1.
+ *
+ * If the element is found, returns the offset of the element
+ * as a positive number; otherwise, -1 is returned and the position
+ * where the element should be is stored in @pos. You can set @pos
+ * to NULL if you don't mind.
+ * [Arrays]
+ */
+int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 {
 	int b, t, n, c, o;
 
@@ -488,7 +505,7 @@ static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, in
 		if ((v = mpdm_aget(a, n * step)) == NULL)
 			break;
 
-		c = ks ? mpdm_cmp_s(v, ks) : mpdm_cmp(v, k);
+		c = mpdm_cmp(v, k);
 
 		if (c == 0)
 			o = n * step;
@@ -506,29 +523,6 @@ static int bseek(const mpdm_t a, const mpdm_t k, const wchar_t *ks, int step, in
     mpdm_unref(a);
 
 	return o;
-}
-
-
-/**
- * mpdm_bseek - Seeks a value in an array (binary).
- * @a: the ordered array
- * @k: the key
- * @step: number of elements to step
- * @pos: the position where the element should be, if it's not found
- *
- * Seeks the value @k in the @a array in increments of @step.
- * The array should be sorted to work correctly. A complete search
- * should use a step of 1.
- *
- * If the element is found, returns the offset of the element
- * as a positive number; otherwise, -1 is returned and the position
- * where the element should be is stored in @pos. You can set @pos
- * to NULL if you don't mind.
- * [Arrays]
- */
-int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
-{
-	return bseek(a, k, NULL, step, pos);
 }
 
 
@@ -551,7 +545,7 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
  */
 int mpdm_bseek_s(const mpdm_t a, const wchar_t *k, int step, int *pos)
 {
-	return bseek(a, NULL, k, step, pos);
+	return mpdm_bseek(a, MPDM_S(k), step, pos);
 }
 
 
