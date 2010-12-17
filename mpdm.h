@@ -34,7 +34,7 @@ enum {
     _MPDM_HASH,
     _MPDM_FILE,
     _MPDM_EXEC,
-	_MPDM_REGEX,
+    _MPDM_REGEX,
     _MPDM_MUTEX,
     _MPDM_SEMAPHORE,
     _MPDM_THREAD

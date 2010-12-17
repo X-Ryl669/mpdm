@@ -45,66 +45,69 @@
 
 /** code **/
 
-void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize)
+void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org,
+                  int osize, int esize)
 {
-	if (org != NULL && osize) {
-		/* enough room? */
-		if (*offset + osize > *dsize) {
-			/* no; enlarge */
-			*dsize += osize;
+    if (org != NULL && osize) {
+        /* enough room? */
+        if (*offset + osize > *dsize) {
+            /* no; enlarge */
+            *dsize += osize;
 
-			dst = realloc(dst, *dsize * esize);
-		}
+            dst = realloc(dst, *dsize * esize);
+        }
 
-		memcpy((char *)dst + (*offset * esize), org, osize * esize);
-		*offset += osize;
-	}
+        memcpy((char *) dst + (*offset * esize), org, osize * esize);
+        *offset += osize;
+    }
 
-	return dst;
+    return dst;
 }
 
 
-void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
+void *mpdm_poke(void *dst, int *dsize, const void *org, int osize,
+                int esize)
 /* pokes (adds) org into dst, which is a dynamic string, making it grow */
 {
-	int offset = *dsize;
+    int offset = *dsize;
 
-	return mpdm_poke_o(dst, dsize, &offset, org, osize, esize);
+    return mpdm_poke_o(dst, dsize, &offset, org, osize, esize);
 }
 
 
-wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
+wchar_t *mpdm_pokewsn(wchar_t * dst, int *dsize, const wchar_t * str,
+                      int slen)
 /* adds a wide string to dst using mpdm_poke() with size */
 {
-	if (str)
-		dst = mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
+    if (str)
+        dst = mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
 
-	return dst;
+    return dst;
 }
 
 
-wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
+wchar_t *mpdm_pokews(wchar_t * dst, int *dsize, const wchar_t * str)
 /* adds a wide string to dst using mpdm_poke() */
 {
-	if (str)
-		dst = mpdm_pokewsn(dst, dsize, str, wcslen(str));
+    if (str)
+        dst = mpdm_pokewsn(dst, dsize, str, wcslen(str));
 
-	return dst;
+    return dst;
 }
 
 
 wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
-	if (v != NULL) {
-		const wchar_t *ptr = mpdm_string(v);
+    if (v != NULL) {
+        const wchar_t *ptr = mpdm_string(v);
 
-		mpdm_ref(v);
-		dst = mpdm_pokews(dst, dsize, ptr);
-		mpdm_unref(v);
-	}
+        mpdm_ref(v);
+        dst = mpdm_pokews(dst, dsize, ptr);
+        mpdm_unref(v);
+    }
 
-	return dst;
+    return dst;
 }
 
 
@@ -112,77 +115,77 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
-	wchar_t *ptr = NULL;
-	char tmp[64];		/* really MB_CUR_MAX + 1 */
-	wchar_t wc;
-	int n, i, c, t = 0;
-	char *cstr;
+    wchar_t *ptr = NULL;
+    char tmp[64];               /* really MB_CUR_MAX + 1 */
+    wchar_t wc;
+    int n, i, c, t = 0;
+    char *cstr;
 
-	/* allow NULL values for s */
-	if (s == NULL)
-		s = &t;
+    /* allow NULL values for s */
+    if (s == NULL)
+        s = &t;
 
-	/* if there is a limit, duplicate and break the string */
-	if (l >= 0) {
-		cstr = strdup(str);
-		cstr[l] = '\0';
-	}
-	else
-		cstr = (char *) str;
+    /* if there is a limit, duplicate and break the string */
+    if (l >= 0) {
+        cstr = strdup(str);
+        cstr[l] = '\0';
+    }
+    else
+        cstr = (char *) str;
 
-	/* try first a direct conversion with mbstowcs */
-	if ((*s = mbstowcs(NULL, cstr, 0)) != -1) {
-		/* direct conversion is possible; do it */
-		if ((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL) {
-			mbstowcs(ptr, cstr, *s);
-			ptr[*s] = L'\0';
-		}
-	}
-	else {
-		/* zero everything */
-		*s = n = i = 0;
+    /* try first a direct conversion with mbstowcs */
+    if ((*s = mbstowcs(NULL, cstr, 0)) != -1) {
+        /* direct conversion is possible; do it */
+        if ((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL) {
+            mbstowcs(ptr, cstr, *s);
+            ptr[*s] = L'\0';
+        }
+    }
+    else {
+        /* zero everything */
+        *s = n = i = 0;
 
-		for (;;) {
-			/* no more characters to process? */
-			if ((c = cstr[n + i]) == '\0' && i == 0)
-				break;
+        for (;;) {
+            /* no more characters to process? */
+            if ((c = cstr[n + i]) == '\0' && i == 0)
+                break;
 
-			tmp[i++] = c;
-			tmp[i] = '\0';
+            tmp[i++] = c;
+            tmp[i] = '\0';
 
-			/* try to convert */
-			if (mbstowcs(&wc, tmp, 1) == (size_t) -1) {
-				/* can still be an incomplete multibyte char? */
-				if (c != '\0' && i <= (int) MB_CUR_MAX)
-					continue;
-				else {
-					/* too many failing bytes; skip 1 byte */
-					wc = L'?';
-					i = 1;
-				}
-			}
+            /* try to convert */
+            if (mbstowcs(&wc, tmp, 1) == (size_t) - 1) {
+                /* can still be an incomplete multibyte char? */
+                if (c != '\0' && i <= (int) MB_CUR_MAX)
+                    continue;
+                else {
+                    /* too many failing bytes; skip 1 byte */
+                    wc = L'?';
+                    i = 1;
+                }
+            }
 
-			/* skip used bytes and back again */
-			n += i;
-			i = 0;
+            /* skip used bytes and back again */
+            n += i;
+            i = 0;
 
-			/* store new char */
-			if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
-				break;
-		}
+            /* store new char */
+            if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+                break;
+        }
 
-		/* null terminate and count one less */
-		if (ptr != NULL) {
-			ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
-			(*s)--;
-		}
-	}
+        /* null terminate and count one less */
+        if (ptr != NULL) {
+            ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+            (*s)--;
+        }
+    }
 
-	/* free the duplicate */
-	if (cstr != str)
-		free(cstr);
+    /* free the duplicate */
+    if (cstr != str)
+        free(cstr);
 
-	return ptr;
+    return ptr;
 }
 
 
@@ -190,161 +193,161 @@ char *mpdm_wcstombs(const wchar_t * str, int *s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
-	char *ptr = NULL;
-	char tmp[64];		/* really MB_CUR_MAX + 1 */
-	int l, t = 0;
+    char *ptr = NULL;
+    char tmp[64];               /* really MB_CUR_MAX + 1 */
+    int l, t = 0;
 
-	/* allow NULL values for s */
-	if (s == NULL)
-		s = &t;
+    /* allow NULL values for s */
+    if (s == NULL)
+        s = &t;
 
-	/* try first a direct conversion with wcstombs */
-	if ((*s = wcstombs(NULL, str, 0)) != -1) {
-		/* direct conversion is possible; do it and return */
-		if ((ptr = malloc(*s + 1)) != NULL) {
-			wcstombs(ptr, str, *s);
-			ptr[*s] = '\0';
-		}
+    /* try first a direct conversion with wcstombs */
+    if ((*s = wcstombs(NULL, str, 0)) != -1) {
+        /* direct conversion is possible; do it and return */
+        if ((ptr = malloc(*s + 1)) != NULL) {
+            wcstombs(ptr, str, *s);
+            ptr[*s] = '\0';
+        }
 
-		return ptr;
-	}
+        return ptr;
+    }
 
-	/* invalid encoding? convert characters one by one */
-	*s = 0;
+    /* invalid encoding? convert characters one by one */
+    *s = 0;
 
-	while (*str) {
-		if ((l = wctomb(tmp, *str)) <= 0) {
-			/* if char couldn't be converted,
-			   write a question mark instead */
-			l = wctomb(tmp, L'?');
-		}
+    while (*str) {
+        if ((l = wctomb(tmp, *str)) <= 0) {
+            /* if char couldn't be converted,
+               write a question mark instead */
+            l = wctomb(tmp, L'?');
+        }
 
-		tmp[l] = '\0';
-		if ((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
-			break;
+        tmp[l] = '\0';
+        if ((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
+            break;
 
-		str++;
-	}
+        str++;
+    }
 
-	/* null terminate and count one less */
-	if (ptr != NULL) {
-		ptr = mpdm_poke(ptr, s, "", 1, 1);
-		(*s)--;
-	}
+    /* null terminate and count one less */
+    if (ptr != NULL) {
+        ptr = mpdm_poke(ptr, s, "", 1, 1);
+        (*s)--;
+    }
 
-	return ptr;
+    return ptr;
 }
 
 
 mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
-	wchar_t *ptr;
+    wchar_t *ptr;
 
-	/* a size of -1 means 'calculate it' */
-	if (size == -1 && str != NULL)
-		size = wcslen(str);
+    /* a size of -1 means 'calculate it' */
+    if (size == -1 && str != NULL)
+        size = wcslen(str);
 
-	/* create a copy? */
-	if (cpy) {
-		/* free() on destruction */
-		flags |= MPDM_FREE;
+    /* create a copy? */
+    if (cpy) {
+        /* free() on destruction */
+        flags |= MPDM_FREE;
 
-		/* allocs */
-		if ((ptr = malloc((size + 1) * sizeof(wchar_t))) == NULL)
-			return NULL;
+        /* allocs */
+        if ((ptr = malloc((size + 1) * sizeof(wchar_t))) == NULL)
+            return NULL;
 
-		/* if no source, reset to zeroes; otherwise, copy */
-		if (str == NULL)
-			memset(ptr, '\0', size * sizeof(wchar_t));
-		else {
-			wcsncpy(ptr, str, size);
-			ptr[size] = L'\0';
-		}
-	}
-	else
-		ptr = (wchar_t *)str;
+        /* if no source, reset to zeroes; otherwise, copy */
+        if (str == NULL)
+            memset(ptr, '\0', size * sizeof(wchar_t));
+        else {
+            wcsncpy(ptr, str, size);
+            ptr[size] = L'\0';
+        }
+    }
+    else
+        ptr = (wchar_t *) str;
 
-	/* it's a string */
-	flags |= MPDM_STRING;
+    /* it's a string */
+    flags |= MPDM_STRING;
 
-	return mpdm_new(flags, ptr, size);
+    return mpdm_new(flags, ptr, size);
 }
 
 
 mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l)
 /* creates a new string value from an mbs */
 {
-	wchar_t *ptr;
-	int size;
+    wchar_t *ptr;
+    int size;
 
-	if ((ptr = mpdm_mbstowcs(str, &size, l)) == NULL)
-		return NULL;
+    if ((ptr = mpdm_mbstowcs(str, &size, l)) == NULL)
+        return NULL;
 
-	/* it's a string */
-	flags |= (MPDM_STRING | MPDM_FREE);
+    /* it's a string */
+    flags |= (MPDM_STRING | MPDM_FREE);
 
-	return mpdm_new(flags, ptr, size);
+    return mpdm_new(flags, ptr, size);
 }
 
 
 mpdm_t mpdm_new_wcstombs(int flags, const wchar_t * str)
 /* creates a new mbs value from a wbs */
 {
-	char *ptr;
-	int size;
+    char *ptr;
+    int size;
 
-	ptr = mpdm_wcstombs(str, &size);
+    ptr = mpdm_wcstombs(str, &size);
 
-	flags |= MPDM_FREE;
+    flags |= MPDM_FREE;
 
-	/* unset the string flag; mbs,s are not 'strings' */
-	flags &= ~MPDM_STRING;
+    /* unset the string flag; mbs,s are not 'strings' */
+    flags &= ~MPDM_STRING;
 
-	return mpdm_new(flags, ptr, size);
+    return mpdm_new(flags, ptr, size);
 }
 
 
 mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
-	mpdm_t v;
-	char tmp[32];
+    mpdm_t v;
+    char tmp[32];
 
-	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp), "%d", ival);
+    /* creates the visual representation */
+    snprintf(tmp, sizeof(tmp), "%d", ival);
 
-	v = MPDM_MBS(tmp);
+    v = MPDM_MBS(tmp);
 
-	return mpdm_set_ival(v, ival);
+    return mpdm_set_ival(v, ival);
 }
 
 
 mpdm_t mpdm_new_r(double rval)
 /* creates a new string value from a real number */
 {
-	mpdm_t v;
-	char tmp[128];
+    mpdm_t v;
+    char tmp[128];
 
-	/* creates the visual representation */
-	snprintf(tmp, sizeof(tmp), "%lf", rval);
+    /* creates the visual representation */
+    snprintf(tmp, sizeof(tmp), "%lf", rval);
 
-	/* manually strip useless zeroes */
-	if (strchr(tmp, '.') != NULL) {
-		char *ptr;
+    /* manually strip useless zeroes */
+    if (strchr(tmp, '.') != NULL) {
+        char *ptr;
 
-		for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
+        for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
 
-		/* if it's over the ., strip it also */
-		if (*ptr != '.')
-			ptr++;
+        /* if it's over the ., strip it also */
+        if (*ptr != '.')
+            ptr++;
 
-		*ptr = '\0';
-	}
+        *ptr = '\0';
+    }
 
-	v = MPDM_MBS(tmp);
+    v = MPDM_MBS(tmp);
 
-	return mpdm_set_rval(v, rval);
+    return mpdm_set_rval(v, rval);
 }
 
 
@@ -362,27 +365,27 @@ mpdm_t mpdm_new_r(double rval)
  */
 wchar_t *mpdm_string(const mpdm_t v)
 {
-	static wchar_t wtmp[32];
-	char tmp[32];
-	static wchar_t *ret;
+    static wchar_t wtmp[32];
+    char tmp[32];
+    static wchar_t *ret;
 
-	/* if it's NULL, return a constant */
-	if (v == NULL)
-		ret = L"[NULL]";
-	else
-	/* if it's a string, return it */
-	if (v->flags & MPDM_STRING)
-		ret = (wchar_t *) v->data;
-	else {
-		/* otherwise, return a visual representation */
-		snprintf(tmp, sizeof(tmp), "%p", v);
-		mbstowcs(wtmp, tmp, sizeof(wtmp));
-		wtmp[(sizeof(wtmp) / sizeof(wchar_t)) - 1] = L'\0';
+    /* if it's NULL, return a constant */
+    if (v == NULL)
+        ret = L"[NULL]";
+    else
+        /* if it's a string, return it */
+    if (v->flags & MPDM_STRING)
+        ret = (wchar_t *) v->data;
+    else {
+        /* otherwise, return a visual representation */
+        snprintf(tmp, sizeof(tmp), "%p", v);
+        mbstowcs(wtmp, tmp, sizeof(wtmp));
+        wtmp[(sizeof(wtmp) / sizeof(wchar_t)) - 1] = L'\0';
 
-		ret = wtmp;
-	}
+        ret = wtmp;
+    }
 
-	return ret;
+    return ret;
 }
 
 
@@ -400,51 +403,48 @@ wchar_t *mpdm_string(const mpdm_t v)
  */
 int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 {
-	int r;
+    int r;
 
     mpdm_ref(v1);
     mpdm_ref(v2);
 
-	/* same values? */
-	if (v1 == v2)
-		r = 0;
-	else
-	/* is any value NULL? */
-	if (v1 == NULL)
-		r = -1;
-	else
-	if (v2 == NULL)
-		r = 1;
-	else
-	/* different values, but same content? (unlikely) */
-	if (v1->data == v2->data)
-		r = 0;
-	else
-	if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
-		r = wcscoll((wchar_t *) v1->data, (wchar_t *) v2->data);
-	else
-	if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
-		/* compare first the sizes */
-		if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
-			int n;
+    /* same values? */
+    if (v1 == v2)
+        r = 0;
+    else
+        /* is any value NULL? */
+    if (v1 == NULL)
+        r = -1;
+    else if (v2 == NULL)
+        r = 1;
+    else
+        /* different values, but same content? (unlikely) */
+    if (v1->data == v2->data)
+        r = 0;
+    else if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
+        r = wcscoll((wchar_t *) v1->data, (wchar_t *) v2->data);
+    else if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
+        /* compare first the sizes */
+        if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
+            int n;
 
-			/* they have the same size;
-			   compare each pair of elements */
-			for (n = 0; n < mpdm_size(v1); n++) {
-				if ((r = mpdm_cmp(mpdm_aget(v1, n),
-					mpdm_aget(v2, n))) != 0)
-					break;
-			}
-		}
-	}
-	else
-		/* in any other case, compare just pointers */
-		r = (int) ((char *)v1->data - (char *)v2->data);
+            /* they have the same size;
+               compare each pair of elements */
+            for (n = 0; n < mpdm_size(v1); n++) {
+                if ((r = mpdm_cmp(mpdm_aget(v1, n),
+                                  mpdm_aget(v2, n))) != 0)
+                    break;
+            }
+        }
+    }
+    else
+        /* in any other case, compare just pointers */
+        r = (int) ((char *) v1->data - (char *) v2->data);
 
     mpdm_unref(v2);
     mpdm_unref(v1);
 
-	return r;
+    return r;
 }
 
 
@@ -456,20 +456,20 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  * Compares two values. Compares both values using wcscoll()
  * if the first one is a string, or returns 1 otherwise.
  */
-int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
+int mpdm_cmp_s(const mpdm_t v1, const wchar_t * v2)
 {
-	int r;
+    int r;
 
     mpdm_ref(v1);
 
-	if (MPDM_IS_STRING(v1))
-		r = wcscoll((wchar_t *) v1->data, v2);
-	else
-		r = (int) ((wchar_t *)v1->data - v2);
+    if (MPDM_IS_STRING(v1))
+        r = wcscoll((wchar_t *) v1->data, v2);
+    else
+        r = (int) ((wchar_t *) v1->data - v2);
 
     mpdm_unref(v1);
 
-	return r;
+    return r;
 }
 
 
@@ -495,91 +495,91 @@ int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
  */
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 {
-	mpdm_t w;
-	mpdm_t n = NULL;
-	mpdm_t d = NULL;
-	int os, ns, r;
-	int ins = 0;
-	wchar_t *ptr;
+    mpdm_t w;
+    mpdm_t n = NULL;
+    mpdm_t d = NULL;
+    int os, ns, r;
+    int ins = 0;
+    wchar_t *ptr;
 
-	mpdm_ref(v);
-	mpdm_ref(i);
+    mpdm_ref(v);
+    mpdm_ref(i);
 
-	if (v != NULL) {
-		os = mpdm_size(v);
+    if (v != NULL) {
+        os = mpdm_size(v);
 
-		/* negative offsets start from the end */
-		if (offset < 0)
-			offset = os + 1 - offset;
+        /* negative offsets start from the end */
+        if (offset < 0)
+            offset = os + 1 - offset;
 
-		/* never add further the end */
-		if (offset > os)
-			offset = os;
+        /* never add further the end */
+        if (offset > os)
+            offset = os;
 
-		/* negative del counts as 'characters left' */
-		if (del < 0)
-			del = os + 1 - offset + del;
+        /* negative del counts as 'characters left' */
+        if (del < 0)
+            del = os + 1 - offset + del;
 
-		/* something to delete? */
-		if (del > 0) {
-			/* never delete further the end */
-			if (offset + del > os)
-				del = os - offset;
+        /* something to delete? */
+        if (del > 0) {
+            /* never delete further the end */
+            if (offset + del > os)
+                del = os - offset;
 
-			/* deleted string */
-			d = MPDM_NS(((wchar_t *) v->data) + offset, del);
-		}
-		else
-			del = 0;
+            /* deleted string */
+            d = MPDM_NS(((wchar_t *) v->data) + offset, del);
+        }
+        else
+            del = 0;
 
-		/* something to insert? */
-		ins = mpdm_size(i);
+        /* something to insert? */
+        ins = mpdm_size(i);
 
-		/* new size and remainder */
-		ns = os + ins - del;
-		r = offset + del;
+        /* new size and remainder */
+        ns = os + ins - del;
+        r = offset + del;
 
-		n = MPDM_NS(NULL, ns);
+        n = MPDM_NS(NULL, ns);
 
-		ptr = (wchar_t *)n->data;
+        ptr = (wchar_t *) n->data;
 
-		/* copy the beginning */
-		if (offset > 0) {
-			wcsncpy(ptr, v->data, offset);
-			ptr += offset;
-		}
+        /* copy the beginning */
+        if (offset > 0) {
+            wcsncpy(ptr, v->data, offset);
+            ptr += offset;
+        }
 
-		/* copy the text to be inserted */
-		if (ins > 0) {
-			wcsncpy(ptr, i->data, ins);
-			ptr += ins;
-		}
+        /* copy the text to be inserted */
+        if (ins > 0) {
+            wcsncpy(ptr, i->data, ins);
+            ptr += ins;
+        }
 
-		/* copy the remaining */
-		os -= r;
-		if (os > 0) {
-			wcsncpy(ptr, ((wchar_t *) v->data) + r, os);
-			ptr += os;
-		}
+        /* copy the remaining */
+        os -= r;
+        if (os > 0) {
+            wcsncpy(ptr, ((wchar_t *) v->data) + r, os);
+            ptr += os;
+        }
 
-		/* null terminate */
-		*ptr = L'\0';
-	}
-	else
-		n = i;
+        /* null terminate */
+        *ptr = L'\0';
+    }
+    else
+        n = i;
 
-	/* creates the output array */
-	w = MPDM_A(2);
+    /* creates the output array */
+    w = MPDM_A(2);
 
     mpdm_ref(w);
-	mpdm_aset(w, n, 0);
-	mpdm_aset(w, d, 1);
+    mpdm_aset(w, n, 0);
+    mpdm_aset(w, d, 1);
     mpdm_unrefnd(w);
 
-	mpdm_unref(i);
-	mpdm_unref(v);
+    mpdm_unref(i);
+    mpdm_unref(v);
 
-	return w;
+    return w;
 }
 
 
@@ -592,23 +592,23 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
+mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t * s2, int size)
 {
-	wchar_t *ptr = NULL;
-	int s = 0;
-	mpdm_t r;
+    wchar_t *ptr = NULL;
+    int s = 0;
+    mpdm_t r;
 
-	if (s1 == NULL && s2 == NULL)
-		r = NULL;
-	else {
-		ptr = mpdm_pokev(ptr, &s, s1);
-		ptr = mpdm_pokewsn(ptr, &s, s2, size);
+    if (s1 == NULL && s2 == NULL)
+        r = NULL;
+    else {
+        ptr = mpdm_pokev(ptr, &s, s1);
+        ptr = mpdm_pokewsn(ptr, &s, s2, size);
 
-		ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
-		r = MPDM_ENS(ptr, s - 1);
-	}
+        ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
+        r = MPDM_ENS(ptr, s - 1);
+    }
 
-	return r;
+    return r;
 }
 
 
@@ -620,9 +620,9 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
+mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t * s2)
 {
-	return mpdm_strcat_sn(s1, s2, s2 ? wcslen(s2) : 0);
+    return mpdm_strcat_sn(s1, s2, s2 ? wcslen(s2) : 0);
 }
 
 
@@ -636,13 +636,13 @@ mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
  */
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
 {
-	mpdm_t r;
+    mpdm_t r;
 
-	mpdm_ref(s2);
-	r = mpdm_strcat_s(s1, s2 ? mpdm_string(s2) : NULL);
-	mpdm_unref(s2);
+    mpdm_ref(s2);
+    r = mpdm_strcat_s(s1, s2 ? mpdm_string(s2) : NULL);
+    mpdm_unref(s2);
 
-	return r;
+    return r;
 }
 
 
@@ -660,60 +660,59 @@ mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
  */
 int mpdm_ival(mpdm_t v)
 {
-	int i = 0;
+    int i = 0;
 
     mpdm_ref(v);
 
-	if (v != NULL) {
-		/* if there is no cached integer, calculate it */
-		if (!(v->flags & MPDM_IVAL)) {
-			/* if it's a string, calculate it; other
-			   values will have an ival of 0 */
-			if (v->flags & MPDM_STRING) {
-				char tmp[32];
-				char *fmt = "%i";
+    if (v != NULL) {
+        /* if there is no cached integer, calculate it */
+        if (!(v->flags & MPDM_IVAL)) {
+            /* if it's a string, calculate it; other
+               values will have an ival of 0 */
+            if (v->flags & MPDM_STRING) {
+                char tmp[32];
+                char *fmt = "%i";
 
-				wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-				tmp[sizeof(tmp) - 1] = '\0';
+                wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+                tmp[sizeof(tmp) - 1] = '\0';
 
-				/* workaround for mingw32: as it doesn't
-				   correctly parse octal and hexadecimal
-				   numbers, they are tried as special cases */
-				if (tmp[0] == '0') {
-					if (tmp[1] == 'b' || tmp[1] == 'B') {
-						/* binary number */
-						fmt = NULL;
-						char *ptr = &tmp[2];
+                /* workaround for mingw32: as it doesn't
+                   correctly parse octal and hexadecimal
+                   numbers, they are tried as special cases */
+                if (tmp[0] == '0') {
+                    if (tmp[1] == 'b' || tmp[1] == 'B') {
+                        /* binary number */
+                        fmt = NULL;
+                        char *ptr = &tmp[2];
 
-						while (*ptr == '0' || *ptr == '1') {
-							i <<= 1;
+                        while (*ptr == '0' || *ptr == '1') {
+                            i <<= 1;
 
-							if (*ptr == '1')
-								i |= 1;
+                            if (*ptr == '1')
+                                i |= 1;
 
-							ptr++;
-						}
-					}
-					else
-					if (tmp[1] == 'x' || tmp[1] == 'X')
-						fmt = "%x";
-					else
-						fmt = "%o";
-				}
+                            ptr++;
+                        }
+                    }
+                    else if (tmp[1] == 'x' || tmp[1] == 'X')
+                        fmt = "%x";
+                    else
+                        fmt = "%o";
+                }
 
-				if (fmt != NULL)
-					sscanf(tmp, fmt, &i);
-			}
+                if (fmt != NULL)
+                    sscanf(tmp, fmt, &i);
+            }
 
-			mpdm_set_ival(v, i);
-		}
+            mpdm_set_ival(v, i);
+        }
 
-		i = v->ival;
-	}
+        i = v->ival;
+    }
 
     mpdm_unref(v);
 
-	return i;
+    return i;
 }
 
 
@@ -731,49 +730,49 @@ int mpdm_ival(mpdm_t v)
  */
 double mpdm_rval(mpdm_t v)
 {
-	double r = 0.0;
+    double r = 0.0;
 
     mpdm_ref(v);
 
-	if (v != NULL) {
-		/* if there is no cached double, calculate it */
-		if (!(v->flags & MPDM_RVAL)) {
-			/* if it's a string, calculate it; other
-			   values will have an rval of 0.0 */
-			if (v->flags & MPDM_STRING) {
-				char tmp[128];
-				char *prev_locale;
+    if (v != NULL) {
+        /* if there is no cached double, calculate it */
+        if (!(v->flags & MPDM_RVAL)) {
+            /* if it's a string, calculate it; other
+               values will have an rval of 0.0 */
+            if (v->flags & MPDM_STRING) {
+                char tmp[128];
+                char *prev_locale;
 
-				wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-				tmp[sizeof(tmp) - 1] = '\0';
+                wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+                tmp[sizeof(tmp) - 1] = '\0';
 
-				/* if the number starts with 0, it's
-				   an octal or hexadecimal number; just
-				   take the integer value and cast it */
-				if (tmp[0] == '0' && tmp[1] != '.')
-					r = (double) mpdm_ival(v);
-				else {
-					/* set locale to C for non locale-dependent
-					   floating point conversion */
-					prev_locale = setlocale(LC_NUMERIC, "C");
+                /* if the number starts with 0, it's
+                   an octal or hexadecimal number; just
+                   take the integer value and cast it */
+                if (tmp[0] == '0' && tmp[1] != '.')
+                    r = (double) mpdm_ival(v);
+                else {
+                    /* set locale to C for non locale-dependent
+                       floating point conversion */
+                    prev_locale = setlocale(LC_NUMERIC, "C");
 
-					/* read */
-					sscanf(tmp, "%lf", &r);
+                    /* read */
+                    sscanf(tmp, "%lf", &r);
 
-					/* set previous locale */
-					setlocale(LC_NUMERIC, prev_locale);
-				}
-			}
+                    /* set previous locale */
+                    setlocale(LC_NUMERIC, prev_locale);
+                }
+            }
 
-			mpdm_set_rval(v, r);
-		}
+            mpdm_set_rval(v, r);
+        }
 
-		r = v->rval;
-	}
+        r = v->rval;
+    }
 
     mpdm_unref(v);
 
-	return r;
+    return r;
 }
 
 
@@ -793,47 +792,47 @@ double mpdm_rval(mpdm_t v)
  */
 mpdm_t mpdm_gettext(const mpdm_t str)
 {
-	mpdm_t v;
-	mpdm_t i18n = NULL;
+    mpdm_t v;
+    mpdm_t i18n = NULL;
 
-	/* gets the cache */
-	if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
-		i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+    /* gets the cache */
+    if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
+        i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
-	mpdm_ref(str);
+    mpdm_ref(str);
 
-	/* try first the cache */
-	if ((v = mpdm_hget(i18n, str)) == NULL) {
+    /* try first the cache */
+    if ((v = mpdm_hget(i18n, str)) == NULL) {
 #ifdef CONFOPT_GETTEXT
-		char *s;
-		mpdm_t t;
+        char *s;
+        mpdm_t t;
 
-		/* convert to mbs */
-		t = mpdm_ref(MPDM_2MBS(str->data));
+        /* convert to mbs */
+        t = mpdm_ref(MPDM_2MBS(str->data));
 
-		/* ask gettext for it */
-		s = gettext((char *) t->data);
+        /* ask gettext for it */
+        s = gettext((char *) t->data);
 
-		if (s != t->data)
-			v = MPDM_MBS(s);
-		else
-			v = str;
+        if (s != t->data)
+            v = MPDM_MBS(s);
+        else
+            v = str;
 
-		mpdm_unref(t);
+        mpdm_unref(t);
 
-#else				/* CONFOPT_GETTEXT */
+#else                           /* CONFOPT_GETTEXT */
 
-		v = str;
+        v = str;
 
-#endif				/* CONFOPT_GETTEXT */
+#endif                          /* CONFOPT_GETTEXT */
 
-		/* store in the cache */
-		mpdm_hset(i18n, str, v);
-	}
+        /* store in the cache */
+        mpdm_hset(i18n, str, v);
+    }
 
-	mpdm_unref(str);
+    mpdm_unref(str);
 
-	return v;
+    return v;
 }
 
 
@@ -852,84 +851,142 @@ mpdm_t mpdm_gettext(const mpdm_t str)
  */
 int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 {
-	int ret = 0;
+    int ret = 0;
 
-	mpdm_ref(dom);
-	mpdm_ref(data);
+    mpdm_ref(dom);
+    mpdm_ref(data);
 
 #ifdef CONFOPT_GETTEXT
 
-	mpdm_t dm;
-	mpdm_t dt;
+    mpdm_t dm;
+    mpdm_t dt;
 
-	/* convert both to mbs,s */
-	dm = mpdm_ref(MPDM_2MBS(dom->data));
-	dt = mpdm_ref(MPDM_2MBS(data->data));
+    /* convert both to mbs,s */
+    dm = mpdm_ref(MPDM_2MBS(dom->data));
+    dt = mpdm_ref(MPDM_2MBS(data->data));
 
-	/* bind and set domain */
-	bindtextdomain((char *) dm->data, (char *) dt->data);
-	textdomain((char *) dm->data);
+    /* bind and set domain */
+    bindtextdomain((char *) dm->data, (char *) dt->data);
+    textdomain((char *) dm->data);
 
-	mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+    mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
-	mpdm_unref(dt);
-	mpdm_unref(dm);
+    mpdm_unref(dt);
+    mpdm_unref(dm);
 
-	ret = 1;
+    ret = 1;
 
-#endif				/* CONFOPT_GETTEXT */
+#endif                          /* CONFOPT_GETTEXT */
 
 #ifdef CONFOPT_WIN32
 
-	mpdm_t v;
+    mpdm_t v;
 
-	if ((v = mpdm_hget_s(mpdm_root(), L"ENV")) != NULL &&
-		mpdm_hget_s(v, L"LANG") == NULL) {
-		wchar_t *wptr = L"en";
+    if ((v = mpdm_hget_s(mpdm_root(), L"ENV")) != NULL &&
+        mpdm_hget_s(v, L"LANG") == NULL) {
+        wchar_t *wptr = L"en";
 
-		/* MS Windows crappy language constants... */
+        /* MS Windows crappy language constants... */
 
-		switch((GetSystemDefaultLangID() & 0x00ff)) {
-		case 0x01: wptr = L"ar"; break; /* arabic */
-		case 0x02: wptr = L"bg"; break; /* bulgarian */
-		case 0x03: wptr = L"ca"; break; /* catalan */
-		case 0x04: wptr = L"zh"; break; /* chinese */
-		case 0x05: wptr = L"cz"; break; /* czech */
-		case 0x06: wptr = L"da"; break; /* danish */
-		case 0x07: wptr = L"de"; break; /* german */
-		case 0x08: wptr = L"el"; break; /* greek */
-		case 0x09: wptr = L"en"; break; /* english */
-		case 0x0a: wptr = L"es"; break; /* spanish */
-		case 0x0b: wptr = L"fi"; break; /* finnish */
-		case 0x0c: wptr = L"fr"; break; /* french */
-		case 0x0d: wptr = L"he"; break; /* hebrew */
-		case 0x0e: wptr = L"hu"; break; /* hungarian */
-		case 0x0f: wptr = L"is"; break; /* icelandic */
-		case 0x10: wptr = L"it"; break; /* italian */
-		case 0x11: wptr = L"jp"; break; /* japanese */
-		case 0x12: wptr = L"ko"; break; /* korean */
-		case 0x13: wptr = L"nl"; break; /* dutch */
-		case 0x14: wptr = L"no"; break; /* norwegian */
-		case 0x15: wptr = L"po"; break; /* polish */
-		case 0x16: wptr = L"pt"; break; /* portuguese */
-		case 0x17: wptr = L"rm"; break; /* romansh (switzerland) */
-		case 0x18: wptr = L"ro"; break; /* romanian */
-		case 0x19: wptr = L"ru"; break; /* russian */
-		case 0x1a: wptr = L"sr"; break; /* serbian */
-		case 0x1b: wptr = L"sk"; break; /* slovak */
-		case 0x1c: wptr = L"sq"; break; /* albanian */
-		case 0x1d: wptr = L"sv"; break; /* swedish */
-		}
+        switch ((GetSystemDefaultLangID() & 0x00ff)) {
+        case 0x01:
+            wptr = L"ar";
+            break;              /* arabic */
+        case 0x02:
+            wptr = L"bg";
+            break;              /* bulgarian */
+        case 0x03:
+            wptr = L"ca";
+            break;              /* catalan */
+        case 0x04:
+            wptr = L"zh";
+            break;              /* chinese */
+        case 0x05:
+            wptr = L"cz";
+            break;              /* czech */
+        case 0x06:
+            wptr = L"da";
+            break;              /* danish */
+        case 0x07:
+            wptr = L"de";
+            break;              /* german */
+        case 0x08:
+            wptr = L"el";
+            break;              /* greek */
+        case 0x09:
+            wptr = L"en";
+            break;              /* english */
+        case 0x0a:
+            wptr = L"es";
+            break;              /* spanish */
+        case 0x0b:
+            wptr = L"fi";
+            break;              /* finnish */
+        case 0x0c:
+            wptr = L"fr";
+            break;              /* french */
+        case 0x0d:
+            wptr = L"he";
+            break;              /* hebrew */
+        case 0x0e:
+            wptr = L"hu";
+            break;              /* hungarian */
+        case 0x0f:
+            wptr = L"is";
+            break;              /* icelandic */
+        case 0x10:
+            wptr = L"it";
+            break;              /* italian */
+        case 0x11:
+            wptr = L"jp";
+            break;              /* japanese */
+        case 0x12:
+            wptr = L"ko";
+            break;              /* korean */
+        case 0x13:
+            wptr = L"nl";
+            break;              /* dutch */
+        case 0x14:
+            wptr = L"no";
+            break;              /* norwegian */
+        case 0x15:
+            wptr = L"po";
+            break;              /* polish */
+        case 0x16:
+            wptr = L"pt";
+            break;              /* portuguese */
+        case 0x17:
+            wptr = L"rm";
+            break;              /* romansh (switzerland) */
+        case 0x18:
+            wptr = L"ro";
+            break;              /* romanian */
+        case 0x19:
+            wptr = L"ru";
+            break;              /* russian */
+        case 0x1a:
+            wptr = L"sr";
+            break;              /* serbian */
+        case 0x1b:
+            wptr = L"sk";
+            break;              /* slovak */
+        case 0x1c:
+            wptr = L"sq";
+            break;              /* albanian */
+        case 0x1d:
+            wptr = L"sv";
+            break;              /* swedish */
+        }
 
-		mpdm_hset_s(v, L"LANG", MPDM_S(wptr));
-	}
+        mpdm_hset_s(v, L"LANG", MPDM_S(wptr));
+    }
 
-#endif				/* CONFOPT_WIN32 */
+#endif                          /* CONFOPT_WIN32 */
 
-	mpdm_unref(data);
-	mpdm_unref(dom);
+    mpdm_unref(data);
+    mpdm_unref(dom);
 
-	return ret;
+    return ret;
 }
 
 
@@ -939,19 +996,19 @@ int wcwidth(wchar_t);
 
 int mpdm_wcwidth(wchar_t c)
 {
-	return wcwidth(c);
+    return wcwidth(c);
 }
 
-#else				/* CONFOPT_WCWIDTH */
+#else                           /* CONFOPT_WCWIDTH */
 
 #include "wcwidth.c"
 
 int mpdm_wcwidth(wchar_t c)
 {
-	return mk_wcwidth(c);
+    return mk_wcwidth(c);
 }
 
-#endif				/* CONFOPT_WCWIDTH */
+#endif                          /* CONFOPT_WCWIDTH */
 
 
 /**
@@ -964,145 +1021,142 @@ int mpdm_wcwidth(wchar_t c)
  */
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 {
-	const wchar_t *i = fmt->data;
-	wchar_t *o = NULL;
-	int l = 0, n = 0;
-	wchar_t c;
+    const wchar_t *i = fmt->data;
+    wchar_t *o = NULL;
+    int l = 0, n = 0;
+    wchar_t c;
 
-	mpdm_ref(fmt);
-	mpdm_ref(args);
+    mpdm_ref(fmt);
+    mpdm_ref(args);
 
-	/* loop all characters */
-	while ((c = *i++) != L'\0') {
-		int m = 0;
-		wchar_t *tptr = NULL;
-		wchar_t *wptr = NULL;
+    /* loop all characters */
+    while ((c = *i++) != L'\0') {
+        int m = 0;
+        wchar_t *tptr = NULL;
+        wchar_t *wptr = NULL;
 
-		if (c == L'%') {
-			/* format directive */
-			char t_fmt[128];
-			char tmp[1024];
-			mpdm_t v;
-			char *ptr = NULL;
+        if (c == L'%') {
+            /* format directive */
+            char t_fmt[128];
+            char tmp[1024];
+            mpdm_t v;
+            char *ptr = NULL;
 
-			/* transfer the % */
-			t_fmt[m++] = '%';
+            /* transfer the % */
+            t_fmt[m++] = '%';
 
-			/* transform the format to mbs */
-			while (*i != L'\0' &&
-				m < (int)(sizeof(t_fmt) - MB_CUR_MAX - 1) &&
-				wcschr(L"-.0123456789", *i) != NULL)
-				m += wctomb(&t_fmt[m], *i++);
+            /* transform the format to mbs */
+            while (*i != L'\0' &&
+                   m < (int) (sizeof(t_fmt) - MB_CUR_MAX - 1) &&
+                   wcschr(L"-.0123456789", *i) != NULL)
+                m += wctomb(&t_fmt[m], *i++);
 
-			/* transfer the directive */
-			m += wctomb(&t_fmt[m], *i++);
+            /* transfer the directive */
+            m += wctomb(&t_fmt[m], *i++);
 
-			t_fmt[m] = '\0';
+            t_fmt[m] = '\0';
 
-			/* by default, copies the format */
-			strcpy(tmp, t_fmt);
+            /* by default, copies the format */
+            strcpy(tmp, t_fmt);
 
-			/* pick next value */
-			v = mpdm_aget(args, n++);
+            /* pick next value */
+            v = mpdm_aget(args, n++);
 
-			switch (t_fmt[m - 1]) {
-			case 'd':
-			case 'i':
-			case 'u':
-			case 'x':
-			case 'X':
-			case 'o':
+            switch (t_fmt[m - 1]) {
+            case 'd':
+            case 'i':
+            case 'u':
+            case 'x':
+            case 'X':
+            case 'o':
 
-				/* integer value */
-				snprintf(tmp, sizeof(tmp) - 1,
-					t_fmt, mpdm_ival(v));
-				break;
+                /* integer value */
+                snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(v));
+                break;
 
-			case 'f':
+            case 'f':
 
-				/* float (real) value */
-				snprintf(tmp, sizeof(tmp) - 1,
-					t_fmt, mpdm_rval(v));
-				break;
+                /* float (real) value */
+                snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_rval(v));
+                break;
 
-			case 's':
+            case 's':
 
-				/* string value */
-				ptr = mpdm_wcstombs(mpdm_string(v), NULL);
-				snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
-				free(ptr);
+                /* string value */
+                ptr = mpdm_wcstombs(mpdm_string(v), NULL);
+                snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
+                free(ptr);
 
-				break;
+                break;
 
-			case 'c':
+            case 'c':
 
-				/* char */
-				m = 1;
-				wptr = &c;
-				c = mpdm_ival(v);
-				break;
+                /* char */
+                m = 1;
+                wptr = &c;
+                c = mpdm_ival(v);
+                break;
 
-			case 'b':
+            case 'b':
 
-				ptr = tmp;
-				unsigned int mask;
-				int p = 0;
+                ptr = tmp;
+                unsigned int mask;
+                int p = 0;
 
-				mask = 1 << ((sizeof(int) * 8) - 1);
-				while (mask) {
-					if (mask & (unsigned int) mpdm_ival(v)) {
-						*ptr++ = '1';
-						p = 1;
-					}
-					else
-					if (p)
-						*ptr++ = '0';
+                mask = 1 << ((sizeof(int) * 8) - 1);
+                while (mask) {
+                    if (mask & (unsigned int) mpdm_ival(v)) {
+                        *ptr++ = '1';
+                        p = 1;
+                    }
+                    else if (p)
+                        *ptr++ = '0';
 
-					mask >>= 1;
-				}
+                    mask >>= 1;
+                }
 
-				if (ptr == tmp)
-					*ptr++ = '0';
+                if (ptr == tmp)
+                    *ptr++ = '0';
 
-				*ptr = '\0';
-				break;
+                *ptr = '\0';
+                break;
 
-			case '%':
+            case '%':
 
-				/* percent sign */
-				m = 1;
-				wptr = &c;
-				break;
-			}
+                /* percent sign */
+                m = 1;
+                wptr = &c;
+                break;
+            }
 
-			/* transfer */
-			if (wptr == NULL)
-				wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
-		}
-		else {
-			/* raw character */
-			m = 1;
-			wptr = &c;
-		}
+            /* transfer */
+            if (wptr == NULL)
+                wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
+        }
+        else {
+            /* raw character */
+            m = 1;
+            wptr = &c;
+        }
 
-		/* transfer */
-		o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
+        /* transfer */
+        o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
 
-		/* free the temporary buffer, if any */
-		if (tptr != NULL)
-			free(tptr);
-	}
+        /* free the temporary buffer, if any */
+        if (tptr != NULL)
+            free(tptr);
+    }
 
-	if (o == NULL)
-		return NULL;
+    if (o == NULL)
+        return NULL;
 
-	/* null-terminate */
-	o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
+    /* null-terminate */
+    o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
 
-	mpdm_unref(args);
-	mpdm_unref(fmt);
+    mpdm_unref(args);
+    mpdm_unref(fmt);
 
-	return MPDM_ENS(o, l - 1);
+    return MPDM_ENS(o, l - 1);
 }
 
 
@@ -1116,28 +1170,28 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
  */
 mpdm_t mpdm_ulc(const mpdm_t s, int u)
 {
-	mpdm_t r = NULL;
-	wchar_t *optr;
-	int i;
+    mpdm_t r = NULL;
+    wchar_t *optr;
+    int i;
 
-	mpdm_ref(s);
+    mpdm_ref(s);
 
-	i = mpdm_size(s);
+    i = mpdm_size(s);
 
-	if ((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL) {
-		wchar_t *iptr = mpdm_string(s);
-		int n;
+    if ((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL) {
+        wchar_t *iptr = mpdm_string(s);
+        int n;
 
-		for (n = 0; n < i; n++)
-			optr[n] = u ? towupper(iptr[n]) : towlower(iptr[n]);
+        for (n = 0; n < i; n++)
+            optr[n] = u ? towupper(iptr[n]) : towlower(iptr[n]);
 
-		optr[n] = L'\0';
-		r = MPDM_ENS(optr, i);
-	}
+        optr[n] = L'\0';
+        r = MPDM_ENS(optr, i);
+    }
 
-	mpdm_unref(s);
+    mpdm_unref(s);
 
-	return r;
+    return r;
 }
 
 
@@ -1148,18 +1202,18 @@ static wchar_t scanf_nset[SCANF_BUF_SIZE];
 static wchar_t scanf_mark[SCANF_BUF_SIZE];
 
 struct {
-	wchar_t cmd;
-	wchar_t *yset;
-	wchar_t *nset;
+    wchar_t cmd;
+    wchar_t *yset;
+    wchar_t *nset;
 } scanf_sets[] = {
-	{ L's',		L"",				L" \t" },
-	{ L'u',		L"0123456789",			L"" },
-	{ L'd',		L"-0123456789",			L"" },
-	{ L'i',		L"-0123456789",			L"" },
-	{ L'f',		L"-0123456789.",		L"" },
-	{ L'x',		L"-0123456789xabcdefABCDEF",	L"" },
-	{ L'\0',	NULL,				NULL },
-};
+    {
+    L's', L"", L" \t"}, {
+    L'u', L"0123456789", L""}, {
+    L'd', L"-0123456789", L""}, {
+    L'i', L"-0123456789", L""}, {
+    L'f', L"-0123456789.", L""}, {
+    L'x', L"-0123456789xabcdefABCDEF", L""}, {
+L'\0', NULL, NULL},};
 
 /**
  * mpdm_sscanf - Extracts data like sscanf().
@@ -1180,210 +1234,208 @@ struct {
  */
 mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
 {
-	wchar_t *i = (wchar_t *)str->data;
-	wchar_t *f = (wchar_t *)fmt->data;
-	mpdm_t r;
+    wchar_t *i = (wchar_t *) str->data;
+    wchar_t *f = (wchar_t *) fmt->data;
+    mpdm_t r;
 
-	mpdm_ref(fmt);
-	mpdm_ref(str);
+    mpdm_ref(fmt);
+    mpdm_ref(str);
 
-	i += offset;
-	r = MPDM_A(0);
+    i += offset;
+    r = MPDM_A(0);
     mpdm_ref(r);
 
-	while (*f) {
-		if (*f == L'%') {
-			wchar_t *ptr = NULL;
-			int size = 0;
-			wchar_t cmd;
-			int vsize = 0;
-			int ignore = 0;
-			int msize = 0;
+    while (*f) {
+        if (*f == L'%') {
+            wchar_t *ptr = NULL;
+            int size = 0;
+            wchar_t cmd;
+            int vsize = 0;
+            int ignore = 0;
+            int msize = 0;
 
-			/* empty all buffers */
-			scanf_yset[0] = scanf_nset[0] = scanf_mark[0] = L'\0';
+            /* empty all buffers */
+            scanf_yset[0] = scanf_nset[0] = scanf_mark[0] = L'\0';
 
-			f++;
+            f++;
 
-			/* an asterisk? don't return next value */
-			if (*f == L'*') {
-				ignore = 1;
-				f++;
-			}
+            /* an asterisk? don't return next value */
+            if (*f == L'*') {
+                ignore = 1;
+                f++;
+            }
 
-			/* does it have a size? */
-			while (wcschr(L"0123456789", *f)) {
-				vsize *= 10;
-				vsize += *f - L'0';
-				f++;
-			}
+            /* does it have a size? */
+            while (wcschr(L"0123456789", *f)) {
+                vsize *= 10;
+                vsize += *f - L'0';
+                f++;
+            }
 
-			/* if no size, set it to an arbitrary big limit */
-			if (!vsize)
-				vsize = 0xfffffff;
+            /* if no size, set it to an arbitrary big limit */
+            if (!vsize)
+                vsize = 0xfffffff;
 
-			/* now *f should contain a command */
-			cmd = *f;
-			f++;
+            /* now *f should contain a command */
+            cmd = *f;
+            f++;
 
-			/* is it a verbatim percent sign? */
-			if (cmd == L'%') {
-				vsize = 1;
-				ignore = 1;
-				wcscpy(scanf_yset, L"%");
-			}
-			else
-			/* a position? */
-			if (cmd == L'n') {
-				vsize = 0;
-				ignore = 1;
-				mpdm_push(r, MPDM_I(i - (wchar_t *)str->data));
-			}
-			else
-			/* string upto a mark */
-			if (cmd == L'S') {
-				wchar_t *tmp = f;
+            /* is it a verbatim percent sign? */
+            if (cmd == L'%') {
+                vsize = 1;
+                ignore = 1;
+                wcscpy(scanf_yset, L"%");
+            }
+            else
+                /* a position? */
+            if (cmd == L'n') {
+                vsize = 0;
+                ignore = 1;
+                mpdm_push(r, MPDM_I(i - (wchar_t *) str->data));
+            }
+            else
+                /* string upto a mark */
+            if (cmd == L'S') {
+                wchar_t *tmp = f;
 
-				/* fill the mark upto another command */
-				while (*tmp) {
-					if (*tmp == L'%') {
-						tmp++;
+                /* fill the mark upto another command */
+                while (*tmp) {
+                    if (*tmp == L'%') {
+                        tmp++;
 
-						/* is it an 'n'? ignore and go on */
-						if (*tmp == L'n') {
-							tmp++;
-							continue;
-						}
-						else
-						if (*tmp == L'%')
-							scanf_mark[msize++] = *tmp;
-						else
-							break;
-					}
-					else
-						scanf_mark[msize++] = *tmp;
+                        /* is it an 'n'? ignore and go on */
+                        if (*tmp == L'n') {
+                            tmp++;
+                            continue;
+                        }
+                        else if (*tmp == L'%')
+                            scanf_mark[msize++] = *tmp;
+                        else
+                            break;
+                    }
+                    else
+                        scanf_mark[msize++] = *tmp;
 
-					tmp++;
-				}
+                    tmp++;
+                }
 
-				scanf_mark[msize] = L'\0';
-			}
-			else
-			/* raw set */
-			if (cmd == L'[') {
-				int n = 0;
-				wchar_t *set = scanf_yset;
+                scanf_mark[msize] = L'\0';
+            }
+            else
+                /* raw set */
+            if (cmd == L'[') {
+                int n = 0;
+                wchar_t *set = scanf_yset;
 
-				/* is it an inverse set? */
-				if (*f == L'^') {
-					set = scanf_nset;
-					f++;
-				}
+                /* is it an inverse set? */
+                if (*f == L'^') {
+                    set = scanf_nset;
+                    f++;
+                }
 
-				/* first one is a ]? add it */
-				if (*f == L']') {
-					set[n++] = *f;
-					f++;
-				}
+                /* first one is a ]? add it */
+                if (*f == L']') {
+                    set[n++] = *f;
+                    f++;
+                }
 
-				/* now build the set */
-				for (; n < SCANF_BUF_SIZE - 1 && *f && *f != L']'; f++) {
-					/* is it a range? */
-					if (*f == L'-') {
-						f++;
+                /* now build the set */
+                for (; n < SCANF_BUF_SIZE - 1 && *f && *f != L']'; f++) {
+                    /* is it a range? */
+                    if (*f == L'-') {
+                        f++;
 
-						/* start or end? hyphen itself */
-						if (n == 0 || *f == L']')
-							set[n++] = L'-';
-						else {
-							/* pick previous char */
-							wchar_t c = set[n - 1];
+                        /* start or end? hyphen itself */
+                        if (n == 0 || *f == L']')
+                            set[n++] = L'-';
+                        else {
+                            /* pick previous char */
+                            wchar_t c = set[n - 1];
 
-							/* fill */
-							while (n < SCANF_BUF_SIZE - 1 && c < *f)
-								set[n++] = ++c;
-						}
-					}
-					else
-					/* is it another command? */
-					if (*f == L'%') {
-						int i;
+                            /* fill */
+                            while (n < SCANF_BUF_SIZE - 1 && c < *f)
+                                set[n++] = ++c;
+                        }
+                    }
+                    else
+                        /* is it another command? */
+                    if (*f == L'%') {
+                        int i;
 
-						f++;
-						for (i = 0; scanf_sets[i].cmd; i++) {
-							if (*f == scanf_sets[i].cmd) {
-								set[n] = L'\0';
-								wcscat(set, scanf_sets[i].yset);
-								n += wcslen(scanf_sets[i].yset);
-								break;
-							}
-						}
-					}
-					else
-						set[n++] = *f;
-				}
+                        f++;
+                        for (i = 0; scanf_sets[i].cmd; i++) {
+                            if (*f == scanf_sets[i].cmd) {
+                                set[n] = L'\0';
+                                wcscat(set, scanf_sets[i].yset);
+                                n += wcslen(scanf_sets[i].yset);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                        set[n++] = *f;
+                }
 
-				/* skip the ] */
-				f++;
+                /* skip the ] */
+                f++;
 
-				set[n] = L'\0';
-			}
-			else
-			/* a standard set? */
-			{
-				int n;
+                set[n] = L'\0';
+            }
+            else
+                /* a standard set? */
+            {
+                int n;
 
-				for (n = 0; scanf_sets[n].cmd != L'\0'; n++) {
-					if (cmd == scanf_sets[n].cmd) {
-						wcscpy(scanf_yset, scanf_sets[n].yset);
-						wcscpy(scanf_nset, scanf_sets[n].nset);
-						break;
-					}
-				}
-			}
+                for (n = 0; scanf_sets[n].cmd != L'\0'; n++) {
+                    if (cmd == scanf_sets[n].cmd) {
+                        wcscpy(scanf_yset, scanf_sets[n].yset);
+                        wcscpy(scanf_nset, scanf_sets[n].nset);
+                        break;
+                    }
+                }
+            }
 
-			/* now fill the dynamic string */
-			while (vsize &&
-			       !wcschr(scanf_nset, *i) &&
-			       (scanf_yset[0] == L'\0' || wcschr(scanf_yset, *i)) &&
-			       (msize == 0 || wcsncmp(i, scanf_mark, msize) != 0)) {
+            /* now fill the dynamic string */
+            while (vsize &&
+                   !wcschr(scanf_nset, *i) &&
+                   (scanf_yset[0] == L'\0' || wcschr(scanf_yset, *i)) &&
+                   (msize == 0 || wcsncmp(i, scanf_mark, msize) != 0)) {
 
-				/* only add if not being ignored */
-				if (!ignore)
-					ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
+                /* only add if not being ignored */
+                if (!ignore)
+                    ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
 
-				i++;
-				vsize--;
-			}
+                i++;
+                vsize--;
+            }
 
-			if (!ignore && size) {
-				/* null terminate and push */
-				ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
-				mpdm_push(r, MPDM_ENS(ptr, size - 1));
-			}
-		}
-		else
-		if (*f == L' ' || *f == L'\t') {
-			/* if it's a blank, sync to next non-blank */
-			f++;
+            if (!ignore && size) {
+                /* null terminate and push */
+                ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+                mpdm_push(r, MPDM_ENS(ptr, size - 1));
+            }
+        }
+        else if (*f == L' ' || *f == L'\t') {
+            /* if it's a blank, sync to next non-blank */
+            f++;
 
-			while (*i == L' ' || *i == L'\t')
-				i++;
-		}
-		else
-		/* test for literals in the format string */
-		if (*i == *f) {
-			i++;
-			f++;
-		}
-		else
-			break;
-	}
+            while (*i == L' ' || *i == L'\t')
+                i++;
+        }
+        else
+            /* test for literals in the format string */
+        if (*i == *f) {
+            i++;
+            f++;
+        }
+        else
+            break;
+    }
 
-	mpdm_unref(str);
-	mpdm_unref(fmt);
+    mpdm_unref(str);
+    mpdm_unref(fmt);
 
     mpdm_unrefnd(r);
 
-	return r;
+    return r;
 }

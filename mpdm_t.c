@@ -66,8 +66,8 @@ void mpdm_sleep(int msecs)
 #ifdef CONFOPT_NANOSLEEP
     struct timespec ts;
 
-    ts.tv_sec   = msecs / 1000;
-    ts.tv_nsec  = (msecs % 1000) * 1000000;
+    ts.tv_sec = msecs / 1000;
+    ts.tv_nsec = (msecs % 1000) * 1000000;
 
     nanosleep(&ts, NULL);
 #endif
@@ -84,18 +84,18 @@ void mpdm_sleep(int msecs)
  */
 mpdm_t mpdm_new_mutex(void)
 {
-	char *ptr = NULL;
-	int size = 0;
+    char *ptr = NULL;
+    int size = 0;
 
 #ifdef CONFOPT_WIN32
-	HANDLE h;
+    HANDLE h;
 
-	h = CreateMutex(NULL, FALSE, NULL);
+    h = CreateMutex(NULL, FALSE, NULL);
 
-	if (h != NULL) {
-		size = sizeof(h);
-		ptr = (char *)&h;
-	}
+    if (h != NULL) {
+        size = sizeof(h);
+        ptr = (char *) &h;
+    }
 #endif
 
 #ifdef CONFOPT_PTHREADS
@@ -103,12 +103,12 @@ mpdm_t mpdm_new_mutex(void)
 
     if (pthread_mutex_init(&m, NULL) == 0) {
         size = sizeof(m);
-        ptr = (char *)&m;
+        ptr = (char *) &m;
     }
 
 #endif
 
-	return MPDM_C(MPDM_MUTEX, ptr, size);
+    return MPDM_C(MPDM_MUTEX, ptr, size);
 }
 
 
@@ -123,13 +123,13 @@ mpdm_t mpdm_new_mutex(void)
 void mpdm_mutex_lock(mpdm_t mutex)
 {
 #ifdef CONFOPT_WIN32
-	HANDLE *h = (HANDLE *)mutex->data;
+    HANDLE *h = (HANDLE *) mutex->data;
 
-	WaitForSingleObject(*h, INFINITE);
+    WaitForSingleObject(*h, INFINITE);
 #endif
 
 #ifdef CONFOPT_PTHREADS
-    pthread_mutex_t *m = (pthread_mutex_t *)mutex->data;
+    pthread_mutex_t *m = (pthread_mutex_t *) mutex->data;
 
     pthread_mutex_lock(m);
 #endif
@@ -147,13 +147,13 @@ void mpdm_mutex_lock(mpdm_t mutex)
 void mpdm_mutex_unlock(mpdm_t mutex)
 {
 #ifdef CONFOPT_WIN32
-	HANDLE *h = (HANDLE *)mutex->data;
+    HANDLE *h = (HANDLE *) mutex->data;
 
-	ReleaseMutex(*h);
+    ReleaseMutex(*h);
 #endif
 
 #ifdef CONFOPT_PTHREADS
-    pthread_mutex_t *m = (pthread_mutex_t *)mutex->data;
+    pthread_mutex_t *m = (pthread_mutex_t *) mutex->data;
 
     pthread_mutex_unlock(m);
 #endif
@@ -179,7 +179,7 @@ mpdm_t mpdm_new_semaphore(int init_value)
 
     if ((h = CreateSemaphore(NULL, init_value, 0x7fffffff, NULL)) != NULL) {
         size = sizeof(h);
-        ptr = (char *)&h;
+        ptr = (char *) &h;
     }
 
 #endif
@@ -189,7 +189,7 @@ mpdm_t mpdm_new_semaphore(int init_value)
 
     if (sem_init(&s, 0, init_value) == 0) {
         size = sizeof(s);
-        ptr = (char *)&s;
+        ptr = (char *) &s;
     }
 
 #endif
@@ -209,13 +209,13 @@ mpdm_t mpdm_new_semaphore(int init_value)
 void mpdm_semaphore_wait(mpdm_t sem)
 {
 #ifdef CONFOPT_WIN32
-	HANDLE *h = (HANDLE *)sem->data;
+    HANDLE *h = (HANDLE *) sem->data;
 
-	WaitForSingleObject(*h, INFINITE);
+    WaitForSingleObject(*h, INFINITE);
 #endif
 
 #ifdef CONFOPT_POSIXSEMS
-    sem_t *s = (sem_t *)sem->data;
+    sem_t *s = (sem_t *) sem->data;
 
     sem_wait(s);
 #endif
@@ -232,13 +232,13 @@ void mpdm_semaphore_wait(mpdm_t sem)
 void mpdm_semaphore_post(mpdm_t sem)
 {
 #ifdef CONFOPT_WIN32
-	HANDLE *h = (HANDLE *)sem->data;
+    HANDLE *h = (HANDLE *) sem->data;
 
     ReleaseSemaphore(*h, 1, NULL);
 #endif
 
 #ifdef CONFOPT_POSIXSEMS
-    sem_t *s = (sem_t *)sem->data;
+    sem_t *s = (sem_t *) sem->data;
 
     sem_post(s);
 #endif
@@ -249,11 +249,12 @@ void mpdm_semaphore_post(mpdm_t sem)
 
 static void thread_caller(mpdm_t a)
 {
-	/* ignore return value */
-	mpdm_void(mpdm_exec(mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2)));
+    /* ignore return value */
+    mpdm_void(mpdm_exec
+              (mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2)));
 
-	/* was referenced in mpdm_exec_thread() */
-	mpdm_unref(a);
+    /* was referenced in mpdm_exec_thread() */
+    mpdm_unref(a);
 }
 
 
@@ -262,7 +263,7 @@ DWORD WINAPI win32_thread(LPVOID param)
 {
     thread_caller((mpdm_t) param);
 
-	return 0;
+    return 0;
 }
 #endif
 
@@ -290,29 +291,29 @@ void *pthreads_thread(void *args)
  */
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
-	mpdm_t a;
-	char *ptr = NULL;
-	int size = 0;
+    mpdm_t a;
+    char *ptr = NULL;
+    int size = 0;
 
-	if (ctxt == NULL)
-		ctxt = MPDM_A(0);
+    if (ctxt == NULL)
+        ctxt = MPDM_A(0);
 
-	/* to be unreferenced at thread stop */
-	a = mpdm_ref(MPDM_A(3));
+    /* to be unreferenced at thread stop */
+    a = mpdm_ref(MPDM_A(3));
 
-	mpdm_aset(a, c, 0);
-	mpdm_aset(a, args, 1);
-	mpdm_aset(a, ctxt, 2);
+    mpdm_aset(a, c, 0);
+    mpdm_aset(a, args, 1);
+    mpdm_aset(a, ctxt, 2);
 
 #ifdef CONFOPT_WIN32
-	HANDLE t;
+    HANDLE t;
 
-	t = CreateThread(NULL, 0, win32_thread, a, 0, NULL);
+    t = CreateThread(NULL, 0, win32_thread, a, 0, NULL);
 
-	if (t != NULL) {
-		size = sizeof(t);
-		ptr = (char *)&t;
-	}
+    if (t != NULL) {
+        size = sizeof(t);
+        ptr = (char *) &t;
+    }
 
 #endif
 
@@ -321,10 +322,10 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     if (pthread_create(&pt, NULL, pthreads_thread, a) == 0) {
         size = sizeof(pthread_t);
-        ptr = (char *)&pt;
+        ptr = (char *) &pt;
     }
 
 #endif
 
-	return MPDM_C(MPDM_THREAD, ptr, size);
+    return MPDM_C(MPDM_THREAD, ptr, size);
 }

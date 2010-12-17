@@ -43,32 +43,32 @@ static int (*mpdm_hash_func) (const wchar_t *, int) = switch_hash_func;
 static int standard_hash_func(const wchar_t * string, int mod)
 /* computes a hashing function on string */
 {
-	int c;
+    int c;
 
-	for (c = 0; *string != L'\0'; string++)
-		c ^= (int) *string;
+    for (c = 0; *string != L'\0'; string++)
+        c ^= (int) *string;
 
-	return c % mod;
+    return c % mod;
 }
 
 
 static int null_hash_func(const wchar_t * string, int mod)
 {
-	return *string % mod;
+    return *string % mod;
 }
 
 static int switch_hash_func(const wchar_t * string, int mod)
 /* one-time wrapper for hash method autodetection */
 {
-	/* commute the real hashing function on
-	   having the MPDM_NULL_HASH environment variable set */
-	if (getenv("MPDM_NULL_HASH") != NULL)
-		mpdm_hash_func = null_hash_func;
-	else
-		mpdm_hash_func = standard_hash_func;
+    /* commute the real hashing function on
+       having the MPDM_NULL_HASH environment variable set */
+    if (getenv("MPDM_NULL_HASH") != NULL)
+        mpdm_hash_func = null_hash_func;
+    else
+        mpdm_hash_func = standard_hash_func;
 
-	/* and fall back to it */
-	return mpdm_hash_func(string, mod);
+    /* and fall back to it */
+    return mpdm_hash_func(string, mod);
 }
 
 #define HASH_BUCKET_S(h, k) mpdm_hash_func(k, mpdm_size(h))
@@ -85,19 +85,19 @@ static int switch_hash_func(const wchar_t * string, int mod)
  */
 int mpdm_hsize(const mpdm_t h)
 {
-	int n;
-	int ret = 0;
+    int n;
+    int ret = 0;
 
     mpdm_ref(h);
 
-	for (n = 0; n < mpdm_size(h); n++) {
-		mpdm_t b = mpdm_aget(h, n);
-		ret += mpdm_size(b);
-	}
+    for (n = 0; n < mpdm_size(h); n++) {
+        mpdm_t b = mpdm_aget(h, n);
+        ret += mpdm_size(b);
+    }
 
     mpdm_unref(h);
 
-	return ret / 2;
+    return ret / 2;
 }
 
 
@@ -112,26 +112,26 @@ int mpdm_hsize(const mpdm_t h)
  */
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
 {
-	mpdm_t b;
-	mpdm_t v = NULL;
-	int n = 0;
+    mpdm_t b;
+    mpdm_t v = NULL;
+    int n = 0;
 
     mpdm_ref(h);
     mpdm_ref(k);
 
-	if (mpdm_size(h)) {
-		/* if hash is not empty... */
-		if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
-			n = mpdm_bseek(b, k, 2, NULL);
+    if (mpdm_size(h)) {
+        /* if hash is not empty... */
+        if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
+            n = mpdm_bseek(b, k, 2, NULL);
 
-		if (n >= 0)
-			v = mpdm_aget(b, n + 1);
-	}
+        if (n >= 0)
+            v = mpdm_aget(b, n + 1);
+    }
 
     mpdm_unref(k);
     mpdm_unref(h);
 
-	return v;
+    return v;
 }
 
 
@@ -144,9 +144,9 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
  * NULL if the key does not exist.
  * [Hashes]
  */
-mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
+mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t * k)
 {
-	return mpdm_hget(h, MPDM_S(k));
+    return mpdm_hget(h, MPDM_S(k));
 }
 
 
@@ -160,26 +160,26 @@ mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
  */
 int mpdm_exists(const mpdm_t h, const mpdm_t k)
 {
-	mpdm_t b;
-	int n;
-	int ret = 0;
+    mpdm_t b;
+    int n;
+    int ret = 0;
 
     mpdm_ref(h);
     mpdm_ref(k);
 
-	if (mpdm_size(h)) {
-		/* if hash is not empty... */
-		if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
-			/* if bucket exists, binary-seek it */
-			if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0)
-				ret = 1;
-		}
-	}
+    if (mpdm_size(h)) {
+        /* if hash is not empty... */
+        if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
+            /* if bucket exists, binary-seek it */
+            if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0)
+                ret = 1;
+        }
+    }
 
     mpdm_unref(k);
     mpdm_unref(h);
 
-	return ret;
+    return ret;
 }
 
 
@@ -196,48 +196,48 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 {
-	mpdm_t b, r;
-	int n;
+    mpdm_t b, r;
+    int n;
 
     mpdm_ref(h);
     mpdm_ref(k);
     mpdm_ref(v);
 
-	/* if hash is empty, create an optimal number of buckets */
-	if (mpdm_size(h) == 0)
-		mpdm_expand(h, 0, mpdm->hash_buckets);
+    /* if hash is empty, create an optimal number of buckets */
+    if (mpdm_size(h) == 0)
+        mpdm_expand(h, 0, mpdm->hash_buckets);
 
-	n = HASH_BUCKET(h, k);
+    n = HASH_BUCKET(h, k);
 
-	if ((b = mpdm_aget(h, n)) != NULL) {
-		int pos;
+    if ((b = mpdm_aget(h, n)) != NULL) {
+        int pos;
 
-		/* bucket exists; try to find the key there */
-		n = mpdm_bseek(b, k, 2, &pos);
+        /* bucket exists; try to find the key there */
+        n = mpdm_bseek(b, k, 2, &pos);
 
-		if (n < 0) {
-			/* the pair does not exist: create it */
-			n = pos;
-			mpdm_expand(b, n, 2);
+        if (n < 0) {
+            /* the pair does not exist: create it */
+            n = pos;
+            mpdm_expand(b, n, 2);
 
-			mpdm_aset(b, k, n);
-		}
-	}
-	else {
-		/* the bucket does not exist; create it */
-		b = MPDM_A(2);
+            mpdm_aset(b, k, n);
+        }
+    }
+    else {
+        /* the bucket does not exist; create it */
+        b = MPDM_A(2);
 
-		/* put the bucket into the hash */
-		mpdm_aset(h, b, n);
+        /* put the bucket into the hash */
+        mpdm_aset(h, b, n);
 
-		/* offset 0 */
-		n = 0;
+        /* offset 0 */
+        n = 0;
 
-		/* insert the key */
-		mpdm_aset(b, k, n);
-	}
+        /* insert the key */
+        mpdm_aset(b, k, n);
+    }
 
-	r = mpdm_aset(b, v, n + 1);
+    r = mpdm_aset(b, v, n + 1);
 
     mpdm_unref(v);
     mpdm_unref(k);
@@ -258,9 +258,9 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  * value).
  * [Hashes]
  */
-mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
+mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t * k, mpdm_t v)
 {
-	return mpdm_hset(h, MPDM_S(k), v);
+    return mpdm_hset(h, MPDM_S(k), v);
 }
 
 
@@ -275,24 +275,24 @@ mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
  */
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
 {
-	mpdm_t b;
-	int n;
+    mpdm_t b;
+    int n;
 
     mpdm_ref(h);
     mpdm_ref(k);
 
-	if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
-		/* bucket exists */
-		if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0) {
-			/* collapse the bucket */
-			mpdm_collapse(b, n, 2);
-		}
-	}
+    if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
+        /* bucket exists */
+        if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0) {
+            /* collapse the bucket */
+            mpdm_collapse(b, n, 2);
+        }
+    }
 
     mpdm_unref(k);
     mpdm_unref(h);
 
-	return NULL;
+    return NULL;
 }
 
 
@@ -306,25 +306,25 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_keys(const mpdm_t h)
 {
-	int n, c;
-	mpdm_t a, k;
+    int n, c;
+    mpdm_t a, k;
 
-	mpdm_ref(h);
+    mpdm_ref(h);
 
-	/* create an array with the same number of elements */
-	a = MPDM_A(mpdm_hsize(h));
+    /* create an array with the same number of elements */
+    a = MPDM_A(mpdm_hsize(h));
 
     mpdm_ref(a);
 
-	c = n = 0;
-	while (mpdm_iterator(h, &c, &k, NULL))
-		mpdm_aset(a, k, n++);
+    c = n = 0;
+    while (mpdm_iterator(h, &c, &k, NULL))
+        mpdm_aset(a, k, n++);
 
     mpdm_unrefnd(a);
 
-	mpdm_unref(h);
+    mpdm_unref(h);
 
-	return a;
+    return a;
 }
 
 
@@ -347,133 +347,131 @@ mpdm_t mpdm_keys(const mpdm_t h)
  * [Hashes]
  * [Arrays]
  */
-int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2)
+int mpdm_iterator(mpdm_t h, int *context, mpdm_t * v1, mpdm_t * v2)
 {
-	int ret = 0;
-	mpdm_t w1, w2;
+    int ret = 0;
+    mpdm_t w1, w2;
 
-	mpdm_ref(h);
+    mpdm_ref(h);
 
-	if (v1 == NULL)
-		v1 = &w1;
+    if (v1 == NULL)
+        v1 = &w1;
 
-	if (v2 == NULL)
-		v2 = &w2;
+    if (v2 == NULL)
+        v2 = &w2;
 
-	if (MPDM_IS_HASH(h)) {
-		int bi, ei;
+    if (MPDM_IS_HASH(h)) {
+        int bi, ei;
 
-		if (mpdm_size(h)) {
-			/* get bucket and element index */
-			bi = (*context) % mpdm_size(h);
-			ei = (*context) / mpdm_size(h);
+        if (mpdm_size(h)) {
+            /* get bucket and element index */
+            bi = (*context) % mpdm_size(h);
+            ei = (*context) / mpdm_size(h);
 
-			while (ret == 0 && bi < mpdm_size(h)) {
-				mpdm_t b;
+            while (ret == 0 && bi < mpdm_size(h)) {
+                mpdm_t b;
 
-				/* if bucket is empty or there is no more elements in it, pick next */
-				if ((b = mpdm_aget(h, bi)) == NULL || ei >= mpdm_size(b)) {
-					ei = 0;
-					bi++;
-					continue;
-				}
+                /* if bucket is empty or there is no more elements in it, pick next */
+                if ((b = mpdm_aget(h, bi)) == NULL || ei >= mpdm_size(b)) {
+                    ei = 0;
+                    bi++;
+                    continue;
+                }
 
-				/* get pair */
-				*v1 = mpdm_aget(b, ei++);
-				*v2 = mpdm_aget(b, ei++);
+                /* get pair */
+                *v1 = mpdm_aget(b, ei++);
+                *v2 = mpdm_aget(b, ei++);
 
-				/* update context */
-				*context = (ei * mpdm_size(h)) + bi;
-				ret = 1;
-			}
-		}
-	}
-	else
-	if (MPDM_IS_ARRAY(h)) {
-		if (*context < mpdm_size(h)) {
-			*v1 = mpdm_aget(h, (*context)++);
-			ret = 1;
-		}
-	}
+                /* update context */
+                *context = (ei * mpdm_size(h)) + bi;
+                ret = 1;
+            }
+        }
+    }
+    else if (MPDM_IS_ARRAY(h)) {
+        if (*context < mpdm_size(h)) {
+            *v1 = mpdm_aget(h, (*context)++);
+            ret = 1;
+        }
+    }
 
-	mpdm_unref(h);
+    mpdm_unref(h);
 
-	return ret;
+    return ret;
 }
 
 
 static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 {
-	int n;
-	mpdm_t p, w;
+    int n;
+    mpdm_t p, w;
 
-	if (r == NULL)
-		r = mpdm_root();
+    if (r == NULL)
+        r = mpdm_root();
 
-	mpdm_ref(r);
-	mpdm_ref(k);
-	mpdm_ref(v);
+    mpdm_ref(r);
+    mpdm_ref(k);
+    mpdm_ref(v);
 
-	/* splits the path, if needed */
-	if (k->flags & MPDM_MULTIPLE)
-		p = mpdm_ref(k);
-	else
-		p = mpdm_ref(mpdm_split_s(L".", k));
+    /* splits the path, if needed */
+    if (k->flags & MPDM_MULTIPLE)
+        p = mpdm_ref(k);
+    else
+        p = mpdm_ref(mpdm_split_s(L".", k));
 
-	w = r;
+    w = r;
 
-	for (n = 0; n < mpdm_size(p) - s; n++) {
+    for (n = 0; n < mpdm_size(p) - s; n++) {
 
-		/* is executable? run it and take its output */
-		while (MPDM_IS_EXEC(w))
-			w = mpdm_exec(w, NULL, NULL);
+        /* is executable? run it and take its output */
+        while (MPDM_IS_EXEC(w))
+            w = mpdm_exec(w, NULL, NULL);
 
-		if (MPDM_IS_HASH(w))
-			w = mpdm_hget(w, mpdm_aget(p, n));
-		else
-		if (MPDM_IS_ARRAY(w)) {
-			int i = mpdm_ival(mpdm_aget(p, n));
-			w = mpdm_aget(w, i);
-		}
-		else {
-			mpdm_unref(mpdm_ref(w));
-			w = NULL;
-		}
+        if (MPDM_IS_HASH(w))
+            w = mpdm_hget(w, mpdm_aget(p, n));
+        else if (MPDM_IS_ARRAY(w)) {
+            int i = mpdm_ival(mpdm_aget(p, n));
+            w = mpdm_aget(w, i);
+        }
+        else {
+            mpdm_unref(mpdm_ref(w));
+            w = NULL;
+        }
 
-		if (w == NULL)
-			break;
-	}
+        if (w == NULL)
+            break;
+    }
 
-	/* if want to set, do it */
-	if (s && w != NULL) {
-		/* resolve executable values again */
-		while (MPDM_IS_EXEC(w))
-			w = mpdm_exec(w, NULL, NULL);
+    /* if want to set, do it */
+    if (s && w != NULL) {
+        /* resolve executable values again */
+        while (MPDM_IS_EXEC(w))
+            w = mpdm_exec(w, NULL, NULL);
 
-		if (w->flags & MPDM_HASH)
-			w = mpdm_hset(w, mpdm_aget(p, n), v);
-		else {
-			int i = mpdm_ival(mpdm_aget(p, n));
-			w = mpdm_aset(w, v, i);
-		}
-	}
+        if (w->flags & MPDM_HASH)
+            w = mpdm_hset(w, mpdm_aget(p, n), v);
+        else {
+            int i = mpdm_ival(mpdm_aget(p, n));
+            w = mpdm_aset(w, v, i);
+        }
+    }
 
     mpdm_unref(p);
-	mpdm_unref(v);
-	mpdm_unref(k);
-	mpdm_unref(r);
+    mpdm_unref(v);
+    mpdm_unref(k);
+    mpdm_unref(r);
 
-	return w;
+    return w;
 }
 
 
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k)
 {
-	return mpdm_sym(r, k, NULL, 0);
+    return mpdm_sym(r, k, NULL, 0);
 }
 
 
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v)
 {
-	return mpdm_sym(r, k, v, 1);
+    return mpdm_sym(r, k, v, 1);
 }

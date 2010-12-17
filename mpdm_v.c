@@ -45,15 +45,15 @@ struct mpdm_control *mpdm = NULL;
 static void cleanup_value(mpdm_t v)
 /* cleans a value */
 {
-	/* collapse multiple values */
-	if (v->flags & MPDM_MULTIPLE)
-		mpdm_collapse(v, 0, v->size);
+    /* collapse multiple values */
+    if (v->flags & MPDM_MULTIPLE)
+        mpdm_collapse(v, 0, v->size);
 
-	/* free data if needed */
-	if (v->data != NULL && v->flags & MPDM_FREE) {
-		free((void *)v->data);
-		v->data = NULL;
-	}
+    /* free data if needed */
+    if (v->data != NULL && v->flags & MPDM_FREE) {
+        free((void *) v->data);
+        v->data = NULL;
+    }
 
     mpdm->count--;
 
@@ -78,21 +78,20 @@ static void cleanup_value(mpdm_t v)
  */
 mpdm_t mpdm_new(int flags, const void *data, int size)
 {
-	mpdm_t v = NULL;
+    mpdm_t v = NULL;
 
-	/* alloc */
-	if ((v = malloc(sizeof(struct mpdm_val))) == NULL)
-		return NULL;
+    /* alloc */
+    if ((v = malloc(sizeof(struct mpdm_val))) != NULL) {
+        /* account one value more */
+        mpdm->count++;
 
-	/* account one value more */
-	mpdm->count++;
+        v->flags    = flags;
+        v->ref      = 0;
+        v->data     = data;
+        v->size     = size;
+    }
 
-	v->flags = flags;
-	v->ref = 0;
-	v->data = data;
-	v->size = size;
-
-	return v;
+    return v;
 }
 
 
@@ -105,9 +104,10 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
  */
 mpdm_t mpdm_ref(mpdm_t v)
 {
-	if (v != NULL)
-		v->ref++;
-	return v;
+    if (v != NULL)
+        v->ref++;
+
+    return v;
 }
 
 
@@ -121,16 +121,16 @@ mpdm_t mpdm_ref(mpdm_t v)
  */
 mpdm_t mpdm_unref(mpdm_t v)
 {
-	if (v != NULL) {
-		v->ref--;
+    if (v != NULL) {
+        v->ref--;
 
-		if (v->ref <= 0) {
-			cleanup_value(v);
-			v = NULL;
-		}
-	}
+        if (v->ref <= 0) {
+            cleanup_value(v);
+            v = NULL;
+        }
+    }
 
-	return v;
+    return v;
 }
 
 
@@ -144,9 +144,10 @@ mpdm_t mpdm_unref(mpdm_t v)
  */
 mpdm_t mpdm_unrefnd(mpdm_t v)
 {
-	if (v != NULL)
-		v->ref--;
-	return v;
+    if (v != NULL)
+        v->ref--;
+
+    return v;
 }
 
 
@@ -162,11 +163,11 @@ int mpdm_size(const mpdm_t v)
 {
     int r = 0;
 
-	/* NULL values have no size */
-	if (v != NULL)
-		r = v->size;
+    /* NULL values have no size */
+    if (v != NULL)
+        r = v->size;
 
-	return r;
+    return r;
 }
 
 
@@ -185,14 +186,14 @@ mpdm_t mpdm_clone(const mpdm_t v)
 
     mpdm_ref(v);
 
-	if (MPDM_IS_ARRAY(v))
-		r = mpdm_aclone(v);
+    if (MPDM_IS_ARRAY(v))
+        r = mpdm_aclone(v);
     else
         r = v;
 
     mpdm_unref(v);
 
-	return r;
+    return r;
 }
 
 
@@ -205,10 +206,10 @@ mpdm_t mpdm_clone(const mpdm_t v)
  */
 mpdm_t mpdm_root(void)
 {
-	if (mpdm->root == NULL)
-		mpdm->root = mpdm_ref(MPDM_H(0));
+    if (mpdm->root == NULL)
+        mpdm->root = mpdm_ref(MPDM_H(0));
 
-	return mpdm->root;
+    return mpdm->root;
 }
 
 
@@ -223,10 +224,10 @@ mpdm_t mpdm_root(void)
 mpdm_t mpdm_set_ival(mpdm_t v, int ival)
 /* sets an integer value to a value */
 {
-	v->flags |= MPDM_IVAL;
-	v->ival = ival;
+    v->flags    |= MPDM_IVAL;
+    v->ival     = ival;
 
-	return v;
+    return v;
 }
 
 
@@ -241,10 +242,10 @@ mpdm_t mpdm_set_ival(mpdm_t v, int ival)
 mpdm_t mpdm_set_rval(mpdm_t v, double rval)
 /* sets a real value to a value */
 {
-	v->flags |= MPDM_RVAL;
-	v->rval = rval;
+    v->flags    |= MPDM_RVAL;
+    v->rval     = rval;
 
-	return v;
+    return v;
 }
 
 
@@ -258,8 +259,8 @@ mpdm_t mpdm_set_rval(mpdm_t v, double rval)
  */
 void mpdm_void(mpdm_t v)
 {
-	mpdm_ref(v);
-	mpdm_unref(v);
+    mpdm_ref(v);
+    mpdm_unref(v);
 }
 
 
@@ -271,13 +272,13 @@ void mpdm_void(mpdm_t v)
  */
 int mpdm_is_null(mpdm_t v)
 {
-	int r;
+    int r;
 
-	mpdm_ref(v);
-	r = v == NULL ? 1 : 0;
-	mpdm_unref(v);
+    mpdm_ref(v);
+    r = v == NULL ? 1 : 0;
+    mpdm_unref(v);
 
-	return r;
+    return r;
 }
 
 
@@ -304,54 +305,55 @@ int mpdm_is_null(mpdm_t v)
  */
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
-	mpdm_t r = NULL;
+    mpdm_t r = NULL;
 
-	mpdm_ref(c);
-	mpdm_ref(args);
-	mpdm_ref(ctxt);
+    mpdm_ref(c);
+    mpdm_ref(args);
+    mpdm_ref(ctxt);
 
-	if (c != NULL && (c->flags & MPDM_EXEC)) {
+    if (c != NULL && (c->flags & MPDM_EXEC)) {
 
-		if (c->flags & MPDM_MULTIPLE) {
-			mpdm_t x;
-			mpdm_t(*func) (mpdm_t, mpdm_t, mpdm_t);
+        if (c->flags & MPDM_MULTIPLE) {
+            mpdm_t x;
+            mpdm_t(*func) (mpdm_t, mpdm_t, mpdm_t);
 
-			/* value is multiple; first element is the
-			   3 argument version of the executable function,
-			   next its optional additional information,
-			   the arguments and the context */
-			x = mpdm_aget(c, 0);
+            /* value is multiple; first element is the
+               3 argument version of the executable function,
+               next its optional additional information,
+               the arguments and the context */
+            x = mpdm_aget(c, 0);
 
-			if ((func = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
-				r = func(mpdm_aget(c, 1), args, ctxt);
-		}
-		else {
-			mpdm_t(*func) (mpdm_t, mpdm_t);
+            if ((func =
+                 (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
+                r = func(mpdm_aget(c, 1), args, ctxt);
+        }
+        else {
+            mpdm_t(*func) (mpdm_t, mpdm_t);
 
-			/* value is scalar; c is the 2 argument
-			   version of the executable function */
-			if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
-				r = func(args, ctxt);
-		}
+            /* value is scalar; c is the 2 argument
+               version of the executable function */
+            if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
+                r = func(args, ctxt);
+        }
     }
 
-	mpdm_unref(ctxt);
-	mpdm_unref(args);
-	mpdm_unref(c);
+    mpdm_unref(ctxt);
+    mpdm_unref(args);
+    mpdm_unref(c);
 
-	return r;
+    return r;
 }
 
 
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 {
     mpdm_t r;
-	mpdm_t a = MPDM_A(1);
+    mpdm_t a = MPDM_A(1);
 
     mpdm_ref(a);
-	mpdm_aset(a, a1, 0);
+    mpdm_aset(a, a1, 0);
 
-	r = mpdm_exec(c, a, ctxt);
+    r = mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -362,13 +364,13 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 {
     mpdm_t r;
-	mpdm_t a = MPDM_A(2);
+    mpdm_t a = MPDM_A(2);
 
     mpdm_ref(a);
-	mpdm_aset(a, a1, 0);
-	mpdm_aset(a, a2, 1);
+    mpdm_aset(a, a1, 0);
+    mpdm_aset(a, a2, 1);
 
-	r = mpdm_exec(c, a, ctxt);
+    r = mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -379,14 +381,14 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 {
     mpdm_t r;
-	mpdm_t a = MPDM_A(3);
+    mpdm_t a = MPDM_A(3);
 
     mpdm_ref(a);
-	mpdm_aset(a, a1, 0);
-	mpdm_aset(a, a2, 1);
-	mpdm_aset(a, a3, 2);
+    mpdm_aset(a, a1, 0);
+    mpdm_aset(a, a2, 1);
+    mpdm_aset(a, a3, 2);
 
-	r = mpdm_exec(c, a, ctxt);
+    r = mpdm_exec(c, a, ctxt);
 
     mpdm_unref(a);
 
@@ -396,69 +398,69 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 
 mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2)
 {
-	mpdm_t x;
+    mpdm_t x;
 
-	x = MPDM_A(2);
-	x->flags |= MPDM_EXEC;
+    x = MPDM_A(2);
+    x->flags |= MPDM_EXEC;
 
     mpdm_ref(x);
 
-	mpdm_aset(x, MPDM_X(a1), 0);
-	mpdm_aset(x, a2, 1);
+    mpdm_aset(x, MPDM_X(a1), 0);
+    mpdm_aset(x, a2, 1);
 
     mpdm_unrefnd(x);
 
-	return x;
+    return x;
 }
 
 
 mpdm_t mpdm_new_copy(int flags, void *ptr, int size)
 {
-	mpdm_t r = NULL;
+    mpdm_t r = NULL;
 
-	if (ptr != NULL) {
-		char *ptr2 = malloc(size);
-		memcpy(ptr2, ptr, size);
+    if (ptr != NULL) {
+        char *ptr2 = malloc(size);
+        memcpy(ptr2, ptr, size);
 
-		r = mpdm_new(MPDM_FREE | flags, ptr2, size);
-	}
+        r = mpdm_new(MPDM_FREE | flags, ptr2, size);
+    }
 
-	return r;
+    return r;
 }
 
 
 static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
 /* accesor / mutator for MPDM internal data */
 {
-	mpdm_t v;
+    mpdm_t v;
 
     mpdm_ref(args);
 
     v = mpdm_aget(args, 0);
 
-	if (v != NULL) {
-		mpdm_t w;
+    if (v != NULL) {
+        mpdm_t w;
 
-		/* do changes */
-		if ((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
-			mpdm->hash_buckets = mpdm_ival(w);
-	}
+        /* do changes */
+        if ((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
+            mpdm->hash_buckets = mpdm_ival(w);
+    }
 
-	/* now collect all information */
-	v = MPDM_H(0);
+    /* now collect all information */
+    v = MPDM_H(0);
 
     mpdm_ref(v);
 
-	mpdm_hset_s(v, L"version",             MPDM_MBS(VERSION));
-	mpdm_hset_s(v, L"count",               MPDM_I(mpdm->count));
-	mpdm_hset_s(v, L"hash_buckets",        MPDM_I(mpdm->hash_buckets));
-	mpdm_hset_s(v, L"destroy_on_unref",    MPDM_I(1));
+    mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
+    mpdm_hset_s(v, L"count",            MPDM_I(mpdm->count));
+    mpdm_hset_s(v, L"hash_buckets",     MPDM_I(mpdm->hash_buckets));
+    mpdm_hset_s(v, L"destroy_on_unref", MPDM_I(1));
 
     mpdm_unref(args);
 
     mpdm_unrefnd(v);
 
-	return v;
+    return v;
 }
 
 extern char **environ;
@@ -466,27 +468,27 @@ extern char **environ;
 static mpdm_t build_env(void)
 /* builds a hash with the environment */
 {
-	char **ptr;
-	mpdm_t e = MPDM_H(0);
+    char **ptr;
+    mpdm_t e = MPDM_H(0);
 
     mpdm_ref(e);
 
-	for (ptr = environ; *ptr != NULL; ptr++) {
-		char *eq = strchr(*ptr, '=');
+    for (ptr = environ; *ptr != NULL; ptr++) {
+        char *eq = strchr(*ptr, '=');
 
-		if (eq != NULL) {
-			mpdm_t k, v;
+        if (eq != NULL) {
+            mpdm_t k, v;
 
-			k = MPDM_NMBS((*ptr), eq - (*ptr));
-			v = MPDM_MBS(eq + 1);
+            k = MPDM_NMBS((*ptr), eq - (*ptr));
+            v = MPDM_MBS(eq + 1);
 
-			mpdm_hset(e, k, v);
-		}
-	}
+            mpdm_hset(e, k, v);
+        }
+    }
 
     mpdm_unrefnd(e);
 
-	return e;
+    return e;
 }
 
 
@@ -498,33 +500,33 @@ static mpdm_t build_env(void)
  */
 int mpdm_startup(void)
 {
-	/* do the startup only unless done beforehand */
-	if (mpdm == NULL) {
-		/* alloc space */
-		if ((mpdm = malloc(sizeof(struct mpdm_control))) == NULL)
-			return -1;
+    /* do the startup only unless done beforehand */
+    if (mpdm == NULL) {
+        /* alloc space */
+        if ((mpdm = malloc(sizeof(struct mpdm_control))) == NULL)
+            return -1;
 
-		/* cleans it */
-		memset(mpdm, '\0', sizeof(struct mpdm_control));
+        /* cleans it */
+        memset(mpdm, '\0', sizeof(struct mpdm_control));
 
-		/* sets the defaults */
-		mpdm->hash_buckets = 31;
+        /* sets the defaults */
+        mpdm->hash_buckets = 31;
 
-		/* sets the locale */
-		if (setlocale(LC_ALL, "") == NULL)
-			setlocale(LC_ALL, "C");
+        /* sets the locale */
+        if (setlocale(LC_ALL, "") == NULL)
+            setlocale(LC_ALL, "C");
 
-		mpdm_encoding(NULL);
+        mpdm_encoding(NULL);
 
-		/* store the MPDM() function */
-		mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_X(MPDM));
+        /* store the MPDM() function */
+        mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_X(MPDM));
 
-		/* store the ENV hash */
-		mpdm_hset_s(mpdm_root(), L"ENV", build_env());
-	}
+        /* store the ENV hash */
+        mpdm_hset_s(mpdm_root(), L"ENV", build_env());
+    }
 
-	/* everything went OK */
-	return 0;
+    /* everything went OK */
+    return 0;
 }
 
 
@@ -535,7 +537,7 @@ int mpdm_startup(void)
  */
 void mpdm_shutdown(void)
 {
-	/* dummy, by now */
+    /* dummy, by now */
 }
 
 /**

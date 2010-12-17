@@ -35,93 +35,93 @@
 /** data **/
 
 static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size);
-wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size) = NULL;
+wchar_t *(*mpdm_dump_1) (const mpdm_t v, int l, wchar_t * ptr, int *size) =
+    NULL;
 
 /** code **/
 
-static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, int *size)
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
 /* dumps one value to the ptr dynamic string with 'l' indenting level */
 {
-	int n;
-	wchar_t *wptr;
+    int n;
+    wchar_t *wptr;
 
-	mpdm_ref(v);
+    mpdm_ref(v);
 
-	/* indent */
-	for (n = 0; n < l; n++)
-		ptr = mpdm_pokews(ptr, size, L"  ");
+    /* indent */
+    for (n = 0; n < l; n++)
+        ptr = mpdm_pokews(ptr, size, L"  ");
 
-	if (v != NULL) {
-		char tmp[256];
-		int s;
+    if (v != NULL) {
+        char tmp[256];
+        int s;
 
-		sprintf(tmp, "%d,%c%c%c%c:", v->ref,
-			v->flags & MPDM_FILE ? 'F' :
-			(v->flags & MPDM_STRING ? 'S' :
-				(v->flags & MPDM_EXEC ? 'X' : '-')),
-			v->flags & MPDM_HASH ? 'H' :
-				(v->flags & MPDM_MULTIPLE ? 'M' : '-'),
-			v->flags & MPDM_REGEX ? 'r' :
-				(v->flags & MPDM_FREE ? 'A' : '-'),
-			v->flags & MPDM_IVAL ? 'I' :
-				(v->flags & MPDM_RVAL ? 'R' : '-')
-	    	);
+        sprintf(tmp, "%d,%c%c%c%c:", v->ref,
+                v->flags & MPDM_FILE ? 'F' :
+                (v->flags & MPDM_STRING ? 'S' :
+                 (v->flags & MPDM_EXEC ? 'X' : '-')),
+                v->flags & MPDM_HASH ? 'H' :
+                (v->flags & MPDM_MULTIPLE ? 'M' : '-'),
+                v->flags & MPDM_REGEX ? 'r' :
+                (v->flags & MPDM_FREE ? 'A' : '-'),
+                v->flags & MPDM_IVAL ? 'I' :
+                (v->flags & MPDM_RVAL ? 'R' : '-')
+            );
 
-		wptr = mpdm_mbstowcs(tmp, &s, -1);
-		ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
-		free(wptr);
+        wptr = mpdm_mbstowcs(tmp, &s, -1);
+        ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
+        free(wptr);
 
-		/* if it's a multiple value, add also the number
-		   of elements */
-		if (v->flags & MPDM_MULTIPLE) {
-			sprintf(tmp, "[%d] ", mpdm_size(v));
-			wptr = mpdm_mbstowcs(tmp, &s, -1);
-			ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
-			free(wptr);
-		}
-	}
+        /* if it's a multiple value, add also the number
+           of elements */
+        if (v->flags & MPDM_MULTIPLE) {
+            sprintf(tmp, "[%d] ", mpdm_size(v));
+            wptr = mpdm_mbstowcs(tmp, &s, -1);
+            ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
+            free(wptr);
+        }
+    }
 
-	/* add the visual representation of the value */
-	ptr = mpdm_pokev(ptr, size, v);
-	ptr = mpdm_pokewsn(ptr, size, L"\n", 1);
+    /* add the visual representation of the value */
+    ptr = mpdm_pokev(ptr, size, v);
+    ptr = mpdm_pokewsn(ptr, size, L"\n", 1);
 
-	if (v != NULL) {
-		/* if it's a hash, iterate it */
-		if (v->flags & MPDM_HASH) {
-			int c = 0;
-			mpdm_t k, w;
+    if (v != NULL) {
+        /* if it's a hash, iterate it */
+        if (v->flags & MPDM_HASH) {
+            int c = 0;
+            mpdm_t k, w;
 
-			while (mpdm_iterator(v, &c, &k, &w)) {
-				ptr = dump_1(k, l + 1, ptr, size);
-				ptr = dump_1(w, l + 2, ptr, size);
-			}
-		}
-		else
-		if (v->flags & MPDM_MULTIPLE) {
-			for (n = 0; n < mpdm_size(v); n++)
-				ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
-		}
-	}
+            while (mpdm_iterator(v, &c, &k, &w)) {
+                ptr = dump_1(k, l + 1, ptr, size);
+                ptr = dump_1(w, l + 2, ptr, size);
+            }
+        }
+        else if (v->flags & MPDM_MULTIPLE) {
+            for (n = 0; n < mpdm_size(v); n++)
+                ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
+        }
+    }
 
-	mpdm_unref(v);
+    mpdm_unref(v);
 
-	return ptr;
+    return ptr;
 }
 
 
 static wchar_t *do_dump(mpdm_t v, int *size)
 {
-	wchar_t *ptr;
+    wchar_t *ptr;
 
-	/* if no dumper plugin is defined, fall back to default */
-	if (mpdm_dump_1 == NULL)
-		mpdm_dump_1 = dump_1;
+    /* if no dumper plugin is defined, fall back to default */
+    if (mpdm_dump_1 == NULL)
+        mpdm_dump_1 = dump_1;
 
-	*size = 0;
-	ptr = mpdm_dump_1(v, 0, NULL, size);
-	ptr = mpdm_pokewsn(ptr, size, L"", 1);
+    *size = 0;
+    ptr = mpdm_dump_1(v, 0, NULL, size);
+    ptr = mpdm_pokewsn(ptr, size, L"", 1);
 
-	return ptr;
+    return ptr;
 }
 
 
@@ -133,12 +133,12 @@ static wchar_t *do_dump(mpdm_t v, int *size)
  */
 mpdm_t mpdm_dumper(const mpdm_t v)
 {
-	int size = 0;
-	wchar_t *ptr;
+    int size = 0;
+    wchar_t *ptr;
 
-	ptr = do_dump(v, &size);
+    ptr = do_dump(v, &size);
 
-	return MPDM_ENS(ptr, size - 1);
+    return MPDM_ENS(ptr, size - 1);
 }
 
 
@@ -151,14 +151,14 @@ mpdm_t mpdm_dumper(const mpdm_t v)
  */
 void mpdm_dump(const mpdm_t v)
 {
-	int size = 0;
-	wchar_t *ptr;
+    int size = 0;
+    wchar_t *ptr;
 
-	mpdm_ref(v);
+    mpdm_ref(v);
 
-	ptr = do_dump(v, &size);
-	mpdm_write_wcs(stdout, ptr);
-	free(ptr);
+    ptr = do_dump(v, &size);
+    mpdm_write_wcs(stdout, ptr);
+    free(ptr);
 
-	mpdm_unrefnd(v);
+    mpdm_unrefnd(v);
 }
