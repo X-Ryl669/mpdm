@@ -2048,6 +2048,47 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 
 
 /**
+ * mpdm_popen2 - Opens a pipe and returns 2 descriptors.
+ * @prg: the program to pipe
+ *
+ * Opens a read-write pipe and returns an array of two descriptors,
+ * one for reading and one for writing. If @prg could not be piped to,
+ * returns NULL.
+ * [File Management]
+ */
+mpdm_t mpdm_popen2(const mpdm_t prg)
+{
+    mpdm_t i, o;
+    mpdm_t p = NULL;
+
+    if ((i = mpdm_popen(prg, MPDM_LS(L"r+"))) != NULL) {
+        struct mpdm_file *ifs;
+        struct mpdm_file *ofs;
+
+        o = new_mpdm_file();
+
+        ifs = (struct mpdm_file *)i->data;
+        ofs = (struct mpdm_file *)o->data;
+
+        ofs->in = ifs->out;
+        ifs->out = NULL;
+
+#ifdef CONFOPT_WIN32
+        ofs->hin = ifs->hout;
+        ifs->hout = -1;
+#endif
+
+        p = mpdm_ref(MPDM_A(2));
+        mpdm_aset(p, i, 0);
+        mpdm_aset(p, o, 1);
+        mpdm_unrefnd(p);
+    }
+
+    return p;
+}
+
+
+/**
  * mpdm_pclose - Closes a pipe.
  * @fd: the value containing the file descriptor
  *

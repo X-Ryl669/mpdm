@@ -194,6 +194,7 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid);
 mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base);
 
 mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode);
+mpdm_t mpdm_popen2(const mpdm_t prg);
 mpdm_t mpdm_pclose(mpdm_t fd);
 
 extern int mpdm_regex_offset;
