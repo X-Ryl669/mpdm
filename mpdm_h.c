@@ -388,7 +388,8 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t * v1, mpdm_t * v2)
             }
         }
     }
-    else if (MPDM_IS_ARRAY(h)) {
+    else
+    if (MPDM_IS_ARRAY(h)) {
         if (*context < mpdm_size(h)) {
             *v1 = mpdm_aget(h, (*context)++);
             ret = 1;
@@ -429,7 +430,8 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
         if (MPDM_IS_HASH(w))
             w = mpdm_hget(w, mpdm_aget(p, n));
-        else if (MPDM_IS_ARRAY(w)) {
+        else
+        if (MPDM_IS_ARRAY(w)) {
             int i = mpdm_ival(mpdm_aget(p, n));
             w = mpdm_aget(w, i);
         }

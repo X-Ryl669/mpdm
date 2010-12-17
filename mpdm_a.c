@@ -510,7 +510,8 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 
         if (c == 0)
             o = n * step;
-        else if (c > 0)
+        else
+        if (c > 0)
             t = n - 1;
         else
             b = n + 1;

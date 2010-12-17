@@ -349,7 +349,8 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 
         if ((c & 0x80) == 0)
             wc = c;
-        else if ((c & 0xe0) == 0xe0) {
+        else
+        if ((c & 0xe0) == 0xe0) {
             wc = (c & 0x1f) << 12;
             UTF8_BYTE();
             wc |= (c & 0x3f) << 6;
@@ -390,7 +391,8 @@ static int write_utf8(struct mpdm_file *f, const wchar_t * str)
     for (; (wc = *str) != L'\0'; str++) {
         if (wc < 0x80)
             put_char((int) wc, f);
-        else if (wc < 0x800) {
+        else
+        if (wc < 0x800) {
             put_char((int) (0xc0 | (wc >> 6)), f);
             put_char((int) (0x80 | (wc & 0x3f)), f);
             cnt++;
@@ -596,7 +598,8 @@ static wchar_t *read_utf16(struct mpdm_file *f, int *s)
         enc = L"utf-16be";
         f->f_read = read_utf16be;
     }
-    else if (c1 != 0xff || c2 != 0xfe) {
+    else
+    if (c1 != 0xff || c2 != 0xfe) {
         /* no BOM; rewind and hope */
         fseek(f->in, 0, SEEK_SET);
     }
@@ -822,7 +825,8 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
                 }
             }
         }
-        else if (c == 0x00) {
+        else
+        if (c == 0x00) {
             /* can be utf32be */
             if (get_char(f) == 0x00 && get_char(f) == 0xfe
                 && get_char(f) == 0xff) {
@@ -831,7 +835,8 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
                 goto got_encoding;
             }
         }
-        else if (c == 0xfe) {
+        else
+        if (c == 0xfe) {
             /* can be utf16be */
             if (get_char(f) == 0xff) {
                 enc = L"utf-16be";
@@ -839,7 +844,8 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
                 goto got_encoding;
             }
         }
-        else if (c == 0xef) {
+        else
+        if (c == 0xef) {
             /* can be utf8 with BOM */
             if (get_char(f) == 0xbb && get_char(f) == 0xbf) {
                 enc = L"utf-8bom";
@@ -857,12 +863,14 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
                 if ((c & 0xc0) == 0x80) {
                     if ((p & 0xc0) == 0xc0)
                         u++;
-                    else if ((p & 0x80) == 0x00) {
+                    else
+                    if ((p & 0x80) == 0x00) {
                         u = -1;
                         break;
                     }
                 }
-                else if ((p & 0xc0) == 0xc0) {
+                else
+                if ((p & 0xc0) == 0xc0) {
                     u = -1;
                     break;
                 }
@@ -875,7 +883,8 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
                 enc = L"8bit";
                 f->f_read = read_iso8859_1;
             }
-            else if (u > 0) {
+            else
+            if (u > 0) {
                 /* utf-8 sequences found */
                 enc = L"utf-8";
                 f->f_read = read_utf8;
@@ -936,36 +945,44 @@ static mpdm_t new_mpdm_file(void)
             fs->f_read = read_utf8_bom;
             fs->f_write = write_utf8;
         }
-        else if (wcscmp(enc, L"utf-8bom") == 0) {
+        else
+        if (wcscmp(enc, L"utf-8bom") == 0) {
             fs->f_read = read_utf8_bom;
             fs->f_write = write_utf8_bom;
         }
-        else if (wcscmp(enc, L"iso8859-1") == 0 ||
+        else
+        if (wcscmp(enc, L"iso8859-1") == 0 ||
                  wcscmp(enc, L"8bit") == 0) {
             fs->f_read = read_iso8859_1;
             fs->f_write = write_iso8859_1;
         }
-        else if (wcscmp(enc, L"utf-16le") == 0) {
+        else
+        if (wcscmp(enc, L"utf-16le") == 0) {
             fs->f_read = read_utf16le;
             fs->f_write = write_utf16le_bom;
         }
-        else if (wcscmp(enc, L"utf-16be") == 0) {
+        else
+        if (wcscmp(enc, L"utf-16be") == 0) {
             fs->f_read = read_utf16be;
             fs->f_write = write_utf16be_bom;
         }
-        else if (wcscmp(enc, L"utf-16") == 0) {
+        else
+        if (wcscmp(enc, L"utf-16") == 0) {
             fs->f_read = read_utf16;
             fs->f_write = write_utf16le_bom;
         }
-        else if (wcscmp(enc, L"utf-32le") == 0) {
+        else
+        if (wcscmp(enc, L"utf-32le") == 0) {
             fs->f_read = read_utf32le;
             fs->f_write = write_utf32le_bom;
         }
-        else if (wcscmp(enc, L"utf-32be") == 0) {
+        else
+        if (wcscmp(enc, L"utf-32be") == 0) {
             fs->f_read = read_utf32be;
             fs->f_write = write_utf32be_bom;
         }
-        else if (wcscmp(enc, L"utf-32") == 0) {
+        else
+        if (wcscmp(enc, L"utf-32") == 0) {
             fs->f_read = read_utf32;
             fs->f_write = write_utf32le_bom;
         }

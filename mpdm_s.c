@@ -415,15 +415,18 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
         /* is any value NULL? */
     if (v1 == NULL)
         r = -1;
-    else if (v2 == NULL)
+    else
+    if (v2 == NULL)
         r = 1;
     else
         /* different values, but same content? (unlikely) */
     if (v1->data == v2->data)
         r = 0;
-    else if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
+    else
+    if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
         r = wcscoll((wchar_t *) v1->data, (wchar_t *) v2->data);
-    else if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
+    else
+    if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
         /* compare first the sizes */
         if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
             int n;
@@ -694,7 +697,8 @@ int mpdm_ival(mpdm_t v)
                             ptr++;
                         }
                     }
-                    else if (tmp[1] == 'x' || tmp[1] == 'X')
+                    else
+                    if (tmp[1] == 'x' || tmp[1] == 'X')
                         fmt = "%x";
                     else
                         fmt = "%o";
@@ -1109,7 +1113,8 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
                         *ptr++ = '1';
                         p = 1;
                     }
-                    else if (p)
+                    else
+                    if (p)
                         *ptr++ = '0';
 
                     mask >>= 1;
@@ -1308,7 +1313,8 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
                             tmp++;
                             continue;
                         }
-                        else if (*tmp == L'%')
+                        else
+                        if (*tmp == L'%')
                             scanf_mark[msize++] = *tmp;
                         else
                             break;
@@ -1415,7 +1421,8 @@ mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
                 mpdm_push(r, MPDM_ENS(ptr, size - 1));
             }
         }
-        else if (*f == L' ' || *f == L'\t') {
+        else
+        if (*f == L' ' || *f == L'\t') {
             /* if it's a blank, sync to next non-blank */
             f++;
 

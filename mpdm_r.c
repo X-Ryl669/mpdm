@@ -236,7 +236,8 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
             mpdm_unrefnd(w);
         }
     }
-    else if (v != NULL) {
+    else
+    if (v != NULL) {
         if (r->flags & MPDM_MULTIPLE) {
             int n;
             mpdm_t t;
@@ -320,7 +321,8 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 
                 optr = mpdm_pokewsn(optr, &osize, wptr, 1);
             }
-            else if (*wptr == '&')
+            else
+            if (*wptr == '&')
                 optr = mpdm_pokev(optr, &osize, t);
 
             sptr = wptr + 1;
@@ -385,7 +387,8 @@ mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
         /* return last count */
         o = MPDM_I(mpdm_sregex_count);
     }
-    else if (v != NULL) {
+    else
+    if (v != NULL) {
         /* compile the regex */
         if ((cr = mpdm_regcomp(r)) != NULL) {
             char *ptr;
