@@ -2075,7 +2075,7 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
 
 #ifdef CONFOPT_WIN32
         ofs->hin = ifs->hout;
-        ifs->hout = -1;
+        ifs->hout = NULL;
 #endif
 
         p = mpdm_ref(MPDM_A(2));
