@@ -4,6 +4,8 @@ MPDM Release Notes
 2.0.0
 -----
 
+ * The system has been refactored to be a pure reference counting
+   system, so sweeping / garbage collection no longer exists.
  * Executable values and functions now include a new argument to
    hold a context (used to implement local symbol tables and such).
  * mpdm_adel() and mpdm_hdel() no longer return the deleted element.
