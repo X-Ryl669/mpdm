@@ -19,27 +19,13 @@ Pending Enhancements
  * 1008: bread().
  * 1009: bwrite().
  * 1063: Implement copy-on-write on array cloning.
- * 1066: Implement a minimum time-to-live for values; never referenced values
-   younger than that will never be swept. Values under explicit [un]ref()
-   control won't have this, as they (should) never be used after being
-   unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
-   as this could mask possible sweeping errors, it has not been implemented yet.
- * 1094: Try an (optional) usage of pthreads to call sweep() in a low priority
-   thread, when nothing else is happening.
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
- * 1105: Try another approach: store in the circular queue only the
-   unreferenced values; the others will be completely unqueued. This way,
-   values to be swept are immediately found. On the other side, mpdm_ref()
-   and mpdm_unref() will be much expensive, as they will en/dequeue values
-   depending of v->ref 0 or 1.
  * 1115: Invert mpdm_split() arguments.
  * 1116: Invert mpdm_join() arguments.
  * 1117: Invert mpdm_sscanf() arguments.
  * 1118: Invert mpdm_regex() arguments.
  * 1119: Invert mpdm_sregex() arguments.
- * 1120: Drop completely the garbage collection and convert it to a pure
-   reference-counting system.
 
 Closed
 ------
@@ -250,5 +236,21 @@ Closed
    (Wed, 26 Aug 2009 09:40:03 +0200).
  * 1114: Fixed mpdm_sset() when the previous-to-last value to be
    assigned is executable (Tue, 22 Dec 2009 10:05:12 +0100).
+ * 1066: Implement a minimum time-to-live for values; never referenced values
+   younger than that will never be swept. Values under explicit [un]ref()
+   control won't have this, as they (should) never be used after being
+   unreferenced, so TTL will be unset after being unreferenced to 0. Anyway,
+   as this could mask possible sweeping errors, it has not been implemented yet
+   (no longer applicable; Fri, 14 Jan 2011 12:31:28 +0100).
+ * 1094: Try an (optional) usage of pthreads to call sweep() in a low priority
+   thread, when nothing else is happening (no longer applicable;
+   Fri, 14 Jan 2011 12:31:28 +0100).
+ * 1105: Try another approach: store in the circular queue only the
+   unreferenced values; the others will be completely unqueued. This way,
+   values to be swept are immediately found. On the other side, mpdm_ref()
+   and mpdm_unref() will be much expensive, as they will en/dequeue values
+   depending of v->ref 0 or 1 (no longer applicable; Fri, 14 Jan 2011 12:31:28 +0100).
+ * 1120: Drop completely the garbage collection and convert it to a pure
+   reference-counting system (Fri, 14 Jan 2011 12:30:30 +0100).
 
 Email bugs to angel@triptico.com
