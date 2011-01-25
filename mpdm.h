@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2011 Angel Ortega <angel@triptico.com>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -72,10 +72,12 @@ struct mpdm_val {
 
 /* the main control structure */
 struct mpdm_control {
-    mpdm_t root;        /* the root hash */
-    mpdm_t del;         /* list of deleted values */
-    int count;          /* total count of values */
-    int hash_buckets;   /* default hash buckets */
+    mpdm_t root;            /* the root hash */
+    mpdm_t del;             /* list of deleted values */
+    int count;              /* total count of values */
+    int hash_buckets;       /* default hash buckets */
+    mpdm_t del_queue_mutex; /* delete queue mutex */
+    mpdm_t del_queue_sem;   /* delete queue semaphore */
 };
 
 extern struct mpdm_control *mpdm;

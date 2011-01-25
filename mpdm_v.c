@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2011 Angel Ortega <angel@triptico.com>
 
     mpdm_v.c - Basic value management
 
@@ -64,7 +64,42 @@ static void cleanup_value(mpdm_t v)
 static void destroy_value(mpdm_t v)
 /* destroys a value */
 {
-    cleanup_value(v);
+    if (mpdm->del_queue_mutex != NULL) {
+        /* atomically enqueue this value */
+        mpdm_mutex_lock(mpdm->del_queue_mutex);
+
+        v->next = mpdm->del;
+        mpdm->del = v;
+
+        mpdm_mutex_unlock(mpdm->del_queue_mutex);
+
+        /* notify the del queue thread */
+        mpdm_semaphore_post(mpdm->del_queue_sem);
+    }
+    else
+        cleanup_value(v);
+}
+
+
+static mpdm_t del_queue_thread(mpdm_t args, mpdm_t ctxt)
+/* delete queue processing thread */
+{
+    for (;;) {
+        mpdm_t v;
+
+        /* wait for next value */
+        mpdm_semaphore_wait(mpdm->del_queue_sem);
+
+        /* atomically dequeue */
+        mpdm_mutex_lock(mpdm->del_queue_mutex);
+
+        v = mpdm->del;
+        mpdm->del = v->next;
+
+        mpdm_mutex_unlock(mpdm->del_queue_mutex);
+
+        cleanup_value(v);
+    }
 }
 
 
@@ -519,6 +554,17 @@ int mpdm_startup(void)
 
         /* sets the defaults */
         mpdm->hash_buckets = 31;
+
+#ifdef CONFOPT_THREADED_DELETE
+        /* create the concurrent delete control */
+        mpdm->del_queue_mutex   = mpdm_new_mutex();
+        mpdm->del_queue_sem     = mpdm_new_semaphore(0);
+#endif
+
+        /* if the mutex and the semaphore exist, spawn the delete thread */
+        if (mpdm->del_queue_mutex != NULL &&
+            mpdm->del_queue_sem != NULL)
+                mpdm_exec_thread(MPDM_X(del_queue_thread), NULL, NULL);
 
         /* sets the locale */
         if (setlocale(LC_ALL, "") == NULL)
