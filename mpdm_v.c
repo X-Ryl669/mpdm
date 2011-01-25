@@ -64,7 +64,7 @@ static void cleanup_value(mpdm_t v)
 static void destroy_value(mpdm_t v)
 /* destroys a value */
 {
-    if (mpdm->del_queue_mutex != NULL) {
+    if (mpdm->threaded_delete) {
         /* atomically enqueue this value */
         mpdm_mutex_lock(mpdm->del_queue_mutex);
 
@@ -487,6 +487,9 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
         /* do changes */
         if ((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
             mpdm->hash_buckets = mpdm_ival(w);
+        else
+        if ((w = mpdm_hget_s(v, L"threaded_delete")) != NULL)
+            mpdm->threaded_delete = mpdm_ival(w);
     }
 
     /* now collect all information */
@@ -497,7 +500,7 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
     mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
     mpdm_hset_s(v, L"count",            MPDM_I(mpdm->count));
     mpdm_hset_s(v, L"hash_buckets",     MPDM_I(mpdm->hash_buckets));
-    mpdm_hset_s(v, L"destroy_on_unref", MPDM_I(1));
+    mpdm_hset_s(v, L"threaded_delete",  MPDM_I(mpdm->threaded_delete));
 
     mpdm_unref(args);
 
@@ -555,16 +558,13 @@ int mpdm_startup(void)
         /* sets the defaults */
         mpdm->hash_buckets = 31;
 
-#ifdef CONFOPT_THREADED_DELETE
-        /* create the concurrent delete control */
+        /* sets the threaded delete control */
+        mpdm->threaded_delete = 0;
+
+        /* create the threaded delete thread and control */
         mpdm->del_queue_mutex   = mpdm_new_mutex();
         mpdm->del_queue_sem     = mpdm_new_semaphore(0);
-#endif
-
-        /* if the mutex and the semaphore exist, spawn the delete thread */
-        if (mpdm->del_queue_mutex != NULL &&
-            mpdm->del_queue_sem != NULL)
-                mpdm_exec_thread(MPDM_X(del_queue_thread), NULL, NULL);
+        mpdm_exec_thread(MPDM_X(del_queue_thread), NULL, NULL);
 
         /* sets the locale */
         if (setlocale(LC_ALL, "") == NULL)

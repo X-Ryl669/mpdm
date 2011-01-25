@@ -76,6 +76,7 @@ struct mpdm_control {
     mpdm_t del;             /* list of deleted values */
     int count;              /* total count of values */
     int hash_buckets;       /* default hash buckets */
+    int threaded_delete;    /* threaded delete flag */
     mpdm_t del_queue_mutex; /* delete queue mutex */
     mpdm_t del_queue_sem;   /* delete queue semaphore */
 };
