@@ -61,6 +61,13 @@ static void cleanup_value(mpdm_t v)
 }
 
 
+static void destroy_value(mpdm_t v)
+/* destroys a value */
+{
+    cleanup_value(v);
+}
+
+
 /**
  * mpdm_new - Creates a new value.
  * @flags: flags
@@ -89,6 +96,7 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
         v->ref      = 0;
         v->data     = data;
         v->size     = size;
+        v->next     = NULL;
     }
 
     return v;
@@ -125,7 +133,7 @@ mpdm_t mpdm_unref(mpdm_t v)
         v->ref--;
 
         if (v->ref <= 0) {
-            cleanup_value(v);
+            destroy_value(v);
             v = NULL;
         }
     }
