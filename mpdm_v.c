@@ -46,8 +46,12 @@ static void cleanup_value(mpdm_t v)
 /* cleans a value */
 {
     /* collapse multiple values */
-    if (v->flags & MPDM_MULTIPLE)
-        mpdm_collapse(v, 0, v->size);
+    if (v->flags & MPDM_MULTIPLE) {
+        int n;
+
+        for (n = 0; n < mpdm_size(v); n++)
+            mpdm_unref(mpdm_aget(v, n));
+    }
 
     /* free data if needed */
     if (v->data != NULL && v->flags & MPDM_FREE) {

@@ -47,7 +47,7 @@ mpdm_t mpdm_new_a(int flags, int size)
     mpdm_t v;
 
     /* creates and expands */
-    if ((v = mpdm_new(flags | MPDM_MULTIPLE, NULL, 0)) != NULL)
+    if ((v = mpdm_new(flags | MPDM_MULTIPLE | MPDM_FREE, NULL, 0)) != NULL)
         mpdm_expand(v, 0, size);
 
     return v;
