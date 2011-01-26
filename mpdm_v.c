@@ -90,6 +90,10 @@ static mpdm_t del_queue_thread(mpdm_t args, mpdm_t ctxt)
         /* wait for next value */
         mpdm_semaphore_wait(mpdm->del_queue_sem);
 
+        /* do nothing if the queue is empty (should't happen) */
+        if (mpdm->del == NULL)
+            continue;
+
         /* atomically dequeue */
         mpdm_mutex_lock(mpdm->del_queue_mutex);
 
