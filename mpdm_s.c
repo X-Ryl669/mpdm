@@ -461,9 +461,11 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
             }
         }
     }
-    else
-        /* in any other case, compare just pointers */
-        r = (int) ((char *) v1->data - (char *) v2->data);
+    else {
+        wchar_t tmp[32];
+
+        r = wcscoll(mpdm_string(v1), mpdm_string2(v2, tmp));
+    }
 
     mpdm_unref(v2);
     mpdm_unref(v1);
