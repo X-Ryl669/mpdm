@@ -143,6 +143,7 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u);
 mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset);
 
 wchar_t *mpdm_string(const mpdm_t v);
+wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del);
 mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size);
 mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2);

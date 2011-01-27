@@ -354,20 +354,22 @@ mpdm_t mpdm_new_r(double rval)
 /* interface */
 
 /**
- * mpdm_string - Returns a printable representation of a value.
+ * mpdm_string2 - Returns a printable representation of a value (with buffer).
  * @v: the value
+ * @wtmp: the external buffer
  *
  * Returns a printable representation of a value. For strings, it's
  * the value data itself; for any other type, a conversion to string
- * is returned instead. This value should be used immediately, as it
- * can be a pointer to a static buffer.
+ * is returned instead. If @v is not a string, the @wtmp buffer
+ * can be used as a placeholder for the string representation.
+ *
+ * The reference count value in @v is not touched.
  * [Strings]
  */
-wchar_t *mpdm_string(const mpdm_t v)
+wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 {
-    static wchar_t wtmp[32];
     char tmp[32];
-    static wchar_t *ret;
+    wchar_t *ret;
 
     /* if it's NULL, return a constant */
     if (v == NULL)
@@ -380,12 +382,31 @@ wchar_t *mpdm_string(const mpdm_t v)
         /* otherwise, return a visual representation */
         snprintf(tmp, sizeof(tmp), "%p", v);
         mbstowcs(wtmp, tmp, sizeof(wtmp));
-        wtmp[(sizeof(wtmp) / sizeof(wchar_t)) - 1] = L'\0';
 
         ret = wtmp;
     }
 
     return ret;
+}
+
+
+/**
+ * mpdm_string - Returns a printable representation of a value.
+ * @v: the value
+ *
+ * Returns a printable representation of a value. For strings, it's
+ * the value data itself; for any other type, a conversion to string
+ * is returned instead. This value should be used immediately, as it
+ * can be a pointer to a static buffer.
+ *
+ * The reference count value in @v is not touched.
+ * [Strings]
+ */
+wchar_t *mpdm_string(const mpdm_t v)
+{
+    static wchar_t tmp[32];
+
+    return mpdm_string2(v, tmp);
 }
 
 
