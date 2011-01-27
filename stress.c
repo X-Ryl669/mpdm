@@ -280,10 +280,12 @@ void test_array(void)
     do_test("mpdm_asort_cb() works (2)",
             mpdm_cmp(mpdm_aget(a, 0), MPDM_LS(L"wednesday")) == 0);
 
-    n = v->ref;
     v = mpdm_aget(a, 3);
+    mpdm_ref(v);
+    n = v->ref;
     mpdm_collapse(a, 3, 1);
     do_test("acollapse unrefs values", (v->ref < n));
+    mpdm_unref(v);
 
     mpdm_unref(a);
 
