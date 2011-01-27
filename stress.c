@@ -1714,5 +1714,5 @@ int main(int argc, char *argv[])
             printf("%s", failed_msgs[n]);
     }
 
-    return (0);
+    return oks == tests ? 0 : 1;
 }
