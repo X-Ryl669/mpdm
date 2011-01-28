@@ -381,7 +381,7 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
     else {
         /* otherwise, return a visual representation */
         snprintf(tmp, sizeof(tmp), "%p", v);
-        mbstowcs(wtmp, tmp, sizeof(wtmp));
+        mbstowcs(wtmp, tmp, sizeof(tmp) * sizeof(wchar_t));
 
         ret = wtmp;
     }
