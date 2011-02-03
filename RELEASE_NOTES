@@ -22,6 +22,7 @@ MPDM Release Notes
     - mpdm_split() and mpdm_split_s().
     - mpdm_join() and mpdm_join_s().
     - mpdm_sscanf().
+    - mpdm_regex().
     - mpdm_sregex().
 
 1.0.9

@@ -187,8 +187,8 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
 
 /**
  * mpdm_regex - Matches a regular expression.
- * @r: the regular expression
  * @v: the value to be matched
+ * @r: the regular expression
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value. Valid flags are 'i',
@@ -217,7 +217,7 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
  * is returned.
  * [Regular Expressions]
  */
-mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
+mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
 {
     mpdm_t w = NULL;
 
@@ -249,7 +249,7 @@ mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset)
             mpdm_ref(w);
 
             for (n = 0; n < mpdm_size(r); n++) {
-                t = mpdm_regex(mpdm_aget(r, n), v, offset);
+                t = mpdm_regex(v, mpdm_aget(r, n), offset);
 
                 if (t == NULL)
                     break;

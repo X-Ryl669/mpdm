@@ -754,47 +754,48 @@ void test_regex(void)
     mpdm_t v;
     mpdm_t w;
 
-    v = mpdm_regex(MPDM_LS(L"/[0-9]+/"), MPDM_LS(L"123456"), 0);
+    v = mpdm_regex(MPDM_LS(L"123456"), MPDM_LS(L"/[0-9]+/"), 0);
     do_test("regex 0", v != NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/[0-9]+/"), MPDM_I(65536), 0);
+    v = mpdm_regex(MPDM_I(65536), MPDM_LS(L"/[0-9]+/"), 0);
     do_test("regex 1", v != NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/^[0-9]+$/"), MPDM_LS(L"12345678"), 0);
+    v = mpdm_regex(MPDM_LS(L"12345678"), MPDM_LS(L"/^[0-9]+$/"), 0);
     do_test("regex 2", v != NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/^[0-9]+$/"), MPDM_I(1), 0);
+    v = mpdm_regex(MPDM_I(1), MPDM_LS(L"/^[0-9]+$/"), 0);
     do_test("regex 3", v != NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/^[0-9]+$/"), MPDM_LS(L"A12345-678"), 0);
+    v = mpdm_regex(MPDM_LS(L"A12345-678"), MPDM_LS(L"/^[0-9]+$/"), 0);
     do_test("regex 4", v == NULL);
 
     w = MPDM_LS(L"Hell street, 666");
     mpdm_ref(w);
-    v = mpdm_regex(MPDM_LS(L"/[0-9]+/"), w, 0);
+    v = mpdm_regex(w, MPDM_LS(L"/[0-9]+/"), 0);
 
     mpdm_dump(v);
 
     do_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
 
-    v = mpdm_regex(MPDM_LS(L"/regex/"), MPDM_LS(L"CASE-INSENSITIVE REGEX"),
+    v = mpdm_regex(MPDM_LS(L"CASE-INSENSITIVE REGEX"), MPDM_LS(L"/regex/"), 
                    0);
     do_test("regex 6.1 (case sensitive)", v == NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/regex/i"),
-                   MPDM_LS(L"CASE-INSENSITIVE REGEX"), 0);
+    v = mpdm_regex(MPDM_LS(L"CASE-INSENSITIVE REGEX"),
+                    MPDM_LS(L"/regex/i"),
+                   0);
     do_test("regex 6.2 (case insensitive)", v != NULL);
 /*
 	v=mpdm_regex(MPDM_LS(L"/[A-Z]+/"), MPDM_LS(L"case SENSITIVE regex"), 0);
 	do_test("regex 6.3 (case sensitive)", mpdm_cmp(v, MPDM_LS(L"SENSITIVE")) == 0);
 */
-    v = mpdm_regex(MPDM_LS(L"/^\\s*/"), MPDM_LS(L"123456"), 0);
+    v = mpdm_regex(MPDM_LS(L"123456"), MPDM_LS(L"/^\\s*/"), 0);
     do_test("regex 7", v != NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/^\\s+/"), MPDM_LS(L"123456"), 0);
+    v = mpdm_regex(MPDM_LS(L"123456"), MPDM_LS(L"/^\\s+/"), 0);
     do_test("regex 8", v == NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/^\\s+/"), NULL, 0);
+    v = mpdm_regex(NULL, MPDM_LS(L"/^\\s+/"), 0);
     do_test("regex 9 (NULL string to match)", v == NULL);
 
     /* sregex */
@@ -906,7 +907,7 @@ void test_regex(void)
     mpdm_push(w, MPDM_LS(L"/[^ \t]+/"));
     mpdm_push(w, MPDM_LS(L"/[ \t]*$/"));
 
-    v = mpdm_regex(w, MPDM_LS(L"key=value"), 0);
+    v = mpdm_regex(MPDM_LS(L"key=value"), w, 0);
     mpdm_ref(v);
     do_test("multi-regex 1.1",
             mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
@@ -914,7 +915,7 @@ void test_regex(void)
             mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"value")) == 0);
     mpdm_unref(v);
 
-    v = mpdm_regex(w, MPDM_LS(L" key = value"), 0);
+    v = mpdm_regex(MPDM_LS(L" key = value"), w, 0);
     mpdm_ref(v);
     do_test("multi-regex 2.1",
             mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
@@ -922,7 +923,7 @@ void test_regex(void)
             mpdm_cmp(mpdm_aget(v, 3), MPDM_LS(L"value")) == 0);
     mpdm_unref(v);
 
-    v = mpdm_regex(w, MPDM_LS(L"\t\tkey\t=\tvalue  "), 0);
+    v = mpdm_regex(MPDM_LS(L"\t\tkey\t=\tvalue  "), w, 0);
     mpdm_ref(v);
     do_test("multi-regex 3.1",
             mpdm_cmp(mpdm_aget(v, 1), MPDM_LS(L"key")) == 0);
@@ -939,13 +940,13 @@ void test_regex(void)
     w = MPDM_LS(L"/* this is\na C-like comment */");
     mpdm_ref(w);
 
-    v = mpdm_regex(MPDM_LS(L"|/\\*.+\\*/|"), w, 0);
+    v = mpdm_regex(w, MPDM_LS(L"|/\\*.+\\*/|"), 0);
     do_test("Multiline regex 1", mpdm_cmp(v, w) == 0);
 
-    v = mpdm_regex(MPDM_LS(L"/is$/"), w, 0);
+    v = mpdm_regex(w, MPDM_LS(L"/is$/"), 0);
     do_test("Multiline regex 2", v == NULL);
 
-    v = mpdm_regex(MPDM_LS(L"/is$/m"), w, 0);
+    v = mpdm_regex(w, MPDM_LS(L"/is$/m"), 0);
     do_test("Multiline regex 3", mpdm_cmp(v, MPDM_LS(L"is")) == 0);
     mpdm_unref(w);
 
@@ -954,7 +955,7 @@ void test_regex(void)
     w = MPDM_LS(L"-\x03a9-");
     mpdm_ref(w);
 
-    v = mpdm_regex(MPDM_LS(L"/-$/"), w, 0);
+    v = mpdm_regex(w, MPDM_LS(L"/-$/"), 0);
     do_test("Multibyte environment regex 1",
             mpdm_cmp(v, MPDM_LS(L"-")) == 0);
 
@@ -974,7 +975,7 @@ void test_regex(void)
 
     /* 'last' flag tests */
     v = MPDM_LS(L"this string has many words");
-    v = mpdm_regex(MPDM_LS(L"/[a-z]+/l"), v, 0);
+    v = mpdm_regex(v, MPDM_LS(L"/[a-z]+/l"), 0);
     do_test("Flag l in mpdm_regex", mpdm_cmp(v, MPDM_LS(L"words")) == 0);
 }
 
