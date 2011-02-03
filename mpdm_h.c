@@ -418,7 +418,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
     if (k->flags & MPDM_MULTIPLE)
         p = mpdm_ref(k);
     else
-        p = mpdm_ref(mpdm_split_s(L".", k));
+        p = mpdm_ref(mpdm_split_s(k, L"."));
 
     w = r;
 

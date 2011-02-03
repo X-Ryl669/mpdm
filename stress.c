@@ -96,7 +96,7 @@ void test_counter(void)
     v = MPDM_S(L"this is a phrase");
     T(1);
     C;
-    w = mpdm_split_s(L" ", v);
+    w = mpdm_split_s(v, L" ");
     T(5);
 }
 
@@ -589,24 +589,23 @@ void test_split(void)
 
     printf("mpdm_split test\n\n");
 
-    w = mpdm_split(MPDM_S(L"."), MPDM_S(L"four.elems.in.string"));
+    w = mpdm_split(MPDM_S(L"four.elems.in.string"), MPDM_S(L"."));
     mpdm_dump(w);
     do_test("4 elems: ", (w->size == 4));
 
-    w = mpdm_split(MPDM_S(L"."), MPDM_S(L"unseparated string"));
+    w = mpdm_split(MPDM_S(L"unseparated string"), MPDM_S(L"."));
     mpdm_dump(w);
     do_test("1 elem: ", (w->size == 1));
 
-    w = mpdm_split(MPDM_S(L"."), MPDM_S(L".dot.at start"));
+    w = mpdm_split(MPDM_S(L".dot.at start"), MPDM_S(L"."));
     mpdm_dump(w);
     do_test("3 elems: ", (w->size == 3));
 
-    w = mpdm_split(MPDM_S(L"."), MPDM_S(L"dot.at end."));
+    w = mpdm_split(MPDM_S(L"dot.at end."), MPDM_S(L"."));
     mpdm_dump(w);
     do_test("3 elems: ", (w->size == 3));
 
-    w = mpdm_split(MPDM_S(L"."),
-                   MPDM_S(L"three...dots (two empty elements)"));
+    w = mpdm_split(MPDM_S(L"three...dots (two empty elements)"), MPDM_S(L"."));
     mpdm_dump(w);
     do_test("4 elems: ", (w->size == 4));
 
@@ -614,7 +613,7 @@ void test_split(void)
     mpdm_dump(w);
     do_test("2 elems: ", (w->size == 2));
 
-    w = mpdm_split(NULL, MPDM_S(L"I am the man"));
+    w = mpdm_split(MPDM_S(L"I am the man"), NULL);
     do_test("NULL split 1: ", mpdm_size(w) == 12);
     do_test("NULL split 2: ",
             mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I")) == 0);

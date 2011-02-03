@@ -629,8 +629,8 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 
 /**
  * mpdm_split_s - Separates a string into an array of pieces (string version).
- * @s: the separator
  * @v: the value to be separated
+ * @s: the separator
  *
  * Separates the @v string value into an array of pieces, using @s
  * as a separator.
@@ -642,7 +642,7 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_split_s(const wchar_t * s, const mpdm_t v)
+mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s)
 {
     mpdm_t w = NULL;
     const wchar_t *ptr;
@@ -685,8 +685,8 @@ mpdm_t mpdm_split_s(const wchar_t * s, const mpdm_t v)
 
 /**
  * mpdm_split - Separates a string into an array of pieces.
- * @s: the separator
  * @v: the value to be separated
+ * @s: the separator
  *
  * Separates the @v string value into an array of pieces, using @s
  * as a separator.
@@ -698,7 +698,7 @@ mpdm_t mpdm_split_s(const wchar_t * s, const mpdm_t v)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
+mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
 {
     mpdm_t r;
     wchar_t *ss = NULL;
@@ -708,7 +708,7 @@ mpdm_t mpdm_split(const mpdm_t s, const mpdm_t v)
     if (s != NULL)
         ss = (wchar_t *) s->data;
 
-    r = mpdm_split_s(ss, v);
+    r = mpdm_split_s(v, ss);
 
     mpdm_unref(s);
 
