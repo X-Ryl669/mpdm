@@ -1237,8 +1237,8 @@ struct {
 
 /**
  * mpdm_sscanf - Extracts data like sscanf().
- * @fmt: the string format
  * @str: the string to be parsed
+ * @fmt: the string format
  * @offset: the character offset to start scanning
  *
  * Extracts data from a string using a special format pattern, very
@@ -1252,7 +1252,7 @@ struct {
  * position in the scanned string is returned as the value.
  * [Strings]
  */
-mpdm_t mpdm_sscanf(const mpdm_t fmt, const mpdm_t str, int offset)
+mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 {
     wchar_t *i = (wchar_t *) str->data;
     wchar_t *f = (wchar_t *) fmt->data;
