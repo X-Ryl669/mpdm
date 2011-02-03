@@ -108,6 +108,8 @@ static mpdm_t del_queue_thread(mpdm_t args, mpdm_t ctxt)
 
         cleanup_value(v);
     }
+
+    return NULL;
 }
 
 
