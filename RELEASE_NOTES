@@ -19,7 +19,8 @@ MPDM Release Notes
    an empty one) and if searching for an array of regexes (maybe
    be a partial one).
  - The following functions had had their arguments swapped:
-    - mpdm_split().
+    - mpdm_split() and mpdm_split_s().
+    - mpdm_join() and mpdm_join_s().
 
 1.0.9
 -----
