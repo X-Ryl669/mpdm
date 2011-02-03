@@ -635,23 +635,23 @@ void test_join(void)
     mpdm_ref(w);
     mpdm_aset(w, MPDM_S(L"ce"), 0);
 
-    v = mpdm_join(NULL, w);
+    v = mpdm_join(w, NULL);
     do_test("1 elem, no separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
 
-    v = mpdm_join(s, w);
+    v = mpdm_join(w, s);
     do_test("1 elem, '--' separator", (mpdm_cmp(v, MPDM_LS(L"ce")) == 0));
 
     mpdm_push(w, MPDM_LS(L"n'est"));
-    v = mpdm_join(s, w);
+    v = mpdm_join(w, s);
     do_test("2 elems, '--' separator",
             (mpdm_cmp(v, MPDM_LS(L"ce--n'est")) == 0));
 
     mpdm_push(w, MPDM_LS(L"pas"));
-    v = mpdm_join(s, w);
+    v = mpdm_join(w, s);
     do_test("3 elems, '--' separator",
             (mpdm_cmp(v, MPDM_LS(L"ce--n'est--pas")) == 0));
 
-    v = mpdm_join(NULL, w);
+    v = mpdm_join(w, NULL);
     do_test("3 elems, no separator",
             (mpdm_cmp(v, MPDM_LS(L"cen'estpas")) == 0));
 
