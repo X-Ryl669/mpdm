@@ -343,8 +343,8 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
 
 /**
  * mpdm_sregex - Matches and substitutes a regular expression.
- * @r: the regular expression
  * @v: the value to be matched
+ * @r: the regular expression
  * @s: the substitution string, hash or code
  * @offset: offset from the start of v->data
  *
@@ -372,7 +372,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
  * Always returns a new string (either modified or an exact copy).
  * [Regular Expressions]
  */
-mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset)
+mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
 {
     mpdm_t cr;
     wchar_t *optr = NULL;

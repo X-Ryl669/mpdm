@@ -206,7 +206,7 @@ extern int mpdm_regex_size;
 extern int mpdm_sregex_count;
 
 mpdm_t mpdm_regex(mpdm_t r, const mpdm_t v, int offset);
-mpdm_t mpdm_sregex(mpdm_t r, const mpdm_t v, const mpdm_t s, int offset);
+mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
 
 mpdm_t mpdm_gettext(const mpdm_t str);
 int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data);

@@ -22,7 +22,6 @@ Pending Enhancements
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
  * 1118: Invert mpdm_regex() arguments.
- * 1119: Invert mpdm_sregex() arguments.
 
 Closed
 ------
@@ -252,5 +251,6 @@ Closed
  * 1115: Invert mpdm_split() arguments (Thu, 03 Feb 2011 09:25:38 +0100).
  * 1116: Invert mpdm_join() arguments (Thu, 03 Feb 2011 09:42:48 +0100).
  * 1117: Invert mpdm_sscanf() arguments (Thu, 03 Feb 2011 10:08:28 +0100).
+ * 1119: Invert mpdm_sregex() arguments (Thu, 03 Feb 2011 13:10:49 +0100).
 
 Email bugs to angel@triptico.com

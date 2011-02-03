@@ -799,32 +799,36 @@ void test_regex(void)
 
     /* sregex */
 
-    v = mpdm_sregex(MPDM_LS(L"/A/"), MPDM_LS(L"change all A to A"),
+    v = mpdm_sregex(MPDM_LS(L"change all A to A"),
+                    MPDM_LS(L"/A/"), 
                     MPDM_LS(L"E"), 0);
     do_test("sregex 0", mpdm_cmp(v, MPDM_LS(L"change all E to A")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/A/g"), MPDM_LS(L"change all A to A"),
+    v = mpdm_sregex(MPDM_LS(L"change all A to A"),
+                    MPDM_LS(L"/A/g"), 
                     MPDM_LS(L"E"), 0);
     do_test("sregex 1", mpdm_cmp(v, MPDM_LS(L"change all E to E")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/A+/g"), MPDM_LS(L"change all AAAAAA to E"),
+    v = mpdm_sregex(MPDM_LS(L"change all AAAAAA to E"),
+                    MPDM_LS(L"/A+/g"), 
                     MPDM_LS(L"E"), 0);
     do_test("sregex 2", mpdm_cmp(v, MPDM_LS(L"change all E to E")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/A+/g"),
-                    MPDM_LS(L"change all A A A A A A to E"), MPDM_LS(L"E"),
+    v = mpdm_sregex(MPDM_LS(L"change all A A A A A A to E"), 
+                    MPDM_LS(L"/A+/g"),
+                    MPDM_LS(L"E"),
                     0);
     do_test("sregex 3",
             mpdm_cmp(v, MPDM_LS(L"change all E E E E E E to E")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/A+/g"),
-                    MPDM_LS(L"change all AAA A AA AAAAA A AAA to E"),
+    v = mpdm_sregex(MPDM_LS(L"change all AAA A AA AAAAA A AAA to E"),
+                    MPDM_LS(L"/A+/g"),
                     MPDM_LS(L"E"), 0);
     do_test("sregex 3.2",
             mpdm_cmp(v, MPDM_LS(L"change all E E E E E E to E")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/[0-9]+/g"),
-                    MPDM_LS(L"1, 20, 333, 40 all are numbers"),
+    v = mpdm_sregex(MPDM_LS(L"1, 20, 333, 40 all are numbers"),
+                    MPDM_LS(L"/[0-9]+/g"),
                     MPDM_LS(L"numbers"), 0);
     do_test("sregex 4",
             mpdm_cmp(v,
@@ -832,20 +836,24 @@ void test_regex(void)
                      (L"numbers, numbers, numbers, numbers all are numbers"))
             == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/[a-zA-Z_]+/g"),
-                    MPDM_LS(L"regex, mpdm_regex, TexMex"), MPDM_LS(L"sex"),
+    v = mpdm_sregex(MPDM_LS(L"regex, mpdm_regex, TexMex"), 
+                    MPDM_LS(L"/[a-zA-Z_]+/g"),
+                    MPDM_LS(L"sex"),
                     0);
     do_test("sregex 5", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/[a-zA-Z]+/g"),
-                    MPDM_LS(L"regex, mpdm_regex, TexMex"), NULL, 0);
+    v = mpdm_sregex(MPDM_LS(L"regex, mpdm_regex, TexMex"), 
+                    MPDM_LS(L"/[a-zA-Z]+/g"),
+                    NULL, 0);
     do_test("sregex 6", mpdm_cmp(v, MPDM_LS(L", _, ")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/\\\\/g"), MPDM_LS(L"\\MSDOS\\style\\path"),
+    v = mpdm_sregex(MPDM_LS(L"\\MSDOS\\style\\path"),
+                    MPDM_LS(L"/\\\\/g"), 
                     MPDM_LS(L"/"), 0);
     do_test("sregex 7", mpdm_cmp(v, MPDM_LS(L"/MSDOS/style/path")) == 0);
 
-    v = mpdm_sregex(MPDM_LS(L"/regex/gi"), MPDM_LS(L"regex, Regex, REGEX"),
+    v = mpdm_sregex(MPDM_LS(L"regex, Regex, REGEX"),
+                    MPDM_LS(L"/regex/gi"), 
                     MPDM_LS(L"sex"), 0);
     do_test("sregex 8", mpdm_cmp(v, MPDM_LS(L"sex, sex, sex")) == 0);
 
@@ -854,38 +862,38 @@ void test_regex(void)
 
     /* & in substitution tests */
     v = MPDM_LS(L"this string has many words");
-    v = mpdm_sregex(MPDM_LS(L"/[a-z]+/g"), v, MPDM_LS(L"[&]"), 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/[a-z]+/g"), MPDM_LS(L"[&]"), 0);
     do_test("& in sregex target",
             mpdm_cmp(v,
                      MPDM_LS(L"[this] [string] [has] [many] [words]")) ==
             0);
 
     v = MPDM_LS(L"this string has many words");
-    v = mpdm_sregex(MPDM_LS(L"/[a-z]+/g"), v, MPDM_LS(L"[\\&]"), 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/[a-z]+/g"), MPDM_LS(L"[\\&]"), 0);
     do_test("escaped & in sregex target",
             mpdm_cmp(v, MPDM_LS(L"[&] [&] [&] [&] [&]")) == 0);
 
     v = MPDM_LS(L"this string has many words");
-    v = mpdm_sregex(MPDM_LS(L"/[a-z]+/g"), v, MPDM_LS(L"\\\\&"), 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/[a-z]+/g"), MPDM_LS(L"\\\\&"), 0);
     do_test("escaped \\ in sregex target",
             mpdm_cmp(v,
                      MPDM_LS(L"\\this \\string \\has \\many \\words")) ==
             0);
 
     v = MPDM_LS(L"hola ");
-    v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, MPDM_LS(L""), 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/[ \t]$/"), MPDM_LS(L""), 0);
     do_test("sregex output size 1", v->size == 4);
 
     v = MPDM_LS(L"hola ");
-    v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, NULL, 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/[ \t]$/"), NULL, 0);
     do_test("sregex output size 2", v->size == 4);
 
     v = MPDM_LS(L"hola ");
-    v = mpdm_sregex(MPDM_LS(L"/[ \t]$/"), v, MPDM_LS(L"!"), 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/[ \t]$/"), MPDM_LS(L"!"), 0);
     do_test("sregex output size 3", v->size == 5);
 
     v = MPDM_LS(L"holo");
-    v = mpdm_sregex(MPDM_LS(L"/o/g"), v, MPDM_LS(L"!!"), 0);
+    v = mpdm_sregex(v, MPDM_LS(L"/o/g"), MPDM_LS(L"!!"), 0);
     do_test("sregex output size 4", v->size == 6);
 
     /* multiple regex tests */
@@ -951,11 +959,11 @@ void test_regex(void)
             mpdm_cmp(v, MPDM_LS(L"-")) == 0);
 
     if (do_multibyte_sregex_tests) {
-        v = mpdm_sregex(MPDM_LS(L"/-$/"), w, MPDM_LS(L"~"), 0);
+        v = mpdm_sregex(w, MPDM_LS(L"/-$/"), MPDM_LS(L"~"), 0);
         do_test("Multibyte environment sregex 1",
                 mpdm_cmp(v, MPDM_LS(L"-\x03a9~")) == 0);
 
-        v = mpdm_sregex(MPDM_LS(L"/-/g"), w, MPDM_LS(L"~"), 0);
+        v = mpdm_sregex(w, MPDM_LS(L"/-/g"), MPDM_LS(L"~"), 0);
         do_test("Multibyte environment sregex 2",
                 mpdm_cmp(v, MPDM_LS(L"~\x03a9~")) == 0);
     }
