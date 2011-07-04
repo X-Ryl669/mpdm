@@ -1,6 +1,12 @@
 MPDM Release Notes
 ==================
 
+2.0.1
+-----
+
+ - New features:
+   - New function mpdm_sget_i().
+
 2.0.0
 -----
 

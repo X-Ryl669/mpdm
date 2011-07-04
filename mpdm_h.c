@@ -402,7 +402,7 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t * v1, mpdm_t * v2)
 }
 
 
-static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
+static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int o, int s)
 {
     int n;
     mpdm_t p, w;
@@ -422,7 +422,7 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
     w = r;
 
-    for (n = 0; n < mpdm_size(p) - s; n++) {
+    for (n = 0; n < mpdm_size(p) - o; n++) {
 
         /* is executable? run it and take its output */
         while (MPDM_IS_EXEC(w))
@@ -469,11 +469,17 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int s)
 
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k)
 {
-    return mpdm_sym(r, k, NULL, 0);
+    return mpdm_sym(r, k, NULL, 0, 0);
+}
+
+
+mpdm_t mpdm_sget_i(mpdm_t r, mpdm_t k, int i)
+{
+    return mpdm_sym(r, k, NULL, i, 0);
 }
 
 
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v)
 {
-    return mpdm_sym(r, k, v, 1);
+    return mpdm_sym(r, k, v, 1, 1);
 }

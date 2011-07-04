@@ -176,6 +176,7 @@ void mpdm_dump(const mpdm_t v);
 #define MPDM_SSET(r, k, v) mpdm_sset((r), MPDM_LS((k)), (v))
 
 mpdm_t mpdm_sget(mpdm_t r, mpdm_t k);
+mpdm_t mpdm_sget_i(mpdm_t r, mpdm_t k, int i);
 mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v);
 
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
