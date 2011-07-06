@@ -239,7 +239,7 @@ mpdm_t mpdm_clone(const mpdm_t v)
 
     mpdm_ref(v);
 
-    if (MPDM_IS_ARRAY(v))
+    if (MPDM_IS_ARRAY(v) && !MPDM_IS_EXEC(v))
         r = mpdm_aclone(v);
     else
         r = v;
