@@ -72,23 +72,16 @@ mpdm_t mpdm_aclone(const mpdm_t v)
 
     mpdm_ref(v);
 
-    if (MPDM_IS_EXEC(v)) {
-        /* if it's executable, do not replicate the code,
-           just re-reference it */
-        w = mpdm_ref(v);
-    }
-    else {
-        /* creates a similar value */
-        w = mpdm_new_a(v->flags, v->size);
+    /* creates a similar value */
+    w = mpdm_new_a(v->flags, v->size);
 
-        mpdm_ref(w);
+    mpdm_ref(w);
 
-        /* fills each element with duplicates of the original */
-        for (n = 0; n < w->size; n++)
-            mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+    /* fills each element with duplicates of the original */
+    for (n = 0; n < w->size; n++)
+        mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
-        mpdm_unrefnd(w);
-    }
+    mpdm_unrefnd(w);
 
     mpdm_unref(v);
 
