@@ -72,7 +72,6 @@ struct mpdm_val {
 /* the main control structure */
 struct mpdm_control {
     mpdm_t root;            /* the root hash */
-    mpdm_t del;             /* list of deleted values */
     int count;              /* total count of values */
     int hash_buckets;       /* default hash buckets */
 };
