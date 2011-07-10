@@ -78,6 +78,7 @@ struct mpdm_control {
 
 extern struct mpdm_control *mpdm;
 
+mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, int size);
 mpdm_t mpdm_new(int flags, const void *data, int size);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
