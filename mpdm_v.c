@@ -370,7 +370,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 {
     mpdm_t r;
-    mpdm_t a = MPDM_A(1);
+    mpdm_t a = MPDM_LA(1);
 
     mpdm_ref(a);
     mpdm_aset(a, a1, 0);
@@ -386,7 +386,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 {
     mpdm_t r;
-    mpdm_t a = MPDM_A(2);
+    mpdm_t a = MPDM_LA(2);
 
     mpdm_ref(a);
     mpdm_aset(a, a1, 0);
@@ -403,7 +403,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 {
     mpdm_t r;
-    mpdm_t a = MPDM_A(3);
+    mpdm_t a = MPDM_LA(3);
 
     mpdm_ref(a);
     mpdm_aset(a, a1, 0);
