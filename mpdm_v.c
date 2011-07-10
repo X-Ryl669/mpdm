@@ -61,7 +61,8 @@ static void cleanup_value(mpdm_t v)
 
     mpdm->count--;
 
-    free(v);
+    if (!(v->flags & MPDM_NONDYN))
+        free(v);
 }
 
 

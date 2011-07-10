@@ -37,7 +37,8 @@ enum {
     _MPDM_REGEX,
     _MPDM_MUTEX,
     _MPDM_SEMAPHORE,
-    _MPDM_THREAD
+    _MPDM_THREAD,
+    _MPDM_NONDYN
 };
 
 enum {
@@ -52,7 +53,8 @@ enum {
     MPDM_REGEX      = (1<<_MPDM_REGEX),     /* data is a compiled regex */
     MPDM_MUTEX      = (1<<_MPDM_MUTEX),     /* data is a mutex */
     MPDM_SEMAPHORE  = (1<<_MPDM_SEMAPHORE), /* data is a semaphore */
-    MPDM_THREAD     = (1<<_MPDM_THREAD)     /* data is a thread handle */
+    MPDM_THREAD     = (1<<_MPDM_THREAD),    /* data is a thread handle */
+    MPDM_NONDYN     = (1<<_MPDM_NONDYN)     /* data is non-dynamic (do not free()) */
 };
 
 /* mpdm values */
