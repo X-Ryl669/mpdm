@@ -608,8 +608,6 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
     if (a != NULL) {
         sort_cb = cb;
 
-        /* references the array and the code, as the latter
-           can include anything (including sweeping) */
         mpdm_ref(a);
         mpdm_ref(sort_cb);
 
