@@ -329,7 +329,7 @@ mpdm_t mpdm_keys(const mpdm_t h)
 
 
 /**
- * mpdm_interator - Iterates through the content of a hash or array.
+ * mpdm_iterator - Iterates through the content of a hash or array.
  * @h: the hash (or array)
  * @context: A pointer to an opaque context
  * @v1: a pointer to a value
