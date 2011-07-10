@@ -68,48 +68,7 @@ static void cleanup_value(mpdm_t v)
 static void destroy_value(mpdm_t v)
 /* destroys a value */
 {
-    if (mpdm->threaded_delete) {
-        /* atomically enqueue this value */
-        mpdm_mutex_lock(mpdm->del_queue_mutex);
-
-        v->next = mpdm->del;
-        mpdm->del = v;
-
-        mpdm_mutex_unlock(mpdm->del_queue_mutex);
-
-        /* notify the del queue thread */
-        mpdm_semaphore_post(mpdm->del_queue_sem);
-    }
-    else
-        cleanup_value(v);
-}
-
-
-static mpdm_t del_queue_thread(mpdm_t args, mpdm_t ctxt)
-/* delete queue processing thread */
-{
-    for (;;) {
-        mpdm_t v;
-
-        /* wait for next value */
-        mpdm_semaphore_wait(mpdm->del_queue_sem);
-
-        /* do nothing if the queue is empty (should't happen) */
-        if (mpdm->del == NULL)
-            continue;
-
-        /* atomically dequeue */
-        mpdm_mutex_lock(mpdm->del_queue_mutex);
-
-        v = mpdm->del;
-        mpdm->del = v->next;
-
-        mpdm_mutex_unlock(mpdm->del_queue_mutex);
-
-        cleanup_value(v);
-    }
-
-    return NULL;
+    cleanup_value(v);
 }
 
 
@@ -141,7 +100,6 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
         v->ref      = 0;
         v->data     = data;
         v->size     = size;
-        v->next     = NULL;
     }
 
     return v;
@@ -493,9 +451,6 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
         /* do changes */
         if ((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
             mpdm->hash_buckets = mpdm_ival(w);
-        else
-        if ((w = mpdm_hget_s(v, L"threaded_delete")) != NULL)
-            mpdm->threaded_delete = mpdm_ival(w);
     }
 
     /* now collect all information */
@@ -506,7 +461,6 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
     mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
     mpdm_hset_s(v, L"count",            MPDM_I(mpdm->count));
     mpdm_hset_s(v, L"hash_buckets",     MPDM_I(mpdm->hash_buckets));
-    mpdm_hset_s(v, L"threaded_delete",  MPDM_I(mpdm->threaded_delete));
 
     mpdm_unref(args);
 
@@ -563,14 +517,6 @@ int mpdm_startup(void)
 
         /* sets the defaults */
         mpdm->hash_buckets = 31;
-
-        /* sets the threaded delete control */
-        mpdm->threaded_delete = 0;
-
-        /* create the threaded delete thread and control */
-        mpdm->del_queue_mutex   = mpdm_new_mutex();
-        mpdm->del_queue_sem     = mpdm_new_semaphore(0);
-        mpdm_exec_thread(MPDM_X(del_queue_thread), NULL, NULL);
 
         /* sets the locale */
         if (setlocale(LC_ALL, "") == NULL)

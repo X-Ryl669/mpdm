@@ -66,7 +66,6 @@ struct mpdm_val {
     int ival;           /* cached integer value */
     double rval;        /* cache real value */
     const void *data;   /* the real data */
-    mpdm_t next;        /* next in chain */
 };
 
 
@@ -76,9 +75,6 @@ struct mpdm_control {
     mpdm_t del;             /* list of deleted values */
     int count;              /* total count of values */
     int hash_buckets;       /* default hash buckets */
-    int threaded_delete;    /* threaded delete flag */
-    mpdm_t del_queue_mutex; /* delete queue mutex */
-    mpdm_t del_queue_sem;   /* delete queue semaphore */
 };
 
 extern struct mpdm_control *mpdm;
