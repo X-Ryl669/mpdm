@@ -21,6 +21,8 @@
 
 */
 
+#include <malloc.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -241,12 +243,6 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_X2(f,b)    mpdm_xnew(f,b)
 
 #define MPDM_F(f)       mpdm_new_f(f)
-
-#ifdef __MINGW32__
-#ifndef alloca
-void *alloca(size_t);
-#endif
-#endif
 
 #define MPDM_LA(n)      mpdm_init(alloca(sizeof(struct mpdm_val)), \
                             MPDM_NONDYN | MPDM_MULTIPLE, \
