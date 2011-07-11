@@ -117,7 +117,8 @@ mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, int size)
  */
 mpdm_t mpdm_new(int flags, const void *data, int size)
 {
-    return mpdm_init(malloc(sizeof(struct mpdm_val)), flags, data, size);
+    return mpdm_init(malloc(sizeof(struct mpdm_val)),
+            flags & ~MPDM_NONDYN, data, size);
 }
 
 
