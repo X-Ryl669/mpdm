@@ -21,6 +21,9 @@ Pending Enhancements
  * 1063: Implement copy-on-write on array cloning.
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
+ * 1122: Modify MPDM_I() and MPDM_R() to move the sprintf()-ing of
+   the value to mpdm_string(). This will delay numbers' printable
+   representation until (or if) really needed.
 
 Closed
 ------
