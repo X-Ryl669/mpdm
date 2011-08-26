@@ -211,7 +211,7 @@ void test_basic(void)
     do_test("mpdm_rval() for octal numbers", mpdm_rval(v) == 1.0);
 
     v = MPDM_LS(L"0x7f");
-    do_test("mpdm_rval() for hexadecimal numbers", mpdm_ival(v) == 127.0);
+    do_test("mpdm_rval() for hexadecimal numbers", mpdm_rval(v) == 127.0);
 
     do_test("Two NULLs are equal", mpdm_cmp(NULL, NULL) == 0);
 
