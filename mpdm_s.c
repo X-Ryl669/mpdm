@@ -445,9 +445,6 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
     if (v1->data == v2->data)
         r = 0;
     else
-    if (MPDM_IS_STRING(v1) && MPDM_IS_STRING(v2))
-        r = wcscoll((wchar_t *) v1->data, (wchar_t *) v2->data);
-    else
     if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
         /* compare first the sizes */
         if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
