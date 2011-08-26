@@ -143,7 +143,7 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
             last = wcschr(last, 'l');
 
         /* convert to mbs */
-        ptr = mpdm_wcstombs((wchar_t *) v->data + offset, NULL);
+        ptr = mpdm_wcstombs((wchar_t *) mpdm_string(v) + offset, NULL);
 
         /* match? */
         while (regexec((regex_t *) cr->data, ptr + o, 1,
