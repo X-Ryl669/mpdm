@@ -112,8 +112,10 @@ void test_basic(void)
     v = mpdm_ref(MPDM_S(L"65536"));
     mpdm_dump(v);
     i = mpdm_ival(v);
+    r = mpdm_rval(v);
 
     do_test("i == 65536", (i == 65536));
+    do_test("r == 65536", (r == 65536));
     do_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
 
     r = mpdm_rval(v);
