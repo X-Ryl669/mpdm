@@ -313,13 +313,9 @@ mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
     mpdm_t v;
-    char tmp[32];
 
-    /* creates the visual representation */
-    snprintf(tmp, sizeof(tmp), "%d", ival);
-
-    v = MPDM_MBS(tmp);
-
+    /* create a string value, but without the 'string' */
+    v = mpdm_new(MPDM_STRING | MPDM_FREE, NULL, 0);
     return mpdm_set_ival(v, ival);
 }
 
@@ -328,26 +324,9 @@ mpdm_t mpdm_new_r(double rval)
 /* creates a new string value from a real number */
 {
     mpdm_t v;
-    char tmp[128];
 
-    /* creates the visual representation */
-    snprintf(tmp, sizeof(tmp), "%lf", rval);
-
-    /* manually strip useless zeroes */
-    if (strchr(tmp, '.') != NULL) {
-        char *ptr;
-
-        for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
-
-        /* if it's over the ., strip it also */
-        if (*ptr != '.')
-            ptr++;
-
-        *ptr = '\0';
-    }
-
-    v = MPDM_MBS(tmp);
-
+    /* create a string value, but without the 'string' */
+    v = mpdm_new(MPDM_STRING | MPDM_FREE, NULL, 0);
     return mpdm_set_rval(v, rval);
 }
 
@@ -377,8 +356,44 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
         ret = L"[NULL]";
     else
         /* if it's a string, return it */
-    if (v->flags & MPDM_STRING)
+    if (v->flags & MPDM_STRING) {
+
+        if (v->data == NULL) {
+            char tmp[128] = "";
+
+            /* string but no data? most probably a 'lazy' number */
+            if (v->flags & MPDM_RVAL) {
+                char *prev_locale = setlocale(LC_NUMERIC, "C");
+
+                /* creates the visual representation */
+                snprintf(tmp, sizeof(tmp), "%lf", v->rval);
+            
+                setlocale(LC_NUMERIC, prev_locale);
+
+                /* manually strip useless zeroes */
+                if (strchr(tmp, '.') != NULL) {
+                    char *ptr;
+            
+                    for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
+            
+                    /* if it's over the ., strip it also */
+                    if (*ptr != '.')
+                        ptr++;
+            
+                    *ptr = '\0';
+                }
+            }
+            else
+            if (v->flags & MPDM_IVAL) {
+                /* creates the visual representation */
+                snprintf(tmp, sizeof(tmp), "%d", v->ival);
+            }
+
+            v->data = (void *)mpdm_mbstowcs(tmp, &v->size, -1);
+        }
+
         ret = (wchar_t *) v->data;
+    }
     else {
         /* otherwise, return a visual representation */
         snprintf(tmp, sizeof(tmp), "%p", v);

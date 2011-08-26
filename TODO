@@ -21,9 +21,6 @@ Pending Enhancements
  * 1063: Implement copy-on-write on array cloning.
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
- * 1122: Modify MPDM_I() and MPDM_R() to move the sprintf()-ing of
-   the value to mpdm_string(). This will delay numbers' printable
-   representation until (or if) really needed.
 
 Closed
 ------
@@ -255,5 +252,9 @@ Closed
  * 1117: Invert mpdm_sscanf() arguments (Thu, 03 Feb 2011 10:08:28 +0100).
  * 1119: Invert mpdm_sregex() arguments (Thu, 03 Feb 2011 13:10:49 +0100).
  * 1118: Invert mpdm_regex() arguments (Thu, 03 Feb 2011 16:01:50 +0100).
+ * 1122: Modify MPDM_I() and MPDM_R() to move the sprintf()-ing of
+   the value to mpdm_string(). This will delay numbers' printable
+   representation until (or if) really needed
+   (Fri, 26 Aug 2011 20:28:57 +0200).
 
 Email bugs to angel@triptico.com
