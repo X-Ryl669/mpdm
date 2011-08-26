@@ -61,7 +61,8 @@ int mpdm_sregex_count = 0;
 
 static wchar_t *regex_flags(const mpdm_t r)
 {
-    return wcsrchr((wchar_t *) r->data, *(wchar_t *) r->data);
+    wchar_t *ptr = mpdm_string(r);
+    return wcsrchr(ptr, *ptr);
 }
 
 
