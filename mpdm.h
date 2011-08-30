@@ -249,6 +249,10 @@ mpdm_t mpdm_app_dir(void);
                             memset(alloca(sizeof(mpdm_t) * n), '\0', sizeof(mpdm_t) * n), \
                             n)
 
+#define MPDM_AS(s)      mpdm_init(alloca(sizeof(struct mpdm_val)), \
+                            MPDM_NONDYN | MPDM_STRING, \
+                            s, wcslen(s))
+
 int mpdm_startup(void);
 void mpdm_shutdown(void);
 

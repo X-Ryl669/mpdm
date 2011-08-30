@@ -609,6 +609,20 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
+ * MPDM_AS - Creates a string value from a literal string using alloca().
+ * @wcs: the wide character string
+ *
+ * Creates a new string value from a literal, wide character string.
+ * A pointer to the string will be stored in the value (not a copy).
+ * These values are destroyed when the function exits. They should
+ * only be used for temporary issues and cannot be assigned to arrays
+ * nor hashes.
+ * [Value Creation]
+ */
+/** mpdm_t MPDM_AS(wchar_t * wcs); */
+/* ; */
+
+/**
  * MPDM_S - Creates a string value from a string.
  * @wcs: the wide character string
  *
