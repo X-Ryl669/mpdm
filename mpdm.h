@@ -244,7 +244,7 @@ mpdm_t mpdm_app_dir(void);
 
 #define MPDM_F(f)       mpdm_new_f(f)
 
-#define MPDM_LA(n)      mpdm_init(alloca(sizeof(struct mpdm_val)), \
+#define MPDM_AA(n)      mpdm_init(alloca(sizeof(struct mpdm_val)), \
                             MPDM_NONDYN | MPDM_MULTIPLE, \
                             memset(alloca(sizeof(mpdm_t) * n), '\0', sizeof(mpdm_t) * n), \
                             n)

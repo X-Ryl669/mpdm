@@ -371,7 +371,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 {
     mpdm_t r;
-    mpdm_t a = MPDM_LA(1);
+    mpdm_t a = MPDM_AA(1);
 
     mpdm_ref(a);
     mpdm_aset(a, a1, 0);
@@ -387,7 +387,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 {
     mpdm_t r;
-    mpdm_t a = MPDM_LA(2);
+    mpdm_t a = MPDM_AA(2);
 
     mpdm_ref(a);
     mpdm_aset(a, a1, 0);
@@ -404,7 +404,7 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 {
     mpdm_t r;
-    mpdm_t a = MPDM_LA(3);
+    mpdm_t a = MPDM_AA(3);
 
     mpdm_ref(a);
     mpdm_aset(a, a1, 0);
@@ -570,6 +570,19 @@ void mpdm_shutdown(void)
  * [Value Creation]
  */
 /** mpdm_t MPDM_A(int n); */
+/* ; */
+
+/**
+ * MPDM_AA - Creates an array value (using alloca()).
+ * @n: Number of elements
+ *
+ * Creates a new array value with @n elements on the local
+ * function's stack. These values are destroyed when the
+ * function exits. They should only be used for temporary
+ * issues.
+ * [Value Creation]
+ */
+/** mpdm_t MPDM_AA(int n); */
 /* ; */
 
 /**
