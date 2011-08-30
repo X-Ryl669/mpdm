@@ -146,7 +146,7 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t * k)
 {
-    return mpdm_hget(h, MPDM_S(k));
+    return mpdm_hget(h, MPDM_AS(k));
 }
 
 

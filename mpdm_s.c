@@ -496,7 +496,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  */
 int mpdm_cmp_s(const mpdm_t v1, const wchar_t * v2)
 {
-    return mpdm_cmp(v1, MPDM_S(v2));
+    return mpdm_cmp(v1, MPDM_AS(v2));
 }
 
 

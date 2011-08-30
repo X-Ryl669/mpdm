@@ -1692,7 +1692,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
     /* delete repeated directory delimiters */
     w = mpdm_ref(sp);
-    sp = mpdm_sregex(w, MPDM_LS(L"@[\\/]+@g"), MPDM_LS(L"/"), 0);
+    sp = mpdm_sregex(w, MPDM_AS(L"@[\\/]+@g"), MPDM_AS(L"/"), 0);
     mpdm_unref(w);
 
     w = mpdm_ref(sp);
@@ -1763,7 +1763,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
     /* delete repeated directory delimiters */
     w = mpdm_ref(v);
-    v = mpdm_sregex(w, MPDM_LS(L"@/{2,}@g"), MPDM_LS(L"/"), 0);
+    v = mpdm_sregex(w, MPDM_AS(L"@/{2,}@g"), MPDM_AS(L"/"), 0);
     mpdm_unref(w);
 
     w = mpdm_ref(v);
@@ -2061,7 +2061,7 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
     mpdm_t i, o;
     mpdm_t p = NULL;
 
-    if ((i = mpdm_popen(prg, MPDM_LS(L"r+"))) != NULL) {
+    if ((i = mpdm_popen(prg, MPDM_AS(L"r+"))) != NULL) {
         struct mpdm_file *ifs;
         struct mpdm_file *ofs;
 

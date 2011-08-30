@@ -462,7 +462,7 @@ int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
  */
 int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step)
 {
-    return mpdm_seek(a, MPDM_S(k), step);
+    return mpdm_seek(a, MPDM_AS(k), step);
 }
 
 
@@ -546,7 +546,7 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
  */
 int mpdm_bseek_s(const mpdm_t a, const wchar_t * k, int step, int *pos)
 {
-    return mpdm_bseek(a, MPDM_S(k), step, pos);
+    return mpdm_bseek(a, MPDM_AS(k), step, pos);
 }
 
 
