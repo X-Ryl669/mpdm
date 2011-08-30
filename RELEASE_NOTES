@@ -6,6 +6,9 @@ MPDM Release Notes
 
  - New features:
    - New function mpdm_sget_i().
+   - New macros MPDM_AA() and MPDM_AS(), for local stack-allocated
+     (i.e. using alloca()) arrays and strings, meant to be used
+     for optimized, short-lived temporary values.
 
 2.0.0
 -----
