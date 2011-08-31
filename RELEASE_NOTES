@@ -4,6 +4,10 @@ MPDM Release Notes
 2.0.1
 -----
 
+ - Optimizations:
+   - Numeric values created with MPDM_I() and MPDM_R() do not have
+     their string representation created until needed by a call to
+     mpdm_string() (which can be never).
  - New features:
    - New function mpdm_sget_i().
    - New macros MPDM_AA() and MPDM_AS(), for local stack-allocated
