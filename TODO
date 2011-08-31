@@ -4,7 +4,7 @@ Minimum Profit Data Manager (MPDM) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1121: Document MPDM_LA().
+None!
 
 Open Bugs
 ---------
@@ -256,5 +256,6 @@ Closed
    the value to mpdm_string(). This will delay numbers' printable
    representation until (or if) really needed
    (Fri, 26 Aug 2011 20:28:57 +0200).
+ * 1121: Document MPDM_AA() (Wed, 31 Aug 2011 12:32:09 +0200).
 
 Email bugs to angel@triptico.com
