@@ -21,6 +21,9 @@
 
 */
 
+#ifndef MPDM_H_
+#define MPDM_H_
+
 #include <malloc.h>
 
 #ifdef __cplusplus
@@ -271,3 +274,5 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* MPDM_H_ */
