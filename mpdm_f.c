@@ -1905,10 +1905,9 @@ static int sysdep_pclose(const mpdm_t v)
     if (fs->hout != NULL)
         CloseHandle(fs->hout);
 
-#if 0
-    CloseHandle(fs->process);
+    /* waits until the process terminates */
+    WaitForSingleObject(fs->process, 1000);
     GetExitCodeProcess(fs->process, &out);
-#endif
 
     return (int) out;
 }
