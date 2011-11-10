@@ -88,6 +88,7 @@ struct mpdm_file {
 #ifdef CONFOPT_WIN32
     HANDLE hin;
     HANDLE hout;
+    HANDLE process;
 #endif                          /* CONFOPT_WIN32 */
 };
 
@@ -1878,17 +1879,16 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
     si.hStdInput = pw[0];
     si.dwFlags |= STARTF_USESTDHANDLES;
 
-    ret =
-        CreateProcess(NULL, prg, NULL, NULL, TRUE, 0, NULL, NULL, &si,
-                      &pi);
+    ret = CreateProcess(NULL, prg, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
 
     if (rw & 0x01)
         CloseHandle(pr[1]);
     if (rw & 0x02)
         CloseHandle(pw[0]);
 
-    fs->hin = pr[0];
-    fs->hout = pw[1];
+    fs->hin     = pr[0];
+    fs->hout    = pw[1];
+    fs->process = pi.hProcess;
 
     return ret;
 }
@@ -1897,6 +1897,7 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 static int sysdep_pclose(const mpdm_t v)
 {
     struct mpdm_file *fs = (struct mpdm_file *) v->data;
+    DWORD out = 0;
 
     if (fs->hin != NULL)
         CloseHandle(fs->hin);
@@ -1904,8 +1905,12 @@ static int sysdep_pclose(const mpdm_t v)
     if (fs->hout != NULL)
         CloseHandle(fs->hout);
 
-    /* how to know process exit code? */
-    return 0;
+#if 0
+    CloseHandle(fs->process);
+    GetExitCodeProcess(fs->process, &out);
+#endif
+
+    return (int) out;
 }
 
 
