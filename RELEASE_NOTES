@@ -4,6 +4,8 @@ MPDM Release Notes
 2.0.2
 -----
 
+ - New features:
+   - New function mpdm_tr(), to transliterate strings.
  - Bugfixes:
    - The pclose() win32 implementation returns the process exit
      status correctly.

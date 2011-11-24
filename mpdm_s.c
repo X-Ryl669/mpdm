@@ -1478,3 +1478,54 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 
     return r;
 }
+
+
+/**
+ * mpdm_tr - Transliterates a string.
+ * @str: the strnig
+ * @s1: characters to be changed
+ * @s2: characters to replace those in s1
+ *
+ * Creates a copy of @str, which will have all characters in @s1
+ * replaced by those in @s2 matching their position.
+ */
+mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2)
+{
+    mpdm_t r;
+    wchar_t *ptr;
+    wchar_t *cs1;
+    wchar_t *cs2;
+    wchar_t c;
+
+    mpdm_ref(str);
+    mpdm_ref(s1);
+    mpdm_ref(s2);
+
+    /* create a copy of the string */
+    r = MPDM_NS((wchar_t *)str->data, mpdm_size(str));
+    mpdm_ref(r);
+
+    ptr = (wchar_t *)r->data;
+    cs1 = (wchar_t *)s1->data;
+    cs2 = (wchar_t *)s2->data;
+
+    while ((c = *ptr) != L'\0') {
+        int n;
+
+        for (n = 0; cs1[n] != '\0'; n++) {
+            if (c == cs1[n]) {
+                *ptr = cs2[n];
+                break;
+            }
+        }
+
+        ptr++;
+    }
+
+    mpdm_unrefnd(r);
+    mpdm_unref(s2);
+    mpdm_unref(s1);
+    mpdm_unref(str);
+
+    return r;
+}

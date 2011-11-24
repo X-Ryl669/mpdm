@@ -1425,6 +1425,12 @@ void test_ulc(void)
     do_test("mpdm_ulc 2", mpdm_cmp(mpdm_ulc(w, 0), v) == 0);
 
     mpdm_unref(w);
+
+    do_test("mpdm_tr",
+        mpdm_cmp(mpdm_tr(v, MPDM_LS(L"si"), MPDM_LS(L"Z1")),
+            MPDM_LS(L"Ztr1ng")) == 0
+    );
+
     mpdm_unref(v);
 }
 
