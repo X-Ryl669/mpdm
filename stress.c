@@ -51,7 +51,7 @@ void _do_test(char *str, int ok, int src_line)
 
     sprintf(tmp, "%s: %s (line %d)\n", str, ok ? "OK!" : "*** Failed ***",
             src_line);
-    printf(tmp);
+    printf("%s", tmp);
 
     tests++;
 
