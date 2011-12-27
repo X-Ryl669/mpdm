@@ -161,7 +161,6 @@ mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t * k)
 int mpdm_exists(const mpdm_t h, const mpdm_t k)
 {
     mpdm_t b;
-    int n;
     int ret = 0;
 
     mpdm_ref(h);
@@ -171,7 +170,7 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
         /* if hash is not empty... */
         if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
             /* if bucket exists, binary-seek it */
-            if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0)
+            if (mpdm_bseek(b, k, 2, NULL) >= 0)
                 ret = 1;
         }
     }
@@ -450,11 +449,13 @@ static mpdm_t mpdm_sym(mpdm_t r, mpdm_t k, mpdm_t v, int o, int s)
         while (MPDM_IS_EXEC(w))
             w = mpdm_exec(w, NULL, NULL);
 
-        if (w->flags & MPDM_HASH)
-            w = mpdm_hset(w, mpdm_aget(p, n), v);
-        else {
-            int i = mpdm_ival(mpdm_aget(p, n));
-            w = mpdm_aset(w, v, i);
+        if (w) {
+            if (w->flags & MPDM_HASH)
+                w = mpdm_hset(w, mpdm_aget(p, n), v);
+            else {
+                int i = mpdm_ival(mpdm_aget(p, n));
+                w = mpdm_aset(w, v, i);
+            }
         }
     }
 

@@ -1976,7 +1976,7 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
 static int sysdep_pclose(const mpdm_t v)
 /* unix-style pipe close */
 {
-    int s;
+    int s = 0;
     struct mpdm_file *fs = (struct mpdm_file *) v->data;
 
     if (fs->in != NULL)
@@ -2110,7 +2110,7 @@ mpdm_t mpdm_pclose(mpdm_t fd)
         destroy_mpdm_file(fd);
     }
 
-    fd = mpdm_unref(fd);
+    mpdm_unref(fd);
 
     return r;
 }
@@ -2127,7 +2127,9 @@ mpdm_t mpdm_home_dir(void)
 {
     mpdm_t r = NULL;
     char *ptr;
-    char tmp[512] = "";
+    char tmp[512];
+
+    tmp[0] = '\0';
 
 #ifdef CONFOPT_WIN32
 
