@@ -87,16 +87,6 @@ fi
 
 echo "CC=$CC" >> makefile.opts
 
-# set cflags
-if [ "$CFLAGS" = "" -a "$CC" = "gcc" ] ; then
-	CFLAGS="-g -Wall"
-fi
-
-echo "CFLAGS=$CFLAGS" >> makefile.opts
-
-# Add CFLAGS to CC
-CC="$CC $CFLAGS"
-
 # set archiver
 if [ "$AR" = "" ] ; then
 	AR=ar
@@ -113,6 +103,28 @@ echo "#define CONFOPT_PREFIX \"$PREFIX\"" >> config.h
 #########################################################
 
 # configuration directives
+
+# CFLAGS
+if [ -z "$CFLAGS" ] ; then
+    CFLAGS="-g -Wall"
+fi
+
+echo -n "Testing if C compiler supports ${CFLAGS}... "
+echo "int main(int argc, char *argv[]) { return 0; }" > .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+    echo "OK"
+else
+    echo "No; resetting to defaults"
+    CFLAGS=""
+fi
+
+echo "CFLAGS=$CFLAGS" >> makefile.opts
+
+# Add CFLAGS to CC
+CC="$CC $CFLAGS"
 
 # Win32
 echo -n "Testing for win32... "
