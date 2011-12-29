@@ -442,7 +442,7 @@ fi
 if [ "$WITH_WIN32" != 1 ] ; then
     echo -n "Testing for POSIX threads... "
     echo "#include <pthread.h>" > .tmp.c
-    echo "int main(void) { pthread_t t; pthread_create(&t, NULL, NULL, NULL); return 0; }" >> .tmp.c
+    echo "void *f(void *p) { return p; } int main(void) { pthread_t t; pthread_create(&t, NULL, f, NULL); return 0; }" >> .tmp.c
 
     TMP_LDFLAGS="-pthread"
     $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
