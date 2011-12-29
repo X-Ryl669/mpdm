@@ -250,7 +250,7 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy)
         size = wcslen(str);
 
     /* create a copy? */
-    if (cpy) {
+    if (size >= 0 && cpy) {
         /* free() on destruction */
         flags |= MPDM_FREE;
 
