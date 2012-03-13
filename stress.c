@@ -1685,6 +1685,24 @@ void test_sem(void)
 }
 
 
+void test_sock(void)
+{
+    mpdm_t f;
+
+    printf("socket: connecting to google\n");
+
+    f = mpdm_connect(MPDM_LS(L"www.google.com"), MPDM_LS(L"www"));
+
+    if (f == NULL) {
+        printf("Connection failed (Internet access?)\n");
+    }
+    else {
+        printf("Connection successful!\n");
+        mpdm_close(f);
+    }
+}
+
+
 void (*func) (void) = NULL;
 
 int main(int argc, char *argv[])
@@ -1725,6 +1743,7 @@ int main(int argc, char *argv[])
     test_scanf();
     test_thread();
     test_sem();
+    test_sock();
 
     benchmark();
 

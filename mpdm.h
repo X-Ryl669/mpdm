@@ -272,6 +272,8 @@ void mpdm_semaphore_post(mpdm_t sem);
 
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
+mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
+
 #ifdef __cplusplus
 }
 #endif

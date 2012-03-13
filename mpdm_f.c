@@ -70,6 +70,10 @@
 #include <pwd.h>
 #endif
 
+#ifdef CONFOPT_NETDB_H
+#include <netdb.h>
+#endif
+
 #include "mpdm.h"
 
 #ifdef CONFOPT_ICONV
@@ -2242,7 +2246,6 @@ mpdm_t mpdm_app_dir(void)
     return r;
 }
 
-#include <netdb.h>
 
 mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
 {

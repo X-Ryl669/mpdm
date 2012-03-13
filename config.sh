@@ -303,6 +303,20 @@ else
 	echo "No"
 fi
 
+# netdb.h detection
+echo -n "Testing for netdb.h... "
+echo "#include <netdb.h>" > .tmp.c
+echo "int main(void) { return(0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_NETDB_H 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
 # chown() detection
 echo -n "Testing for chown()... "
 echo "#include <sys/types.h>" > .tmp.c
