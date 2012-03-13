@@ -48,6 +48,11 @@
 #include <commctrl.h>
 #include <shlobj.h>
 
+#undef UNICODE
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
 #endif
 
 #ifdef CONFOPT_SYS_TYPES_H
@@ -2255,6 +2260,12 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     char *h;
     char *s;
 
+#ifdef CONFOPT_WIN32
+    /* FIXME: this does not belong here */
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+
     mpdm_ref(host);
     mpdm_ref(serv);
 
@@ -2264,7 +2275,13 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     memset(&hints, '\0', sizeof(hints));
 
     hints.ai_socktype   = SOCK_STREAM;
+
+#ifdef CONFOPT_WIN32
+    hints.ai_family     = AF_UNSPEC;
+    hints.ai_protocol   = IPPROTO_TCP;
+#else
     hints.ai_flags      = AI_ADDRCONFIG;
+#endif
 
     if (getaddrinfo(h, s, &hints, &res) == 0) {
         int s = -1;
