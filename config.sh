@@ -129,24 +129,25 @@ CC="$CC $CFLAGS"
 # Win32
 echo -n "Testing for win32... "
 if [ "$WITHOUT_WIN32" = "1" ] ; then
-	echo "Disabled by user"
+    echo "Disabled by user"
 else
-	echo "#include <windows.h>" > .tmp.c
-	echo "#include <commctrl.h>" >> .tmp.c
-	echo "int STDCALL WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
-	echo "{ return 0; }" >> .tmp.c
+    echo "#include <windows.h>" > .tmp.c
+    echo "#include <commctrl.h>" >> .tmp.c
+    echo "int STDCALL WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
+    echo "{ return 0; }" >> .tmp.c
 
-	TMP_LDFLAGS=""
-	$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+    TMP_LDFLAGS="-lws2_32"
+    $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "#define CONFOPT_WIN32 1" >> config.h
-		echo "OK"
-		WITHOUT_UNIX_GLOB=1
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_WIN32 1" >> config.h
+        echo "OK"
+        WITHOUT_UNIX_GLOB=1
         WITH_WIN32=1
-	else
-		echo "No"
-	fi
+        echo $TMP_LDFLAGS >> config.ldflags
+    else
+        echo "No"
+    fi
 fi
 
 # glob.h support
