@@ -32,7 +32,7 @@ $(LIB): $(OBJS)
 	$(AR) rv $(LIB) $(OBJS)
 
 stress: stress.c $(LIB)
-	$(CC) $(CFLAGS) `cat config.ldflags` stress.c -L. -lmpdm -o $@
+	$(CC) $(CFLAGS) stress.c -L. -lmpdm `cat config.ldflags` -o $@
 
 .SUFFIXES: .txt .html
 
