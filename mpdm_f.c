@@ -2262,7 +2262,6 @@ void init_sockets(void)
         init = 1;
 
 #ifdef CONFOPT_WIN32
-    /* FIXME: this does not belong here */
         WSADATA wsaData;
         WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
@@ -2316,6 +2315,29 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     }
 
 #else   /* CONFOPT_WITHOUT_GETADDRINFO */
+
+    /* traditional socket interface */
+    struct hostent *he;
+
+    if ((he = gethostbyname(h)) != NULL) {
+        struct servent *se;
+
+        if ((se = getservbyname(s, "tcp")) != NULL) {
+        	struct sockaddr_in host;
+    
+        	memset(&host, '\0', sizeof(host));
+
+            memcpy(&host.sin_addr, he->h_addr_list[0], he->h_length);
+            host.sin_family = he->h_addrtype;
+            host.sin_port   = se->s_port;
+    
+            if ((d = socket(AF_INET, SOCK_STREAM, 0)) != -1) {
+                if (connect(d, (struct sockaddr *)&host, sizeof(host)) == -1)
+                    d = -1;
+            }
+        }
+    }
+
 #endif  /* CONFOPT_WITHOUT_GETADDRINFO */
 
     }
