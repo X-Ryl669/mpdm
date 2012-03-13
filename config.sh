@@ -145,6 +145,25 @@ else
         WITHOUT_UNIX_GLOB=1
         WITH_WIN32=1
         echo $TMP_LDFLAGS >> config.ldflags
+
+        echo -n "Testing for getaddrinfo() in winsock... "
+        echo "#include <winsock2.h>" > .tmp.c
+        echo "#include <ws2tcpip.h>" >> .tmp.c
+
+        echo "int STDCALL WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
+        echo "{ struct addrinfo *res; struct addrinfo hints; " >> .tmp.c
+        echo "getaddrinfo(\"google.es\", \"www\", &hints, &res);" >> .tmp.c
+
+        echo "return 0; }" >> .tmp.c
+
+        $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+        if [ $? = 0 ] ; then
+            echo "OK"
+        else
+            echo "No"
+            echo "#define CONFOPT_WITHOUT_GETADDRINFO" >> config.h
+        fi
     else
         echo "No"
     fi
