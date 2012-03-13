@@ -2298,7 +2298,6 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     hints.ai_flags      = AI_ADDRCONFIG;
 
     if (getaddrinfo(h, s, &hints, &res) == 0) {
-        int d = -1;
         struct addrinfo *r;
 
         for (r = res; r != NULL; r = r->ai_next) {
