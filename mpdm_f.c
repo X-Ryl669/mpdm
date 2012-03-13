@@ -2241,3 +2241,62 @@ mpdm_t mpdm_app_dir(void)
 
     return r;
 }
+
+#include <netdb.h>
+
+mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
+{
+    mpdm_t f = NULL;
+    struct addrinfo *res;
+    struct addrinfo hints;
+    char *h;
+    char *s;
+
+    mpdm_ref(host);
+    mpdm_ref(serv);
+
+    h = mpdm_wcstombs(mpdm_string(host), NULL);
+    s = mpdm_wcstombs(mpdm_string(serv), NULL);
+
+    memset(&hints, '\0', sizeof(hints));
+
+    hints.ai_socktype   = SOCK_STREAM;
+    hints.ai_flags      = AI_ADDRCONFIG;
+
+    if (getaddrinfo(h, s, &hints, &res) == 0) {
+        int s = -1;
+        struct addrinfo *r;
+
+        for (r = res; r != NULL; r = r->ai_next) {
+            s = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
+
+            if (s != -1) {
+                if (connect(s, r->ai_addr, r->ai_addrlen) == 0)
+                    break;
+
+                close(s);
+                s = -1;
+            }
+        }
+
+        freeaddrinfo(res);
+
+        /* create file value */
+        if (s != -1) {
+            struct mpdm_file *fs;
+
+            f = new_mpdm_file();
+            fs = (struct mpdm_file *) f->data;
+
+            fs->sock = s;
+        }
+    }
+
+    free(s);
+    free(h);
+
+    mpdm_unref(serv);
+    mpdm_unref(host);
+
+    return f;
+}
