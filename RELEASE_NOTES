@@ -1,10 +1,12 @@
 MPDM Release Notes
 ==================
 
-2.0.2
+2.1.0
 -----
 
  - New features:
+   - Support for client TCP/IP connections via the new
+     mpdm_connect() function.
    - New function mpdm_tr(), to transliterate strings.
  - Bugfixes:
    - The pclose() win32 implementation returns the process exit

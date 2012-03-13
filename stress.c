@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     stress.c - Stress tests for MPDM.
 
@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-    http://www.triptico.com
+    http://triptico.com
 
 */
 
@@ -1697,7 +1697,25 @@ void test_sock(void)
         printf("Connection failed (Internet access?)\n");
     }
     else {
+        int n;
+        mpdm_t r;
+
         printf("Connection successful!\n");
+
+        mpdm_write(f, MPDM_LS(L"GET / HTTP/1.1\r\n"));
+        mpdm_write(f, MPDM_LS(L"Host: www.google.com\r\n\r\n"));
+
+        r = mpdm_ref(MPDM_A(0));
+
+        for (n = 0; n < 10; n++)
+            mpdm_push(r, mpdm_read(f));
+
+        printf("First 10 lines:\n");
+        mpdm_dump(r);
+
+        mpdm_unref(r);
+
+        printf("Closing connection\n");
         mpdm_close(f);
     }
 }
