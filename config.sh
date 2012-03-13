@@ -14,30 +14,30 @@ DOCDIR=""
 # parse arguments
 while [ $# -gt 0 ] ; do
 
-	case $1 in
-	--without-win32)	WITHOUT_WIN32=1 ;;
-	--without-unix-glob)	WITHOUT_UNIX_GLOB=1 ;;
-	--with-included-regex)	WITH_INCLUDED_REGEX=1 ;;
-	--with-pcre)		WITH_PCRE=1 ;;
-	--without-gettext)	WITHOUT_GETTEXT=1 ;;
-	--without-iconv)	WITHOUT_ICONV=1 ;;
-	--without-wcwidth)	WITHOUT_WCWIDTH=1 ;;
-	--help)			CONFIG_HELP=1 ;;
+    case $1 in
+    --without-win32)        WITHOUT_WIN32=1 ;;
+    --without-unix-glob)    WITHOUT_UNIX_GLOB=1 ;;
+    --with-included-regex)  WITH_INCLUDED_REGEX=1 ;;
+    --with-pcre)            WITH_PCRE=1 ;;
+    --without-gettext)      WITHOUT_GETTEXT=1 ;;
+    --without-iconv)        WITHOUT_ICONV=1 ;;
+    --without-wcwidth)      WITHOUT_WCWIDTH=1 ;;
+    --help)                 CONFIG_HELP=1 ;;
 
-	--mingw32)		CC=i586-mingw32msvc-cc
-				WINDRES=i586-mingw32msvc-windres
-				AR=i586-mingw32msvc-ar
-				;;
+    --mingw32)              CC=i586-mingw32msvc-cc
+                            WINDRES=i586-mingw32msvc-windres
+                            AR=i586-mingw32msvc-ar
+                            ;;
 
-	--prefix)		PREFIX=$2 ; shift ;;
-	--prefix=*)		PREFIX=`echo $1 | sed -e 's/--prefix=//'` ;;
+    --prefix)               PREFIX=$2 ; shift ;;
+    --prefix=*)             PREFIX=`echo $1 | sed -e 's/--prefix=//'` ;;
 
-	--docdir)		DOCDIR=$2 ; shift ;;
-	--docdir=*)		DOCDIR=`echo $1 | sed -e 's/--docdir=//'` ;;
+    --docdir)               DOCDIR=$2 ; shift ;;
+    --docdir=*)             DOCDIR=`echo $1 | sed -e 's/--docdir=//'` ;;
 
-	esac
+    esac
 
-	shift
+    shift
 done
 
 if [ "$CONFIG_HELP" = "1" ] ; then
@@ -284,6 +284,20 @@ $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
 	echo "#define CONFOPT_PWD_H 1" >> config.h
+	echo "OK"
+else
+	echo "No"
+fi
+
+# sys/socket.h detection
+echo -n "Testing for sys/socket.h... "
+echo "#include <sys/socket.h>" > .tmp.c
+echo "int main(void) { return(0); }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+	echo "#define CONFOPT_SYS_SOCKET_H 1" >> config.h
 	echo "OK"
 else
 	echo "No"

@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     mpdm_f.c - File management
 
@@ -62,6 +62,10 @@
 #include <sys/stat.h>
 #endif
 
+#ifdef CONFOPT_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
 #ifdef CONFOPT_PWD_H
 #include <pwd.h>
 #endif
@@ -76,6 +80,8 @@
 struct mpdm_file {
     FILE *in;
     FILE *out;
+
+    int sock;
 
     wchar_t *(*f_read) (struct mpdm_file *, int *);
     int (*f_write) (struct mpdm_file *, const wchar_t *);
@@ -129,6 +135,14 @@ static int get_char(struct mpdm_file *f)
             c += 256;
     }
 
+    if (f->sock != -1) {
+        unsigned char b;
+
+        recv(f->sock, &b, sizeof(b), 0);
+
+        c = b;
+    }
+
     return c;
 }
 
@@ -149,6 +163,9 @@ static int put_buf(const char *ptr, int s, struct mpdm_file *f)
 
     if (f->out != NULL)
         s = fwrite(ptr, s, 1, f->out);
+
+    if (f->sock != -1)
+        send(f->sock, ptr, s, 0);
 
     return s;
 }
@@ -917,6 +934,8 @@ static mpdm_t new_mpdm_file(void)
 
     memset(fs, '\0', sizeof(struct mpdm_file));
 
+    fs->sock = -1;
+
     /* default I/O functions */
     fs->f_read = read_auto;
     fs->f_write = write_wcs;
@@ -1160,6 +1179,14 @@ mpdm_t mpdm_close(mpdm_t fd)
 
         if (fs->out != fs->in && fs->out != NULL)
             fclose(fs->out);
+
+        if (fs->sock != -1) {
+#ifdef CONFOPT_WIN32
+            closesocket(fs->sock);
+#else
+            close(fs->sock);
+#endif
+        }
 
         destroy_mpdm_file(fd);
     }
