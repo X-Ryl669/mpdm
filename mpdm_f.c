@@ -2252,19 +2252,30 @@ mpdm_t mpdm_app_dir(void)
 }
 
 
-mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
+/** sockets **/
+
+void init_sockets(void)
 {
-    mpdm_t f = NULL;
-    struct addrinfo *res;
-    struct addrinfo hints;
-    char *h;
-    char *s;
+    static int init = 0;
+
+    if (init == 0) {
+        init = 1;
 
 #ifdef CONFOPT_WIN32
     /* FIXME: this does not belong here */
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
+        WSADATA wsaData;
+        WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
+    }
+}
+
+
+mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
+{
+    mpdm_t f = NULL;
+    char *h;
+    char *s;
+    int d = -1;
 
     mpdm_ref(host);
     mpdm_ref(serv);
@@ -2272,44 +2283,52 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     h = mpdm_wcstombs(mpdm_string(host), NULL);
     s = mpdm_wcstombs(mpdm_string(serv), NULL);
 
+    init_sockets();
+
+    {
+
+#ifndef CONFOPT_WITHOUT_GETADDRINFO
+
+    struct addrinfo *res;
+    struct addrinfo hints;
+
     memset(&hints, '\0', sizeof(hints));
 
     hints.ai_socktype   = SOCK_STREAM;
-
-#ifdef CONFOPT_WIN32
-    hints.ai_family     = AF_UNSPEC;
-    hints.ai_protocol   = IPPROTO_TCP;
-#else
     hints.ai_flags      = AI_ADDRCONFIG;
-#endif
 
     if (getaddrinfo(h, s, &hints, &res) == 0) {
-        int s = -1;
+        int d = -1;
         struct addrinfo *r;
 
         for (r = res; r != NULL; r = r->ai_next) {
-            s = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
+            d = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
 
-            if (s != -1) {
-                if (connect(s, r->ai_addr, r->ai_addrlen) == 0)
+            if (d != -1) {
+                if (connect(d, r->ai_addr, r->ai_addrlen) == 0)
                     break;
 
-                close(s);
-                s = -1;
+                close(d);
+                d = -1;
             }
         }
 
         freeaddrinfo(res);
+    }
 
-        /* create file value */
-        if (s != -1) {
-            struct mpdm_file *fs;
+#else   /* CONFOPT_WITHOUT_GETADDRINFO */
+#endif  /* CONFOPT_WITHOUT_GETADDRINFO */
 
-            f = new_mpdm_file();
-            fs = (struct mpdm_file *) f->data;
+    }
 
-            fs->sock = s;
-        }
+    /* create file value */
+    if (d != -1) {
+        struct mpdm_file *fs;
+
+        f = new_mpdm_file();
+        fs = (struct mpdm_file *) f->data;
+
+        fs->sock = d;
     }
 
     free(s);

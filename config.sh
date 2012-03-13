@@ -162,7 +162,7 @@ else
             echo "OK"
         else
             echo "No"
-            echo "#define CONFOPT_WITHOUT_GETADDRINFO" >> config.h
+            echo "#define CONFOPT_WITHOUT_GETADDRINFO 1" >> config.h
         fi
     else
         echo "No"
