@@ -147,9 +147,8 @@ static int get_char(struct mpdm_file *f)
     if (f->sock != -1) {
         unsigned char b;
 
-        recv(f->sock, &b, sizeof(b), 0);
-
-        c = b;
+        if (recv(f->sock, &b, sizeof(b), 0) == sizeof(b))
+            c = b;
     }
 
     return c;
@@ -174,7 +173,7 @@ static int put_buf(const char *ptr, int s, struct mpdm_file *f)
         s = fwrite(ptr, s, 1, f->out);
 
     if (f->sock != -1)
-        send(f->sock, ptr, s, 0);
+        s = send(f->sock, ptr, s, 0);
 
     return s;
 }
