@@ -21,7 +21,6 @@ Pending Enhancements
  * 1063: Implement copy-on-write on array cloning.
  * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
    don't really belong here.
- * 1123: Add TCP/IP support (mainly to add "test for updates" for MP).
 
 Closed
 ------
@@ -258,5 +257,7 @@ Closed
    representation until (or if) really needed
    (Fri, 26 Aug 2011 20:28:57 +0200).
  * 1121: Document MPDM_AA() (Wed, 31 Aug 2011 12:32:09 +0200).
+ * 1123: Add TCP/IP support (mainly to add "test for updates" for MP)
+   (Mon, 02 Apr 2012 15:18:07 +0200).
 
 Email bugs to angel@triptico.com
