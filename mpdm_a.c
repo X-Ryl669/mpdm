@@ -715,7 +715,7 @@ mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
 
 
 /**
- * mpdm_join_s - Joins all elements of an array into one (string version).
+ * mpdm_join_s - Joins all elements of an array into a string (string version).
  * @a: array to be joined
  * @s: joiner string
  *
@@ -758,11 +758,13 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
 
 
 /**
- * mpdm_join - Joins all elements of an array into one.
- * @a: array to be joined
- * @s: joiner string
+ * mpdm_join - Joins an array.
+ * @a: array
+ * @s: joiner string or second array
  *
- * Joins all elements from @a into one string, using @s as a glue.
+ * If @s is a string or NULL, returns a new string with all elements
+ * in @a joined using @s. If @s is an array, it returns a new one
+ * containing all elements of @a followed by all elements of @s.
  * [Arrays]
  * [Strings]
  */
@@ -771,7 +773,26 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s)
     mpdm_t r;
 
     mpdm_ref(s);
-    r = mpdm_join_s(a, s ? mpdm_string(s) : NULL);
+
+    if (MPDM_IS_ARRAY(s)) {
+        int n, as, ss;
+
+        /* join two arrays */
+        as = mpdm_size(a);
+        ss = mpdm_size(s);
+
+        r = mpdm_ref(MPDM_A(as + ss));
+
+        for (n = 0; n < as; n++)
+            mpdm_aset(r, mpdm_aget(a, n), n);
+        for (n = 0; n < ss; n++)
+            mpdm_aset(r, mpdm_aget(s, n), n + as);
+
+        mpdm_unrefnd(r);
+    }
+    else
+        r = mpdm_join_s(a, s ? mpdm_string(s) : NULL);
+
     mpdm_unref(s);
 
     return r;
