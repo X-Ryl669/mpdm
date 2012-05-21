@@ -662,39 +662,6 @@ void test_join(void)
 }
 
 
-static mpdm_t active(mpdm_t args)
-{
-    return MPDM_H(0);
-}
-
-
-void test_sym(void)
-{
-    mpdm_t v;
-    int i;
-
-    printf("mpdm_sset / mpdm_sget tests\n\n");
-
-    mpdm_sset(NULL, MPDM_LS(L"mp"), MPDM_H(7));
-    mpdm_sset(NULL, MPDM_LS(L"mp.config"), MPDM_H(7));
-    mpdm_sset(NULL, MPDM_LS(L"mp.config.auto_indent"), MPDM_I(16384));
-    mpdm_sset(NULL, MPDM_LS(L"mp.config.use_regex"), MPDM_I(1357));
-    mpdm_sset(NULL, MPDM_LS(L"mp.config.gtk_font_face"),
-              MPDM_LS(L"profontwindows"));
-    mpdm_sset(NULL, MPDM_LS(L"mp.lines"), MPDM_A(2));
-    mpdm_sset(NULL, MPDM_LS(L"mp.lines.0"), MPDM_LS(L"First post!"));
-    mpdm_sset(NULL, MPDM_LS(L"mp.lines.1"), MPDM_LS(L"Second post!"));
-    mpdm_sset(NULL, MPDM_LS(L"mp.active"), MPDM_X(active));
-    mpdm_sset(NULL, MPDM_LS(L"mp.active.syntax"), NULL);
-    mpdm_dump(mpdm_root());
-
-    v = mpdm_sget(NULL, MPDM_LS(L"mp.config.auto_indent"));
-    i = mpdm_ival(v);
-
-    do_test("auto_indent == 16384", (i == 16384));
-}
-
-
 void test_file(void)
 {
     mpdm_t f;
@@ -1747,7 +1714,6 @@ int main(int argc, char *argv[])
     test_strcat();
     test_split();
     test_join();
-    test_sym();
     test_file();
     test_regex();
     test_exec();

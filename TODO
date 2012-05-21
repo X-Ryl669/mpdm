@@ -19,8 +19,6 @@ Pending Enhancements
  * 1008: bread().
  * 1009: bwrite().
  * 1063: Implement copy-on-write on array cloning.
- * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
-   don't really belong here.
 
 Closed
 ------
@@ -259,5 +257,7 @@ Closed
  * 1121: Document MPDM_AA() (Wed, 31 Aug 2011 12:32:09 +0200).
  * 1123: Add TCP/IP support (mainly to add "test for updates" for MP)
    (Mon, 02 Apr 2012 15:18:07 +0200).
+ * 1101: Move mpdm_sym(), mpdm_sget() and mpdm_sset() to MPSL, as they
+   don't really belong here (Mon, 21 May 2012 17:09:22 +0200).
 
 Email bugs to angel@triptico.com
