@@ -370,20 +370,21 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t * v1, mpdm_t * v2)
             while (ret == 0 && bi < mpdm_size(h)) {
                 mpdm_t b;
 
-                /* if bucket is empty or there is no more elements in it, pick next */
-                if ((b = mpdm_aget(h, bi)) == NULL || ei >= mpdm_size(b)) {
+                /* if bucket is empty or there are no more
+                   elements in it, pick the next one */
+                if (!(b = mpdm_aget(h, bi)) || ei >= mpdm_size(b)) {
                     ei = 0;
                     bi++;
-                    continue;
                 }
+                else {
+                    /* get pair */
+                    *v1 = mpdm_aget(b, ei++);
+                    *v2 = mpdm_aget(b, ei++);
 
-                /* get pair */
-                *v1 = mpdm_aget(b, ei++);
-                *v2 = mpdm_aget(b, ei++);
-
-                /* update context */
-                *context = (ei * mpdm_size(h)) + bi;
-                ret = 1;
+                    /* update context */
+                    *context = (ei * mpdm_size(h)) + bi;
+                    ret = 1;
+                }
             }
         }
     }
@@ -391,6 +392,7 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t * v1, mpdm_t * v2)
     if (MPDM_IS_ARRAY(h)) {
         if (*context < mpdm_size(h)) {
             *v1 = mpdm_aget(h, (*context)++);
+            *v2 = NULL;
             ret = 1;
         }
     }
