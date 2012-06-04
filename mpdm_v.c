@@ -305,6 +305,16 @@ int mpdm_is_null(mpdm_t v)
 }
 
 
+mpdm_t mpdm_set(mpdm_t *v, mpdm_t w)
+{
+    mpdm_ref(w);
+    mpdm_unref(*v);
+    *v = w;
+
+    return w;
+}
+
+
 /**
  * mpdm_exec - Executes an executable value.
  * @c: the code value
