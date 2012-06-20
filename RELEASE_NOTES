@@ -6,6 +6,7 @@ MPDM Release Notes
 
  - New features:
    - mpdm_join() allows the joining of two arrays.
+   - New function mpdm_set().
 
 2.1.0
 -----
