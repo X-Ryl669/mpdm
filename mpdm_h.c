@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     mpdm_h.c - Hash management
 
@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-    http://www.triptico.com
+    http://triptico.com
 
 */
 
@@ -328,16 +328,19 @@ mpdm_t mpdm_keys(const mpdm_t h)
 
 
 /**
- * mpdm_iterator - Iterates through the content of a hash or array.
- * @h: the hash (or array)
+ * mpdm_iterator - Iterates through the content of an object.
+ * @o: the object
  * @context: A pointer to an opaque context
- * @v1: a pointer to a value
- * @v2: another pointer to a value
+ * @k: a pointer to a value to store the key
+ * @v: a pointer to a value to store the value
  *
- * Iterates through the content of a hash, filling the @v1 and @v2
- * pointers with key-value pairs on each call until the hash is
- * exhausted. If @h is an array, only the @v1 pointer is filled.
- * @v1 and @v2 pointers can be NULL.
+ * Iterates through the @o value. If it's a hash, every key/value pair
+ * is returned on each call. If it's an array, @v contains the
+ * element and @k the index number on each call. Otherwise, it's assumed
+ * to be a string containing a numeral and @k and @v are filled with
+ * values from 0 to @o - 1 on each call.
+ *
+ * Any of @k and @v pointers can be NULL if the value is not of interest.
  *
  * The @context pointer to integer is opaque and should be
  * initialized to zero on the first call.
@@ -346,58 +349,62 @@ mpdm_t mpdm_keys(const mpdm_t h)
  * [Hashes]
  * [Arrays]
  */
-int mpdm_iterator(mpdm_t h, int *context, mpdm_t * v1, mpdm_t * v2)
+int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
 {
     int ret = 0;
     mpdm_t w1, w2;
 
-    mpdm_ref(h);
+    mpdm_ref(o);
 
-    if (v1 == NULL)
-        v1 = &w1;
+    if (k == NULL) k = &w1;
+    if (v == NULL) v = &w2;
 
-    if (v2 == NULL)
-        v2 = &w2;
-
-    if (MPDM_IS_HASH(h)) {
+    if (MPDM_IS_HASH(o)) {
         int bi, ei;
 
-        if (mpdm_size(h)) {
+        if (mpdm_size(o)) {
             /* get bucket and element index */
-            bi = (*context) % mpdm_size(h);
-            ei = (*context) / mpdm_size(h);
+            bi = (*context) % mpdm_size(o);
+            ei = (*context) / mpdm_size(o);
 
-            while (ret == 0 && bi < mpdm_size(h)) {
+            while (ret == 0 && bi < mpdm_size(o)) {
                 mpdm_t b;
 
                 /* if bucket is empty or there are no more
                    elements in it, pick the next one */
-                if (!(b = mpdm_aget(h, bi)) || ei >= mpdm_size(b)) {
+                if (!(b = mpdm_aget(o, bi)) || ei >= mpdm_size(b)) {
                     ei = 0;
                     bi++;
                 }
                 else {
                     /* get pair */
-                    *v1 = mpdm_aget(b, ei++);
-                    *v2 = mpdm_aget(b, ei++);
+                    *k = mpdm_aget(b, ei++);
+                    *v = mpdm_aget(b, ei++);
 
                     /* update context */
-                    *context = (ei * mpdm_size(h)) + bi;
+                    *context = (ei * mpdm_size(o)) + bi;
                     ret = 1;
                 }
             }
         }
     }
     else
-    if (MPDM_IS_ARRAY(h)) {
-        if (*context < mpdm_size(h)) {
-            *v1 = mpdm_aget(h, (*context)++);
-            *v2 = NULL;
+    if (MPDM_IS_ARRAY(o)) {
+        if (*context < mpdm_size(o)) {
+            *k = MPDM_I(*context);
+            *v = mpdm_aget(o, (*context)++);
+            ret = 1;
+        }
+    }
+    else {
+        /* assume it's a number */
+        if (*context < mpdm_ival(o)) {
+            *k = *v = MPDM_I((*context)++);
             ret = 1;
         }
     }
 
-    mpdm_unref(h);
+    mpdm_unref(o);
 
     return ret;
 }

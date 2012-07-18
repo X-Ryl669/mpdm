@@ -6,6 +6,8 @@ MPDM Release Notes
 
  - New features:
    - mpdm_join() joins more types.
+   - mpdm_iterator() returns index/element pairs when iterating
+     an array and can also iterate a number.
 
 2.1.1
 -----
