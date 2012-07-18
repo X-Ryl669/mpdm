@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     mpdm_a.c - Array management
 
@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-    http://www.triptico.com
+    http://triptico.com
 
 */
 
@@ -758,42 +758,84 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
 
 
 /**
- * mpdm_join - Joins an array.
- * @a: array
- * @s: joiner string or second array
+ * mpdm_join - Joins two values.
+ * @a: first value
+ * @b: second value
  *
- * If @s is a string or NULL, returns a new string with all elements
- * in @a joined using @s. If @s is an array, it returns a new one
- * containing all elements of @a followed by all elements of @s.
+ * Joins two values. If both are hashes, a new hash containing the
+ * pairs in @a overwritten with the keys in @b is returned; if both
+ * are arrays, a new array is returned with all elements in @a followed
+ * by all elements in b; if @a is an array and @b is a string,
+ * a new string is returned with all elements in @a joined using @b
+ * as a separator; and if @a is a hash and @b is a string, a new array
+ * is returned containing all pairs in @a joined using @b as a separator.
  * [Arrays]
+ * [Hashes]
  * [Strings]
  */
-mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s)
+mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 {
     mpdm_t r;
 
-    mpdm_ref(s);
+    mpdm_ref(a);
+    mpdm_ref(b);
 
-    if (MPDM_IS_ARRAY(s)) {
-        int n, as, ss;
+    if (MPDM_IS_HASH(a)) {
+        int n = 0, i = 0;
+        mpdm_t k, v;
 
-        /* join two arrays */
-        as = mpdm_size(a);
-        ss = mpdm_size(s);
+        if (MPDM_IS_HASH(b)) {
+            /* hash-hash */
+            r = mpdm_ref(MPDM_H(0));
 
-        r = mpdm_ref(MPDM_A(as + ss));
+            n = 0;
+            while (mpdm_iterator(a, &n, &k, &v))
+                mpdm_hset(r, k, v);
+            n = 0;
+            while (mpdm_iterator(b, &n, &k, &v))
+                mpdm_hset(r, k, v);
 
-        for (n = 0; n < as; n++)
-            mpdm_aset(r, mpdm_aget(a, n), n);
-        for (n = 0; n < ss; n++)
-            mpdm_aset(r, mpdm_aget(s, n), n + as);
+            mpdm_unrefnd(r);
+        }
+        else
+        if (!MPDM_IS_ARRAY(b)) {
+            /* hash-string */
+            r = mpdm_ref(MPDM_A(mpdm_hsize(a)));
 
-        mpdm_unrefnd(r);
+            while (mpdm_iterator(a, &n, &k, &v))
+                mpdm_aset(r, mpdm_strcat(k, mpdm_strcat(b, v)), i++);
+
+            mpdm_unrefnd(r);
+        }
     }
     else
-        r = mpdm_join_s(a, s ? mpdm_string(s) : NULL);
+    if (MPDM_IS_ARRAY(a)) {
+        if (MPDM_IS_ARRAY(b)) {
+            int n, as, ss;
 
-    mpdm_unref(s);
+            /* array-array */
+            as = mpdm_size(a);
+            ss = mpdm_size(b);
+
+            r = mpdm_ref(MPDM_A(as + ss));
+
+            for (n = 0; n < as; n++)
+                mpdm_aset(r, mpdm_aget(a, n), n);
+            for (n = 0; n < ss; n++)
+                mpdm_aset(r, mpdm_aget(b, n), n + as);
+
+            mpdm_unrefnd(r);
+        }
+        else
+            /* array-string */
+            r = mpdm_join_s(a, b ? mpdm_string(b) : NULL);
+    }
+    else
+        /* string-string */
+        r = mpdm_strcat(a, b);
+
+    mpdm_unref(b);
+    mpdm_unref(a);
 
     return r;
 }

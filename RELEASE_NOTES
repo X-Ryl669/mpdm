@@ -1,6 +1,12 @@
 MPDM Release Notes
 ==================
 
+2.1.2
+-----
+
+ - New features:
+   - mpdm_join() joins more types.
+
 2.1.1
 -----
 
