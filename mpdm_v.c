@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2011 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     mpdm_v.c - Basic value management
 
@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-    http://www.triptico.com
+    http://triptico.com
 
 */
 
@@ -42,6 +42,18 @@ struct mpdm_control *mpdm = NULL;
 
 /** code **/
 
+mpdm_t _mpdm_malloc(void)
+{
+    return malloc(sizeof(struct mpdm_val));
+}
+
+
+void _mpdm_free(mpdm_t v)
+{
+    free(v);
+}
+
+
 static void destroy_value(mpdm_t v)
 /* destroys a value */
 {
@@ -62,7 +74,7 @@ static void destroy_value(mpdm_t v)
     mpdm->count--;
 
     if (!(v->flags & MPDM_NONDYN))
-        free(v);
+        _mpdm_free(v);
 }
 
 
@@ -110,8 +122,7 @@ mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, int size)
  */
 mpdm_t mpdm_new(int flags, const void *data, int size)
 {
-    return mpdm_init(malloc(sizeof(struct mpdm_val)),
-            flags & ~MPDM_NONDYN, data, size);
+    return mpdm_init(_mpdm_malloc(), flags & ~MPDM_NONDYN, data, size);
 }
 
 
