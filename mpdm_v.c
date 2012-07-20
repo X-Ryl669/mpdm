@@ -42,8 +42,8 @@ struct mpdm_control *mpdm = NULL;
 
 /** code **/
 
-static void cleanup_value(mpdm_t v)
-/* cleans a value */
+static void destroy_value(mpdm_t v)
+/* destroys a value */
 {
     /* collapse multiple values */
     if (v->flags & MPDM_MULTIPLE) {
@@ -63,13 +63,6 @@ static void cleanup_value(mpdm_t v)
 
     if (!(v->flags & MPDM_NONDYN))
         free(v);
-}
-
-
-static void destroy_value(mpdm_t v)
-/* destroys a value */
-{
-    cleanup_value(v);
 }
 
 
