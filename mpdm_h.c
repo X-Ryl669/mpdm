@@ -393,6 +393,7 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
         if (*context < mpdm_size(o)) {
             /* MPSL 2.x */
             *k = mpdm_aget(o, (*context)++);
+            *v = NULL;
 
             /* MPSL 3.x */
 /*
