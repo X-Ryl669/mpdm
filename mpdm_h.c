@@ -166,12 +166,14 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
     mpdm_ref(h);
     mpdm_ref(k);
 
-    if (mpdm_size(h)) {
-        /* if hash is not empty... */
-        if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
-            /* if bucket exists, binary-seek it */
-            if (mpdm_bseek(b, k, 2, NULL) >= 0)
-                ret = 1;
+    if (MPDM_IS_HASH(h)) {
+        if (mpdm_size(h)) {
+            /* if hash is not empty... */
+            if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
+                /* if bucket exists, binary-seek it */
+                if (mpdm_bseek(b, k, 2, NULL) >= 0)
+                    ret = 1;
+            }
         }
     }
 
