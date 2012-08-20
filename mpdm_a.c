@@ -798,7 +798,17 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
             mpdm_unrefnd(r);
         }
         else
-        if (!MPDM_IS_ARRAY(b)) {
+        if (MPDM_IS_ARRAY(b)) {
+            /* hash-array */
+            r = mpdm_ref(mpdm_clone(a));
+
+            /* the array is a list of pairs */
+            for (n = 0; n < mpdm_size(b); n += 2)
+                mpdm_hset(r, mpdm_aget(b, n), mpdm_aget(b, n + 1));
+
+            mpdm_unrefnd(r);
+        }
+        else {
             /* hash-string */
             r = mpdm_ref(MPDM_A(mpdm_hsize(a)));
 
