@@ -1291,8 +1291,6 @@ void benchmark(void)
     int i, n;
     char tmp[64];
 
-    printf("\n");
-
     if (!do_benchmarks) {
         printf("Benchmarks disabled -- use -b\n");
         return;
@@ -1339,8 +1337,6 @@ void test_conversion(void)
 void test_pipes(void)
 {
     mpdm_t f;
-
-    printf("\n");
 
     if ((f = mpdm_popen(MPDM_LS(L"date"), MPDM_LS(L"r"))) != NULL) {
         mpdm_t v;
