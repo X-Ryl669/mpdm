@@ -41,7 +41,8 @@ int i_failed_msgs = 0;
 
 int do_benchmarks = 0;
 int do_multibyte_sregex_tests = 0;
-
+int verbose = 0;
+int do_sockets = 0;
 
 /** code **/
 
@@ -49,9 +50,12 @@ void _do_test(char *str, int ok, int src_line)
 {
     char tmp[1024];
 
-    sprintf(tmp, "%s: %s (line %d)\n", str, ok ? "OK!" : "*** Failed ***",
-            src_line);
-    printf("%s", tmp);
+    sprintf(tmp, "stress.c:%d: (#%d) %s: %s\n",
+        src_line, tests, str, ok ? "OK!" : "*** Failed ***"
+    );
+
+    if (!ok || verbose)
+        printf("%s", tmp);
 
     tests++;
 
@@ -65,6 +69,7 @@ void _do_test(char *str, int ok, int src_line)
 
 #define C { int CC = mpdm->count
 #define T(i) do_test("v counter", CC + i == mpdm->count); }
+
 
 /** tests **/
 
@@ -110,7 +115,10 @@ void test_basic(void)
     mpdm_t t;
 
     v = mpdm_ref(MPDM_S(L"65536"));
-    mpdm_dump(v);
+
+    if (verbose)
+        mpdm_dump(v);
+
     i = mpdm_ival(v);
     r = mpdm_rval(v);
 
@@ -124,8 +132,10 @@ void test_basic(void)
 
     mpdm_unref(v);
 
-    printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
-    printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
+    if (verbose) {
+        printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
+        printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
+    }
 
     /* partial copies of strings */
     v = MPDM_LS(L"this is not America");
@@ -155,50 +165,63 @@ void test_basic(void)
 
     /* mbs / wcs tests */
     v = MPDM_MBS("This is (was) a multibyte string");
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
 
     /* greek omega is 03a9 */
     v = MPDM_MBS("?Espa?a! (non-ASCII string, as ISO-8859-1 char *)");
-    mpdm_dump(v);
-    printf
-        ("(Previous value will be NULL if locale doesn't match stress.c encoding)\n");
+    if (verbose) {
+        mpdm_dump(v);
+        printf("(Previous value will be NULL if locale doesn't match stress.c encoding)\n");
+    }
 
     v = MPDM_LS(L"A capital greek omega between brackets [\x03a9]");
-    mpdm_dump(v);
-    printf("(Previous value will only show on an Unicode terminal)\n");
+
+    if (verbose) {
+        mpdm_dump(v);
+        printf("(Previous value will only show on an Unicode terminal)\n");
+    }
 
     v = mpdm_ref(MPDM_R(3.1416));
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("rval 1", mpdm_rval(v) == 3.1416);
     do_test("ival 1", mpdm_ival(v) == 3);
     mpdm_unref(v);
 
     v = MPDM_R(777777.0 / 2.0);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 1", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
 
     v = MPDM_R(388888.500);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 2", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
 
     v = MPDM_R(388888.412);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 3", mpdm_cmp(v, MPDM_LS(L"388888.412")) == 0);
 
     v = MPDM_R(388888.6543);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 4", mpdm_cmp(v, MPDM_LS(L"388888.6543")) == 0);
 
     v = MPDM_R(388888.0);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 5", mpdm_cmp(v, MPDM_LS(L"388888")) == 0);
 
     v = MPDM_R(0.050000);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 6", mpdm_cmp(v, MPDM_LS(L"0.05")) == 0);
 
     v = MPDM_R(0.000);
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     do_test("mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
 
     v = MPDM_LS(L"0177");
@@ -251,13 +274,15 @@ void test_array(void)
     mpdm_push(a, MPDM_LS(L"thursday"));
     mpdm_push(a, MPDM_LS(L"friday"));
     mpdm_push(a, MPDM_LS(L"saturday"));
-    mpdm_dump(a);
+    if (verbose)
+        mpdm_dump(a);
     do_test("a->size == 7", (a->size == 7));
 
     v = mpdm_aget(a, 3);
     mpdm_ref(v);
     mpdm_aset(a, NULL, 3);
-    mpdm_dump(a);
+    if (verbose)
+        mpdm_dump(a);
 
     mpdm_sort(a, 1);
     do_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
@@ -310,9 +335,11 @@ void test_array(void)
     do_test("queue should return 2", mpdm_ival(v) == 2);
     do_test("queue size should be 10", a->size == 10);
 
-    mpdm_dump(a);
+    if (verbose)
+        mpdm_dump(a);
     v = mpdm_queue(a, MPDM_I(14), 5);
-    mpdm_dump(a);
+    if (verbose)
+        mpdm_dump(a);
 
     do_test("queue size should be 5", a->size == 5);
     do_test("last taken value should be 8", mpdm_ival(v) == 8);
@@ -415,7 +442,8 @@ void test_hash(void)
             do_test("hash: hget", (v != NULL));
     }
 
-    printf("h's size: %d\n", mpdm_hsize(h));
+    if (verbose)
+        printf("h's size: %d\n", mpdm_hsize(h));
 
     mpdm_hdel(h, MPDM_LS(L"mp"));
     do_test("hsize 5", mpdm_hsize(h) == 102);
@@ -444,7 +472,8 @@ void test_hash(void)
     i = mpdm_ival(mpdm_hget(h, v));
     mpdm_unref(v);
 
-    mpdm_dump(h);
+    if (verbose)
+        mpdm_dump(h);
     do_test("hash: using non-strings as hash keys", (i == 6543));
 
     mpdm_hset(h, MPDM_LS(L"ok"), MPDM_I(666));
@@ -452,19 +481,28 @@ void test_hash(void)
     do_test("exists 1", mpdm_exists(h, MPDM_LS(L"ok")));
     do_test("exists 2", !mpdm_exists(h, MPDM_LS(L"notok")));
 
-    mpdm_dump(h);
+    if (verbose)
+        mpdm_dump(h);
     v = mpdm_hget_s(h, L"ok");
-    printf("v %s\n", v == NULL ? "is NULL" : "is NOT NULL");
+
+    if (verbose)
+        printf("v %s\n", v == NULL ? "is NULL" : "is NOT NULL");
+
     do_test("hget_s 1", mpdm_ival(v) == 666);
-    mpdm_dump(v);
-    mpdm_dump(h);
+    if (verbose) {
+        mpdm_dump(v);
+        mpdm_dump(h);
+    }
 
     i = 0;
     for (n = 0; n < 1000; n++) {
         if (mpdm_hget_s(h, L"ok") != NULL)
             i++;
     }
-    printf("i: %d\n", i);
+
+    if (verbose)
+        printf("i: %d\n", i);
+
     do_test("hget_s 1.2", i == 1000);
 
     if (i != 1000)
@@ -491,28 +529,32 @@ void test_splice(void)
     do_test("splice insertion",
             mpdm_cmp(mpdm_aget(w, 0),
                      MPDM_LS(L"I'm special agent Johnson")) == 0);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
 
     w = mpdm_splice(MPDM_LS(L"Life is a shit"), MPDM_LS(L"cheat"), 10, 4);
     do_test("splice insertion and deletion (1)",
             mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"Life is a cheat")) == 0);
     do_test("splice insertion and deletion (2)",
             mpdm_cmp(mpdm_aget(w, 1), MPDM_LS(L"shit")) == 0);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
 
     w = mpdm_splice(MPDM_LS(L"I'm with dumb"), NULL, 4, 4);
     do_test("splice deletion (1)",
             mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm  dumb")) == 0);
     do_test("splice deletion (2)",
             mpdm_cmp(mpdm_aget(w, 1), MPDM_LS(L"with")) == 0);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
 
     v = MPDM_LS(L"It doesn't matter");
     w = mpdm_splice(v, MPDM_LS(L" two"), v->size, 0);
     do_test("splice insertion at the end",
             mpdm_cmp(mpdm_aget(w, 0),
                      MPDM_LS(L"It doesn't matter two")) == 0);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
 
     w = mpdm_splice(NULL, NULL, 0, 0);
     do_test("splice with two NULLS", (mpdm_aget(w, 0) == NULL));
@@ -543,7 +585,8 @@ void test_splice(void)
     w = mpdm_splice(v, NULL, 0, -4);
     do_test("splice with negative del (4)",
             (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"ing")) == 0));
-    mpdm_dump(mpdm_aget(w, 0));
+    if (verbose)
+        mpdm_dump(mpdm_aget(w, 0));
 
     w = mpdm_splice(v, NULL, 4, -20);
     do_test("splice with out-of-bounds negative del",
@@ -589,30 +632,34 @@ void test_split(void)
 {
     mpdm_t w;
 
-    printf("mpdm_split test\n\n");
-
     w = mpdm_split(MPDM_S(L"four.elems.in.string"), MPDM_S(L"."));
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("4 elems: ", (w->size == 4));
 
     w = mpdm_split(MPDM_S(L"unseparated string"), MPDM_S(L"."));
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("1 elem: ", (w->size == 1));
 
     w = mpdm_split(MPDM_S(L".dot.at start"), MPDM_S(L"."));
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("3 elems: ", (w->size == 3));
 
     w = mpdm_split(MPDM_S(L"dot.at end."), MPDM_S(L"."));
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("3 elems: ", (w->size == 3));
 
     w = mpdm_split(MPDM_S(L"three...dots (two empty elements)"), MPDM_S(L"."));
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("4 elems: ", (w->size == 4));
 
     w = mpdm_split(MPDM_S(L"."), MPDM_S(L"."));
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("2 elems: ", (w->size == 2));
 
     w = mpdm_split(MPDM_S(L"I am the man"), NULL);
@@ -627,8 +674,6 @@ void test_join(void)
     mpdm_t v;
     mpdm_t s;
     mpdm_t w;
-
-    printf("mpdm_join test\n\n");
 
     /* separator */
     s = mpdm_ref(MPDM_LS(L"--"));
@@ -706,13 +751,17 @@ void test_file(void)
             mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r")) == NULL);
 
     v = mpdm_stat(MPDM_LS(L"stress.c"));
-    printf("Stat from stress.c:\n");
-    mpdm_dump(v);
+    if (verbose) {
+        printf("Stat from stress.c:\n");
+        mpdm_dump(v);
+    }
 
 /*	v=mpdm_glob(MPDM_LS(L"*"));*/
-    printf("Glob:\n");
     v = mpdm_glob(NULL, NULL);
-    mpdm_dump(v);
+    if (verbose) {
+        printf("Glob:\n");
+        mpdm_dump(v);
+    }
 
     mpdm_unref(eol);
 }
@@ -742,7 +791,8 @@ void test_regex(void)
     mpdm_ref(w);
     v = mpdm_regex(w, MPDM_LS(L"/[0-9]+/"), 0);
 
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
 
     do_test("regex 5", mpdm_cmp(v, MPDM_I(666)) == 0);
 
@@ -905,7 +955,6 @@ void test_regex(void)
 /*	v = mpdm_regex(w, MPDM_LS(L"key= "), 0);
 	do_test("multi-regex 4", v == NULL);
 */
-    printf("Multiple line regexes\n");
     w = MPDM_LS(L"/* this is\na C-like comment */");
     mpdm_ref(w);
 
@@ -919,7 +968,8 @@ void test_regex(void)
     do_test("Multiline regex 3", mpdm_cmp(v, MPDM_LS(L"is")) == 0);
     mpdm_unref(w);
 
-    printf("Pitfalls on multibyte locales (f.e. utf-8)\n");
+    if (verbose)
+        printf("Pitfalls on multibyte locales (f.e. utf-8)\n");
 
     w = MPDM_LS(L"-\x03a9-");
     mpdm_ref(w);
@@ -938,7 +988,7 @@ void test_regex(void)
                 mpdm_cmp(v, MPDM_LS(L"~\x03a9~")) == 0);
     }
     else
-        printf("Multibyte sregex test omitted; activate with -m\n");
+        printf("Multibyte sregex test disabled -- use -m\n");
 
     mpdm_unref(w);
 
@@ -1025,15 +1075,15 @@ void test_exec(void)
     mpdm_t w;
     mpdm_t p;
 
-    printf("test_exec\n");
-
     x = MPDM_X(dumper);
 
     /* a simple value */
-    mpdm_ref(x);
-    mpdm_exec(x, NULL, NULL);
-    mpdm_exec(x, x, NULL);
-    mpdm_unref(x);
+    if (verbose) {
+        mpdm_ref(x);
+        mpdm_exec(x, NULL, NULL);
+        mpdm_exec(x, x, NULL);
+        mpdm_unref(x);
+    }
 
     x = mpdm_ref(MPDM_X(sum));
     w = mpdm_ref(MPDM_A(3));
@@ -1090,8 +1140,8 @@ void test_encoding(void)
     v = MPDM_MBS("?Espa?a!\n");
     mpdm_ref(v);
 
-    printf
-        ("\nLocale encoding tests (will look bad if terminal is not ISO-8859-1)\n\n");
+    if (verbose)
+        printf("\nLocale encoding tests (will look bad if terminal is not ISO-8859-1)\n\n");
 
     if ((f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"w"))) == NULL) {
         printf("Can't write test.txt; no further file test possible.\n");
@@ -1103,21 +1153,25 @@ void test_encoding(void)
 
     f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
     w = mpdm_read(f);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("Locale encoding", mpdm_cmp(w, v) == 0);
     mpdm_close(f);
 
-    printf
-        ("\nutf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
+    if (verbose)
+        printf("\nutf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
 
     f = mpdm_open(MPDM_LS(L"utf8.txt"), MPDM_LS(L"r"));
     w = mpdm_read(f);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     mpdm_close(f);
 
-    for (ptr = w->data; *ptr != L'\0'; ptr++)
-        printf("%d", mpdm_wcwidth(*ptr));
-    printf("\n");
+    if (verbose) {
+        for (ptr = w->data; *ptr != L'\0'; ptr++)
+            printf("%d", mpdm_wcwidth(*ptr));
+        printf("\n");
+    }
 
     if (mpdm_encoding(MPDM_LS(L"UTF-8")) < 0) {
         printf
@@ -1125,12 +1179,13 @@ void test_encoding(void)
         return;
     }
 
-    printf
-        ("\nForced utf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
+    if (verbose)
+        printf("\nForced utf8.txt loading (should look good only in UTF-8 terminals with good fonts)\n");
 
     f = mpdm_open(MPDM_LS(L"utf8.txt"), MPDM_LS(L"r"));
     w = mpdm_read(f);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     mpdm_close(f);
 
     /* new open file will use the specified encoding */
@@ -1140,7 +1195,8 @@ void test_encoding(void)
 
     f = mpdm_open(MPDM_LS(L"test.txt"), MPDM_LS(L"r"));
     w = mpdm_read(f);
-    mpdm_dump(w);
+    if (verbose)
+        mpdm_dump(w);
     do_test("iconv encoding", mpdm_cmp(w, v) == 0);
     mpdm_close(f);
 
@@ -1154,23 +1210,24 @@ void test_gettext(void)
     mpdm_t v;
     mpdm_t h;
 
-    printf("\nTesting gettext...\n");
-
     mpdm_gettext_domain(MPDM_LS(L"stress"), MPDM_LS(L"./po"));
 
-    printf
-        ("Should follow a translated string of 'This is a test string':\n");
-    v = mpdm_gettext(MPDM_LS(L"This is a test string"));
-    mpdm_dump(v);
+    if (verbose)
+        printf("Should follow a translated string of 'This is a test string':\n");
 
-    printf("The same, but cached:\n");
     v = mpdm_gettext(MPDM_LS(L"This is a test string"));
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
+
+    if (verbose)
+        printf("The same, but cached:\n");
+    v = mpdm_gettext(MPDM_LS(L"This is a test string"));
+    if (verbose)
+        mpdm_dump(v);
 
     v = mpdm_gettext(MPDM_LS(L"This string is not translated"));
-    mpdm_dump(v);
-
-    printf("Ad-hoc translation hash:\n");
+    if (verbose)
+        mpdm_dump(v);
 
     h = MPDM_H(0);
     mpdm_ref(h);
@@ -1178,7 +1235,8 @@ void test_gettext(void)
 
     mpdm_gettext_domain(MPDM_LS(L"stress"), h);
     v = mpdm_gettext(MPDM_LS(L"test string"));
-    mpdm_dump(v);
+    if (verbose)
+        mpdm_dump(v);
     mpdm_unref(h);
 }
 
@@ -1236,7 +1294,7 @@ void benchmark(void)
     printf("\n");
 
     if (!do_benchmarks) {
-        printf("Skipping benchmarks\nRun them with 'stress -b'\n");
+        printf("Benchmarks disabled -- use -b\n");
         return;
     }
 
@@ -1290,8 +1348,10 @@ void test_pipes(void)
         v = mpdm_read(f);
         mpdm_pclose(f);
 
-        printf("Pipe from 'date':\n");
-        mpdm_dump(v);
+        if (verbose) {
+            printf("Pipe from 'date':\n");
+            mpdm_dump(v);
+        }
     }
     else
         printf("Can't pipe to 'date'\n");
@@ -1300,10 +1360,12 @@ void test_pipes(void)
 
 void test_misc(void)
 {
-    printf("Home dir:\n");
-    mpdm_dump(mpdm_home_dir());
-    printf("App dir:\n");
-    mpdm_dump(mpdm_app_dir());
+    if (verbose) {
+        printf("Home dir:\n");
+        mpdm_dump(mpdm_home_dir());
+        printf("App dir:\n");
+        mpdm_dump(mpdm_app_dir());
+    }
 }
 
 
@@ -1311,8 +1373,6 @@ void test_sprintf(void)
 {
     mpdm_t v;
     mpdm_t w;
-
-    printf("sprintf tests\n");
 
     v = MPDM_A(0);
     mpdm_ref(v);
@@ -1537,7 +1597,8 @@ mpdm_t the_thread(mpdm_t args, mpdm_t ctxt)
     mpdm_t fn = mpdm_ref(MPDM_LS(L"thread.txt"));
     mpdm_t f;
 
-    printf("thread: start writing from thread\n");
+    if (verbose)
+        printf("thread: start writing from thread\n");
 
     if ((f = mpdm_open(fn, MPDM_LS(L"w"))) != NULL) {
         int n;
@@ -1550,13 +1611,15 @@ mpdm_t the_thread(mpdm_t args, mpdm_t ctxt)
         mpdm_close(f);
     }
 
-    printf("thread: finished writing from thread\n");
+    if (verbose)
+        printf("thread: finished writing from thread\n");
 
     mpdm_mutex_lock(mutex);
     t_finished = 1;
     mpdm_mutex_unlock(mutex);
 
-    printf("thread: t_finished set\n");
+    if (verbose)
+        printf("thread: t_finished set\n");
 
     return NULL;
 }
@@ -1567,8 +1630,6 @@ void test_thread(void)
     mpdm_t fn = mpdm_ref(MPDM_LS(L"thread.txt"));
     mpdm_t x, v;
     int done;
-
-    printf("Testing threads and mutexes...\n");
 
     mpdm_unlink(fn);
 
@@ -1582,7 +1643,8 @@ void test_thread(void)
 
     v = mpdm_exec_thread(x, NULL, NULL);
 
-    printf("parent: waiting for the thread to finish...\n");
+    if (verbose)
+        printf("parent: waiting for the thread to finish...\n");
     mpdm_ref(v);
 
     done = 0;
@@ -1597,7 +1659,8 @@ void test_thread(void)
         mpdm_mutex_unlock(mutex);
     }
 
-    printf("parent: thread said it has finished.\n");
+    if (verbose)
+        printf("parent: thread said it has finished.\n");
 
     mpdm_unref(v);
 
@@ -1611,11 +1674,13 @@ mpdm_t sem = NULL;
 
 mpdm_t sem_thread(mpdm_t args, mpdm_t ctxt)
 {
-    printf("thread: waiting for semaphore...\n");
+    if (verbose)
+        printf("thread: waiting for semaphore...\n");
 
     mpdm_semaphore_wait(sem);
 
-    printf("thread: got semaphore.\n");
+    if (verbose)
+        printf("thread: got semaphore.\n");
 
     return NULL;
 }
@@ -1625,22 +1690,22 @@ void test_sem(void)
 {
     mpdm_t x, v;
 
-    printf("Testing threads and semaphores...\n");
-
     /* create the executable value */
     x = mpdm_ref(MPDM_X(sem_thread));
 
     /* creates the semaphore */
     sem = mpdm_ref(mpdm_new_semaphore(0));
 
-    printf("parent: launching thread.\n");
+    if (verbose)
+        printf("parent: launching thread.\n");
 
     v = mpdm_exec_thread(x, NULL, NULL);
     mpdm_ref(v);
 
     mpdm_sleep(10);
 
-    printf("parent: posting semaphore.\n");
+    if (verbose)
+        printf("parent: posting semaphore.\n");
 
     mpdm_semaphore_post(sem);
 
@@ -1656,35 +1721,39 @@ void test_sock(void)
 {
     mpdm_t f;
 
-    printf("socket: connecting to google\n");
+    if (do_sockets) {
+        printf("socket: connecting to google\n");
 
-    f = mpdm_connect(MPDM_LS(L"www.google.com"), MPDM_LS(L"www"));
+        f = mpdm_connect(MPDM_LS(L"www.google.com"), MPDM_LS(L"www"));
 
-    if (f == NULL) {
-        printf("Connection failed (Internet access?)\n");
+        if (f == NULL) {
+            printf("Connection failed (Internet access?)\n");
+        }
+        else {
+            int n;
+            mpdm_t r;
+
+            printf("Connection successful!\n");
+
+            mpdm_write(f, MPDM_LS(L"GET / HTTP/1.1\r\n"));
+            mpdm_write(f, MPDM_LS(L"Host: www.google.com\r\n\r\n"));
+
+            r = mpdm_ref(MPDM_A(0));
+
+            for (n = 0; n < 10; n++)
+                mpdm_push(r, mpdm_read(f));
+
+            printf("First 10 lines:\n");
+            mpdm_dump(r);
+
+            mpdm_unref(r);
+
+            printf("Closing connection\n");
+            mpdm_close(f);
+        }
     }
-    else {
-        int n;
-        mpdm_t r;
-
-        printf("Connection successful!\n");
-
-        mpdm_write(f, MPDM_LS(L"GET / HTTP/1.1\r\n"));
-        mpdm_write(f, MPDM_LS(L"Host: www.google.com\r\n\r\n"));
-
-        r = mpdm_ref(MPDM_A(0));
-
-        for (n = 0; n < 10; n++)
-            mpdm_push(r, mpdm_read(f));
-
-        printf("First 10 lines:\n");
-        mpdm_dump(r);
-
-        mpdm_unref(r);
-
-        printf("Closing connection\n");
-        mpdm_close(f);
-    }
+    else
+        printf("Socket test disabled -- use -s\n");
 }
 
 
@@ -1692,19 +1761,27 @@ void (*func) (void) = NULL;
 
 int main(int argc, char *argv[])
 {
+    printf("MPDM stress tests\n\n");
+
     if (argc > 1) {
         if (strcmp(argv[1], "-b") == 0)
             do_benchmarks = 1;
         if (strcmp(argv[1], "-m") == 0)
             do_multibyte_sregex_tests = 1;
+        if (strcmp(argv[1], "-v") == 0)
+            verbose = 1;
+        if (strcmp(argv[1], "-s") == 0)
+            do_sockets = 1;
     }
 
     mpdm_startup();
 
+/*
     printf("sizeof(struct mpdm_val): %ld\n",
            (long) sizeof(struct mpdm_val));
     printf("sizeof(void *): %d\n", sizeof(void *));
     printf("sizeof(void (*func)(void)): %d\n", sizeof(func));
+*/
 
 /*    test_counter();*/
     test_basic();

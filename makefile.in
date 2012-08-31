@@ -31,6 +31,9 @@ dep:
 $(LIB): $(OBJS)
 	$(AR) rv $(LIB) $(OBJS)
 
+stress-test: stress
+	./stress
+
 stress: stress.c $(LIB)
 	$(CC) $(CFLAGS) stress.c -L. -lmpdm `cat config.ldflags` -o $@
 
