@@ -1216,17 +1216,20 @@ mpdm_t mpdm_close(mpdm_t fd)
 mpdm_t mpdm_read(const mpdm_t fd)
 {
     mpdm_t v = NULL;
-    wchar_t *ptr;
-    int s;
-    struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-    if (fs == NULL)
-        return NULL;
+    if (fd != NULL) {
+        struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-    ptr = fs->f_read(fs, &s);
+        if (fs != NULL) {
+            wchar_t *ptr;
+            int s;
 
-    if (ptr != NULL)
-        v = MPDM_ENS(ptr, s);
+            ptr = fs->f_read(fs, &s);
+
+            if (ptr != NULL)
+                v = MPDM_ENS(ptr, s);
+        }
+    }
 
     return v;
 }
