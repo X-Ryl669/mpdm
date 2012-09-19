@@ -1047,6 +1047,76 @@ int mpdm_wcwidth(wchar_t c)
 #endif                          /* CONFOPT_WCWIDTH */
 
 
+static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
+/* fills a %j JSON format */
+{
+    int n = 0, c = 0;
+    mpdm_t k, w;
+
+    if (MPDM_IS_HASH(v)) {
+        o = mpdm_poke(o, l, L"{", 1, sizeof(wchar_t));
+
+        while (mpdm_iterator(v, &n, &k, &w)) {
+            if (c)
+                o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
+
+            o = mpdm_poke(o, l, L"\"", 1, sizeof(wchar_t));
+            o = mpdm_pokev(o, l, k);
+            o = mpdm_poke(o, l, L"\":", 2, sizeof(wchar_t));
+
+            if (w == NULL)
+                o = mpdm_poke(o, l, L"NULL", 4, sizeof(wchar_t));
+            else
+            if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
+                o = json_f(o, l, w);
+            else {
+                if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
+                    o = mpdm_pokev(o, l, w);
+                else {
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokev(o, l, w);
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                }
+            }
+
+            c++;
+        }
+
+        o = mpdm_poke(o, l, L"}", 1, sizeof(wchar_t));
+    }
+    else
+    if (MPDM_IS_ARRAY(v)) {
+        o = mpdm_poke(o, l, L"[", 1, sizeof(wchar_t));
+
+        while (mpdm_iterator(v, &n, &k, &w)) {
+            if (c)
+                o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
+
+            if (w == NULL)
+                o = mpdm_poke(o, l, L"NULL", 4, sizeof(wchar_t));
+            else
+            if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
+                o = json_f(o, l, w);
+            else {
+                if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
+                    o = mpdm_pokev(o, l, w);
+                else {
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokev(o, l, w);
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                }
+            }
+
+            c++;
+        }
+
+        o = mpdm_poke(o, l, L"]", 1, sizeof(wchar_t));
+    }
+
+    return o;
+}
+
+
 mpdm_t mpdm_sprintf1(const mpdm_t fmt, const mpdm_t arg)
 {
     const wchar_t *i = fmt->data;
@@ -1142,6 +1212,10 @@ mpdm_t mpdm_sprintf1(const mpdm_t fmt, const mpdm_t arg)
 
             *ptr = '\0';
             wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'j':
+            o = json_f(o, &l, arg);
             break;
 
         case 'c':
@@ -1257,6 +1331,10 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
                 snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
                 free(ptr);
 
+                break;
+
+            case 'j':
+                o = json_f(o, &l, v);
                 break;
 
             case 'c':
