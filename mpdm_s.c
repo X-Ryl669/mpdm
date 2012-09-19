@@ -1047,6 +1047,139 @@ int mpdm_wcwidth(wchar_t c)
 #endif                          /* CONFOPT_WCWIDTH */
 
 
+mpdm_t mpdm_sprintf1(const mpdm_t fmt, const mpdm_t arg)
+{
+    const wchar_t *i = fmt->data;
+    wchar_t c, *o = NULL;
+    int l = 0, n = 0;
+
+    mpdm_ref(fmt);
+    mpdm_ref(arg);
+
+    /* find first mark */
+    while ((c = i[n]) != L'\0' && c != L'%')
+        n++;
+
+    o = mpdm_poke(o, &l, i, n, sizeof(wchar_t));
+    i = &i[n];
+
+    /* format directive */
+    if (c == L'%') {
+        char t_fmt[128];
+        char tmp[1024];
+        char *ptr = NULL;
+        wchar_t *wptr = NULL;
+        int m = 0;
+
+        /* transfer the % */
+        t_fmt[m++] = '%';
+
+        /* transform the format to mbs */
+        while (*i != L'\0' &&
+               m < (int) (sizeof(t_fmt) - MB_CUR_MAX - 1) &&
+               wcschr(L"-.0123456789", *i) != NULL)
+            m += wctomb(&t_fmt[m], *i++);
+
+        /* transfer the directive */
+        m += wctomb(&t_fmt[m], *i++);
+
+        t_fmt[m] = '\0';
+
+        /* by default, copies the format */
+        strcpy(tmp, t_fmt);
+
+        switch (t_fmt[m - 1]) {
+        case 'd':
+        case 'i':
+        case 'u':
+        case 'x':
+        case 'X':
+        case 'o':
+
+            /* integer value */
+            snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(arg));
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'f':
+
+            /* float (real) value */
+            snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_rval(arg));
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 's':
+
+            /* string value */
+            ptr = mpdm_wcstombs(mpdm_string(arg), NULL);
+            snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
+            free(ptr);
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'b':
+
+            ptr = tmp;
+            unsigned int mask;
+            int p = 0;
+
+            mask = 1 << ((sizeof(int) * 8) - 1);
+            while (mask) {
+                if (mask & (unsigned int) mpdm_ival(arg)) {
+                    *ptr++ = '1';
+                    p = 1;
+                }
+                else
+                if (p)
+                    *ptr++ = '0';
+
+                mask >>= 1;
+            }
+
+            if (ptr == tmp)
+                *ptr++ = '0';
+
+            *ptr = '\0';
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'c':
+
+            /* char */
+            c = mpdm_ival(arg);
+            /* fallthrough ... */
+
+        case '%':
+
+            /* percent sign */
+            o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+            break;
+        }
+
+        /* transfer */
+        if (wptr != NULL) {
+            o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
+            free(wptr);
+        }
+    }
+
+    /* fill the rest up to the end */
+    n = 0;
+    while (i[n] != L'\0')
+        n++;
+
+    o = mpdm_poke(o, &l, i, n, sizeof(wchar_t));
+
+    /* null-terminate */
+    o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
+
+    mpdm_unref(arg);
+    mpdm_unref(fmt);
+
+    return MPDM_ENS(o, l - 1);
+}
+
+
 /**
  * mpdm_sprintf - Formats a sprintf()-like string.
  * @fmt: the string format
