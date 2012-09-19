@@ -1073,6 +1073,7 @@ mpdm_t mpdm_sprintf1(const mpdm_t fmt, const mpdm_t arg)
 
         /* transfer the % */
         t_fmt[m++] = '%';
+        i++;
 
         /* transform the format to mbs */
         while (*i != L'\0' &&
