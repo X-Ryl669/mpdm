@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     mpdm_s.c - String management
 
@@ -1486,6 +1486,9 @@ struct {
     { L'\0', NULL,                        NULL},
 };
 
+char *strptime(const char *s, const char *format, struct tm *tm);
+
+
 /**
  * mpdm_sscanf - Extracts data like sscanf().
  * @str: the string to be parsed
@@ -1652,6 +1655,36 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
                 f++;
 
                 set[n] = L'\0';
+            }
+            else
+                /* strptime() format */
+            if (cmd == L't') {
+                if (*f == L'{') {
+                    char tmp_f[2048];
+                    int n = 0;
+                    struct tm tm;
+                    char *cptr, *cptr2;
+
+                    f++;
+                    while (*f != L'\0' && *f != L'}')
+                        wctomb(&tmp_f[n++], *f++);
+                    tmp_f[n] = '\0';
+
+                    if (*f)
+                        f++;
+
+                    cptr = mpdm_wcstombs(i, NULL);
+                    cptr2 = strptime(cptr, tmp_f, &tm);
+
+                    if (cptr2 != NULL) {
+                        time_t t = mktime(&tm);
+
+                        i += (cptr2 - cptr);
+                        mpdm_push(r, MPDM_I(t));
+                    }
+
+                    free(cptr);
+                }
             }
             else
                 /* a standard set? */

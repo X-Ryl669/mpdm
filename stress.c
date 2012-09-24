@@ -1785,6 +1785,8 @@ int main(int argc, char *argv[])
 
     mpdm_startup();
 
+    mpdm_sscanf(MPDM_LS(L"123 17/08/1968 456"), MPDM_LS(L"%d %t{%d/%m/%Y} %d"), 0);
+
 /*
     printf("sizeof(struct mpdm_val): %ld\n",
            (long) sizeof(struct mpdm_val));
