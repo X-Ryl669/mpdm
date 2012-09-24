@@ -1118,7 +1118,7 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
 }
 
 
-mpdm_t mpdm_sprintf1(const mpdm_t fmt, const mpdm_t arg)
+mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
 {
     const wchar_t *i = fmt->data;
     wchar_t c, *o = NULL;

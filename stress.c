@@ -1437,13 +1437,13 @@ void test_sprintf(void)
     do_test("sprintf 5.1", mpdm_cmp(w, MPDM_LS(L"1001011")) == 0);
     mpdm_unref(v);
 
-    do_test("sprintf1 1", mpdm_cmp(
-        mpdm_sprintf1(MPDM_LS(L"%d beers for %s"), MPDM_I(100)),
+    do_test("fmt 1", mpdm_cmp(
+        mpdm_fmt(MPDM_LS(L"%d beers for %s"), MPDM_I(100)),
         MPDM_LS(L"100 beers for %s")) == 0);
-    do_test("sprintf1 2",
+    do_test("fmt 2",
         mpdm_cmp(
-            mpdm_sprintf1(
-                mpdm_sprintf1(MPDM_LS(L"%d beers for %s"), MPDM_I(100)),
+            mpdm_fmt(
+                mpdm_fmt(MPDM_LS(L"%d beers for %s"), MPDM_I(100)),
                 MPDM_LS(L"me")
             ),
             MPDM_LS(L"100 beers for me")
