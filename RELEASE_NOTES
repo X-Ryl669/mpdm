@@ -8,6 +8,9 @@ MPDM Release Notes
    - mpdm_join() joins more types.
    - mpdm_iterator() returns index/element pairs when iterating
      an array and can also iterate a number.
+   - New function mpdm_fmt(), like mpdm_sprintf() but for only one value.
+     As a bonus it includes the percent-commands `j' (output as JSON) and
+     `t' (followed by a curly brace-enclosed strftime() format).
 
 2.1.1
 -----
