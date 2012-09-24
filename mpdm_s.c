@@ -32,6 +32,7 @@
 #include <malloc.h>
 #include <locale.h>
 #include <wctype.h>
+#include <time.h>
 
 #ifdef CONFOPT_GETTEXT
 #include <libintl.h>
@@ -1216,6 +1217,27 @@ mpdm_t mpdm_sprintf1(const mpdm_t fmt, const mpdm_t arg)
 
         case 'j':
             o = json_f(o, &l, arg);
+            break;
+
+        case 't':
+            /* time: brace-enclosed strftime mask */
+            if (*i == L'{') {
+                char tmp2[4096];
+                int j = 0;
+                struct tm *tm;
+                time_t t = mpdm_ival(arg);
+
+                i++;
+                while (*i != L'\0' && *i != L'}')
+                    wctomb(&tmp2[j++], *i++);
+                tmp2[j] = '\0';
+                if (*i)
+                    i++;
+
+                tm = localtime(&t);
+                strftime(tmp, sizeof(tmp), tmp2, tm);
+                wptr = mpdm_mbstowcs(tmp, &m, -1);
+            }
             break;
 
         case 'c':
