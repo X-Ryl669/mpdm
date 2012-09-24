@@ -1685,6 +1685,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
                     }
 
                     free(cptr);
+                    continue;
                 }
             }
             else

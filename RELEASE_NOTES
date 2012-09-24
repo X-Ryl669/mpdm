@@ -11,6 +11,8 @@ MPDM Release Notes
    - New function mpdm_fmt(), like mpdm_sprintf() but for only one value.
      As a bonus it includes the percent-commands `j' (output as JSON) and
      `t' (followed by a curly brace-enclosed strftime() format).
+   - mpdm_sscanf() also supports a %t command, inverse of the one in
+     mpdm_fmt().
 
 2.1.1
 -----
