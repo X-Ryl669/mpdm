@@ -1674,6 +1674,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
                         f++;
 
                     cptr = mpdm_wcstombs(i, NULL);
+                    memset(&tm, '\0', sizeof(tm));
                     cptr2 = strptime(cptr, tmp_f, &tm);
 
                     if (cptr2 != NULL) {
