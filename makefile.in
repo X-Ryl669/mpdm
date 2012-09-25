@@ -3,7 +3,7 @@
 TARGET=libmpdm.a
 LIB=$(TARGET)
 
-all: $(TARGET) docs
+all: $(TARGET) stress docs
 
 PROJ=mpdm
 
