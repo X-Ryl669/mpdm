@@ -276,6 +276,10 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
 mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
 
+void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
+mpdm_t mpdm_channel_read(mpdm_t channel);
+void mpdm_channel_write(mpdm_t channel, mpdm_t v);
+
 #ifdef __cplusplus
 }
 #endif
