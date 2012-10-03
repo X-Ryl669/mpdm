@@ -379,12 +379,12 @@ mpdm_t mpdm_channel_read(mpdm_t channel)
     m = mpdm_aget(channel, 1);
     l = mpdm_aget(channel, 2);
 
-    if (s->ref > 1) {
+    if (s->ref > 1)
         mpdm_semaphore_wait(s);
-        mpdm_mutex_lock(m);
-        r = mpdm_adel(l, 0);
-        mpdm_mutex_unlock(m);
-    }
+
+    mpdm_mutex_lock(m);
+    r = mpdm_adel(l, 0);
+    mpdm_mutex_unlock(m);
 
     mpdm_unref(channel);
 
