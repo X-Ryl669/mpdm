@@ -227,6 +227,7 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
 #define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
 #define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
+#define MPDM_IS_FILE(v)     ((v != NULL) && ((v)->flags) & MPDM_FILE)
 
 /* value creation utility macros */
 
