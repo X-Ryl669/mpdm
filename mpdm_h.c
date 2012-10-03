@@ -393,18 +393,19 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
     else
     if (MPDM_IS_ARRAY(o)) {
         if (*context < mpdm_size(o)) {
-            /* MPSL 2.x */
-
-/*            *k = mpdm_aget(o, (*context)++);
-            *v = NULL;
-*/
-            /* MPSL 3.x */
-
             *k = MPDM_I(*context);
             *v = mpdm_aget(o, (*context)++);
 
             ret = 1;
         }
+    }
+    else
+    if (MPDM_IS_FILE(o)) {
+        *k = MPDM_I((*context)++);
+        *v = mpdm_read(o);
+
+        if (*v != NULL)
+            ret = 1;
     }
     else {
         /* assume it's a number */
