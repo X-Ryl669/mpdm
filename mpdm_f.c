@@ -91,6 +91,7 @@ struct mpdm_file {
     FILE *out;
 
     int sock;
+    int is_pipe;
 
     wchar_t *(*f_read) (struct mpdm_file *, int *);
     int (*f_write) (struct mpdm_file *, const wchar_t *);
@@ -930,7 +931,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
 }
 
 
-static mpdm_t new_mpdm_file(void)
+static mpdm_t new_mpdm_file(int is_pipe)
 /* creates a new file value */
 {
     mpdm_t v = NULL;
@@ -942,7 +943,8 @@ static mpdm_t new_mpdm_file(void)
 
     memset(fs, '\0', sizeof(struct mpdm_file));
 
-    fs->sock = -1;
+    fs->sock    = -1;
+    fs->is_pipe = is_pipe;
 
     /* default I/O functions */
     fs->f_read = read_auto;
@@ -1097,7 +1099,7 @@ mpdm_t mpdm_new_f(FILE * f)
     if (f == NULL)
         return NULL;
 
-    if ((v = new_mpdm_file()) != NULL) {
+    if ((v = new_mpdm_file(0)) != NULL) {
         struct mpdm_file *fs = (struct mpdm_file *) v->data;
         fs->in = fs->out = f;
     }
@@ -1178,6 +1180,9 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 mpdm_t mpdm_close(mpdm_t fd)
 {
     struct mpdm_file *fs = (struct mpdm_file *) fd->data;
+
+    if (fs->is_pipe)
+        return mpdm_pclose(fd);
 
     mpdm_ref(fd);
 
@@ -2053,7 +2058,7 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 
     if (prg != NULL && mode != NULL) {
 
-        v = new_mpdm_file();
+        v = new_mpdm_file(1);
 
         /* convert to mbs,s */
         pr = mpdm_ref(MPDM_2MBS(prg->data));
@@ -2348,7 +2353,7 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     if (d != -1) {
         struct mpdm_file *fs;
 
-        f = new_mpdm_file();
+        f = new_mpdm_file(0);
         fs = (struct mpdm_file *) f->data;
 
         fs->sock = d;
