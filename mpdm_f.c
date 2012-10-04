@@ -1223,16 +1223,20 @@ mpdm_t mpdm_read(const mpdm_t fd)
     mpdm_t v = NULL;
 
     if (fd != NULL) {
-        struct mpdm_file *fs = (struct mpdm_file *) fd->data;
+        if (fd->flags & MPDM_CHANNEL)
+            v = mpdm_channel_read(fd);
+        else {
+            struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-        if (fs != NULL) {
-            wchar_t *ptr;
-            int s;
+            if (fs != NULL) {
+                wchar_t *ptr;
+                int s;
 
-            ptr = fs->f_read(fs, &s);
+                ptr = fs->f_read(fs, &s);
 
-            if (ptr != NULL)
-                v = MPDM_ENS(ptr, s);
+                if (ptr != NULL)
+                    v = MPDM_ENS(ptr, s);
+            }
         }
     }
 
@@ -1287,13 +1291,22 @@ int mpdm_putchar(const mpdm_t fd, const mpdm_t c)
  */
 int mpdm_write(const mpdm_t fd, const mpdm_t v)
 {
-    struct mpdm_file *fs = (struct mpdm_file *) fd->data;
     int ret = -1;
 
     mpdm_ref(v);
 
-    if (fs != NULL)
-        ret = fs->f_write(fs, mpdm_string(v));
+    if (fd) {
+        if (fd->flags & MPDM_CHANNEL) {
+            mpdm_channel_write(fd, v);
+            ret = 1;
+        }
+        else {
+            struct mpdm_file *fs = (struct mpdm_file *) fd->data;
+
+            if (fs != NULL)
+                ret = fs->f_write(fs, mpdm_string(v));
+        }
+    }
 
     mpdm_unref(v);
 
