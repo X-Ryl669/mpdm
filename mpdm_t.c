@@ -367,8 +367,8 @@ void mpdm_new_channel(mpdm_t *parent, mpdm_t *child)
     mpdm_unrefnd(p);
     mpdm_unrefnd(c);
 
-    parent  = &p;
-    child   = &c;
+    *parent = p;
+    *child  = c;
 }
 
 
@@ -386,7 +386,7 @@ mpdm_t mpdm_channel_read(mpdm_t channel)
         mpdm_semaphore_wait(s);
 
     mpdm_mutex_lock(m);
-    r = mpdm_adel(l, 0);
+    r = mpdm_shift(l);
     mpdm_mutex_unlock(m);
 
     mpdm_unref(channel);
