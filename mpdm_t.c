@@ -361,6 +361,9 @@ void mpdm_new_channel(mpdm_t *parent, mpdm_t *child)
     mpdm_aset(c, v, 2);
     mpdm_aset(p, v, 5);
 
+    p->flags |= (MPDM_CHANNEL);
+    c->flags |= (MPDM_CHANNEL);
+
     mpdm_unrefnd(p);
     mpdm_unrefnd(c);
 
