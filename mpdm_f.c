@@ -1181,7 +1181,7 @@ mpdm_t mpdm_close(mpdm_t fd)
 {
     struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-    if (fs->is_pipe)
+    if (fs && fs->is_pipe)
         return mpdm_pclose(fd);
 
     mpdm_ref(fd);
