@@ -1675,7 +1675,12 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 
                     cptr = mpdm_wcstombs(i, NULL);
                     memset(&tm, '\0', sizeof(tm));
+
+#ifdef CONFOPT_STRPTIME
                     cptr2 = strptime(cptr, tmp_f, &tm);
+#else
+                    cptr2 = NULL;
+#endif
 
                     if (cptr2 != NULL) {
                         time_t t = mktime(&tm);
