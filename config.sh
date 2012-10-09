@@ -487,6 +487,19 @@ if [ "$WITH_WIN32" != 1 ] ; then
     fi
 fi
 
+echo -n "Testing for strptime()... "
+echo "#include <time.h>" > .tmp.c
+echo "int main(void) { struct tm tm; char tmp[256] = \"01\"; strptime(\"%h\", tmp, &tm); return 0; }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+    echo "#define CONFOPT_STRPTIME 1" >> config.h
+    echo "OK"
+else
+    echo "No"
+fi
+
 if [ "$WITH_WIN32" != 1 ] ; then
     echo -n "Testing for POSIX threads... "
     echo "#include <pthread.h>" > .tmp.c
