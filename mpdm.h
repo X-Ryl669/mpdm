@@ -43,7 +43,8 @@ enum {
     _MPDM_MUTEX,
     _MPDM_SEMAPHORE,
     _MPDM_THREAD,
-    _MPDM_NONDYN
+    _MPDM_NONDYN,
+    _MPDM_CHANNEL
 };
 
 enum {
@@ -59,7 +60,8 @@ enum {
     MPDM_MUTEX      = (1<<_MPDM_MUTEX),     /* data is a mutex */
     MPDM_SEMAPHORE  = (1<<_MPDM_SEMAPHORE), /* data is a semaphore */
     MPDM_THREAD     = (1<<_MPDM_THREAD),    /* data is a thread handle */
-    MPDM_NONDYN     = (1<<_MPDM_NONDYN)     /* data is non-dynamic (do not free()) */
+    MPDM_NONDYN     = (1<<_MPDM_NONDYN),    /* data is non-dynamic (do not free()) */
+    MPDM_CHANNEL    = (1<<_MPDM_CHANNEL)    /* data is a channel */
 };
 
 /* mpdm values */
@@ -142,6 +144,7 @@ mpdm_t mpdm_new_wcstombs(int flags, const wchar_t * str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 int mpdm_wcwidth(wchar_t c);
+mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg);
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args);
 mpdm_t mpdm_ulc(const mpdm_t s, int u);
 mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
@@ -226,6 +229,7 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
 #define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
 #define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
+#define MPDM_IS_FILE(v)     ((v != NULL) && ((v)->flags) & MPDM_FILE)
 
 /* value creation utility macros */
 
@@ -274,6 +278,10 @@ void mpdm_semaphore_post(mpdm_t sem);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
 mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
+
+void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
+mpdm_t mpdm_channel_read(mpdm_t channel);
+void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
 #ifdef __cplusplus
 }

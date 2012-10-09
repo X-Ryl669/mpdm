@@ -329,3 +329,86 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     return MPDM_C(MPDM_THREAD, ptr, size);
 }
+
+
+void mpdm_new_channel(mpdm_t *parent, mpdm_t *child)
+{
+    mpdm_t p = mpdm_ref(MPDM_A(6));
+    mpdm_t c = mpdm_ref(MPDM_A(6));
+    mpdm_t v;
+
+    v = mpdm_new_semaphore(0);
+    mpdm_aset(p, v, 0);
+    mpdm_aset(c, v, 3);
+
+    v = mpdm_new_mutex();
+    mpdm_aset(p, v, 1);
+    mpdm_aset(c, v, 4);
+
+    v = MPDM_A(0);
+    mpdm_aset(p, v, 2);
+    mpdm_aset(c, v, 5);
+
+    v = mpdm_new_semaphore(0);
+    mpdm_aset(c, v, 0);
+    mpdm_aset(p, v, 3);
+
+    v = mpdm_new_mutex();
+    mpdm_aset(c, v, 1);
+    mpdm_aset(p, v, 4);
+
+    v = MPDM_A(0);
+    mpdm_aset(c, v, 2);
+    mpdm_aset(p, v, 5);
+
+    p->flags |= (MPDM_FILE | MPDM_CHANNEL);
+    c->flags |= (MPDM_FILE | MPDM_CHANNEL);
+
+    mpdm_unrefnd(p);
+    mpdm_unrefnd(c);
+
+    *parent = p;
+    *child  = c;
+}
+
+
+mpdm_t mpdm_channel_read(mpdm_t channel)
+{
+    mpdm_t s, m, l, r = NULL;
+
+    mpdm_ref(channel);
+
+    s = mpdm_aget(channel, 0);
+    m = mpdm_aget(channel, 1);
+    l = mpdm_aget(channel, 2);
+
+    if (s->ref > 1)
+        mpdm_semaphore_wait(s);
+
+    mpdm_mutex_lock(m);
+    r = mpdm_shift(l);
+    mpdm_mutex_unlock(m);
+
+    mpdm_unref(channel);
+
+    return r;
+}
+
+
+void mpdm_channel_write(mpdm_t channel, mpdm_t v)
+{
+    mpdm_t s, m, l;
+
+    mpdm_ref(channel);
+
+    s = mpdm_aget(channel, 3);
+    m = mpdm_aget(channel, 4);
+    l = mpdm_aget(channel, 5);
+
+    mpdm_mutex_lock(m);
+    mpdm_push(l, v);
+    mpdm_mutex_unlock(m);
+    mpdm_semaphore_post(s);
+
+    mpdm_unref(channel);
+}

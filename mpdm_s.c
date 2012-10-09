@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
 
     mpdm_s.c - String management
 
@@ -32,6 +32,7 @@
 #include <malloc.h>
 #include <locale.h>
 #include <wctype.h>
+#include <time.h>
 
 #ifdef CONFOPT_GETTEXT
 #include <libintl.h>
@@ -1047,6 +1048,235 @@ int mpdm_wcwidth(wchar_t c)
 #endif                          /* CONFOPT_WCWIDTH */
 
 
+static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
+/* fills a %j JSON format */
+{
+    int n = 0, c = 0;
+    mpdm_t k, w;
+
+    if (MPDM_IS_HASH(v)) {
+        o = mpdm_poke(o, l, L"{", 1, sizeof(wchar_t));
+
+        while (mpdm_iterator(v, &n, &k, &w)) {
+            if (c)
+                o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
+
+            o = mpdm_poke(o, l, L"\"", 1, sizeof(wchar_t));
+            o = mpdm_pokev(o, l, k);
+            o = mpdm_poke(o, l, L"\":", 2, sizeof(wchar_t));
+
+            if (w == NULL)
+                o = mpdm_poke(o, l, L"NULL", 4, sizeof(wchar_t));
+            else
+            if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
+                o = json_f(o, l, w);
+            else {
+                if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
+                    o = mpdm_pokev(o, l, w);
+                else {
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokev(o, l, w);
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                }
+            }
+
+            c++;
+        }
+
+        o = mpdm_poke(o, l, L"}", 1, sizeof(wchar_t));
+    }
+    else
+    if (MPDM_IS_ARRAY(v)) {
+        o = mpdm_poke(o, l, L"[", 1, sizeof(wchar_t));
+
+        while (mpdm_iterator(v, &n, &k, &w)) {
+            if (c)
+                o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
+
+            if (w == NULL)
+                o = mpdm_poke(o, l, L"NULL", 4, sizeof(wchar_t));
+            else
+            if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
+                o = json_f(o, l, w);
+            else {
+                if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
+                    o = mpdm_pokev(o, l, w);
+                else {
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokev(o, l, w);
+                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                }
+            }
+
+            c++;
+        }
+
+        o = mpdm_poke(o, l, L"]", 1, sizeof(wchar_t));
+    }
+
+    return o;
+}
+
+
+mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
+{
+    const wchar_t *i = fmt->data;
+    wchar_t c, *o = NULL;
+    int l = 0, n = 0;
+
+    mpdm_ref(fmt);
+    mpdm_ref(arg);
+
+    /* find first mark */
+    while ((c = i[n]) != L'\0' && c != L'%')
+        n++;
+
+    o = mpdm_poke(o, &l, i, n, sizeof(wchar_t));
+    i = &i[n];
+
+    /* format directive */
+    if (c == L'%') {
+        char t_fmt[128];
+        char tmp[1024];
+        char *ptr = NULL;
+        wchar_t *wptr = NULL;
+        int m = 0;
+
+        /* transfer the % */
+        t_fmt[m++] = '%';
+        i++;
+
+        /* transform the format to mbs */
+        while (*i != L'\0' &&
+               m < (int) (sizeof(t_fmt) - MB_CUR_MAX - 1) &&
+               wcschr(L"-.0123456789", *i) != NULL)
+            m += wctomb(&t_fmt[m], *i++);
+
+        /* transfer the directive */
+        m += wctomb(&t_fmt[m], *i++);
+
+        t_fmt[m] = '\0';
+
+        /* by default, copies the format */
+        strcpy(tmp, t_fmt);
+
+        switch (t_fmt[m - 1]) {
+        case 'd':
+        case 'i':
+        case 'u':
+        case 'x':
+        case 'X':
+        case 'o':
+
+            /* integer value */
+            snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(arg));
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'f':
+
+            /* float (real) value */
+            snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_rval(arg));
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 's':
+
+            /* string value */
+            ptr = mpdm_wcstombs(mpdm_string(arg), NULL);
+            snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
+            free(ptr);
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'b':
+
+            ptr = tmp;
+            unsigned int mask;
+            int p = 0;
+
+            mask = 1 << ((sizeof(int) * 8) - 1);
+            while (mask) {
+                if (mask & (unsigned int) mpdm_ival(arg)) {
+                    *ptr++ = '1';
+                    p = 1;
+                }
+                else
+                if (p)
+                    *ptr++ = '0';
+
+                mask >>= 1;
+            }
+
+            if (ptr == tmp)
+                *ptr++ = '0';
+
+            *ptr = '\0';
+            wptr = mpdm_mbstowcs(tmp, &m, -1);
+            break;
+
+        case 'j':
+            o = json_f(o, &l, arg);
+            break;
+
+        case 't':
+            /* time: brace-enclosed strftime mask */
+            if (*i == L'{') {
+                char tmp2[4096];
+                int j = 0;
+                struct tm *tm;
+                time_t t = mpdm_ival(arg);
+
+                i++;
+                while (*i != L'\0' && *i != L'}')
+                    wctomb(&tmp2[j++], *i++);
+                tmp2[j] = '\0';
+                if (*i)
+                    i++;
+
+                tm = localtime(&t);
+                strftime(tmp, sizeof(tmp), tmp2, tm);
+                wptr = mpdm_mbstowcs(tmp, &m, -1);
+            }
+            break;
+
+        case 'c':
+
+            /* char */
+            c = mpdm_ival(arg);
+            /* fallthrough ... */
+
+        case '%':
+
+            /* percent sign */
+            o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+            break;
+        }
+
+        /* transfer */
+        if (wptr != NULL) {
+            o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
+            free(wptr);
+        }
+    }
+
+    /* fill the rest up to the end */
+    n = 0;
+    while (i[n] != L'\0')
+        n++;
+
+    o = mpdm_poke(o, &l, i, n, sizeof(wchar_t));
+
+    /* null-terminate */
+    o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
+
+    mpdm_unref(arg);
+    mpdm_unref(fmt);
+
+    return MPDM_ENS(o, l - 1);
+}
+
+
 /**
  * mpdm_sprintf - Formats a sprintf()-like string.
  * @fmt: the string format
@@ -1123,6 +1353,10 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
                 snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
                 free(ptr);
 
+                break;
+
+            case 'j':
+                o = json_f(o, &l, v);
                 break;
 
             case 'c':
@@ -1251,6 +1485,9 @@ struct {
     { L'x',  L"-0123456789xabcdefABCDEF", L""},
     { L'\0', NULL,                        NULL},
 };
+
+char *strptime(const char *s, const char *format, struct tm *tm);
+
 
 /**
  * mpdm_sscanf - Extracts data like sscanf().
@@ -1418,6 +1655,38 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
                 f++;
 
                 set[n] = L'\0';
+            }
+            else
+                /* strptime() format */
+            if (cmd == L't') {
+                if (*f == L'{') {
+                    char tmp_f[2048];
+                    int n = 0;
+                    struct tm tm;
+                    char *cptr, *cptr2;
+
+                    f++;
+                    while (*f != L'\0' && *f != L'}')
+                        wctomb(&tmp_f[n++], *f++);
+                    tmp_f[n] = '\0';
+
+                    if (*f)
+                        f++;
+
+                    cptr = mpdm_wcstombs(i, NULL);
+                    memset(&tm, '\0', sizeof(tm));
+                    cptr2 = strptime(cptr, tmp_f, &tm);
+
+                    if (cptr2 != NULL) {
+                        time_t t = mktime(&tm);
+
+                        i += (cptr2 - cptr);
+                        mpdm_push(r, MPDM_I(t));
+                    }
+
+                    free(cptr);
+                    continue;
+                }
             }
             else
                 /* a standard set? */

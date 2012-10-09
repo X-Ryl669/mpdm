@@ -1436,6 +1436,19 @@ void test_sprintf(void)
     w = mpdm_sprintf(MPDM_LS(L"%b"), v);
     do_test("sprintf 5.1", mpdm_cmp(w, MPDM_LS(L"1001011")) == 0);
     mpdm_unref(v);
+
+    do_test("fmt 1", mpdm_cmp(
+        mpdm_fmt(MPDM_LS(L"%d beers for %s"), MPDM_I(100)),
+        MPDM_LS(L"100 beers for %s")) == 0);
+    do_test("fmt 2",
+        mpdm_cmp(
+            mpdm_fmt(
+                mpdm_fmt(MPDM_LS(L"%d beers for %s"), MPDM_I(100)),
+                MPDM_LS(L"me")
+            ),
+            MPDM_LS(L"100 beers for me")
+        ) == 0
+    );
 }
 
 
@@ -1753,6 +1766,38 @@ void test_sock(void)
 }
 
 
+void test_channel(void)
+{
+    mpdm_t p, c, v1, v2;
+
+    mpdm_new_channel(&p, &c);
+
+    mpdm_ref(p);
+    mpdm_ref(c);
+
+    v1 = mpdm_ref(MPDM_LS(L"Testing"));
+    mpdm_write(p, v1);
+    v2 = mpdm_read(c);
+
+    do_test("Channel (scalar)", mpdm_cmp(v1, v2) == 0);
+
+    mpdm_unref(v1);
+
+    v1 = mpdm_ref(MPDM_H(0));
+    mpdm_hset_s(v1, L"ein",     MPDM_I(1));
+    mpdm_hset_s(v1, L"zwei",    MPDM_I(2));
+    mpdm_write(p, v1);
+    v2 = mpdm_read(c);
+
+    do_test("Channel (hash)", mpdm_cmp(v1, v2) == 0);
+
+    mpdm_unref(v1);
+
+    mpdm_unref(c);
+    mpdm_unref(p);
+}
+
+
 void (*func) (void) = NULL;
 
 int main(int argc, char *argv[])
@@ -1771,6 +1816,8 @@ int main(int argc, char *argv[])
     }
 
     mpdm_startup();
+
+    mpdm_sscanf(MPDM_LS(L"123 17/08/1968 456"), MPDM_LS(L"%d %t{%d/%m/%Y} %d"), 0);
 
 /*
     printf("sizeof(struct mpdm_val): %ld\n",
@@ -1801,6 +1848,7 @@ int main(int argc, char *argv[])
     test_thread();
     test_sem();
     test_sock();
+    test_channel();
 
     benchmark();
 

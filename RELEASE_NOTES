@@ -7,7 +7,14 @@ MPDM Release Notes
  - New features:
    - mpdm_join() joins more types.
    - mpdm_iterator() returns index/element pairs when iterating
-     an array and can also iterate a number.
+     an array and can also iterate files and numbers.
+   - New function mpdm_fmt(), like mpdm_sprintf() but for only one value.
+     As a bonus it includes the percent-commands `j' (output as JSON) and
+     `t' (followed by a curly brace-enclosed strftime() format).
+   - mpdm_sscanf() also supports a %t command, inverse of the one in
+     mpdm_fmt().
+   - New channel implementation (bidirectional communication for
+     threads).
 
 2.1.1
 -----
