@@ -1287,147 +1287,18 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
  */
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 {
-    const wchar_t *i = fmt->data;
-    wchar_t *o = NULL;
-    int l = 0, n = 0;
-    wchar_t c;
+    int n;
+    mpdm_t v;
 
-    mpdm_ref(fmt);
     mpdm_ref(args);
 
-    /* loop all characters */
-    while ((c = *i++) != L'\0') {
-        int m = 0;
-        wchar_t *tptr = NULL;
-        wchar_t *wptr = NULL;
-
-        if (c == L'%') {
-            /* format directive */
-            char t_fmt[128];
-            char tmp[1024];
-            mpdm_t v;
-            char *ptr = NULL;
-
-            /* transfer the % */
-            t_fmt[m++] = '%';
-
-            /* transform the format to mbs */
-            while (*i != L'\0' &&
-                   m < (int) (sizeof(t_fmt) - MB_CUR_MAX - 1) &&
-                   wcschr(L"-.0123456789", *i) != NULL)
-                m += wctomb(&t_fmt[m], *i++);
-
-            /* transfer the directive */
-            m += wctomb(&t_fmt[m], *i++);
-
-            t_fmt[m] = '\0';
-
-            /* by default, copies the format */
-            strcpy(tmp, t_fmt);
-
-            /* pick next value */
-            v = mpdm_aget(args, n++);
-
-            switch (t_fmt[m - 1]) {
-            case 'd':
-            case 'i':
-            case 'u':
-            case 'x':
-            case 'X':
-            case 'o':
-
-                /* integer value */
-                snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_ival(v));
-                break;
-
-            case 'f':
-
-                /* float (real) value */
-                snprintf(tmp, sizeof(tmp) - 1, t_fmt, mpdm_rval(v));
-                break;
-
-            case 's':
-
-                /* string value */
-                ptr = mpdm_wcstombs(mpdm_string(v), NULL);
-                snprintf(tmp, sizeof(tmp) - 1, t_fmt, ptr);
-                free(ptr);
-
-                break;
-
-            case 'j':
-                o = json_f(o, &l, v);
-                break;
-
-            case 'c':
-
-                /* char */
-                m = 1;
-                wptr = &c;
-                c = mpdm_ival(v);
-                break;
-
-            case 'b':
-
-                ptr = tmp;
-                unsigned int mask;
-                int p = 0;
-
-                mask = 1 << ((sizeof(int) * 8) - 1);
-                while (mask) {
-                    if (mask & (unsigned int) mpdm_ival(v)) {
-                        *ptr++ = '1';
-                        p = 1;
-                    }
-                    else
-                    if (p)
-                        *ptr++ = '0';
-
-                    mask >>= 1;
-                }
-
-                if (ptr == tmp)
-                    *ptr++ = '0';
-
-                *ptr = '\0';
-                break;
-
-            case '%':
-
-                /* percent sign */
-                m = 1;
-                wptr = &c;
-                break;
-            }
-
-            /* transfer */
-            if (wptr == NULL)
-                wptr = tptr = mpdm_mbstowcs(tmp, &m, -1);
-        }
-        else {
-            /* raw character */
-            m = 1;
-            wptr = &c;
-        }
-
-        /* transfer */
-        o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
-
-        /* free the temporary buffer, if any */
-        if (tptr != NULL)
-            free(tptr);
-    }
-
-    if (o == NULL)
-        return NULL;
-
-    /* null-terminate */
-    o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
+    v = fmt;
+    for (n = 0; n < mpdm_size(args); n++)
+        v = mpdm_fmt(v, mpdm_aget(args, n));
 
     mpdm_unref(args);
-    mpdm_unref(fmt);
 
-    return MPDM_ENS(o, l - 1);
+    return v;
 }
 
 

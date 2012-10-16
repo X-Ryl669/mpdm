@@ -1379,7 +1379,7 @@ void test_sprintf(void)
     do_test("sprintf 1", mpdm_cmp(w, MPDM_LS(L"100 beers for me")) == 0);
 
     w = mpdm_sprintf(MPDM_LS(L"%d %s for me %d"), v);
-    do_test("sprintf 2", mpdm_cmp(w, MPDM_LS(L"100 beers for me 0")) == 0);
+    do_test("sprintf 2", mpdm_cmp(w, MPDM_LS(L"100 beers for me %d")) == 0);
 
     w = mpdm_sprintf(MPDM_LS(L"%10d %s for me"), v);
     do_test("sprintf 3",
@@ -1431,7 +1431,7 @@ void test_sprintf(void)
     mpdm_push(v, MPDM_I(75));
 
     w = mpdm_sprintf(MPDM_LS(L"%d%%"), v);
-    do_test("sprintf 4.1", mpdm_cmp(w, MPDM_LS(L"75%")) == 0);
+    do_test("sprintf 4.1", mpdm_cmp(w, MPDM_LS(L"75%%")) == 0);
 
     w = mpdm_sprintf(MPDM_LS(L"%b"), v);
     do_test("sprintf 5.1", mpdm_cmp(w, MPDM_LS(L"1001011")) == 0);
