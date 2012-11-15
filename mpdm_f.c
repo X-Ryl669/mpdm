@@ -1519,6 +1519,36 @@ int mpdm_unlink(const mpdm_t filename)
 
 
 /**
+ * mpdm_rename - Renames a file.
+ * @o: old path
+ * @n: new path
+ *
+ * Renames a file.
+ * [File Management]
+ */
+int mpdm_rename(const mpdm_t o, const mpdm_t n)
+{
+    int ret;
+    mpdm_t om, nm;
+
+    mpdm_ref(o);
+    mpdm_ref(n);
+
+    om = mpdm_ref(MPDM_2MBS(o->data));
+    nm = mpdm_ref(MPDM_2MBS(n->data));
+
+    ret = rename((char *)om->data, (char *)nm->data);
+
+    mpdm_unref(nm);
+    mpdm_unref(om);
+    mpdm_unref(n);
+    mpdm_unref(o);
+
+    return ret;
+}
+
+
+/**
  * mpdm_stat - Gives status from a file.
  * @filename: file name to get the status from
  *

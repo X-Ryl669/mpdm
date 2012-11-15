@@ -200,6 +200,7 @@ long mpdm_ftell(const mpdm_t fd);
 FILE * mpdm_get_filehandle(const mpdm_t fd);
 int mpdm_encoding(mpdm_t charset);
 int mpdm_unlink(const mpdm_t filename);
+int mpdm_rename(const mpdm_t o, const mpdm_t n);
 mpdm_t mpdm_stat(const mpdm_t filename);
 int mpdm_chmod(const mpdm_t filename, mpdm_t perms);
 int mpdm_chdir(const mpdm_t dir);

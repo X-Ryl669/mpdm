@@ -15,6 +15,7 @@ MPDM Release Notes
      mpdm_fmt().
    - New channel implementation (bidirectional communication for
      threads).
+   - New function mpdm_rename().
 
 2.1.1
 -----
