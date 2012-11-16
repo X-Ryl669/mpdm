@@ -1747,115 +1747,81 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
  */
 mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 {
-    mpdm_t d = NULL;
-    mpdm_t f = NULL;
-    mpdm_t v = NULL;
+    mpdm_t d, f, v;
+    char *ptr;
 
 #ifdef CONFOPT_WIN32
-
     WIN32_FIND_DATA fd;
     HANDLE h;
-    char *ptr;
-    mpdm_t w;
-    mpdm_t s = NULL;
-    mpdm_t sp = NULL;
-
-    mpdm_ref(spec);
-    mpdm_ref(base);
-
-    /* add base */
-    if (mpdm_size(base))
-        sp = mpdm_strcat_s(base, L"/");
-
-    /* add spec */
-    w = mpdm_ref(sp);
-
-    if (mpdm_size(spec) == 0)
-        sp = mpdm_strcat_s(w, L"*.*");
-    else
-        sp = mpdm_strcat(w, spec);
-
-    mpdm_unref(w);
-
-    /* delete repeated directory delimiters */
-    w = mpdm_ref(sp);
-    sp = mpdm_sregex(w, MPDM_LS(L"@[\\/]+@g"), MPDM_LS(L"/"), 0);
-    mpdm_unref(w);
-
-    w = mpdm_ref(sp);
-    sp = MPDM_2MBS(w->data);
-    mpdm_unref(w);
-
-    v = MPDM_A(0);
-    d = mpdm_ref(MPDM_A(0));
-    f = mpdm_ref(MPDM_A(0));
-    mpdm_ref(sp);
-
-    if ((h = FindFirstFile((char *) sp->data, &fd)) != INVALID_HANDLE_VALUE) {
-        /* if spec includes a directory, store in s */
-        if ((ptr = strrchr((char *) sp->data, '/')) != NULL) {
-            *(ptr + 1) = '\0';
-            s = MPDM_MBS(sp->data);
-        }
-
-        do {
-            /* ignore . and .. */
-            if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0)
-                continue;
-
-            /* concat base directory and file names */
-            w = mpdm_strcat(s, MPDM_MBS(fd.cFileName));
-
-            /* if it's a directory, add a / */
-            if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                mpdm_t t = mpdm_ref(w);
-                w = mpdm_strcat_s(t, L"/");
-                mpdm_unref(t);
-
-                mpdm_push(d, w);
-            }
-            else
-                mpdm_push(f, w);
-        }
-        while (FindNextFile(h, &fd));
-
-        FindClose(h);
-    }
-
-    mpdm_unref(sp);
-
-    mpdm_unref(base);
-    mpdm_unref(spec);
-
+    const wchar_t *def_spec = L"*.*";
+    mpdm_t p;
 #endif
 
 #if CONFOPT_GLOB_H
-
-    /* glob.h support */
     glob_t globbuf;
-    char *ptr;
+    const wchar_t *def_spec = L"*";
+#endif
 
     /* build full path */
     if (base != NULL)
         base = mpdm_strcat_s(base, L"/");
 
     if (spec == NULL)
-        spec = mpdm_strcat_s(base, L"*");
+        spec = mpdm_strcat_s(base, def_spec);
     else
         spec = mpdm_strcat(base, spec);
 
     /* delete repeated directory delimiters */
-    spec = mpdm_sregex(spec, MPDM_LS(L"@/{2,}@g"), MPDM_LS(L"/"), 0);
+    spec = mpdm_sregex(spec, MPDM_LS(L"@[\\/]{2,}@g"), MPDM_LS(L"/"), 0);
 
     mpdm_ref(spec);
     ptr = mpdm_wcstombs(mpdm_string(spec), NULL);
     mpdm_unref(spec);
 
-    globbuf.gl_offs = 1;
-
     v = MPDM_A(0);
     d = mpdm_ref(MPDM_A(0));
     f = mpdm_ref(MPDM_A(0));
+
+#ifdef CONFOPT_WIN32
+    if ((h = FindFirstFile(ptr, &fd)) != INVALID_HANDLE_VALUE) {
+        char *b;
+
+        /* if spec includes a directory, store in s */
+        if ((b = strrchr(ptr, '/')) != NULL) {
+            *(b + 1) = '\0';
+            p = MPDM_MBS(ptr);
+        }
+        else
+            p = NULL;
+
+        mpdm_ref(p);
+
+        do {
+            mpdm_t t;
+
+            /* ignore . and .. */
+            if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0)
+                continue;
+
+            /* concat base directory and file names */
+            t = mpdm_strcat(p, MPDM_MBS(fd.cFileName));
+
+            /* if it's a directory, add a / */
+            if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                mpdm_push(d, mpdm_strcat_s(t, L"/"));
+            else
+                mpdm_push(f, t);
+        }
+        while (FindNextFile(h, &fd));
+
+        FindClose(h);
+
+        mpdm_unref(p);
+    }
+#endif
+
+#if CONFOPT_GLOB_H
+    globbuf.gl_offs = 1;
 
     if (glob(ptr, GLOB_MARK, NULL, &globbuf) == 0) {
         int n;
@@ -1873,15 +1839,9 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
     }
 
     globfree(&globbuf);
+#endif
 
     free(ptr);
-
-#else
-
-    /* no win32 nor glob.h; try workaround */
-    /* ... */
-
-#endif
 
     if (v != NULL) {
         int n;
