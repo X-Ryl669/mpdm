@@ -1537,7 +1537,8 @@ int mpdm_rename(const mpdm_t o, const mpdm_t n)
     om = mpdm_ref(MPDM_2MBS(o->data));
     nm = mpdm_ref(MPDM_2MBS(n->data));
 
-    ret = rename((char *)om->data, (char *)nm->data);
+    if ((ret = rename((char *)om->data, (char *)nm->data)) == -1)
+        store_syserr();
 
     mpdm_unref(nm);
     mpdm_unref(om);
