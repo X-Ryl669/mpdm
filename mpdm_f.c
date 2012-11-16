@@ -1745,14 +1745,11 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
  * array if no file matches), or NULL if globbing is unsupported.
  * [File Management]
  */
-mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
+mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 {
     mpdm_t d = NULL;
     mpdm_t f = NULL;
     mpdm_t v = NULL;
-
-    mpdm_ref(spec);
-    mpdm_ref(base);
 
 #ifdef CONFOPT_WIN32
 
@@ -1762,6 +1759,9 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
     mpdm_t w;
     mpdm_t s = NULL;
     mpdm_t sp = NULL;
+
+    mpdm_ref(spec);
+    mpdm_ref(base);
 
     /* add base */
     if (mpdm_size(base))
@@ -1791,8 +1791,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
     f = mpdm_ref(MPDM_A(0));
     mpdm_ref(sp);
 
-    if ((h =
-         FindFirstFile((char *) sp->data, &fd)) != INVALID_HANDLE_VALUE) {
+    if ((h = FindFirstFile((char *) sp->data, &fd)) != INVALID_HANDLE_VALUE) {
         /* if spec includes a directory, store in s */
         if ((ptr = strrchr((char *) sp->data, '/')) != NULL) {
             *(ptr + 1) = '\0';
@@ -1801,8 +1800,7 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
         do {
             /* ignore . and .. */
-            if (strcmp(fd.cFileName, ".") == 0
-                || strcmp(fd.cFileName, "..") == 0)
+            if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0)
                 continue;
 
             /* concat base directory and file names */
@@ -1826,38 +1824,32 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
     mpdm_unref(sp);
 
+    mpdm_unref(base);
+    mpdm_unref(spec);
+
 #endif
 
 #if CONFOPT_GLOB_H
 
     /* glob.h support */
     glob_t globbuf;
-    const char *ptr;
-    mpdm_t w;
+    char *ptr;
 
     /* build full path */
-    if (mpdm_size(base))
-        v = mpdm_strcat_s(base, L"/");
+    if (base != NULL)
+        base = mpdm_strcat_s(base, L"/");
 
-    w = mpdm_ref(v);
-
-    if (mpdm_size(spec) == 0)
-        v = mpdm_strcat_s(w, L"*");
+    if (spec == NULL)
+        spec = mpdm_strcat_s(base, L"*");
     else
-        v = mpdm_strcat(w, spec);
-
-    mpdm_unref(w);
+        spec = mpdm_strcat(base, spec);
 
     /* delete repeated directory delimiters */
-    w = mpdm_ref(v);
-    v = mpdm_sregex(w, MPDM_LS(L"@/{2,}@g"), MPDM_LS(L"/"), 0);
-    mpdm_unref(w);
+    spec = mpdm_sregex(spec, MPDM_LS(L"@/{2,}@g"), MPDM_LS(L"/"), 0);
 
-    w = mpdm_ref(v);
-    v = MPDM_2MBS(w->data);
-    mpdm_unref(w);
-
-    ptr = v->data;
+    mpdm_ref(spec);
+    ptr = mpdm_wcstombs(mpdm_string(spec), NULL);
+    mpdm_unref(spec);
 
     globbuf.gl_offs = 1;
 
@@ -1869,11 +1861,11 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
         int n;
 
         for (n = 0; globbuf.gl_pathv[n] != NULL; n++) {
-            char *ptr = globbuf.gl_pathv[n];
-            mpdm_t t = MPDM_MBS(ptr);
+            char *p = globbuf.gl_pathv[n];
+            mpdm_t t = MPDM_MBS(p);
 
             /* if last char is /, add to directories */
-            if (ptr[strlen(ptr) - 1] == '/')
+            if (p[strlen(p) - 1] == '/')
                 mpdm_push(d, t);
             else
                 mpdm_push(f, t);
@@ -1881,6 +1873,8 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
     }
 
     globfree(&globbuf);
+
+    free(ptr);
 
 #else
 
@@ -1908,9 +1902,6 @@ mpdm_t mpdm_glob(const mpdm_t spec, const mpdm_t base)
 
         mpdm_unrefnd(v);
     }
-
-    mpdm_unref(base);
-    mpdm_unref(spec);
 
     return v;
 }
