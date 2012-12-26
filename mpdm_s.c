@@ -1047,6 +1047,41 @@ int mpdm_wcwidth(wchar_t c)
 
 #endif                          /* CONFOPT_WCWIDTH */
 
+static wchar_t *s_mbstowcs(char *mbs, wchar_t *wcs)
+{
+    int n;
+
+    for (n = 0; mbs[n] != '\0'; n++)
+        wcs[n] = (wchar_t) mbs[n];
+
+    return wcs;
+}
+
+
+static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
+{
+    wchar_t *p = mpdm_string(v);
+
+    while (*p) {
+        if (*p == L'\n')
+            o = mpdm_poke(o, l, L"\\n", 2, sizeof(wchar_t));
+        else
+        if (*p < 32 || *p > 127) {
+            char tmp[7];
+            wchar_t wtmp[7];
+
+            sprintf(tmp, "\\u%04x", (unsigned int) *p);
+            o = mpdm_poke(o, l, s_mbstowcs(tmp, wtmp), 6, sizeof(wchar_t));
+        }
+        else
+            o = mpdm_poke(o, l, p, 1, sizeof(wchar_t));
+
+        p++;
+    }
+
+    return o;
+}
+
 
 static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
 /* fills a %j JSON format */
@@ -1062,7 +1097,7 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
                 o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
 
             o = mpdm_poke(o, l, L"\"", 1, sizeof(wchar_t));
-            o = mpdm_pokev(o, l, k);
+            o = json_s(o, l, k);
             o = mpdm_poke(o, l, L"\":", 2, sizeof(wchar_t));
 
             if (w == NULL)
@@ -1075,7 +1110,7 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
                     o = mpdm_pokev(o, l, w);
                 else {
                     o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
-                    o = mpdm_pokev(o, l, w);
+                    o = json_s(o, l, w);
                     o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
                 }
             }
@@ -1103,7 +1138,7 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
                     o = mpdm_pokev(o, l, w);
                 else {
                     o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
-                    o = mpdm_pokev(o, l, w);
+                    o = json_s(o, l, w);
                     o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
                 }
             }
