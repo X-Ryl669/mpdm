@@ -1101,7 +1101,7 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
             o = mpdm_poke(o, l, L"\":", 2, sizeof(wchar_t));
 
             if (w == NULL)
-                o = mpdm_poke(o, l, L"NULL", 4, sizeof(wchar_t));
+                o = mpdm_poke(o, l, L"null", 4, sizeof(wchar_t));
             else
             if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
                 o = json_f(o, l, w);
