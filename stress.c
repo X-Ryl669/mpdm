@@ -1823,7 +1823,11 @@ void test_json_in(void)
     mpdm_unref(v);
     s = json_parser(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}", &t, &v);
     mpdm_ref(v);
-    do_test("JSON 4", t >= 0);
+    do_test("JSON 5", t >= 0);
+    mpdm_unref(v);
+    s = json_parser(L"{\"k1\":true,\"k2\":false,\"k3\":null}", &t, &v);
+    mpdm_ref(v);
+    do_test("JSON 6", t >= 0);
     mpdm_unref(v);
 }
 

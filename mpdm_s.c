@@ -1448,6 +1448,23 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
         v = MPDM_ENS(ptr, size);
     }
     else
+    if (c == 't' && wcsncmp(s, L"rue", 3) == 0) {
+        s += 3;
+        *t = JS_NUMBER;
+        v = MPDM_I(1);
+    }
+    else
+    if (c == 'f' && wcsncmp(s, L"alse", 4) == 0) {
+        s += 4;
+        *t = JS_NUMBER;
+        v = MPDM_I(0);
+    }
+    else
+    if (c == 'n' && wcsncmp(s, L"ull", 3) == 0) {
+        s += 3;
+        *t = JS_NULL;
+    }
+    else
         *t = JS_ERROR;
 
     *pv = v;
