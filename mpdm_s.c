@@ -1066,7 +1066,7 @@ static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
         if (*p == L'\n')
             o = mpdm_poke(o, l, L"\\n", 2, sizeof(wchar_t));
         else
-        if (*p < 32 || *p > 127) {
+        if (*p < 32) {
             char tmp[7];
             wchar_t wtmp[7];
 
