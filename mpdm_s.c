@@ -1424,7 +1424,8 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
 
         while ((c = *s) != L'"' && c != L'\0') {
             if (c == '\\') {
-                c = *s++;
+                s++;
+                c = *s;
                 switch (c) {
                 case 'n': c = L'\n'; break;
                 case 'r': c = L'\r'; break;
