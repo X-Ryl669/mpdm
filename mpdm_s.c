@@ -1376,6 +1376,8 @@ enum {
     JS_ERROR = -1,
     JS_OCURLY,
     JS_OBRACK,
+    JS_CCURLY,
+    JS_CBRACK,
     JS_COMMA,
     JS_COLON,
     JS_VALUE,
@@ -1383,8 +1385,8 @@ enum {
     JS_SSTRING,
     JS_NUMBER,
     JS_NULL,
-    JS_CCURLY,
-    JS_CBRACK
+    JS_ARRAY,
+    JS_OBJECT
 };
 
 static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
@@ -1526,8 +1528,10 @@ wchar_t *json_parser(wchar_t *s, int *t, mpdm_t *pv)
 
             s = json_lexer(s, t, &w);
 
-            if (*t == JS_CCURLY)
+            if (*t == JS_CCURLY) {
+                *t = JS_OBJECT;
                 break;
+            }
             else
             if (*t != JS_COMMA) {
                 *t = JS_ERROR;
@@ -1559,8 +1563,10 @@ wchar_t *json_parser(wchar_t *s, int *t, mpdm_t *pv)
 
             s = json_lexer(s, t, &w);
 
-            if (*t == JS_CBRACK)
+            if (*t == JS_CBRACK) {
+                *t = JS_ARRAY;
                 break;
+            }
             else
             if (*t != JS_COMMA) {
                 *t = JS_ERROR;
