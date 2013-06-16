@@ -1399,7 +1399,7 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
            *s == L'\n' && *s == L'\r')
         s++;
 
-    c   = *s++;
+    c = *s++;
 
     if (c == L'{')
         *t = JS_OCURLY;
@@ -1423,6 +1423,17 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
         *t = JS_STRING;
 
         while ((c = *s) != L'"' && c != L'\0') {
+            if (c == '\\') {
+                c = *s++;
+                switch (c) {
+                case 'n': c = L'\n'; break;
+                case 'r': c = L'\r'; break;
+                case 't': c = L'\t'; break;
+                case 'u': /* hex char */
+                    break;
+                }
+            }
+
             ptr = mpdm_pokewsn(ptr, &size, &c, 1);
             s++;
         }
