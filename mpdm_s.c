@@ -1813,6 +1813,19 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
                 }
             }
             else
+                /* JSON parsing */
+            if (cmd == L'j') {
+                int t;
+                mpdm_t v;
+
+                i = json_parser(i, &t, &v);
+
+                if (t == -1)
+                    break;
+                else
+                    mpdm_push(r, v);
+            }
+            else
                 /* a standard set? */
             {
                 int n;
