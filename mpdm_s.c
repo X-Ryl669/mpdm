@@ -1425,6 +1425,8 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
         *t = JS_STRING;
 
         while ((c = *s) != L'"' && c != L'\0') {
+            char tmp[5];
+
             if (c == '\\') {
                 s++;
                 c = *s;
@@ -1433,6 +1435,14 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
                 case 'r': c = L'\r'; break;
                 case 't': c = L'\t'; break;
                 case 'u': /* hex char */
+                    s++;
+                    tmp[0] = (char)*s; s++;
+                    tmp[1] = (char)*s; s++;
+                    tmp[2] = (char)*s; s++;
+                    tmp[3] = (char)*s;
+                    tmp[4] = '\0';
+
+                    sscanf(tmp, "%04x", &c);
                     break;
                 }
             }

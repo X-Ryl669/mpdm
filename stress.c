@@ -1829,6 +1829,10 @@ void test_json_in(void)
     mpdm_ref(v);
     do_test("JSON 6", t >= 0);
     mpdm_unref(v);
+    s = json_parser(L"{\"k1\":\"-\\u005f-\"}", &t, &v);
+    mpdm_ref(v);
+    do_test("JSON 7", t >= 0);
+    mpdm_unref(v);
 }
 
 
