@@ -611,7 +611,16 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 }
 
 
-mpdm_t mpdm_str_slice(const mpdm_t s, int offset, int num)
+/**
+ * mpdm_slice - Returns a slice of a string.
+ * @v: the original value
+ * @offset: offset
+ * @num: number of characters
+ *
+ * Returns the substring of @v that starts from @offset and have @num characters.
+ * [Strings]
+ */
+mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
 {
     mpdm_t v, r;
 
