@@ -611,6 +611,18 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 }
 
 
+mpdm_t mpdm_str_slice(const mpdm_t s, int offset, int num)
+{
+    mpdm_t v, r;
+
+    v = mpdm_ref(mpdm_splice(s, NULL, offset, num));
+    r = mpdm_ref(mpdm_aget(v, 1));
+    mpdm_unref(v);
+
+    return mpdm_unrefnd(r);
+}
+
+
 /**
  * mpdm_strcat_sn - Concatenates two strings (string with size version).
  * @s1: the first string
