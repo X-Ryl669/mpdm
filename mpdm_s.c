@@ -627,6 +627,8 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
 {
     mpdm_t r = NULL;
 
+    mpdm_ref(s);
+
     if (s != NULL) {
         int os = mpdm_size(s);
         wchar_t *ptr = mpdm_string(s);
@@ -641,6 +643,8 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
 
         r = MPDM_NS(ptr + offset, num);
     }
+
+    mpdm_unref(s);
 
     return r;
 }
