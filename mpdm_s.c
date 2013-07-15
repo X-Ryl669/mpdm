@@ -613,22 +613,36 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 
 /**
  * mpdm_slice - Returns a slice of a string.
- * @v: the original value
+ * @v: the string
  * @offset: offset
  * @num: number of characters
  *
- * Returns the substring of @v that starts from @offset and have @num characters.
+ * Returns the substring of @v that starts from @offset
+ * and have @num characters. A negative @offset is also valid,
+ * with -1 as the last character and counting down to the start
+ * of the string.
  * [Strings]
  */
 mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
 {
-    mpdm_t v, r;
+    mpdm_t r = NULL;
 
-    v = mpdm_ref(mpdm_splice(s, NULL, offset, num));
-    r = mpdm_ref(mpdm_aget(v, 1));
-    mpdm_unref(v);
+    if (s != NULL) {
+        int os = mpdm_size(s);
+        wchar_t *ptr = mpdm_string(s);
 
-    return mpdm_unrefnd(r);
+        if (offset < 0) {
+            if ((offset = os + offset) < 0)
+                offset = 0;
+        }
+
+        if (offset + num > os)
+            num = os - offset;
+
+        r = MPDM_NS(ptr + offset, num);
+    }
+
+    return r;
 }
 
 
