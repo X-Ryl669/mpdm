@@ -16,6 +16,7 @@ MPDM Release Notes
    - New channel implementation (bidirectional communication for
      threads).
    - New function mpdm_rename().
+   - New function mpdm_slice().
 
 2.1.1
 -----
