@@ -1801,35 +1801,34 @@ wchar_t *json_parser(wchar_t *s, int *t, mpdm_t *pv);
 
 void test_json_in(void)
 {
-    wchar_t *s;
     mpdm_t v;
     int t;
 
-    s = json_parser(L"1234", &t, &v);
+    json_parser(L"1234", &t, &v);
     do_test("JSON 1", t == -1);
-    s = json_parser(L"[1,2]", &t, &v);
+    json_parser(L"[1,2]", &t, &v);
     do_test("JSON 2", t >= 0);
     do_test("JSON 2.1", mpdm_ival(mpdm_aget(v, 0)) == 1);
     do_test("JSON 2.2", mpdm_ival(mpdm_aget(v, 1)) == 2);
-    s = json_parser(L"[3,[4,5]]", &t, &v);
+    json_parser(L"[3,[4,5]]", &t, &v);
     do_test("JSON 3", t >= 0);
     do_test("JSON 3.1", mpdm_ival(mpdm_aget(v, 0)) == 3);
     do_test("JSON 3.2", mpdm_ival(mpdm_aget(mpdm_aget(v, 1), 1)) == 5);
-    s = json_parser(L"{\"k1\":10,\"k2\":20}", &t, &v);
+    json_parser(L"{\"k1\":10,\"k2\":20}", &t, &v);
     mpdm_ref(v);
     do_test("JSON 4", t >= 0);
     do_test("JSON 4.1", mpdm_ival(mpdm_hget_s(v, L"k2")) == 20);
     do_test("JSON 4.2", mpdm_ival(mpdm_hget_s(v, L"k1")) == 10);
     mpdm_unref(v);
-    s = json_parser(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}", &t, &v);
+    json_parser(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}", &t, &v);
     mpdm_ref(v);
     do_test("JSON 5", t >= 0);
     mpdm_unref(v);
-    s = json_parser(L"{\"k1\":true,\"k2\":false,\"k3\":null}", &t, &v);
+    json_parser(L"{\"k1\":true,\"k2\":false,\"k3\":null}", &t, &v);
     mpdm_ref(v);
     do_test("JSON 6", t >= 0);
     mpdm_unref(v);
-    s = json_parser(L"{\"k1\":\"-\\u005f-\"}", &t, &v);
+    json_parser(L"{\"k1\":\"-\\u005f-\"}", &t, &v);
     mpdm_ref(v);
     do_test("JSON 7", t >= 0);
     mpdm_unref(v);
