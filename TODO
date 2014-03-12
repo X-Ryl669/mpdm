@@ -20,6 +20,8 @@ Pending Enhancements
  * 1008: bread().
  * 1009: bwrite().
  * 1063: Implement copy-on-write on array cloning.
+ * 1126: Channels may possibly be implemented with only one set
+   of array + mutex + semaphore (instead of two).
 
 Closed
 ------
