@@ -2227,11 +2227,17 @@ mpdm_t mpdm_home_dir(void)
  *
  * Returns a system-dependent directory where the applications store
  * their private data, as components or resources.
+ *
+ * If the global APPID MPDM variable is set, it's used to search for
+ * the specific application installation folder (on MS Windows' registry)
+ * and / or appended as the final folder.
  * [File Management]
  */
 mpdm_t mpdm_app_dir(void)
 {
     mpdm_t r = NULL;
+    mpdm_t appid = mpdm_hget_s(mpdm_root(), L"APPID");
+    int aok = 0;
 
 #ifdef CONFOPT_WIN32
 
@@ -2239,22 +2245,45 @@ mpdm_t mpdm_app_dir(void)
     char tmp[MAX_PATH];
     LPITEMIDLIST pidl;
 
-    /* get the 'Program Files' folder (can fail) */
     tmp[0] = '\0';
-    if (SHGetSpecialFolderLocation(NULL, CSIDL_PROGRAM_FILES, &pidl) ==
-        S_OK)
-        SHGetPathFromIDList(pidl, tmp);
 
-    /* if it's still empty, get from the registry */
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+    if (appid != NULL) {
+        /* find the installation folder in the registry */
+        char *ptr = mpdm_wcstombs(mpdm_string(appid), NULL);
+
+        sprintf(tmp, "SOFTWARE\\%s\\appdir", ptr);
+
+        if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, tmp, 0, KEY_QUERY_VALUE, &hkey) == ERROR_SUCCESS) {
+            int n = sizeof(tmp);
+
+            if (RegQueryValueEx(hkey, NULL, NULL, NULL,
+                tmp, (LPDWORD) &n) == ERROR_SUCCESS)
+                    aok = 1;
+                else
+                    tmp[0] = '\0';
+        }
+        else
+            tmp[0] = '\0';
+
+        free(ptr);
+    }
+
+    if (tmp[0] == '\0') {
+        /* get the 'Program Files' folder (can fail) */
+        if (SHGetSpecialFolderLocation(NULL, CSIDL_PROGRAM_FILES, &pidl) == S_OK)
+            SHGetPathFromIDList(pidl, tmp);
+
+        /* if it's still empty, get from the registry */
+        if (tmp[0] == '\0' && RegOpenKeyEx(HKEY_LOCAL_MACHINE,
                      "SOFTWARE\\Microsoft\\Windows\\CurrentVersion",
                      0, KEY_QUERY_VALUE, &hkey) == ERROR_SUCCESS) {
-        int n = sizeof(tmp);
+            int n = sizeof(tmp);
 
-        if (RegQueryValueEx(hkey, "ProgramFilesDir",
-                            NULL, NULL, tmp,
-                            (LPDWORD) & n) != ERROR_SUCCESS)
-            tmp[0] = '\0';
+            if (RegQueryValueEx(hkey, "ProgramFilesDir",
+                                NULL, NULL, tmp,
+                                (LPDWORD) & n) != ERROR_SUCCESS)
+                tmp[0] = '\0';
+        }
     }
 
     if (tmp[0] != '\0') {
@@ -2266,6 +2295,9 @@ mpdm_t mpdm_app_dir(void)
     /* still none? get the configured directory */
     if (r == NULL)
         r = MPDM_MBS(CONFOPT_PREFIX "/share/");
+
+    if (appid && !aok)
+        r = mpdm_strcat(r, appid);
 
     return r;
 }
