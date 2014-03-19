@@ -17,6 +17,7 @@ MPDM Release Notes
      threads).
    - New function mpdm_rename().
    - New function mpdm_slice().
+   - New function mpdm_getcwd().
 
 2.1.1
 -----

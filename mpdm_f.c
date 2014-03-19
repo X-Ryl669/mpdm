@@ -1695,6 +1695,23 @@ int mpdm_chdir(const mpdm_t dir)
 
 
 /**
+ * mpdm_getcwd - Get current working directory
+ *
+ * Returns the current working directory.
+ * [File Management]
+ */
+mpdm_t mpdm_getcwd(void)
+{
+    char tmp[4096];
+
+    getcwd(tmp, sizeof(tmp) - 1);
+    tmp[sizeof(tmp) - 1] = '\0';
+
+    return MPDM_MBS(tmp);
+}
+
+
+/**
  * mpdm_chown - Changes a file's owner.
  * @filename: the file name
  * @uid: user id (element 4 from mpdm_stat())
