@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-#include <malloc.h>
 #include <locale.h>
 #include <wctype.h>
 #include <time.h>

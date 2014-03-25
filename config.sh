@@ -500,6 +500,19 @@ else
     echo "No"
 fi
 
+echo -n "Testing for malloc/malloc.h... "
+echo "#include <malloc/malloc.h>" > .tmp.c
+echo "int main(void) { return 0; }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+    echo "#define CONFOPT_MALLOC_MALLOC 1" >> config.h
+    echo "OK"
+else
+    echo "No (assuming malloc.h in standard place)"
+fi
+
 if [ "$WITH_WIN32" != 1 ] ; then
     echo -n "Testing for POSIX threads... "
     echo "#include <pthread.h>" > .tmp.c
