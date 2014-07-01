@@ -1,6 +1,12 @@
 MPDM Release Notes
 ==================
 
+2.1.5
+-----
+
+ - Bug fixes:
+   - Escape the base directory in glob().
+
 2.1.4
 -----
 

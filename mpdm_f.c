@@ -1781,8 +1781,12 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 #endif
 
     /* build full path */
-    if (base != NULL)
+    if (base != NULL) {
         base = mpdm_strcat_s(base, L"/");
+
+        /* escape expandable chars */
+        base = mpdm_sregex(base, MPDM_LS(L"@[]\\[]@g"), MPDM_LS(L"\\\\&"), 0);
+    }
 
     if (spec == NULL)
         spec = mpdm_strcat_s(base, def_spec);
