@@ -849,3 +849,15 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
     return r;
 }
+
+
+mpdm_t mpdm_reverse(const mpdm_t a)
+{
+    int n, m = mpdm_size(a);
+    mpdm_t r = mpdm_ref(MPDM_A(m));
+
+    for (n = 0; n < m; n++)
+        mpdm_aset(r, mpdm_aget(a, m - n - 1), n);
+
+    return mpdm_unrefnd(r);
+}

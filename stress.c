@@ -389,6 +389,9 @@ void test_array(void)
 
     mpdm_unref(v);
     mpdm_unref(a);
+
+    v = mpdm_ref(mpdm_join_s(mpdm_reverse(mpdm_split_s(MPDM_LS(L"test"), NULL)), NULL));
+    do_test("reverse", mpdm_cmp(v, MPDM_LS(L"tset")) == 0);
 }
 
 
