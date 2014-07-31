@@ -6,6 +6,8 @@ MPDM Release Notes
 
  - Bug fixes:
    - Escape the base directory in glob().
+ - New features:
+   - New array function mpdm_reverse().
 
 2.1.4
 -----
