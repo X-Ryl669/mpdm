@@ -133,7 +133,7 @@ if [ "$WITHOUT_WIN32" = "1" ] ; then
 else
     echo "#include <windows.h>" > .tmp.c
     echo "#include <commctrl.h>" >> .tmp.c
-    echo "int STDCALL WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
+    echo "int CALLBACK WinMain(HINSTANCE h, HINSTANCE p, LPSTR c, int m)" >> .tmp.c
     echo "{ return 0; }" >> .tmp.c
 
     TMP_LDFLAGS="-lws2_32"
