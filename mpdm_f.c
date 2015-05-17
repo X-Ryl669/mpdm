@@ -34,14 +34,6 @@
 #include <string.h>
 #include <wchar.h>
 
-#ifdef CONFOPT_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef CONFOPT_GLOB_H
-#include <glob.h>
-#endif
-
 #ifdef CONFOPT_WIN32
 
 #include <windows.h>
@@ -53,6 +45,10 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#else /* CONFOPT_WIN32 */
+
+#ifdef CONFOPT_GLOB_H
+#include <glob.h>
 #endif
 
 #ifdef CONFOPT_SYS_TYPES_H
@@ -63,20 +59,26 @@
 #include <sys/wait.h>
 #endif
 
-#ifdef CONFOPT_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
 #ifdef CONFOPT_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+
+#ifdef CONFOPT_NETDB_H
+#include <netdb.h>
+#endif
+
+#endif /* CONFOPT_WIN32 */
+
+#ifdef CONFOPT_UNISTD_H
+#include <unistd.h>
 #endif
 
 #ifdef CONFOPT_PWD_H
 #include <pwd.h>
 #endif
 
-#ifdef CONFOPT_NETDB_H
-#include <netdb.h>
+#ifdef CONFOPT_SYS_STAT_H
+#include <sys/stat.h>
 #endif
 
 #include "mpdm.h"
@@ -146,7 +148,7 @@ static int get_char(struct mpdm_file *f)
     }
 
     if (f->sock != -1) {
-        unsigned char b;
+        char b;
 
         if (recv(f->sock, &b, sizeof(b), 0) == sizeof(b))
             c = b;
@@ -2261,7 +2263,7 @@ mpdm_t mpdm_app_dir(void)
             int n = sizeof(tmp);
 
             if (RegQueryValueEx(hkey, NULL, NULL, NULL,
-                tmp, (LPDWORD) &n) == ERROR_SUCCESS)
+                (LPBYTE) tmp, (LPDWORD) &n) == ERROR_SUCCESS)
                     aok = 1;
                 else
                     tmp[0] = '\0';
@@ -2284,7 +2286,7 @@ mpdm_t mpdm_app_dir(void)
             int n = sizeof(tmp);
 
             if (RegQueryValueEx(hkey, "ProgramFilesDir",
-                                NULL, NULL, tmp,
+                                NULL, NULL, (LPBYTE) tmp,
                                 (LPDWORD) & n) != ERROR_SUCCESS)
                 tmp[0] = '\0';
         }
