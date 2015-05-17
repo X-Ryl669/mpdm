@@ -1464,6 +1464,7 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
 
         while ((c = *s) != L'"' && c != L'\0') {
             char tmp[5];
+            int i;
 
             if (c == '\\') {
                 s++;
@@ -1480,7 +1481,8 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
                     tmp[3] = (char)*s;
                     tmp[4] = '\0';
 
-                    sscanf(tmp, "%04x", &c);
+                    sscanf(tmp, "%04x", &i);
+                    c = (wchar_t) i;
                     break;
                 }
             }
