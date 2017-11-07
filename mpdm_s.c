@@ -1435,8 +1435,8 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
     mpdm_t v = NULL;
 
     /* skip blanks */
-    while (*s == L' '  && *s == L'\t' &&
-           *s == L'\n' && *s == L'\r')
+    while (*s == L' '  || *s == L'\t' ||
+           *s == L'\n' || *s == L'\r')
         s++;
 
     c = *s++;

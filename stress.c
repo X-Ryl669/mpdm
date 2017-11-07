@@ -1809,15 +1809,15 @@ void test_json_in(void)
 
     json_parser(L"1234", &t, &v);
     do_test("JSON 1", t == -1);
-    json_parser(L"[1,2]", &t, &v);
+    json_parser(L" [1,2]", &t, &v);
     do_test("JSON 2", t >= 0);
     do_test("JSON 2.1", mpdm_ival(mpdm_aget(v, 0)) == 1);
     do_test("JSON 2.2", mpdm_ival(mpdm_aget(v, 1)) == 2);
-    json_parser(L"[3,[4,5]]", &t, &v);
+    json_parser(L"[3, [4, 5]]", &t, &v);
     do_test("JSON 3", t >= 0);
     do_test("JSON 3.1", mpdm_ival(mpdm_aget(v, 0)) == 3);
     do_test("JSON 3.2", mpdm_ival(mpdm_aget(mpdm_aget(v, 1), 1)) == 5);
-    json_parser(L"{\"k1\":10,\"k2\":20}", &t, &v);
+    json_parser(L"{\"k1\": 10, \"k2\":20}", &t, &v);
     mpdm_ref(v);
     do_test("JSON 4", t >= 0);
     do_test("JSON 4.1", mpdm_ival(mpdm_hget_s(v, L"k2")) == 20);
