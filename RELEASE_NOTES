@@ -6,6 +6,7 @@ MPDM Release Notes
 
  - Bug fixes:
    - Escape the base directory in glob().
+   - Fix a parsing bug in json_lexer().
  - New features:
    - New array function mpdm_reverse().
 
