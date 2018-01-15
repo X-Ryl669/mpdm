@@ -1,6 +1,12 @@
 MPDM Release Notes
 ==================
 
+2.1.6
+-----
+
+ - Bug fixes:
+   - Dump backslashes correctly in JSON.
+
 2.1.5
 -----
 
