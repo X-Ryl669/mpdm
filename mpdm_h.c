@@ -282,11 +282,13 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
     mpdm_ref(h);
     mpdm_ref(k);
 
-    if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
-        /* bucket exists */
-        if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0) {
-            /* collapse the bucket */
-            mpdm_collapse(b, n, 2);
+    if (mpdm_size(h)) {
+        if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
+            /* bucket exists */
+            if ((n = mpdm_bseek(b, k, 2, NULL)) >= 0) {
+                /* collapse the bucket */
+                mpdm_collapse(b, n, 2);
+            }
         }
     }
 
