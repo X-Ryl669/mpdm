@@ -430,32 +430,13 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
  */
 int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
 {
-    int n, o;
+    int r;
 
-    mpdm_ref(a);
     mpdm_ref(k);
-
-    /* avoid stupid steps */
-    if (step <= 0)
-        step = 1;
-
-    o = -1;
-
-    for (n = 0; o == -1 && n < mpdm_size(a); n += step) {
-        int r;
-
-        mpdm_t v = mpdm_aget(a, n);
-
-        r = mpdm_cmp(v, k);
-
-        if (r == 0)
-            o = n;
-    }
-
+    r = mpdm_seek_s(a, mpdm_string(k), step);
     mpdm_unref(k);
-    mpdm_unref(a);
 
-    return o;
+    return r;
 }
 
 
@@ -470,9 +451,32 @@ int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
  * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step)
+int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
 {
-    return mpdm_seek(a, MPDM_AS(k), step);
+    int n, o;
+
+    mpdm_ref(a);
+
+    /* avoid stupid steps */
+    if (step <= 0)
+        step = 1;
+
+    o = -1;
+
+    for (n = 0; o == -1 && n < mpdm_size(a); n += step) {
+        int r;
+
+        mpdm_t v = mpdm_aget(a, n);
+
+        r = mpdm_cmp_s(v, k);
+
+        if (r == 0)
+            o = n;
+    }
+
+    mpdm_unref(a);
+
+    return o;
 }
 
 
