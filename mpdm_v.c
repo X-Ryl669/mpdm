@@ -207,10 +207,7 @@ int mpdm_size(const mpdm_t v)
  */
 mpdm_t mpdm_root(void)
 {
-    if (mpdm->root == NULL)
-        mpdm->root = mpdm_ref(MPDM_H(0));
-
-    return mpdm->root;
+    return mpdm->root = mpdm->root ? mpdm->root : mpdm_ref(MPDM_H(0));
 }
 
 
@@ -260,8 +257,7 @@ mpdm_t mpdm_set_rval(mpdm_t v, double rval)
  */
 void mpdm_void(mpdm_t v)
 {
-    mpdm_ref(v);
-    mpdm_unref(v);
+    mpdm_unref(mpdm_ref(v));
 }
 
 
@@ -513,11 +509,7 @@ int mpdm_startup(void)
     /* do the startup only unless done beforehand */
     if (mpdm == NULL) {
         /* alloc space */
-        if ((mpdm = malloc(sizeof(struct mpdm_control))) == NULL)
-            return -1;
-
-        /* cleans it */
-        memset(mpdm, '\0', sizeof(struct mpdm_control));
+        mpdm = calloc(sizeof(struct mpdm_control), 1);
 
         /* sets the defaults */
         mpdm->hash_buckets = 31;

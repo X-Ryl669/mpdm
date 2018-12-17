@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
 
     mpdm_a.c - Array management
 
@@ -57,10 +57,7 @@ mpdm_t mpdm_new_a(int flags, int size)
 static int wrap_offset(const mpdm_t a, int offset)
 /* manages negative offsets */
 {
-    if (offset < 0)
-        offset = mpdm_size(a) + offset;
-
-    return offset;
+    return offset < 0 ? mpdm_size(a) + offset : offset;
 }
 
 
