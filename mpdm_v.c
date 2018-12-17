@@ -54,7 +54,7 @@ void _mpdm_free(mpdm_t v)
 }
 
 
-static void destroy_value(mpdm_t v)
+static mpdm_t destroy_value(mpdm_t v)
 /* destroys a value */
 {
     /* collapse multiple values */
@@ -73,6 +73,8 @@ static void destroy_value(mpdm_t v)
 
     if (!(v->flags & MPDM_NONDYN))
         _mpdm_free(v);
+
+    return NULL;
 }
 
 
@@ -150,12 +152,8 @@ mpdm_t mpdm_ref(mpdm_t v)
  */
 mpdm_t mpdm_unref(mpdm_t v)
 {
-    if (v != NULL) {
-        if (--v->ref <= 0) {
-            destroy_value(v);
-            v = NULL;
-        }
-    }
+    if (v != NULL && --v->ref <= 0)
+        v = destroy_value(v);
 
     return v;
 }
@@ -272,7 +270,7 @@ int mpdm_is_null(mpdm_t v)
     int r;
 
     mpdm_ref(v);
-    r = v == NULL ? 1 : 0;
+    r = (v == NULL);
     mpdm_unref(v);
 
     return r;
