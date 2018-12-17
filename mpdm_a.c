@@ -64,26 +64,39 @@ static int wrap_offset(const mpdm_t a, int offset)
 }
 
 
-mpdm_t mpdm_aclone(const mpdm_t v)
-/* clones a multiple value */
+/**
+ * mpdm_clone - Creates a clone of a value.
+ * @v: the value
+ *
+ * Creates a clone of a value. If the value is multiple, a new value will
+ * be created containing clones of all its elements; otherwise,
+ * the same unchanged value is returned.
+ * [Value Management]
+ */
+mpdm_t mpdm_clone(const mpdm_t v)
 {
     mpdm_t w;
-    int n;
 
-    mpdm_ref(v);
+    if (MPDM_IS_ARRAY(v) && !MPDM_IS_EXEC(v)) {
+        int n;
 
-    /* creates a similar value */
-    w = mpdm_new_a(v->flags, v->size);
+        mpdm_ref(v);
 
-    mpdm_ref(w);
+        /* creates a similar value */
+        w = mpdm_new_a(v->flags, v->size);
 
-    /* fills each element with duplicates of the original */
-    for (n = 0; n < w->size; n++)
-        mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+        mpdm_ref(w);
 
-    mpdm_unrefnd(w);
+        /* fills each element with duplicates of the original */
+        for (n = 0; n < w->size; n++)
+            mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
-    mpdm_unref(v);
+        mpdm_unrefnd(w);
+
+        mpdm_unref(v);
+    }
+    else
+        w = v;
 
     return w;
 }

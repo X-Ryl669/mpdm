@@ -203,28 +203,6 @@ int mpdm_size(const mpdm_t v)
 
 
 /**
- * mpdm_clone - Creates a clone of a value.
- * @v: the value
- *
- * Creates a clone of a value. If the value is multiple, a new value will
- * be created containing clones of all its elements; otherwise,
- * the same unchanged value is returned.
- * [Value Management]
- */
-mpdm_t mpdm_clone(const mpdm_t v)
-{
-    mpdm_t r;
-
-    if (MPDM_IS_ARRAY(v) && !MPDM_IS_EXEC(v))
-        r = mpdm_aclone(v);
-    else
-        r = v;
-
-    return r;
-}
-
-
-/**
  * mpdm_root - Returns the root hash.
  *
  * Returns the root hash. This hash is stored internally and can be used
