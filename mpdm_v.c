@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
 
     mpdm_v.c - Basic value management
 
@@ -66,10 +66,8 @@ static void destroy_value(mpdm_t v)
     }
 
     /* free data if needed */
-    if (v->data != NULL && v->flags & MPDM_FREE) {
-        free((void *) v->data);
-        v->data = NULL;
-    }
+    if (v->flags & MPDM_FREE)
+        free((void *)v->data);
 
     mpdm->count--;
 
@@ -153,9 +151,7 @@ mpdm_t mpdm_ref(mpdm_t v)
 mpdm_t mpdm_unref(mpdm_t v)
 {
     if (v != NULL) {
-        v->ref--;
-
-        if (v->ref <= 0) {
+        if (--v->ref <= 0) {
             destroy_value(v);
             v = NULL;
         }
