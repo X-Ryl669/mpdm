@@ -495,45 +495,13 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step)
  */
 int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 {
-    int b, t, n, c, o;
+    int r;
 
-    mpdm_ref(a);
     mpdm_ref(k);
-
-    /* avoid stupid steps */
-    if (step <= 0)
-        step = 1;
-
-    b = 0;
-    t = (mpdm_size(a) - 1) / step;
-
-    o = -1;
-
-    while (o == -1 && t >= b) {
-        mpdm_t v;
-
-        n = (b + t) / 2;
-        if ((v = mpdm_aget(a, n * step)) == NULL)
-            break;
-
-        c = mpdm_cmp(v, k);
-
-        if (c == 0)
-            o = n * step;
-        else
-        if (c > 0)
-            t = n - 1;
-        else
-            b = n + 1;
-    }
-
-    if (pos != NULL)
-        *pos = b * step;
-
+    r = mpdm_bseek_s(a, mpdm_string(k), step, pos);
     mpdm_unref(k);
-    mpdm_unref(a);
 
-    return o;
+    return r;
 }
 
 
@@ -554,9 +522,45 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek_s(const mpdm_t a, const wchar_t * k, int step, int *pos)
+int mpdm_bseek_s(const mpdm_t a, const wchar_t *k, int step, int *pos)
 {
-    return mpdm_bseek(a, MPDM_AS(k), step, pos);
+    int b, t, n, c, o;
+
+    mpdm_ref(a);
+
+    /* avoid stupid steps */
+    if (step <= 0)
+        step = 1;
+
+    b = 0;
+    t = (mpdm_size(a) - 1) / step;
+
+    o = -1;
+
+    while (o == -1 && t >= b) {
+        mpdm_t v;
+
+        n = (b + t) / 2;
+        if ((v = mpdm_aget(a, n * step)) == NULL)
+            break;
+
+        c = mpdm_cmp_s(v, k);
+
+        if (c == 0)
+            o = n * step;
+        else
+        if (c > 0)
+            t = n - 1;
+        else
+            b = n + 1;
+    }
+
+    if (pos != NULL)
+        *pos = b * step;
+
+    mpdm_unref(a);
+
+    return o;
 }
 
 
