@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2011 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-    http://www.triptico.com
+    http://triptico.com
 
 */
 
@@ -111,7 +111,6 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt);
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt);
 
 mpdm_t mpdm_new_a(int flags, int size);
-mpdm_t mpdm_aclone(const mpdm_t v);
 
 mpdm_t mpdm_expand(mpdm_t a, int offset, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int offset, int num);
@@ -185,13 +184,6 @@ int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2);
 extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size);
 mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
-
-#define MPDM_SGET(r, k) mpdm_sget((r), MPDM_LS((k)))
-#define MPDM_SSET(r, k, v) mpdm_sset((r), MPDM_LS((k)), (v))
-
-mpdm_t mpdm_sget(mpdm_t r, mpdm_t k);
-mpdm_t mpdm_sget_i(mpdm_t r, mpdm_t k, int i);
-mpdm_t mpdm_sset(mpdm_t r, mpdm_t k, mpdm_t v);
 
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
 mpdm_t mpdm_new_f(FILE * f);
