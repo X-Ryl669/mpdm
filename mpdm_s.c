@@ -338,7 +338,7 @@ mpdm_t mpdm_new_r(double rval)
 wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 {
     char tmp[128] = "";
-    wchar_t *ret;
+    wchar_t *ret = L"[UNKNOWN]";
 
     /* if it's NULL, return a constant */
     if (v == NULL)
@@ -352,7 +352,7 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
                 char *prev_locale = setlocale(LC_NUMERIC, "C");
 
                 /* creates the visual representation */
-                sprintf(tmp, "%lf", v->rval);
+                sprintf(tmp, "%lf", mpdm_rval(v));
             
                 setlocale(LC_NUMERIC, prev_locale);
 
@@ -372,7 +372,7 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
             else
             if (v->flags & MPDM_IVAL) {
                 /* creates the visual representation */
-                sprintf(tmp, "%d", v->ival);
+                sprintf(tmp, "%d", mpdm_ival(v));
             }
 
             v->data = (void *)mpdm_mbstowcs(tmp, &v->size, -1);
