@@ -254,25 +254,16 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy)
         /* free() on destruction */
         flags |= MPDM_FREE;
 
-        /* allocs */
-        if ((ptr = malloc((size + 1) * sizeof(wchar_t))) == NULL)
-            return NULL;
+        ptr = calloc(size + 1, sizeof(wchar_t));
 
-        /* if no source, reset to zeroes; otherwise, copy */
-        if (str == NULL)
-            memset(ptr, '\0', size * sizeof(wchar_t));
-        else {
+        /* if there is a source, copy it */
+        if (str != NULL)
             wcsncpy(ptr, str, size);
-            ptr[size] = L'\0';
-        }
     }
     else
         ptr = (wchar_t *) str;
 
-    /* it's a string */
-    flags |= MPDM_STRING;
-
-    return mpdm_new(flags, ptr, size);
+    return mpdm_new(flags | MPDM_STRING, ptr, size);
 }
 
 
