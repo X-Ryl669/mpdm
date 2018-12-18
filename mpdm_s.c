@@ -294,45 +294,29 @@ mpdm_t mpdm_new_wcstombs(int flags, const wchar_t *str)
 }
 
 
-static mpdm_t set_ival(mpdm_t v, int ival)
-/* sets an integer value to a value */
-{
-    v->flags |= MPDM_IVAL;
-    v->ival  = ival;
-
-    return v;
-}
-
-
-static mpdm_t set_rval(mpdm_t v, double rval)
-/* sets a real value to a value */
-{
-    v->flags |= MPDM_RVAL;
-    v->rval  = rval;
-
-    return v;
-}
-
-
 mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
-    mpdm_t v;
+    mpdm_ex_t ev;
 
     /* create a string value, but without the 'string' */
-    v = mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
-    return set_ival(v, ival);
+    ev = (mpdm_ex_t) mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
+    ev->ival = ival;
+
+    return (mpdm_t) ev;
 }
 
 
 mpdm_t mpdm_new_r(double rval)
 /* creates a new string value from a real number */
 {
-    mpdm_t v;
+    mpdm_ex_t ev;
 
     /* create a string value, but without the 'string' */
-    v = mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
-    return set_rval(v, rval);
+    ev = (mpdm_ex_t) mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
+    ev->rval = rval;
+
+    return (mpdm_t) ev;
 }
 
 
