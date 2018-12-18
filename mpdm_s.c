@@ -333,19 +333,16 @@ mpdm_t mpdm_new_r(double rval)
  */
 wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 {
-    char tmp[128];
+    char tmp[128] = "";
     wchar_t *ret;
 
     /* if it's NULL, return a constant */
     if (v == NULL)
         ret = L"[NULL]";
     else
-        /* if it's a string, return it */
+    /* if it's a string, return it */
     if (v->flags & MPDM_STRING) {
-
         if (v->data == NULL) {
-            char tmp[128] = "";
-
             /* string but no data? most probably a 'lazy' number */
             if (v->flags & MPDM_RVAL) {
                 char *prev_locale = setlocale(LC_NUMERIC, "C");
