@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
 
     mpdm_h.c - Hash management
 
@@ -72,7 +72,7 @@ static int switch_hash_func(const wchar_t * string, int mod)
 }
 
 #define HASH_BUCKET_S(h, k) mpdm_hash_func(k, mpdm_size(h))
-#define HASH_BUCKET(h, k) (mpdm_hash_func(mpdm_string(k), mpdm_size(h)))
+#define HASH_BUCKET(h, k)   mpdm_hash_func(mpdm_string(k), mpdm_size(h))
 
 /* interface */
 
@@ -112,26 +112,13 @@ int mpdm_hsize(const mpdm_t h)
  */
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
 {
-    mpdm_t b;
-    mpdm_t v = NULL;
-    int n = 0;
+    mpdm_t r;
 
-    mpdm_ref(h);
     mpdm_ref(k);
-
-    if (mpdm_size(h)) {
-        /* if hash is not empty... */
-        if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL)
-            n = mpdm_bseek(b, k, 2, NULL);
-
-        if (n >= 0)
-            v = mpdm_aget(b, n + 1);
-    }
-
+    r = mpdm_hget_s(h, mpdm_string(k));
     mpdm_unref(k);
-    mpdm_unref(h);
 
-    return v;
+    return r;
 }
 
 
@@ -144,9 +131,26 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
  * NULL if the key does not exist.
  * [Hashes]
  */
-mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t * k)
+mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
 {
-    return mpdm_hget(h, MPDM_AS(k));
+    mpdm_t b;
+    mpdm_t v = NULL;
+    int n = 0;
+
+    mpdm_ref(h);
+
+    if (mpdm_size(h)) {
+        /* if hash is not empty... */
+        if ((b = mpdm_aget(h, HASH_BUCKET_S(h, k))) != NULL)
+            n = mpdm_bseek_s(b, k, 2, NULL);
+
+        if (n >= 0)
+            v = mpdm_aget(b, n + 1);
+    }
+
+    mpdm_unref(h);
+
+    return v;
 }
 
 
