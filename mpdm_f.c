@@ -1051,7 +1051,7 @@ static void destroy_mpdm_file(mpdm_t v)
 
 /** interface **/
 
-wchar_t *mpdm_read_mbs(FILE * f, int *s)
+wchar_t *mpdm_read_mbs(FILE *f, int *s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
     struct mpdm_file fs;
@@ -1064,7 +1064,7 @@ wchar_t *mpdm_read_mbs(FILE * f, int *s)
 }
 
 
-int mpdm_write_wcs(FILE * f, const wchar_t * str)
+int mpdm_write_wcs(FILE *f, const wchar_t *str)
 /* writes a wide string to a stream */
 {
     struct mpdm_file fs;
@@ -1077,17 +1077,16 @@ int mpdm_write_wcs(FILE * f, const wchar_t * str)
 }
 
 
-mpdm_t mpdm_new_f(FILE * f)
+mpdm_t mpdm_new_f(FILE *f)
 /* creates a new file value from a FILE * */
 {
     mpdm_t v = NULL;
 
-    if (f == NULL)
-        return NULL;
-
-    if ((v = new_mpdm_file(0)) != NULL) {
-        struct mpdm_file *fs = (struct mpdm_file *) v->data;
-        fs->in = fs->out = f;
+    if (f) {
+        if ((v = new_mpdm_file(0)) != NULL) {
+            struct mpdm_file *fs = (struct mpdm_file *) v->data;
+            fs->in = fs->out = f;
+        }
     }
 
     return v;
@@ -1123,7 +1122,6 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
     mpdm_ref(mode);
 
     if (filename != NULL && mode != NULL) {
-
         /* convert to mbs,s */
         fn = mpdm_ref(MPDM_2MBS(filename->data));
         m = mpdm_ref(MPDM_2MBS(mode->data));
@@ -1442,15 +1440,12 @@ int mpdm_encoding(mpdm_t charset)
 
         /* tries to create an iconv encoder and decoder for this charset */
 
-        if ((ic =
-             iconv_open("WCHAR_T", (char *) cs->data)) == (iconv_t) - 1)
+        if ((ic = iconv_open("WCHAR_T", (char *) cs->data)) == (iconv_t) - 1)
             ret = -1;
         else {
             iconv_close(ic);
 
-            if ((ic =
-                 iconv_open((char *) cs->data,
-                            "WCHAR_T")) == (iconv_t) - 1)
+            if ((ic = iconv_open((char *) cs->data, "WCHAR_T")) == (iconv_t) - 1)
                 ret = -2;
             else {
                 iconv_close(ic);
@@ -1718,13 +1713,12 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
 
     mpdm_t fn = mpdm_ref(MPDM_2MBS(filename->data));
 
-    if ((r =
-         chown((char *) fn->data, mpdm_ival(uid), mpdm_ival(gid))) == -1)
+    if ((r = chown((char *) fn->data, mpdm_ival(uid), mpdm_ival(gid))) == -1)
         store_syserr();
 
     mpdm_unref(fn);
 
-#endif                          /* CONFOPT_CHOWN */
+#endif /* CONFOPT_CHOWN */
 
     mpdm_unref(gid);
     mpdm_unref(uid);
