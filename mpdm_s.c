@@ -300,7 +300,7 @@ mpdm_t mpdm_new_i(int ival)
     mpdm_t v;
 
     /* create a string value, but without the 'string' */
-    v = mpdm_new(MPDM_STRING | MPDM_FREE, NULL, 0);
+    v = mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_IVAL, NULL, 0);
     return mpdm_set_ival(v, ival);
 }
 
@@ -311,7 +311,7 @@ mpdm_t mpdm_new_r(double rval)
     mpdm_t v;
 
     /* create a string value, but without the 'string' */
-    v = mpdm_new(MPDM_STRING | MPDM_FREE, NULL, 0);
+    v = mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_RVAL, NULL, 0);
     return mpdm_set_rval(v, rval);
 }
 
