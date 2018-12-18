@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2012 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
 
     mpdm_f.c - File management
 
@@ -139,7 +139,7 @@ static int get_char(struct mpdm_file *f)
             c = (int) tmp;
     }
 
-#endif                          /* CONFOPT_WIN32 */
+#endif /* CONFOPT_WIN32 */
 
     if (f->in != NULL) {
         /* read (converting to positive if needed) */
@@ -210,9 +210,7 @@ static wchar_t *read_mbs(struct mpdm_file *f, int *s)
 
         if (i == sizeof(tmp) - 1) {
             /* out of space; start allocating */
-            if ((auxptr =
-                 mpdm_poke(auxptr, &n, tmp, i, sizeof(char))) == NULL)
-                return NULL;
+            auxptr = mpdm_poke(auxptr, &n, tmp, i, sizeof(char));
 
             i = 0;
         }
@@ -225,9 +223,7 @@ static wchar_t *read_mbs(struct mpdm_file *f, int *s)
 
         if (n) {
             /* auxiliary space used; concat all */
-            if ((auxptr =
-                 mpdm_poke(auxptr, &n, tmp, i, sizeof(char))) == NULL)
-                return NULL;
+            auxptr = mpdm_poke(auxptr, &n, tmp, i, sizeof(char));
 
             /* do the conversion */
             ptr = mpdm_mbstowcs(auxptr, s, -1);
@@ -242,7 +238,7 @@ static wchar_t *read_mbs(struct mpdm_file *f, int *s)
 }
 
 
-static int write_wcs(struct mpdm_file *f, const wchar_t * str)
+static int write_wcs(struct mpdm_file *f, const wchar_t *str)
 /* writes a wide string to an struct mpdm_file */
 {
     int s;
@@ -315,7 +311,7 @@ static wchar_t *read_iconv(struct mpdm_file *f, int *s)
 }
 
 
-static int write_iconv(struct mpdm_file *f, const wchar_t * str)
+static int write_iconv(struct mpdm_file *f, const wchar_t *str)
 /* writes a wide string to a stream using iconv */
 {
     char tmp[128];
@@ -358,7 +354,7 @@ static int write_iconv(struct mpdm_file *f, const wchar_t * str)
 }
 
 
-#endif                          /* CONFOPT_ICONV */
+#endif /* CONFOPT_ICONV */
 
 #define UTF8_BYTE() if((c = get_char(f)) == EOF) break
 
@@ -410,7 +406,7 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf8(struct mpdm_file *f, const wchar_t * str)
+static int write_utf8(struct mpdm_file *f, const wchar_t *str)
 /* utf8 writer */
 {
     int cnt = 0;
@@ -464,7 +460,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf8_bom(struct mpdm_file *f, const wchar_t * str)
+static int write_utf8_bom(struct mpdm_file *f, const wchar_t *str)
 /* utf-8 writer with BOM */
 {
     /* store the BOM */
@@ -509,7 +505,7 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
 }
 
 
-static int write_iso8859_1(struct mpdm_file *f, const wchar_t * str)
+static int write_iso8859_1(struct mpdm_file *f, const wchar_t *str)
 /* iso8859-1 writer */
 {
     int cnt = 0;
@@ -564,7 +560,7 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
 }
 
 
-static int write_utf16ae(struct mpdm_file *f, const wchar_t * str, int le)
+static int write_utf16ae(struct mpdm_file *f, const wchar_t *str, int le)
 /* utf16 writer, ANY ending */
 {
     int cnt = 0;
@@ -593,7 +589,7 @@ static wchar_t *read_utf16le(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf16le(struct mpdm_file *f, const wchar_t * str)
+static int write_utf16le(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf16ae(f, str, 1);
 }
@@ -605,7 +601,7 @@ static wchar_t *read_utf16be(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf16be(struct mpdm_file *f, const wchar_t * str)
+static int write_utf16be(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf16ae(f, str, 0);
 }
@@ -639,7 +635,7 @@ static wchar_t *read_utf16(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf16le_bom(struct mpdm_file *f, const wchar_t * str)
+static int write_utf16le_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the LE signature */
     put_char(0xff, f);
@@ -652,7 +648,7 @@ static int write_utf16le_bom(struct mpdm_file *f, const wchar_t * str)
 }
 
 
-static int write_utf16be_bom(struct mpdm_file *f, const wchar_t * str)
+static int write_utf16be_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the BE signature */
     put_char(0xfe, f);
@@ -712,7 +708,7 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
 }
 
 
-static int write_utf32ae(struct mpdm_file *f, const wchar_t * str, int le)
+static int write_utf32ae(struct mpdm_file *f, const wchar_t *str, int le)
 /* utf32 writer, ANY ending */
 {
     int cnt = 0;
@@ -745,7 +741,7 @@ static wchar_t *read_utf32le(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf32le(struct mpdm_file *f, const wchar_t * str)
+static int write_utf32le(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf32ae(f, str, 1);
 }
@@ -757,7 +753,7 @@ static wchar_t *read_utf32be(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf32be(struct mpdm_file *f, const wchar_t * str)
+static int write_utf32be(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf32ae(f, str, 0);
 }
@@ -791,7 +787,7 @@ static wchar_t *read_utf32(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf32le_bom(struct mpdm_file *f, const wchar_t * str)
+static int write_utf32le_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the LE signature */
     put_char(0xff, f);
@@ -806,7 +802,7 @@ static int write_utf32le_bom(struct mpdm_file *f, const wchar_t * str)
 }
 
 
-static int write_utf32be_bom(struct mpdm_file *f, const wchar_t * str)
+static int write_utf32be_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the BE signature */
     put_char(0, f);
@@ -926,7 +922,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s)
         fseek(f->in, 0, SEEK_SET);
     }
 
-  got_encoding:
+got_encoding:
     mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
 
     return f->f_read(f, s);
@@ -940,10 +936,7 @@ static mpdm_t new_mpdm_file(int is_pipe)
     struct mpdm_file *fs;
     mpdm_t e;
 
-    if ((fs = malloc(sizeof(struct mpdm_file))) == NULL)
-        return NULL;
-
-    memset(fs, '\0', sizeof(struct mpdm_file));
+    fs = calloc(sizeof(struct mpdm_file), 1);
 
     fs->sock    = -1;
     fs->is_pipe = is_pipe;
@@ -957,12 +950,7 @@ static mpdm_t new_mpdm_file(int is_pipe)
     fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
 #endif
 
-    if ((v =
-         mpdm_new(MPDM_FILE | MPDM_FREE, fs,
-                  sizeof(struct mpdm_file))) == NULL) {
-        free(fs);
-        return NULL;
-    }
+    v = mpdm_new(MPDM_FILE | MPDM_FREE, fs, sizeof(struct mpdm_file));
 
     e = mpdm_hget_s(mpdm_root(), L"ENCODING");
 
@@ -970,7 +958,6 @@ static mpdm_t new_mpdm_file(int is_pipe)
         e = mpdm_hget_s(mpdm_root(), L"TEMP_ENCODING");
 
     if (mpdm_size(e)) {
-
         wchar_t *enc = mpdm_string(e);
 
         if (wcscmp(enc, L"utf-8") == 0) {
@@ -1022,13 +1009,10 @@ static mpdm_t new_mpdm_file(int is_pipe)
 #ifdef CONFOPT_ICONV
             mpdm_t cs = MPDM_2MBS(e->data);
 
-            if ((fs->ic_enc =
-                 iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) - 1
-                && (fs->ic_dec =
-                    iconv_open("WCHAR_T",
-                               (char *) cs->data)) != (iconv_t) - 1) {
+            if ((fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) - 1 &&
+                (fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data)) != (iconv_t) - 1) {
 
-                fs->f_read = read_iconv;
+                fs->f_read  = read_iconv;
                 fs->f_write = write_iconv;
             }
 #endif                          /* CONFOPT_ICONV */
