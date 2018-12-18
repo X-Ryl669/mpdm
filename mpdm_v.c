@@ -42,18 +42,6 @@ struct mpdm_control *mpdm = NULL;
 
 /** code **/
 
-mpdm_t _mpdm_malloc(void)
-{
-    return malloc(sizeof(struct mpdm_val));
-}
-
-
-void _mpdm_free(mpdm_t v)
-{
-    free(v);
-}
-
-
 static mpdm_t destroy_value(mpdm_t v)
 /* destroys a value */
 {
@@ -72,7 +60,7 @@ static mpdm_t destroy_value(mpdm_t v)
     mpdm->count--;
 
     if (!(v->flags & MPDM_NONDYN))
-        _mpdm_free(v);
+        free(v);
 
     return NULL;
 }
@@ -122,7 +110,12 @@ mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, int size)
  */
 mpdm_t mpdm_new(int flags, const void *data, int size)
 {
-    return mpdm_init(_mpdm_malloc(), flags & ~MPDM_NONDYN, data, size);
+    mpdm_t v;
+
+    v = (mpdm_t) calloc(flags & MPDM_EXTENDED ?
+                sizeof(struct mpdm_val_ex) : sizeof(struct mpdm_val), 1);
+
+    return mpdm_init(v, flags & ~MPDM_NONDYN, data, size);
 }
 
 

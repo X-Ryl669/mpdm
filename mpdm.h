@@ -48,7 +48,8 @@ enum {
     _MPDM_SEMAPHORE,
     _MPDM_THREAD,
     _MPDM_NONDYN,
-    _MPDM_CHANNEL
+    _MPDM_CHANNEL,
+    _MPDM_EXTENDED
 };
 
 enum {
@@ -58,18 +59,20 @@ enum {
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
-    MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a FILE * */
+    MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a file */
     MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
     MPDM_REGEX      = (1<<_MPDM_REGEX),     /* data is a compiled regex */
     MPDM_MUTEX      = (1<<_MPDM_MUTEX),     /* data is a mutex */
     MPDM_SEMAPHORE  = (1<<_MPDM_SEMAPHORE), /* data is a semaphore */
     MPDM_THREAD     = (1<<_MPDM_THREAD),    /* data is a thread handle */
     MPDM_NONDYN     = (1<<_MPDM_NONDYN),    /* data is non-dynamic (do not free()) */
-    MPDM_CHANNEL    = (1<<_MPDM_CHANNEL)    /* data is a channel */
+    MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
+    MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };
 
 /* mpdm values */
 typedef struct mpdm_val *mpdm_t;
+typedef struct mpdm_val_ex *mpdm_ex_t;
 
 /* a value */
 struct mpdm_val {
@@ -79,6 +82,17 @@ struct mpdm_val {
     int ival;           /* cached integer value */
     double rval;        /* cache real value */
     const void *data;   /* the real data */
+};
+
+/* extended value */
+struct mpdm_val_ex {
+    int flags;                  /* value flags */
+    int ref;                    /* reference count */
+    int size;                   /* data size */
+    int ival;                   /* cached integer value */
+    double rval;                /* cache real value */
+    const void *data;           /* the real data */
+    void (*destroy)(mpdm_ex_t); /* destroy function */
 };
 
 
