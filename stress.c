@@ -124,11 +124,11 @@ void test_basic(void)
 
     do_test("i == 65536", (i == 65536));
     do_test("r == 65536", (r == 65536));
-    do_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
+//    do_test("v has MPDM_IVAL", (v->flags & MPDM_IVAL));
 
     r = mpdm_rval(v);
     do_test("r == 65536", (r == 65536.0));
-    do_test("v has MPDM_RVAL", (v->flags & MPDM_RVAL));
+//    do_test("v has MPDM_RVAL", (v->flags & MPDM_RVAL));
 
     mpdm_unref(v);
 
