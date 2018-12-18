@@ -76,6 +76,22 @@ void mpdm_sleep(int msecs)
 
 /** mutexes **/
 
+static void mutex_destroy(mpdm_ex_t ev)
+{
+#ifdef CONFOPT_WIN32
+    HANDLE *h = (HANDLE *) ev->data;
+
+    CloseHandle(*h);
+#endif
+
+#ifdef CONFOPT_PTHREADS
+    pthread_mutex_t *m = (pthread_mutex_t *) ev->data;
+
+    pthread_mutex_destroy(m);
+#endif
+}
+
+
 /**
  * mpdm_new_mutex - Creates a new mutex.
  *
@@ -86,6 +102,7 @@ mpdm_t mpdm_new_mutex(void)
 {
     char *ptr = NULL;
     int size = 0;
+    mpdm_ex_t ev;
 
 #ifdef CONFOPT_WIN32
     HANDLE h;
@@ -108,7 +125,10 @@ mpdm_t mpdm_new_mutex(void)
 
 #endif
 
-    return MPDM_C(MPDM_MUTEX, ptr, size);
+    ev = (mpdm_ex_t) MPDM_C(MPDM_MUTEX | MPDM_EXTENDED, ptr, size);
+    ev->destroy = mutex_destroy;
+
+    return (mpdm_t) ev;
 }
 
 

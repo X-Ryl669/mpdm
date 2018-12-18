@@ -45,6 +45,14 @@ struct mpdm_control *mpdm = NULL;
 static mpdm_t destroy_value(mpdm_t v)
 /* destroys a value */
 {
+    /* if it's an extended value, call its destroy function */
+    if (v->flags & MPDM_EXTENDED) {
+        mpdm_ex_t ev = (mpdm_ex_t) v;
+
+        if (ev->destroy)
+            ev->destroy(ev);
+    }
+
     /* collapse multiple values */
     if (v->flags & MPDM_MULTIPLE) {
         int n;
