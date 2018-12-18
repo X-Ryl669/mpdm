@@ -773,28 +773,35 @@ int mpdm_ival(mpdm_t v)
     if (v != NULL) {
         mpdm_ref(v);
 
-        /* if there is no cached integer, calculate it */
-        if (!(v->flags & MPDM_IVAL)) {
-            /* does it have an rval? */
-            if (v->flags & MPDM_RVAL) {
-                i = (int) mpdm_rval(v);
-            }
-            else
-            /* if it's a string, calculate it; other
-               values will have an ival of 0 */
-            if (v->flags & MPDM_STRING) {
-                char tmp[32];
+        /* does it have a cached value? */
+        if ((v->flags & MPDM_IVAL)) {
+            mpdm_ex_t ev = (mpdm_ex_t) v;
 
-                wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-                tmp[sizeof(tmp) - 1] = '\0';
+            i = ev->ival;
+        }
+        else
+        /* does it have a real cached value? */
+        if ((v->flags & MPDM_RVAL)) {
+            i = (int) mpdm_rval(v);
+        }
+        else
+        /* it's a string: calculate */
+        if ((v->flags & MPDM_STRING)) {
+            char tmp[32];
 
-                i = mpdm_ival_mbs(tmp);
-            }
+            wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+            tmp[sizeof(tmp) - 1] = '\0';
 
-            set_ival(v, i);
+            i = mpdm_ival_mbs(tmp);
         }
 
-        i = v->ival;
+        /* cache it if possible */
+        if ((v->flags & MPDM_EXTENDED)) {
+            mpdm_ex_t ev = (mpdm_ex_t) v;
+
+            ev->flags   |= MPDM_IVAL;
+            ev->ival    = i;
+        }
 
         mpdm_unref(v);
     }
@@ -841,31 +848,40 @@ double mpdm_rval(mpdm_t v)
     mpdm_ref(v);
 
     if (v != NULL) {
-        /* if there is no cached double, calculate it */
-        if (!(v->flags & MPDM_RVAL)) {
-            /* does it have in ival? */
-            if (v->flags & MPDM_IVAL) {
-                r = (double) mpdm_ival(v);
-            }
-            else
-            /* if it's a string, calculate it; other
-               values will have an rval of 0.0 */
-            if (v->flags & MPDM_STRING) {
-                char tmp[128];
+        mpdm_ref(v);
 
-                wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-                tmp[sizeof(tmp) - 1] = '\0';
+        /* does it have a cached value? */
+        if ((v->flags & MPDM_RVAL)) {
+            mpdm_ex_t ev = (mpdm_ex_t) v;
 
-                r = mpdm_rval_mbs(tmp);
-            }
+            r = ev->rval;
+        }
+        else
+        /* does it have an integer cached value? */
+        if ((v->flags & MPDM_IVAL)) {
+            r = (double) mpdm_ival(v);
+        }
+        else
+        /* it's a string: calculate */
+        if ((v->flags & MPDM_STRING)) {
+            char tmp[32];
 
-            set_rval(v, r);
+            wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
+            tmp[sizeof(tmp) - 1] = '\0';
+
+            r = mpdm_rval_mbs(tmp);
         }
 
-        r = v->rval;
-    }
+        /* cache it if possible */
+        if ((v->flags & MPDM_EXTENDED)) {
+            mpdm_ex_t ev = (mpdm_ex_t) v;
 
-    mpdm_unref(v);
+            ev->flags   |= MPDM_RVAL;
+            ev->rval    = r;
+        }
+
+        mpdm_unref(v);
+    }
 
     return r;
 }
