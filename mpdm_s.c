@@ -455,7 +455,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
     else {
         wchar_t tmp[32];
 
-        r = wcscoll(mpdm_string(v1), mpdm_string2(v2, tmp));
+        r = mpdm_cmp_s(v1, mpdm_string2(v2, tmp));
     }
 
     mpdm_unref(v2);
@@ -470,15 +470,18 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  * @v1: the first value
  * @v2: the second value
  *
- * Compares two values. If both has the MPDM_STRING flag set,
- * a comparison using wcscoll() is returned; if both are arrays,
- * the size is compared first and, if they have the same number
- * elements, each one is compared; otherwise, a simple visual
- * representation comparison is done.
+ * Compares the @v2 string against the stringified view of @v1.
  */
-int mpdm_cmp_s(const mpdm_t v1, const wchar_t * v2)
+int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
 {
-    return mpdm_cmp(v1, MPDM_AS(v2));
+    wchar_t tmp[32];
+    int r;
+
+    mpdm_ref(v1);
+    r = wcscoll(mpdm_string2(v1, tmp), v2);
+    mpdm_unref(v1);
+
+    return r;
 }
 
 
