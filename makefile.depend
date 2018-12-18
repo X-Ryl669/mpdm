@@ -5,5 +5,6 @@ mpdm_f.o: mpdm_f.c config.h mpdm.h
 mpdm_h.o: mpdm_h.c config.h mpdm.h
 mpdm_r.o: mpdm_r.c config.h mpdm.h
 mpdm_s.o: mpdm_s.c config.h mpdm.h
+mpdm_t.o: mpdm_t.c config.h mpdm.h
 mpdm_v.o: mpdm_v.c config.h mpdm.h
 stress.o: stress.c mpdm.h
