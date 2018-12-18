@@ -738,8 +738,9 @@ int mpdm_ival(mpdm_t v)
         /* if there is no cached integer, calculate it */
         if (!(v->flags & MPDM_IVAL)) {
             /* does it have an rval? */
-            if (v->flags & MPDM_RVAL)
-                i = (int) v->rval;
+            if (v->flags & MPDM_RVAL) {
+                i = (int) mpdm_rval(v);
+            }
             else
             /* if it's a string, calculate it; other
                values will have an ival of 0 */
@@ -813,8 +814,9 @@ double mpdm_rval(mpdm_t v)
         /* if there is no cached double, calculate it */
         if (!(v->flags & MPDM_RVAL)) {
             /* does it have in ival? */
-            if (v->flags & MPDM_IVAL)
-                r = (double) v->ival;
+            if (v->flags & MPDM_IVAL) {
+                r = (double) mpdm_ival(v);
+            }
             else
             /* if it's a string, calculate it; other
                values will have an rval of 0.0 */
