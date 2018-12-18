@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
 
     mpdm_r.c - Regular expressions
 
@@ -66,6 +66,12 @@ static wchar_t *regex_flags(const mpdm_t r)
 }
 
 
+static void regex_destroy(mpdm_ex_t ev)
+{
+    regfree((regex_t *) ev->data);
+}
+
+
 static mpdm_t mpdm_regcomp(mpdm_t r)
 {
     mpdm_t c = NULL;
@@ -74,8 +80,7 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
     mpdm_ref(r);
 
     /* if cache does not exist, create it */
-    if ((regex_cache =
-         mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL) {
+    if ((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL) {
         regex_cache = MPDM_H(0);
         mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", regex_cache);
     }
@@ -105,7 +110,12 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
             *flags = '\0';
 
             if (!regcomp(&re, regex, f)) {
-                c = MPDM_C(MPDM_REGEX, &re, sizeof(regex_t));
+                mpdm_ex_t ev;
+
+                ev = (mpdm_ex_t) MPDM_C(MPDM_REGEX | MPDM_EXTENDED, &re, sizeof(regex_t));
+                ev->destroy = regex_destroy;
+                c = (mpdm_t) ev;
+
                 mpdm_hset(regex_cache, r, c);
             }
         }
