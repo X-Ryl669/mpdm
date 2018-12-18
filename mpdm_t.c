@@ -287,11 +287,15 @@ void mpdm_semaphore_post(mpdm_t sem)
 
 /** threads **/
 
+static void thread_destroy(mpdm_ex_t ev)
+{
+}
+
+
 static void thread_caller(mpdm_t a)
 {
     /* ignore return value */
-    mpdm_void(mpdm_exec
-              (mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2)));
+    mpdm_void(mpdm_exec(mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2)));
 
     /* was referenced in mpdm_exec_thread() */
     mpdm_unref(a);
@@ -334,6 +338,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
     mpdm_t a;
     char *ptr = NULL;
     int size = 0;
+    mpdm_ex_t ev;
 
     if (ctxt == NULL)
         ctxt = MPDM_A(0);
@@ -367,7 +372,10 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 #endif
 
-    return MPDM_C(MPDM_THREAD, ptr, size);
+    ev = (mpdm_ex_t) MPDM_C(MPDM_THREAD | MPDM_EXTENDED, ptr, size);
+    ev->destroy = thread_destroy;
+
+    return (mpdm_t) ev;
 }
 
 
