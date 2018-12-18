@@ -717,14 +717,10 @@ mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s)
 mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
 {
     mpdm_t r;
-    wchar_t *ss = NULL;
 
     mpdm_ref(s);
 
-    if (s != NULL)
-        ss = (wchar_t *) s->data;
-
-    r = mpdm_split_s(v, ss);
+    r = mpdm_split_s(v, s ? mpdm_string(s) : NULL);
 
     mpdm_unref(s);
 
