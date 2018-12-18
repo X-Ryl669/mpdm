@@ -53,14 +53,6 @@ static mpdm_t destroy_value(mpdm_t v)
             ev->destroy(ev);
     }
 
-    /* collapse multiple values */
-    if (v->flags & MPDM_MULTIPLE) {
-        int n;
-
-        for (n = 0; n < mpdm_size(v); n++)
-            mpdm_unref(mpdm_aget(v, n));
-    }
-
     /* free data if needed */
     if (v->flags & MPDM_FREE)
         free((void *)v->data);

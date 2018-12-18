@@ -41,16 +41,29 @@ static mpdm_t sort_cb = NULL;
 
 /** code **/
 
+void multiple_destroy(mpdm_ex_t ev)
+{
+    int n;
+
+    /* unref all contained values */
+    for (n = 0; n < mpdm_size((mpdm_t) ev); n++)
+        mpdm_unref(mpdm_aget((mpdm_t) ev, n));
+}
+
+
 mpdm_t mpdm_new_a(int flags, int size)
 /* creates a new array value */
 {
-    mpdm_t v;
+    mpdm_ex_t ev;
 
     /* creates and expands */
-    if ((v = mpdm_new(flags | MPDM_MULTIPLE | MPDM_FREE, NULL, 0)) != NULL)
-        mpdm_expand(v, 0, size);
+    if ((ev = (mpdm_ex_t) mpdm_new(flags | MPDM_MULTIPLE | MPDM_FREE | MPDM_EXTENDED, NULL, 0))) {
+        ev->destroy = multiple_destroy;
 
-    return v;
+        mpdm_expand((mpdm_t) ev, 0, size);
+    }
+
+    return (mpdm_t) ev;
 }
 
 
