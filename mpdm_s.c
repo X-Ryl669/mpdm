@@ -716,6 +716,44 @@ mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
 }
 
 
+int mpdm_ival_mbs(char *str)
+/* converts str to integer */
+{
+    int i = 0;
+    char *fmt = "%i";
+
+    /* workaround for mingw32: as it doesn't
+       correctly parse octal and hexadecimal
+       numbers, they are tried as special cases */
+    if (str[0] == '0') {
+        if (str[1] == 'b' || str[1] == 'B') {
+            /* binary number */
+            fmt = NULL;
+            char *ptr = &str[2];
+
+            while (*ptr == '0' || *ptr == '1') {
+                i <<= 1;
+
+                if (*ptr == '1')
+                    i |= 1;
+
+                ptr++;
+            }
+        }
+        else
+        if (str[1] == 'x' || str[1] == 'X')
+            fmt = "%x";
+        else
+            fmt = "%o";
+    }
+
+    if (fmt != NULL)
+        sscanf(str, fmt, &i);
+
+    return i;
+}
+
+
 /**
  * mpdm_ival - Returns a value's data as an integer.
  * @v: the value
@@ -732,9 +770,9 @@ int mpdm_ival(mpdm_t v)
 {
     int i = 0;
 
-    mpdm_ref(v);
-
     if (v != NULL) {
+        mpdm_ref(v);
+
         /* if there is no cached integer, calculate it */
         if (!(v->flags & MPDM_IVAL)) {
             /* does it have an rval? */
@@ -746,47 +784,20 @@ int mpdm_ival(mpdm_t v)
                values will have an ival of 0 */
             if (v->flags & MPDM_STRING) {
                 char tmp[32];
-                char *fmt = "%i";
 
                 wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
                 tmp[sizeof(tmp) - 1] = '\0';
 
-                /* workaround for mingw32: as it doesn't
-                   correctly parse octal and hexadecimal
-                   numbers, they are tried as special cases */
-                if (tmp[0] == '0') {
-                    if (tmp[1] == 'b' || tmp[1] == 'B') {
-                        /* binary number */
-                        fmt = NULL;
-                        char *ptr = &tmp[2];
-
-                        while (*ptr == '0' || *ptr == '1') {
-                            i <<= 1;
-
-                            if (*ptr == '1')
-                                i |= 1;
-
-                            ptr++;
-                        }
-                    }
-                    else
-                    if (tmp[1] == 'x' || tmp[1] == 'X')
-                        fmt = "%x";
-                    else
-                        fmt = "%o";
-                }
-
-                if (fmt != NULL)
-                    sscanf(tmp, fmt, &i);
+                i = mpdm_ival_mbs(tmp);
             }
 
             set_ival(v, i);
         }
 
         i = v->ival;
-    }
 
-    mpdm_unref(v);
+        mpdm_unref(v);
+    }
 
     return i;
 }

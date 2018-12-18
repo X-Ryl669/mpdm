@@ -179,6 +179,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2);
 int mpdm_ival(mpdm_t v);
 double mpdm_rval(mpdm_t v);
+int mpdm_ival_mbs(char *str);
 
 mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2);
 mpdm_t mpdm_new_copy(int flags, void *ptr, int size);
