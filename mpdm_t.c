@@ -182,6 +182,22 @@ void mpdm_mutex_unlock(mpdm_t mutex)
 
 /** semaphores **/
 
+static void semaphore_destroy(mpdm_ex_t ev)
+{
+#ifdef CONFOPT_WIN32
+    HANDLE *h = (HANDLE *) ev->data;
+
+    CloseHandle(*h);
+#endif
+
+#ifdef CONFOPT_POSIXSEMS
+    sem_t *s = (sem_t *) ev->data;
+
+    sem_destroy(s);
+#endif
+}
+
+
 /**
  * mpdm_new_semaphore - Creates a new semaphore.
  * @init_value: the initial value of the semaphore.
@@ -193,6 +209,7 @@ mpdm_t mpdm_new_semaphore(int init_value)
 {
     char *ptr = NULL;
     int size = 0;
+    mpdm_ex_t ev;
 
 #ifdef CONFOPT_WIN32
     HANDLE h;
@@ -214,7 +231,10 @@ mpdm_t mpdm_new_semaphore(int init_value)
 
 #endif
 
-    return MPDM_C(MPDM_SEMAPHORE, ptr, size);
+    ev = (mpdm_ex_t) MPDM_C(MPDM_SEMAPHORE | MPDM_EXTENDED, ptr, size);
+    ev->destroy = semaphore_destroy;
+
+    return (mpdm_t) ev;
 }
 
 
