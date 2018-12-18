@@ -803,6 +803,25 @@ int mpdm_ival(mpdm_t v)
 }
 
 
+double mpdm_rval_mbs(char *str)
+{
+    double r = 0.0;
+    char *prev_locale;
+
+    /* set locale to C for non locale-dependent
+       floating point conversion */
+    prev_locale = setlocale(LC_NUMERIC, "C");
+
+    /* read */
+    sscanf(str, "%lf", &r);
+
+    /* set previous locale */
+    setlocale(LC_NUMERIC, prev_locale);
+
+    return r;
+}
+
+
 /**
  * mpdm_rval - Returns a value's data as a real number (double).
  * @v: the value
@@ -833,27 +852,11 @@ double mpdm_rval(mpdm_t v)
                values will have an rval of 0.0 */
             if (v->flags & MPDM_STRING) {
                 char tmp[128];
-                char *prev_locale;
 
                 wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
                 tmp[sizeof(tmp) - 1] = '\0';
 
-                /* if the number starts with 0, it's
-                   an octal or hexadecimal number; just
-                   take the integer value and cast it */
-                if (tmp[0] == '0' && tmp[1] != '.')
-                    r = (double) mpdm_ival(v);
-                else {
-                    /* set locale to C for non locale-dependent
-                       floating point conversion */
-                    prev_locale = setlocale(LC_NUMERIC, "C");
-
-                    /* read */
-                    sscanf(tmp, "%lf", &r);
-
-                    /* set previous locale */
-                    setlocale(LC_NUMERIC, prev_locale);
-                }
+                r = mpdm_rval_mbs(tmp);
             }
 
             set_rval(v, r);
