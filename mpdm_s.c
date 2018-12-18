@@ -645,13 +645,12 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
  */
 mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t * s2, int size)
 {
-    wchar_t *ptr = NULL;
-    int s = 0;
-    mpdm_t r;
+    mpdm_t r = NULL;
 
-    if (s1 == NULL && s2 == NULL)
-        r = NULL;
-    else {
+    if (s1 != NULL || s2 != NULL) {
+        wchar_t *ptr = NULL;
+        int s = 0;
+
         ptr = mpdm_pokev(ptr, &s, s1);
         ptr = mpdm_pokewsn(ptr, &s, s2, size);
 
