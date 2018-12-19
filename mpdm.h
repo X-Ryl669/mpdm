@@ -200,7 +200,7 @@ void mpdm_dump(const mpdm_t v);
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
 mpdm_t mpdm_new_f(FILE * f);
 mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode);
-mpdm_t mpdm_close(mpdm_t fd);
+int mpdm_close(mpdm_t fd);
 mpdm_t mpdm_read(const mpdm_t fd);
 int mpdm_write(const mpdm_t fd, const mpdm_t v);
 mpdm_t mpdm_getchar(const mpdm_t fd);
@@ -220,7 +220,7 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base);
 
 mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode);
 mpdm_t mpdm_popen2(const mpdm_t prg);
-mpdm_t mpdm_pclose(mpdm_t fd);
+int mpdm_pclose(mpdm_t fd);
 
 extern int mpdm_regex_offset;
 extern int mpdm_regex_size;

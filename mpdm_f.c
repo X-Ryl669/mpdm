@@ -929,126 +929,6 @@ got_encoding:
 }
 
 
-static mpdm_t new_mpdm_file(int is_pipe)
-/* creates a new file value */
-{
-    mpdm_t v = NULL;
-    struct mpdm_file *fs;
-    mpdm_t e;
-
-    fs = calloc(sizeof(struct mpdm_file), 1);
-
-    fs->sock    = -1;
-    fs->is_pipe = is_pipe;
-
-    /* default I/O functions */
-    fs->f_read = read_auto;
-    fs->f_write = write_wcs;
-
-#ifdef CONFOPT_ICONV
-    /* no iconv encodings by default */
-    fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
-#endif
-
-    v = mpdm_new(MPDM_FILE | MPDM_FREE, fs, sizeof(struct mpdm_file));
-
-    e = mpdm_hget_s(mpdm_root(), L"ENCODING");
-
-    if (mpdm_size(e) == 0)
-        e = mpdm_hget_s(mpdm_root(), L"TEMP_ENCODING");
-
-    if (mpdm_size(e)) {
-        wchar_t *enc = mpdm_string(e);
-
-        if (wcscmp(enc, L"utf-8") == 0) {
-            fs->f_read = read_utf8_bom;
-            fs->f_write = write_utf8;
-        }
-        else
-        if (wcscmp(enc, L"utf-8bom") == 0) {
-            fs->f_read = read_utf8_bom;
-            fs->f_write = write_utf8_bom;
-        }
-        else
-        if (wcscmp(enc, L"iso8859-1") == 0 ||
-                 wcscmp(enc, L"8bit") == 0) {
-            fs->f_read = read_iso8859_1;
-            fs->f_write = write_iso8859_1;
-        }
-        else
-        if (wcscmp(enc, L"utf-16le") == 0) {
-            fs->f_read = read_utf16le;
-            fs->f_write = write_utf16le_bom;
-        }
-        else
-        if (wcscmp(enc, L"utf-16be") == 0) {
-            fs->f_read = read_utf16be;
-            fs->f_write = write_utf16be_bom;
-        }
-        else
-        if (wcscmp(enc, L"utf-16") == 0) {
-            fs->f_read = read_utf16;
-            fs->f_write = write_utf16le_bom;
-        }
-        else
-        if (wcscmp(enc, L"utf-32le") == 0) {
-            fs->f_read = read_utf32le;
-            fs->f_write = write_utf32le_bom;
-        }
-        else
-        if (wcscmp(enc, L"utf-32be") == 0) {
-            fs->f_read = read_utf32be;
-            fs->f_write = write_utf32be_bom;
-        }
-        else
-        if (wcscmp(enc, L"utf-32") == 0) {
-            fs->f_read = read_utf32;
-            fs->f_write = write_utf32le_bom;
-        }
-        else {
-#ifdef CONFOPT_ICONV
-            mpdm_t cs = MPDM_2MBS(e->data);
-
-            if ((fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) - 1 &&
-                (fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data)) != (iconv_t) - 1) {
-
-                fs->f_read  = read_iconv;
-                fs->f_write = write_iconv;
-            }
-#endif                          /* CONFOPT_ICONV */
-        }
-
-        mpdm_hset_s(mpdm_root(), L"TEMP_ENCODING", NULL);
-    }
-
-    return v;
-}
-
-
-static void destroy_mpdm_file(mpdm_t v)
-/* destroys and file value */
-{
-    struct mpdm_file *fs = (struct mpdm_file *) v->data;
-
-    if (fs != NULL) {
-#ifdef CONFOPT_ICONV
-        if (fs->ic_enc != (iconv_t) - 1) {
-            iconv_close(fs->ic_enc);
-            fs->ic_enc = (iconv_t) - 1;
-        }
-
-        if (fs->ic_dec != (iconv_t) - 1) {
-            iconv_close(fs->ic_dec);
-            fs->ic_dec = (iconv_t) - 1;
-        }
-#endif
-
-        free(fs);
-        v->data = NULL;
-    }
-}
-
-
 /** interface **/
 
 wchar_t *mpdm_read_mbs(FILE *f, int *s)
@@ -1074,22 +954,6 @@ int mpdm_write_wcs(FILE *f, const wchar_t *str)
     fs.out = f;
 
     return write_wcs(&fs, str);
-}
-
-
-mpdm_t mpdm_new_f(FILE *f)
-/* creates a new file value from a FILE * */
-{
-    mpdm_t v = NULL;
-
-    if (f) {
-        if ((v = new_mpdm_file(0)) != NULL) {
-            struct mpdm_file *fs = (struct mpdm_file *) v->data;
-            fs->in = fs->out = f;
-        }
-    }
-
-    return v;
 }
 
 
@@ -1150,47 +1014,7 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
     mpdm_unref(mode);
     mpdm_unref(filename);
 
-    return MPDM_F(f);
-}
-
-
-/**
- * mpdm_close - Closes a file descriptor.
- * @fd: the value containing the file descriptor
- *
- * Closes the file descriptor.
- * [File Management]
- */
-mpdm_t mpdm_close(mpdm_t fd)
-{
-    struct mpdm_file *fs = (struct mpdm_file *) fd->data;
-
-    if (fs && fs->is_pipe)
-        return mpdm_pclose(fd);
-
-    mpdm_ref(fd);
-
-    if ((fd->flags & MPDM_FILE) && fs != NULL) {
-        if (fs->in != NULL)
-            fclose(fs->in);
-
-        if (fs->out != fs->in && fs->out != NULL)
-            fclose(fs->out);
-
-        if (fs->sock != -1) {
-#ifdef CONFOPT_WIN32
-            closesocket(fs->sock);
-#else
-            close(fs->sock);
-#endif
-        }
-
-        destroy_mpdm_file(fd);
-    }
-
-    fd = mpdm_unref(fd);
-
-    return fd;
+    return f ? MPDM_F(f) : NULL;
 }
 
 
@@ -1869,16 +1693,19 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 }
 
 
+/** pipes **/
+
+
 #ifdef CONFOPT_WIN32
 
-static void win32_pipe(HANDLE * h, int n)
+static void win32_pipe(HANDLE *h, int n)
 {
     SECURITY_ATTRIBUTES sa;
     HANDLE cp, t;
 
     memset(&sa, '\0', sizeof(sa));
-    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-    sa.bInheritHandle = TRUE;
+    sa.nLength              = sizeof(SECURITY_ATTRIBUTES);
+    sa.bInheritHandle       = TRUE;
     sa.lpSecurityDescriptor = NULL;
 
     cp = GetCurrentProcess();
@@ -1899,6 +1726,8 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
     STARTUPINFO si;
     int ret;
     struct mpdm_file *fs = (struct mpdm_file *) v->data;
+
+    fs->is_pipe = 1;
 
     /* init all */
     pr[0] = pr[1] = pw[0] = pw[1] = NULL;
@@ -1941,8 +1770,11 @@ static int sysdep_pclose(const mpdm_t v)
     if (fs->hin != NULL)
         CloseHandle(fs->hin);
 
-    if (fs->hout != NULL)
+    if (fs->hout != fs->hin && fs->hout != NULL)
         CloseHandle(fs->hout);
+
+    fs->hin = NULL;
+    fs->hout = NULL;
 
     /* waits until the process terminates */
     WaitForSingleObject(fs->process, 1000);
@@ -1952,7 +1784,7 @@ static int sysdep_pclose(const mpdm_t v)
 }
 
 
-#else                           /* CONFOPT_WIN32 */
+#else /* CONFOPT_WIN32 */
 
 static int sysdep_popen(mpdm_t v, char *prg, int rw)
 /* unix-style pipe open */
@@ -2016,13 +1848,6 @@ static int sysdep_pclose(const mpdm_t v)
 /* unix-style pipe close */
 {
     int s = 0;
-    struct mpdm_file *fs = (struct mpdm_file *) v->data;
-
-    if (fs->in != NULL)
-        fclose(fs->in);
-
-    if (fs->out != fs->in && fs->out != NULL)
-        fclose(fs->out);
 
     wait(&s);
 
@@ -2030,7 +1855,7 @@ static int sysdep_pclose(const mpdm_t v)
 }
 
 
-#endif                          /* CONFOPT_WIN32 */
+#endif /* CONFOPT_WIN32 */
 
 
 /**
@@ -2045,16 +1870,17 @@ static int sysdep_pclose(const mpdm_t v)
  */
 mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
 {
-    mpdm_t v, pr, md;
-    char *m;
-    int rw = 0;
+    mpdm_t v = NULL;
 
     mpdm_ref(prg);
     mpdm_ref(mode);
 
     if (prg != NULL && mode != NULL) {
+        mpdm_t pr, md;
+        char *m;
+        int rw = 0;
 
-        v = new_mpdm_file(1);
+        v = MPDM_F(NULL);
 
         /* convert to mbs,s */
         pr = mpdm_ref(MPDM_2MBS(prg->data));
@@ -2072,16 +1898,13 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
             rw = 0x03;          /* r+ or w+ */
 
         if (!sysdep_popen(v, (char *) pr->data, rw)) {
-            destroy_mpdm_file(v);
-            mpdm_unref(mpdm_ref(v));
+            mpdm_void(v);
             v = NULL;
         }
 
         mpdm_unref(md);
         mpdm_unref(pr);
     }
-    else
-        v = NULL;
 
     mpdm_unref(mode);
     mpdm_unref(prg);
@@ -2104,7 +1927,7 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
     mpdm_t i, o;
     mpdm_t p = NULL;
 
-    if ((i = mpdm_popen(prg, MPDM_AS(L"r+"))) != NULL) {
+    if ((i = mpdm_popen(prg, MPDM_LS(L"r+"))) != NULL) {
         struct mpdm_file *ifs;
         struct mpdm_file *ofs;
 
@@ -2138,20 +1961,9 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
  * Closes a pipe.
  * [File Management]
  */
-mpdm_t mpdm_pclose(mpdm_t fd)
+int mpdm_pclose(mpdm_t fd)
 {
-    mpdm_t r = NULL;
-
-    mpdm_ref(fd);
-
-    if ((fd->flags & MPDM_FILE) && fd->data != NULL) {
-        r = MPDM_I(sysdep_pclose(fd));
-        destroy_mpdm_file(fd);
-    }
-
-    mpdm_unref(fd);
-
-    return r;
+    return mpdm_close(fd);
 }
 
 
@@ -2381,7 +2193,7 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     if (d != -1) {
         struct mpdm_file *fs;
 
-        f = new_mpdm_file(0);
+        f = MPDM_F(NULL);
         fs = (struct mpdm_file *) f->data;
 
         fs->sock = d;
@@ -2394,4 +2206,179 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
     mpdm_unref(host);
 
     return f;
+}
+
+
+static int file_close(mpdm_t v)
+/* close any type of file / pipe / socket */
+{
+    int r = 0;
+    struct mpdm_file *fs = (struct mpdm_file *) v->data;
+
+    if (fs) {
+#ifdef CONFOPT_ICONV
+        if (fs->ic_enc != (iconv_t) - 1)
+            iconv_close(fs->ic_enc);
+
+        if (fs->ic_dec != fs->ic_enc && fs->ic_dec != (iconv_t) - 1)
+            iconv_close(fs->ic_dec);
+
+        fs->ic_enc = (iconv_t) - 1;
+        fs->ic_dec = (iconv_t) - 1;
+#endif
+
+        if (fs->in != NULL)
+            r = fclose(fs->in);
+
+        if (fs->out != fs->in && fs->out != NULL)
+            r = fclose(fs->out);
+
+        fs->in = NULL;
+        fs->out = NULL;
+
+        if (fs->is_pipe) {
+            r = sysdep_pclose(v);
+            fs->is_pipe = 0;
+        }
+
+        if (fs->sock != -1) {
+#ifdef CONFOPT_WIN32
+            r = closesocket(fs->sock);
+#else
+            r = close(fs->sock);
+#endif
+            fs->sock = -1;
+        }
+    }
+
+    return r;
+}
+
+
+static void file_destroy(mpdm_ex_t v)
+/* destroys and file value */
+{
+    file_close((mpdm_t) v);
+}
+
+
+mpdm_t mpdm_new_f(FILE *f)
+/* creates a new file value */
+{
+    mpdm_t v = NULL;
+    mpdm_ex_t ev;
+    struct mpdm_file *fs;
+    mpdm_t e;
+
+    fs = calloc(sizeof(struct mpdm_file), 1);
+
+    fs->sock    = -1;
+    fs->is_pipe = 0;
+    fs->in      = f;
+    fs->out     = f;
+
+    /* default I/O functions */
+    fs->f_read = read_auto;
+    fs->f_write = write_wcs;
+
+#ifdef CONFOPT_ICONV
+    /* no iconv encodings by default */
+    fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
+#endif
+
+    ev = (mpdm_ex_t) mpdm_new(MPDM_FILE | MPDM_FREE | MPDM_EXTENDED, fs, sizeof(struct mpdm_file));
+    ev->destroy = file_destroy;
+    v = (mpdm_t) ev;
+
+    e = mpdm_hget_s(mpdm_root(), L"ENCODING");
+
+    if (mpdm_size(e) == 0)
+        e = mpdm_hget_s(mpdm_root(), L"TEMP_ENCODING");
+
+    if (mpdm_size(e)) {
+        wchar_t *enc = mpdm_string(e);
+
+        if (wcscmp(enc, L"utf-8") == 0) {
+            fs->f_read = read_utf8_bom;
+            fs->f_write = write_utf8;
+        }
+        else
+        if (wcscmp(enc, L"utf-8bom") == 0) {
+            fs->f_read = read_utf8_bom;
+            fs->f_write = write_utf8_bom;
+        }
+        else
+        if (wcscmp(enc, L"iso8859-1") == 0 ||
+                 wcscmp(enc, L"8bit") == 0) {
+            fs->f_read = read_iso8859_1;
+            fs->f_write = write_iso8859_1;
+        }
+        else
+        if (wcscmp(enc, L"utf-16le") == 0) {
+            fs->f_read = read_utf16le;
+            fs->f_write = write_utf16le_bom;
+        }
+        else
+        if (wcscmp(enc, L"utf-16be") == 0) {
+            fs->f_read = read_utf16be;
+            fs->f_write = write_utf16be_bom;
+        }
+        else
+        if (wcscmp(enc, L"utf-16") == 0) {
+            fs->f_read = read_utf16;
+            fs->f_write = write_utf16le_bom;
+        }
+        else
+        if (wcscmp(enc, L"utf-32le") == 0) {
+            fs->f_read = read_utf32le;
+            fs->f_write = write_utf32le_bom;
+        }
+        else
+        if (wcscmp(enc, L"utf-32be") == 0) {
+            fs->f_read = read_utf32be;
+            fs->f_write = write_utf32be_bom;
+        }
+        else
+        if (wcscmp(enc, L"utf-32") == 0) {
+            fs->f_read = read_utf32;
+            fs->f_write = write_utf32le_bom;
+        }
+        else {
+#ifdef CONFOPT_ICONV
+            mpdm_t cs = mpdm_ref(MPDM_2MBS(e->data));
+
+            if ((fs->ic_enc = iconv_open((char *) cs->data, "WCHAR_T")) != (iconv_t) - 1 &&
+                (fs->ic_dec = iconv_open("WCHAR_T", (char *) cs->data)) != (iconv_t) - 1) {
+
+                fs->f_read  = read_iconv;
+                fs->f_write = write_iconv;
+            }
+
+            mpdm_unref(cs);
+#endif                          /* CONFOPT_ICONV */
+        }
+
+        mpdm_hset_s(mpdm_root(), L"TEMP_ENCODING", NULL);
+    }
+
+    return v;
+}
+
+
+/**
+ * mpdm_close - Closes a file descriptor.
+ * @fd: the value containing the file descriptor
+ *
+ * Closes the file descriptor.
+ * [File Management]
+ */
+int mpdm_close(mpdm_t fd)
+{
+    int r;
+
+    mpdm_ref(fd);
+    r = file_close(fd);
+    mpdm_unref(fd);
+
+    return r;
 }
