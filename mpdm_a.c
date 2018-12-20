@@ -57,11 +57,10 @@ mpdm_t mpdm_new_a(int flags, int size)
     mpdm_ex_t ev;
 
     /* creates and expands */
-    if ((ev = (mpdm_ex_t) mpdm_new(flags | MPDM_MULTIPLE | MPDM_FREE | MPDM_EXTENDED, NULL, 0))) {
-        ev->destroy = multiple_destroy;
+    ev = (mpdm_ex_t) mpdm_new(flags | MPDM_MULTIPLE | MPDM_FREE | MPDM_EXTENDED, NULL, 0);
+    ev->destroy = multiple_destroy;
 
-        mpdm_expand((mpdm_t) ev, 0, size);
-    }
+    mpdm_expand((mpdm_t) ev, 0, size);
 
     return (mpdm_t) ev;
 }
@@ -135,8 +134,7 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
         a->size += num;
 
         /* expand */
-        p = (mpdm_t *) realloc((mpdm_t *) a->data,
-                               a->size * sizeof(mpdm_t));
+        p = (mpdm_t *) realloc((mpdm_t *) a->data, a->size * sizeof(mpdm_t));
 
         /* moves up from top of the array */
         for (n = a->size - 1; n >= offset + num; n--)
@@ -244,7 +242,7 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
  */
 mpdm_t mpdm_aget(const mpdm_t a, int offset)
 {
-    mpdm_t r;
+    mpdm_t r = NULL;
     mpdm_t *p;
 
     offset = wrap_offset(a, offset);
@@ -254,8 +252,6 @@ mpdm_t mpdm_aget(const mpdm_t a, int offset)
         p = (mpdm_t *) a->data;
         r = p[offset];
     }
-    else
-        r = NULL;
 
     return r;
 }
@@ -732,9 +728,7 @@ mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
     mpdm_t r;
 
     mpdm_ref(s);
-
     r = mpdm_split_s(v, s ? mpdm_string(s) : NULL);
-
     mpdm_unref(s);
 
     return r;
@@ -761,14 +755,12 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
     mpdm_ref(a);
 
     if (MPDM_IS_ARRAY(a)) {
-        /* adds the first string */
-        ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, 0));
-
         ss = s ? wcslen(s) : 0;
 
-        for (n = 1; n < mpdm_size(a); n++) {
+        for (n = 0; n < mpdm_size(a); n++) {
             /* add separator */
-            ptr = mpdm_pokewsn(ptr, &l, s, ss);
+            if (n && ss)
+                ptr = mpdm_pokewsn(ptr, &l, s, ss);
 
             /* add element */
             ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
