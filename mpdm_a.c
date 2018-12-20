@@ -883,8 +883,10 @@ mpdm_t mpdm_reverse(const mpdm_t a)
     int n, m = mpdm_size(a);
     mpdm_t r = mpdm_ref(MPDM_A(m));
 
+    mpdm_ref(a);
     for (n = 0; n < m; n++)
         mpdm_aset(r, mpdm_aget(a, m - n - 1), n);
+    mpdm_unref(a);
 
     return mpdm_unrefnd(r);
 }
