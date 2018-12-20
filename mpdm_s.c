@@ -340,6 +340,8 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
     char tmp[128] = "";
     wchar_t *ret = L"[UNKNOWN]";
 
+    mpdm_ref(v);
+
     /* if it's NULL, return a constant */
     if (v == NULL)
         ret = L"[NULL]";
@@ -387,6 +389,8 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 
         ret = wtmp;
     }
+
+    mpdm_unrefnd(v);
 
     return ret;
 }
@@ -828,8 +832,6 @@ double mpdm_rval_mbs(char *str)
 double mpdm_rval(mpdm_t v)
 {
     double r = 0.0;
-
-    mpdm_ref(v);
 
     if (v != NULL) {
         mpdm_ref(v);
