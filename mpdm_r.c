@@ -457,11 +457,7 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
 
                         /* is the value executable? */
                         if (MPDM_IS_EXEC(v)) {
-                            mpdm_t w = mpdm_ref(v);
-
-                            v = mpdm_exec_1(w, t, NULL);
-
-                            mpdm_unref(w);
+                            v = mpdm_exec_1(v, t, NULL);
                         }
 
                         mpdm_unref(t);
