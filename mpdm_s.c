@@ -184,7 +184,7 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 }
 
 
-char *mpdm_wcstombs(const wchar_t * str, int *s)
+char *mpdm_wcstombs(const wchar_t *str, int *s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
@@ -234,7 +234,7 @@ char *mpdm_wcstombs(const wchar_t * str, int *s)
 mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
-    wchar_t *ptr;
+    wchar_t *ptr = NULL;
 
     /* a size of -1 means 'calculate it' */
     if (size == -1 && str != NULL)
@@ -251,24 +251,20 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, int size, int cpy)
         if (str != NULL)
             wcsncpy(ptr, str, size);
     }
-    else
-        ptr = (wchar_t *) str;
 
-    return mpdm_new(flags | MPDM_STRING, ptr, size);
+    return mpdm_new(flags | MPDM_STRING, ptr ? ptr : str, size);
 }
 
 
 mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l)
 /* creates a new string value from an mbs */
 {
-    mpdm_t v = NULL;
     wchar_t *ptr;
     int size;
 
-    if ((ptr = mpdm_mbstowcs(str, &size, l)) != NULL)
-        v = mpdm_new(flags | MPDM_STRING | MPDM_FREE, ptr, size);
+    ptr = mpdm_mbstowcs(str, &size, l);
 
-    return v;
+    return mpdm_new(flags | MPDM_STRING | MPDM_FREE, ptr, size);
 }
 
 
@@ -328,10 +324,8 @@ mpdm_t mpdm_new_r(double rval)
  */
 wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 {
-    char tmp[128] = "";
+    char tmp[32] = "";
     wchar_t *ret = L"[UNKNOWN]";
-
-    mpdm_ref(v);
 
     /* if it's NULL, return a constant */
     if (v == NULL)
@@ -340,6 +334,9 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
     /* if it's a string, return it */
     if (v->flags & MPDM_STRING) {
         if (v->data == NULL) {
+            /* for mpdm_ival() and mpdm_rval() */
+            mpdm_ref(v);
+
             /* string but no data? most probably a 'lazy' number */
             if (v->flags & MPDM_RVAL) {
                 char *prev_locale = setlocale(LC_NUMERIC, "C");
@@ -369,6 +366,8 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
             }
 
             v->data = (void *)mpdm_mbstowcs(tmp, &v->size, -1);
+
+            mpdm_unrefnd(v);
         }
 
         ret = (wchar_t *) v->data;
@@ -380,8 +379,6 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 
         ret = wtmp;
     }
-
-    mpdm_unrefnd(v);
 
     return ret;
 }
@@ -582,10 +579,8 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
     /* creates the output array */
     w = MPDM_A(2);
 
-    mpdm_ref(w);
     mpdm_aset(w, n, 0);
     mpdm_aset(w, d, 1);
-    mpdm_unrefnd(w);
 
     mpdm_unref(i);
     mpdm_unref(v);
@@ -642,7 +637,7 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t * s2, int size)
+mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
 {
     mpdm_t r = NULL;
 
@@ -669,7 +664,7 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t * s2, int size)
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t * s2)
+mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
 {
     return mpdm_strcat_sn(s1, s2, s2 ? wcslen(s2) : 0);
 }
