@@ -88,14 +88,10 @@ int mpdm_hsize(const mpdm_t h)
     int n;
     int ret = 0;
 
-    mpdm_ref(h);
-
     for (n = 0; n < mpdm_size(h); n++) {
         mpdm_t b = mpdm_aget(h, n);
         ret += mpdm_size(b);
     }
-
-    mpdm_unref(h);
 
     return ret / 2;
 }
@@ -137,8 +133,6 @@ mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
     mpdm_t v = NULL;
     int n = 0;
 
-    mpdm_ref(h);
-
     if (mpdm_size(h)) {
         /* if hash is not empty... */
         if ((b = mpdm_aget(h, HASH_BUCKET_S(h, k))) != NULL)
@@ -147,8 +141,6 @@ mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
         if (n >= 0)
             v = mpdm_aget(b, n + 1);
     }
-
-    mpdm_unref(h);
 
     return v;
 }
@@ -167,7 +159,6 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
     mpdm_t b;
     int ret = 0;
 
-    mpdm_ref(h);
     mpdm_ref(k);
 
     if (MPDM_IS_HASH(h)) {
@@ -182,7 +173,6 @@ int mpdm_exists(const mpdm_t h, const mpdm_t k)
     }
 
     mpdm_unref(k);
-    mpdm_unref(h);
 
     return ret;
 }
@@ -204,7 +194,6 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
     mpdm_t b, r;
     int n;
 
-    mpdm_ref(h);
     mpdm_ref(k);
     mpdm_ref(v);
 
@@ -246,7 +235,6 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 
     mpdm_unref(v);
     mpdm_unref(k);
-    mpdm_unref(h);
 
     return r;
 }
@@ -263,7 +251,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
  * value).
  * [Hashes]
  */
-mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t * k, mpdm_t v)
+mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v)
 {
     return mpdm_hset(h, MPDM_S(k), v);
 }
@@ -283,7 +271,6 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
     mpdm_t b;
     int n;
 
-    mpdm_ref(h);
     mpdm_ref(k);
 
     if (mpdm_size(h)) {
@@ -297,7 +284,6 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
     }
 
     mpdm_unref(k);
-    mpdm_unref(h);
 
     return NULL;
 }
@@ -321,13 +307,9 @@ mpdm_t mpdm_keys(const mpdm_t h)
     /* create an array with the same number of elements */
     a = MPDM_A(mpdm_hsize(h));
 
-    mpdm_ref(a);
-
     c = n = 0;
     while (mpdm_iterator(h, &c, &k, NULL))
         mpdm_aset(a, k, n++);
-
-    mpdm_unrefnd(a);
 
     mpdm_unref(h);
 
@@ -361,8 +343,6 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
 {
     int ret = 0;
     mpdm_t w1, w2;
-
-    mpdm_ref(o);
 
     if (k == NULL) k = &w1;
     if (v == NULL) v = &w2;
@@ -421,9 +401,5 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
         }
     }
 
-    mpdm_unref(o);
-
     return ret;
 }
-
-
