@@ -368,10 +368,21 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
     }
     else {
         /* otherwise, return a visual representation */
-        sprintf(tmp, "%p", v);
-        mbstowcs(wtmp, tmp, sizeof(tmp) * sizeof(wchar_t));
+        mpdm_t c, w;
+        wchar_t wstr[32];
 
-        ret = wtmp;
+        if ((c = mpdm_hget_s(mpdm_root(), L"__STRINGIFY__")) == NULL)
+            c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
+
+        sprintf(tmp, "%p", v);
+        mbstowcs(wstr, tmp, sizeof(wstr));
+
+        if ((w = mpdm_hget_s(c, wstr)) == NULL) {
+            w = MPDM_S(wstr);
+            mpdm_hset(c, w, w);
+        }
+
+        ret = (wchar_t *) w->data;
     }
 
     return ret;
