@@ -1,6 +1,15 @@
 MPDM Release Notes
 ==================
 
+2.1.8-dev
+---------
+
+ - New features:
+   - Added the concept of "extended" values: they contain an
+     addition "destroy" function, called when the value is destroyed.
+     Also, only these extended values stored cached ival and rval.
+     This way, many values use much less memory.
+
 2.1.6
 -----
 
