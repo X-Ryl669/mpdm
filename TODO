@@ -24,6 +24,7 @@ Pending Enhancements
  * 1127: Do not ref/unref arrays and hashes.
  * 1128: Implement tar (file) reading.
  * 1129: Implement tar (in memory) reading.
+ * 1130: Move all file operations (chmod, etc.) to MPSL.
 
 Closed
 ------
