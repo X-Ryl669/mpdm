@@ -66,8 +66,7 @@ void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org,
 }
 
 
-void *mpdm_poke(void *dst, int *dsize, const void *org, int osize,
-                int esize)
+void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 /* pokes (adds) org into dst, which is a dynamic string, making it grow */
 {
     int offset = *dsize;
@@ -76,8 +75,7 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize,
 }
 
 
-wchar_t *mpdm_pokewsn(wchar_t * dst, int *dsize, const wchar_t * str,
-                      int slen)
+wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
 /* adds a wide string to dst using mpdm_poke() with size */
 {
     if (str)
@@ -87,7 +85,7 @@ wchar_t *mpdm_pokewsn(wchar_t * dst, int *dsize, const wchar_t * str,
 }
 
 
-wchar_t *mpdm_pokews(wchar_t * dst, int *dsize, const wchar_t * str)
+wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
 /* adds a wide string to dst using mpdm_poke() */
 {
     if (str)
@@ -97,14 +95,12 @@ wchar_t *mpdm_pokews(wchar_t * dst, int *dsize, const wchar_t * str)
 }
 
 
-wchar_t *mpdm_pokev(wchar_t * dst, int *dsize, const mpdm_t v)
+wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
     if (v != NULL) {
-        const wchar_t *ptr = mpdm_string(v);
-
         mpdm_ref(v);
-        dst = mpdm_pokews(dst, dsize, ptr);
+        dst = mpdm_pokews(dst, dsize, mpdm_string(v));
         mpdm_unref(v);
     }
 
@@ -137,10 +133,8 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
     /* try first a direct conversion with mbstowcs */
     if ((*s = mbstowcs(NULL, cstr, 0)) != -1) {
         /* direct conversion is possible; do it */
-        if ((ptr = malloc((*s + 1) * sizeof(wchar_t))) != NULL) {
-            mbstowcs(ptr, cstr, *s);
-            ptr[*s] = L'\0';
-        }
+        ptr = calloc((*s + 1), sizeof(wchar_t));
+        mbstowcs(ptr, cstr, *s);
     }
     else {
         /* zero everything */
@@ -204,36 +198,33 @@ char *mpdm_wcstombs(const wchar_t * str, int *s)
 
     /* try first a direct conversion with wcstombs */
     if ((*s = wcstombs(NULL, str, 0)) != -1) {
-        /* direct conversion is possible; do it and return */
-        if ((ptr = malloc(*s + 1)) != NULL) {
-            wcstombs(ptr, str, *s);
-            ptr[*s] = '\0';
+        /* direct conversion is possible; do it */
+        ptr = calloc(*s + 1, 1);
+        wcstombs(ptr, str, *s);
+    }
+    else {
+        /* invalid encoding? convert characters one by one */
+        *s = 0;
+
+        while (*str) {
+            if ((l = wctomb(tmp, *str)) <= 0) {
+                /* if char couldn't be converted,
+                   write a question mark instead */
+                l = wctomb(tmp, L'?');
+            }
+
+            tmp[l] = '\0';
+            if ((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
+                break;
+
+            str++;
         }
 
-        return ptr;
-    }
-
-    /* invalid encoding? convert characters one by one */
-    *s = 0;
-
-    while (*str) {
-        if ((l = wctomb(tmp, *str)) <= 0) {
-            /* if char couldn't be converted,
-               write a question mark instead */
-            l = wctomb(tmp, L'?');
+        /* null terminate and count one less */
+        if (ptr != NULL) {
+            ptr = mpdm_poke(ptr, s, "", 1, 1);
+            (*s)--;
         }
-
-        tmp[l] = '\0';
-        if ((ptr = mpdm_poke(ptr, s, tmp, l, 1)) == NULL)
-            break;
-
-        str++;
-    }
-
-    /* null terminate and count one less */
-    if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, "", 1, 1);
-        (*s)--;
     }
 
     return ptr;
