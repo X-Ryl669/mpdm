@@ -78,20 +78,14 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
 /* adds a wide string to dst using mpdm_poke() with size */
 {
-    if (str)
-        dst = mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
-
-    return dst;
+    return mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
 }
 
 
 wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
 /* adds a wide string to dst using mpdm_poke() */
 {
-    if (str)
-        dst = mpdm_pokewsn(dst, dsize, str, wcslen(str));
-
-    return dst;
+    return mpdm_pokewsn(dst, dsize, str, wcslen(str));
 }
 
 
@@ -165,13 +159,13 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
             i = 0;
 
             /* store new char */
-            if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+            if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
                 break;
         }
 
         /* null terminate and count one less */
         if (ptr != NULL) {
-            ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+            ptr = mpdm_pokewsn(ptr, s, L"", 1);
             (*s)--;
         }
     }
@@ -647,8 +641,8 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
 
         ptr = mpdm_pokev(ptr, &s, s1);
         ptr = mpdm_pokewsn(ptr, &s, s2, size);
+        ptr = mpdm_pokewsn(ptr, &s, L"", 1);
 
-        ptr = mpdm_poke(ptr, &s, L"", 1, sizeof(wchar_t));
         r = MPDM_ENS(ptr, s - 1);
     }
 
@@ -1110,20 +1104,20 @@ static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
 
     while (*p) {
         if (*p == L'\n')
-            o = mpdm_poke(o, l, L"\\n", 2, sizeof(wchar_t));
+            o = mpdm_pokews(o, l, L"\\n");
         else
         if (*p == L'\\')
-            o = mpdm_poke(o, l, L"\\\\", 2, sizeof(wchar_t));
+            o = mpdm_pokews(o, l, L"\\\\");
         else
         if (*p < 32) {
             char tmp[7];
             wchar_t wtmp[7];
 
             sprintf(tmp, "\\u%04x", (unsigned int) *p);
-            o = mpdm_poke(o, l, s_mbstowcs(tmp, wtmp), 6, sizeof(wchar_t));
+            o = mpdm_pokews(o, l, s_mbstowcs(tmp, wtmp));
         }
         else
-            o = mpdm_poke(o, l, p, 1, sizeof(wchar_t));
+            o = mpdm_pokewsn(o, l, p, 1);
 
         p++;
     }
@@ -1139,18 +1133,18 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
     mpdm_t k, w;
 
     if (MPDM_IS_HASH(v)) {
-        o = mpdm_poke(o, l, L"{", 1, sizeof(wchar_t));
+        o = mpdm_pokews(o, l, L"{");
 
         while (mpdm_iterator(v, &n, &k, &w)) {
             if (c)
-                o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
+                o = mpdm_pokews(o, l, L",");
 
-            o = mpdm_poke(o, l, L"\"", 1, sizeof(wchar_t));
+            o = mpdm_pokews(o, l, L"\"");
             o = json_s(o, l, k);
-            o = mpdm_poke(o, l, L"\":", 2, sizeof(wchar_t));
+            o = mpdm_pokews(o, l, L"\":");
 
             if (w == NULL)
-                o = mpdm_poke(o, l, L"null", 4, sizeof(wchar_t));
+                o = mpdm_pokews(o, l, L"null");
             else
             if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
                 o = json_f(o, l, w);
@@ -1158,27 +1152,27 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
                 if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
                     o = mpdm_pokev(o, l, w);
                 else {
-                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokews(o, l, L"\"");
                     o = json_s(o, l, w);
-                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokews(o, l, L"\"");
                 }
             }
 
             c++;
         }
 
-        o = mpdm_poke(o, l, L"}", 1, sizeof(wchar_t));
+        o = mpdm_pokews(o, l, L"}");
     }
     else
     if (MPDM_IS_ARRAY(v)) {
-        o = mpdm_poke(o, l, L"[", 1, sizeof(wchar_t));
+        o = mpdm_pokews(o, l, L"[");
 
         while (mpdm_iterator(v, &n, &k, &w)) {
             if (c)
-                o = mpdm_poke(o, l, L",", 1, sizeof(wchar_t));
+                o = mpdm_pokews(o, l, L",");
 
             if (w == NULL)
-                o = mpdm_poke(o, l, L"NULL", 4, sizeof(wchar_t));
+                o = mpdm_pokews(o, l, L"null");
             else
             if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
                 o = json_f(o, l, w);
@@ -1186,16 +1180,16 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
                 if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
                     o = mpdm_pokev(o, l, w);
                 else {
-                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokews(o, l, L"\"");
                     o = json_s(o, l, w);
-                    o = mpdm_poke(o, l, "\"", 1, sizeof(wchar_t));
+                    o = mpdm_pokews(o, l, L"\"");
                 }
             }
 
             c++;
         }
 
-        o = mpdm_poke(o, l, L"]", 1, sizeof(wchar_t));
+        o = mpdm_pokews(o, l, L"]");
     }
 
     return o;
@@ -1215,7 +1209,7 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
     while ((c = i[n]) != L'\0' && c != L'%')
         n++;
 
-    o = mpdm_poke(o, &l, i, n, sizeof(wchar_t));
+    o = mpdm_pokewsn(o, &l, i, n);
     i = &i[n];
 
     /* format directive */
@@ -1333,13 +1327,13 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
         case '%':
 
             /* percent sign */
-            o = mpdm_poke(o, &l, &c, 1, sizeof(wchar_t));
+            o = mpdm_pokewsn(o, &l, &c, 1);
             break;
         }
 
         /* transfer */
         if (wptr != NULL) {
-            o = mpdm_poke(o, &l, wptr, m, sizeof(wchar_t));
+            o = mpdm_pokewsn(o, &l, wptr, m);
             free(wptr);
         }
     }
@@ -1349,10 +1343,10 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
     while (i[n] != L'\0')
         n++;
 
-    o = mpdm_poke(o, &l, i, n, sizeof(wchar_t));
+    o = mpdm_pokewsn(o, &l, i, n);
 
     /* null-terminate */
-    o = mpdm_poke(o, &l, L"", 1, sizeof(wchar_t));
+    o = mpdm_pokewsn(o, &l, L"", 1);
 
     mpdm_unref(arg);
     mpdm_unref(fmt);
@@ -1908,7 +1902,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 
                 /* only add if not being ignored */
                 if (!ignore)
-                    ptr = mpdm_poke(ptr, &size, i, 1, sizeof(wchar_t));
+                    ptr = mpdm_pokewsn(ptr, &size, i, 1);
 
                 i++;
                 vsize--;
@@ -1916,7 +1910,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 
             if (!ignore && size) {
                 /* null terminate and push */
-                ptr = mpdm_poke(ptr, &size, L"", 1, sizeof(wchar_t));
+                ptr = mpdm_pokewsn(ptr, &size, L"", 1);
                 mpdm_push(r, MPDM_ENS(ptr, size - 1));
             }
         }
