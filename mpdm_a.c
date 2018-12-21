@@ -391,7 +391,13 @@ mpdm_t mpdm_clone(const mpdm_t v)
  */
 int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
 {
-    return mpdm_seek_s(a, mpdm_string(k), step);
+    int r;
+
+    mpdm_ref(k);
+    r = mpdm_seek_s(a, mpdm_string(k), step);
+    mpdm_unref(k);
+
+    return r;
 }
 
 
@@ -450,7 +456,13 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
  */
 int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 {
-    return mpdm_bseek_s(a, mpdm_string(k), step, pos);
+    int r;
+
+    mpdm_ref(k);
+    r = mpdm_bseek_s(a, mpdm_string(k), step, pos);
+    mpdm_unref(k);
+
+    return r;
 }
 
 
@@ -802,8 +814,12 @@ mpdm_t mpdm_reverse(const mpdm_t a)
     int n, m = mpdm_size(a);
     mpdm_t r = MPDM_A(m);
 
+    mpdm_ref(a);
+
     for (n = 0; n < m; n++)
         mpdm_aset(r, mpdm_aget(a, m - n - 1), n);
+
+    mpdm_unref(a);
 
     return r;
 }
