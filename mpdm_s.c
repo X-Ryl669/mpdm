@@ -304,19 +304,18 @@ mpdm_t mpdm_new_r(double rval)
 /* interface */
 
 /**
- * mpdm_string2 - Returns a printable representation of a value (with buffer).
+ * mpdm_string - Returns a printable representation of a value.
  * @v: the value
- * @wtmp: the external buffer
  *
  * Returns a printable representation of a value. For strings, it's
  * the value data itself; for any other type, a conversion to string
- * is returned instead. If @v is not a string, the @wtmp buffer
- * can be used as a placeholder for the string representation.
+ * is returned instead. This value should be used immediately, as it
+ * can be a pointer to a static buffer.
  *
  * The reference count value in @v is not touched.
  * [Strings]
  */
-wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
+wchar_t *mpdm_string(const mpdm_t v)
 {
     char tmp[32] = "";
     wchar_t *ret = L"[UNKNOWN]";
@@ -390,26 +389,6 @@ wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp)
 
 
 /**
- * mpdm_string - Returns a printable representation of a value.
- * @v: the value
- *
- * Returns a printable representation of a value. For strings, it's
- * the value data itself; for any other type, a conversion to string
- * is returned instead. This value should be used immediately, as it
- * can be a pointer to a static buffer.
- *
- * The reference count value in @v is not touched.
- * [Strings]
- */
-wchar_t *mpdm_string(const mpdm_t v)
-{
-    static wchar_t tmp[32];
-
-    return mpdm_string2(v, tmp);
-}
-
-
-/**
  * mpdm_cmp - Compares two values.
  * @v1: the first value
  * @v2: the second value
@@ -453,11 +432,8 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
             }
         }
     }
-    else {
-        wchar_t tmp[32];
-
-        r = mpdm_cmp_s(v1, mpdm_string2(v2, tmp));
-    }
+    else
+        r = mpdm_cmp_s(v1, mpdm_string(v2));
 
     mpdm_unref(v2);
     mpdm_unref(v1);
@@ -475,11 +451,10 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  */
 int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
 {
-    wchar_t tmp[32];
     int r;
 
     mpdm_ref(v1);
-    r = wcscoll(mpdm_string2(v1, tmp), v2);
+    r = wcscoll(mpdm_string(v1), v2);
     mpdm_unref(v1);
 
     return r;

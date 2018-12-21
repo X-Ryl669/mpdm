@@ -167,7 +167,6 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 
 wchar_t *mpdm_string(const mpdm_t v);
-wchar_t *mpdm_string2(const mpdm_t v, wchar_t *wtmp);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del);
 mpdm_t mpdm_slice(const mpdm_t s, int offset, int num);
 mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size);
