@@ -342,10 +342,6 @@ mpdm_t mpdm_keys(const mpdm_t h)
 int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
 {
     int ret = 0;
-    mpdm_t w1, w2;
-
-    if (k == NULL) k = &w1;
-    if (v == NULL) v = &w2;
 
     if (MPDM_IS_HASH(o)) {
         int bi, ei;
@@ -366,8 +362,8 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
                 }
                 else {
                     /* get pair */
-                    *k = mpdm_aget(b, ei++);
-                    *v = mpdm_aget(b, ei++);
+                    if (k) *k = mpdm_aget(b, ei++);
+                    if (v) *v = mpdm_aget(b, ei++);
 
                     /* update context */
                     *context = (ei * mpdm_size(o)) + bi;
@@ -379,24 +375,34 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
     else
     if (MPDM_IS_ARRAY(o)) {
         if (*context < mpdm_size(o)) {
-            *k = MPDM_I(*context);
-            *v = mpdm_aget(o, (*context)++);
+            if (k) *k = MPDM_I(*context);
+            if (v) *v = mpdm_aget(o, (*context));
 
+            (*context)++;
             ret = 1;
         }
     }
     else
     if (MPDM_IS_FILE(o)) {
-        *k = MPDM_I((*context)++);
-        *v = mpdm_read(o);
+        mpdm_t w = mpdm_read(o);
 
-        if (*v != NULL)
+        if (w != NULL) {
+            if (k) *k = MPDM_I(*context);
+            if (v) *v = w;
+
+            if (!v) mpdm_void(w);
+
+            (*context)++;
             ret = 1;
+        }
     }
     else {
         /* assume it's a number */
         if (*context < mpdm_ival(o)) {
-            *k = *v = MPDM_I((*context)++);
+            if (k) *k = MPDM_I(*context);
+            if (v) *v = MPDM_I(*context);
+
+            (*context)++;
             ret = 1;
         }
     }
