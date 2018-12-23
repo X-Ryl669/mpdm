@@ -362,8 +362,10 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
                 }
                 else {
                     /* get pair */
-                    if (k) *k = mpdm_aget(b, ei++);
-                    if (v) *v = mpdm_aget(b, ei++);
+                    if (k) *k = mpdm_aget(b, ei);
+                    if (v) *v = mpdm_aget(b, ei + 1);
+
+                    ei += 2;
 
                     /* update context */
                     *context = (ei * mpdm_size(o)) + bi;
