@@ -21,7 +21,6 @@ Pending Enhancements
  * 1009: bwrite().
  * 1126: Channels may possibly be implemented with only one set
    of array + mutex + semaphore (instead of two).
- * 1127: Do not ref/unref arrays and hashes.
  * 1128: Implement tar (file) reading.
  * 1129: Implement tar (in memory) reading.
  * 1130: Move all file operations (chmod, etc.) to MPSL.
@@ -267,5 +266,7 @@ Closed
    don't really belong here (Mon, 21 May 2012 17:09:22 +0200).
  * 1063: Implement copy-on-write on array cloning (Discarded;
    Fri, 21 Dec 2018 08:08:16 +0100).
+ * 1127: Do not ref/unref arrays and hashes
+   (Mon, 24 Dec 2018 15:32:54 +0100).
 
 Email bugs to angel@triptico.com
