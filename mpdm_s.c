@@ -1953,10 +1953,10 @@ mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2)
     cs1 = mpdm_string(s1);
     cs2 = mpdm_string(s2);
 
-    while ((c = *ptr) != L'\0') {
+    while ((c = *ptr)) {
         int n;
 
-        for (n = 0; cs1[n] != '\0'; n++) {
+        for (n = 0; cs1[n] && cs2[n]; n++) {
             if (c == cs1[n]) {
                 *ptr = cs2[n];
                 break;
