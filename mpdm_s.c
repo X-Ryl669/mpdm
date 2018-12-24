@@ -1669,8 +1669,8 @@ char *strptime(const char *s, const char *format, struct tm *tm);
  */
 mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 {
-    wchar_t *i = (wchar_t *) str->data;
-    wchar_t *f = (wchar_t *) fmt->data;
+    wchar_t *i = mpdm_string(str);
+    wchar_t *f = mpdm_string(fmt);
     mpdm_t r;
 
     mpdm_ref(fmt);
@@ -1678,7 +1678,6 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 
     i += offset;
     r = MPDM_A(0);
-    mpdm_ref(r);
 
     while (*f) {
         if (*f == L'%') {
@@ -1726,7 +1725,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
             if (cmd == L'n') {
                 vsize = 0;
                 ignore = 1;
-                mpdm_push(r, MPDM_I(i - (wchar_t *) str->data));
+                mpdm_push(r, MPDM_I(i - mpdm_string(str)));
             }
             else
                 /* string upto a mark */
@@ -1921,8 +1920,6 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
 
     mpdm_unref(str);
     mpdm_unref(fmt);
-
-    mpdm_unrefnd(r);
 
     return r;
 }
