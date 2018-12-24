@@ -578,7 +578,8 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
  * Returns the substring of @v that starts from @offset
  * and have @num characters. A negative @offset is also valid,
  * with -1 as the last character and counting down to the start
- * of the string.
+ * of the string. If @num is 0, it means the full string; if
+ * it's -1, one character less, etc.
  * [Strings]
  */
 mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
@@ -590,6 +591,9 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
     if (s != NULL) {
         int os = mpdm_size(s);
         wchar_t *ptr = mpdm_string(s);
+
+        if (num <= 0)
+            num = os + num;
 
         if (offset < 0) {
             if ((offset = os + offset) < 0)
