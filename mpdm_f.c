@@ -389,7 +389,7 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
         }
 
         /* store */
-        if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
             break;
 
         /* if it's an end of line, finish */
@@ -398,7 +398,7 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
     }
 
     if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+        ptr = mpdm_pokewsn(ptr, s, L"", 1);
         (*s)--;
     }
 
@@ -488,7 +488,7 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
         wc = c;
 
         /* store */
-        if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
             break;
 
         /* if it's an end of line, finish */
@@ -497,7 +497,7 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
     }
 
     if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+        ptr = mpdm_pokewsn(ptr, s, L"", 1);
         (*s)--;
     }
 
@@ -543,7 +543,7 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
             wc = c2 | (c1 << 8);
 
         /* store */
-        if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
             break;
 
         /* if it's an end of line, finish */
@@ -552,7 +552,7 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
     }
 
     if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+        ptr = mpdm_pokewsn(ptr, s, L"", 1);
         (*s)--;
     }
 
@@ -691,7 +691,7 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
             wc = c4 | (c3 << 8) | (c2 << 16) | (c1 << 24);
 
         /* store */
-        if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
+        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
             break;
 
         /* if it's an end of line, finish */
@@ -700,7 +700,7 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
     }
 
     if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+        ptr = mpdm_pokewsn(ptr, s, L"", 1);
         (*s)--;
     }
 
