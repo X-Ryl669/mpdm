@@ -950,102 +950,24 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
     mpdm_t v;
 
     if ((v = mpdm_hget_s(mpdm_root(), L"ENV")) != NULL &&
-        mpdm_hget_s(v, L"LANG") == NULL) {
-        wchar_t *wptr = L"en";
+             mpdm_hget_s(v, L"LANG") == NULL) {
+        const char *ptr = "en";
+        int c;
+        const char *win_langs[] = {
+            "en", "ar", "bg", "ca", "zh", "cz", "da", "de", "el", "en", /* 00-09 */
+            "es", "fi", "fr", "he", "hu", "is", "it", "jp", "ko", "nl", /* 0a-13 */
+            "no", "po", "pt", "rm", "ro", "ru", "sr", "sk", "sq", "sv", /* 14-1d */
+            "th", "tr", "ur", "id", "uk", "be", "sl", "et", "lv", "lt", /* 1e-27 */
+            "tg", "fa", "vi", "hy", "az"                                /* 28-2d */
+        };
+
+        c = GetSystemDefaultLangID() & 0x00ff;
 
         /* MS Windows crappy language constants... */
+        if (c < sizeof(win_langs) / sizeof(char *))
+            ptr = win_langs[c];
 
-        switch ((GetSystemDefaultLangID() & 0x00ff)) {
-        case 0x01:
-            wptr = L"ar";
-            break;              /* arabic */
-        case 0x02:
-            wptr = L"bg";
-            break;              /* bulgarian */
-        case 0x03:
-            wptr = L"ca";
-            break;              /* catalan */
-        case 0x04:
-            wptr = L"zh";
-            break;              /* chinese */
-        case 0x05:
-            wptr = L"cz";
-            break;              /* czech */
-        case 0x06:
-            wptr = L"da";
-            break;              /* danish */
-        case 0x07:
-            wptr = L"de";
-            break;              /* german */
-        case 0x08:
-            wptr = L"el";
-            break;              /* greek */
-        case 0x09:
-            wptr = L"en";
-            break;              /* english */
-        case 0x0a:
-            wptr = L"es";
-            break;              /* spanish */
-        case 0x0b:
-            wptr = L"fi";
-            break;              /* finnish */
-        case 0x0c:
-            wptr = L"fr";
-            break;              /* french */
-        case 0x0d:
-            wptr = L"he";
-            break;              /* hebrew */
-        case 0x0e:
-            wptr = L"hu";
-            break;              /* hungarian */
-        case 0x0f:
-            wptr = L"is";
-            break;              /* icelandic */
-        case 0x10:
-            wptr = L"it";
-            break;              /* italian */
-        case 0x11:
-            wptr = L"jp";
-            break;              /* japanese */
-        case 0x12:
-            wptr = L"ko";
-            break;              /* korean */
-        case 0x13:
-            wptr = L"nl";
-            break;              /* dutch */
-        case 0x14:
-            wptr = L"no";
-            break;              /* norwegian */
-        case 0x15:
-            wptr = L"po";
-            break;              /* polish */
-        case 0x16:
-            wptr = L"pt";
-            break;              /* portuguese */
-        case 0x17:
-            wptr = L"rm";
-            break;              /* romansh (switzerland) */
-        case 0x18:
-            wptr = L"ro";
-            break;              /* romanian */
-        case 0x19:
-            wptr = L"ru";
-            break;              /* russian */
-        case 0x1a:
-            wptr = L"sr";
-            break;              /* serbian */
-        case 0x1b:
-            wptr = L"sk";
-            break;              /* slovak */
-        case 0x1c:
-            wptr = L"sq";
-            break;              /* albanian */
-        case 0x1d:
-            wptr = L"sv";
-            break;              /* swedish */
-        }
-
-        mpdm_hset_s(v, L"LANG", MPDM_S(wptr));
+        mpdm_hset_s(v, L"LANG", MPDM_MBS(ptr));
     }
 
 #endif                          /* CONFOPT_WIN32 */
