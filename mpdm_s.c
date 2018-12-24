@@ -1381,23 +1381,20 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 mpdm_t mpdm_ulc(const mpdm_t s, int u)
 {
     mpdm_t r = NULL;
-    wchar_t *optr;
-    int i;
+    wchar_t *iptr, *optr;
+    int i, n;
 
     mpdm_ref(s);
 
     i = mpdm_size(s);
 
-    if ((optr = malloc((i + 1) * sizeof(wchar_t))) != NULL) {
-        wchar_t *iptr = mpdm_string(s);
-        int n;
+    optr = calloc((i + 1), sizeof(wchar_t));
+    iptr = mpdm_string(s);
 
-        for (n = 0; n < i; n++)
-            optr[n] = u ? towupper(iptr[n]) : towlower(iptr[n]);
+    for (n = 0; n < i; n++)
+        optr[n] = u ? towupper(iptr[n]) : towlower(iptr[n]);
 
-        optr[n] = L'\0';
-        r = MPDM_ENS(optr, i);
-    }
+    r = MPDM_ENS(optr, i);
 
     mpdm_unref(s);
 
