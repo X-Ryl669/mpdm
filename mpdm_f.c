@@ -356,7 +356,7 @@ static int write_iconv(struct mpdm_file *f, const wchar_t *str)
 
 #endif /* CONFOPT_ICONV */
 
-#define UTF8_BYTE() if((c = get_char(f)) == EOF) break
+#define CHAR_OR_BREAK(c, f) if((c = get_char(f)) == EOF) break
 
 static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 /* utf8 reader */
@@ -370,21 +370,21 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
     for (;;) {
         wc = L'\0';
 
-        UTF8_BYTE();
+        CHAR_OR_BREAK(c, f);
 
         if ((c & 0x80) == 0)
             wc = c;
         else
         if ((c & 0xe0) == 0xe0) {
             wc = (c & 0x1f) << 12;
-            UTF8_BYTE();
+            CHAR_OR_BREAK(c, f);
             wc |= (c & 0x3f) << 6;
-            UTF8_BYTE();
+            CHAR_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
         else {
             wc = (c & 0x3f) << 6;
-            UTF8_BYTE();
+            CHAR_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
 
@@ -531,11 +531,8 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
     for (;;) {
         wc = L'\0';
 
-        if ((c1 = get_char(f)) == EOF)
-            break;
-
-        if ((c2 = get_char(f)) == EOF)
-            break;
+        CHAR_OR_BREAK(c1, f);
+        CHAR_OR_BREAK(c2, f);
 
         if (le)
             wc = c1 | (c2 << 8);
@@ -673,17 +670,10 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
     for (;;) {
         wc = L'\0';
 
-        if ((c1 = get_char(f)) == EOF)
-            break;
-
-        if ((c2 = get_char(f)) == EOF)
-            break;
-
-        if ((c3 = get_char(f)) == EOF)
-            break;
-
-        if ((c4 = get_char(f)) == EOF)
-            break;
+        CHAR_OR_BREAK(c1, f);
+        CHAR_OR_BREAK(c2, f);
+        CHAR_OR_BREAK(c3, f);
+        CHAR_OR_BREAK(c4, f);
 
         if (le)
             wc = c1 | (c2 << 8) | (c3 << 16) | (c4 << 24);
@@ -691,8 +681,7 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
             wc = c4 | (c3 << 8) | (c2 << 16) | (c1 << 24);
 
         /* store */
-        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
-            break;
+        ptr = mpdm_pokewsn(ptr, s, &wc, 1);
 
         /* if it's an end of line, finish */
         if (wc == L'\n')
