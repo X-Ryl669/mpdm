@@ -1947,12 +1947,11 @@ mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2)
     mpdm_ref(s2);
 
     /* create a copy of the string */
-    r = MPDM_NS((wchar_t *)str->data, mpdm_size(str));
-    mpdm_ref(r);
+    r = MPDM_NS(mpdm_string(str), mpdm_size(str));
 
-    ptr = (wchar_t *)r->data;
-    cs1 = (wchar_t *)s1->data;
-    cs2 = (wchar_t *)s2->data;
+    ptr = mpdm_string(r);
+    cs1 = mpdm_string(s1);
+    cs2 = mpdm_string(s2);
 
     while ((c = *ptr) != L'\0') {
         int n;
@@ -1967,7 +1966,6 @@ mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2)
         ptr++;
     }
 
-    mpdm_unrefnd(r);
     mpdm_unref(s2);
     mpdm_unref(s1);
     mpdm_unref(str);
