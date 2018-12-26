@@ -221,6 +221,8 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode);
 mpdm_t mpdm_popen2(const mpdm_t prg);
 int mpdm_pclose(mpdm_t fd);
 
+mpdm_t mpdm_find_in_tar_file(const char *fn, mpdm_t fv);
+
 extern int mpdm_regex_offset;
 extern int mpdm_regex_size;
 extern int mpdm_sregex_count;
