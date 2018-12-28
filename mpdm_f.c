@@ -2371,38 +2371,3 @@ int mpdm_close(mpdm_t fd)
 
     return r;
 }
-
-
-/** tar files **/
-
-mpdm_t mpdm_find_in_tar_file(const char *fn, mpdm_t fv)
-{
-    mpdm_t r = NULL;
-    FILE *f = mpdm_get_filehandle(fv);
-
-    if (f) {
-        char *data = NULL;
-        char tar[512];
-
-        while (!data && fread(tar, sizeof(tar), 1, f) && *tar) {
-            long f_size;
-
-            sscanf(&tar[124], "%lo", &f_size);
-
-            if (strcmp(fn, tar))
-                fseek(f, ((f_size + 511) / 512) * 512, 1);
-            else {
-                data = calloc(f_size + 1, 1);
-                if (!fread(data, f_size, 1, f))
-                    data = realloc(data, 0);
-            }
-        }
-
-        if (data) {
-            r = MPDM_MBS(data);
-            free(data);
-        }
-    }
-
-    return r;
-}
