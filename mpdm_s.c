@@ -148,8 +148,9 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
                 if (c != '\0' && i <= (int) MB_CUR_MAX)
                     continue;
                 else {
-                    /* too many failing bytes; skip 1 byte */
-                    wc = L'?';
+                    /* too many failing bytes; skip 1 byte
+                       and use the Unicode replacement char */
+                    wc = L'\xfffd';
                     i = 1;
                 }
             }
