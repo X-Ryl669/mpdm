@@ -471,7 +471,8 @@ int mpdm_startup(void)
 
         /* sets the locale */
         if (setlocale(LC_ALL, "") == NULL)
-            setlocale(LC_ALL, "C");
+            if (setlocale(LC_ALL, "C.UTF-8") == NULL)
+                setlocale(LC_ALL, "C");
 
         mpdm_encoding(NULL);
 
