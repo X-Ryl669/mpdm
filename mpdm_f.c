@@ -1781,6 +1781,8 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
     int pr[2], pw[2];
     struct mpdm_file *fs = (struct mpdm_file *) v->data;
 
+    fs->is_pipe = 1;
+
     /* init all */
     pr[0] = pr[1] = pw[0] = pw[1] = -1;
 
