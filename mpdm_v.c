@@ -299,11 +299,13 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
         }
     }
 
+    mpdm_ref(r);
+
     mpdm_unref(ctxt);
     mpdm_unref(args);
     mpdm_unref(c);
 
-    return r;
+    return mpdm_unrefnd(r);
 }
 
 
