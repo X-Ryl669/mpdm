@@ -272,7 +272,6 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
     mpdm_ref(ctxt);
 
     if (c != NULL && (c->flags & MPDM_EXEC)) {
-
         if (c->flags & MPDM_MULTIPLE) {
             mpdm_t x;
             mpdm_t(*func) (mpdm_t, mpdm_t, mpdm_t);
@@ -283,8 +282,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
                the arguments and the context */
             x = mpdm_aget(c, 0);
 
-            if ((func =
-                 (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
+            if ((func = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
                 r = func(mpdm_aget(c, 1), args, ctxt);
         }
         else {
