@@ -2161,9 +2161,9 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
         struct servent *se;
 
         if ((se = getservbyname(s, "tcp")) != NULL) {
-        	struct sockaddr_in host;
+            struct sockaddr_in host;
     
-        	memset(&host, '\0', sizeof(host));
+            memset(&host, '\0', sizeof(host));
 
             memcpy(&host.sin_addr, he->h_addr_list[0], he->h_length);
             host.sin_family = he->h_addrtype;

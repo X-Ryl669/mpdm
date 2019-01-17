@@ -454,10 +454,10 @@ void test_hash(void)
     mpdm_unref(h);
 
 /*
-	mpdm_dump(h);
+    mpdm_dump(h);
 
-	v=mpdm_hkeys(h);
-	mpdm_dump(v);
+    v=mpdm_hkeys(h);
+    mpdm_dump(v);
 */
     /* use of non-strings as hashes */
     h = MPDM_H(0);
@@ -759,7 +759,7 @@ void test_file(void)
         mpdm_dump(v);
     }
 
-/*	v=mpdm_glob(MPDM_LS(L"*"));*/
+/*  v=mpdm_glob(MPDM_LS(L"*"));*/
     v = mpdm_glob(NULL, NULL);
     if (verbose) {
         printf("Glob:\n");
@@ -808,8 +808,8 @@ void test_regex(void)
                    0);
     do_test("regex 6.2 (case insensitive)", v != NULL);
 /*
-	v=mpdm_regex(MPDM_LS(L"/[A-Z]+/"), MPDM_LS(L"case SENSITIVE regex"), 0);
-	do_test("regex 6.3 (case sensitive)", mpdm_cmp(v, MPDM_LS(L"SENSITIVE")) == 0);
+    v=mpdm_regex(MPDM_LS(L"/[A-Z]+/"), MPDM_LS(L"case SENSITIVE regex"), 0);
+    do_test("regex 6.3 (case sensitive)", mpdm_cmp(v, MPDM_LS(L"SENSITIVE")) == 0);
 */
     v = mpdm_regex(MPDM_LS(L"123456"), MPDM_LS(L"/^\\s*/"), 0);
     do_test("regex 7", v != NULL);
@@ -955,8 +955,8 @@ void test_regex(void)
 
     mpdm_unref(w);
 
-/*	v = mpdm_regex(w, MPDM_LS(L"key= "), 0);
-	do_test("multi-regex 4", v == NULL);
+/*  v = mpdm_regex(w, MPDM_LS(L"key= "), 0);
+    do_test("multi-regex 4", v == NULL);
 */
     w = MPDM_LS(L"/* this is\na C-like comment */");
     mpdm_ref(w);
@@ -1281,9 +1281,9 @@ void bench_hash(int i, mpdm_t l, int buckets)
     mpdm_unref(h);
 
 /*
-	printf("Bucket usage:\n");
-	for(n=0;n < mpdm_size(h);n++)
-		printf("\t%d: %d\n", n, mpdm_size(mpdm_aget(h, n)));
+    printf("Bucket usage:\n");
+    for(n=0;n < mpdm_size(h);n++)
+        printf("\t%d: %d\n", n, mpdm_size(mpdm_aget(h, n)));
 */
 }
 
@@ -1308,7 +1308,7 @@ void benchmark(void)
     l = mpdm_ref(MPDM_A(i));
     for (n = 0; n < i; n++) {
         sprintf(tmp, "%08x", n);
-/*		mpdm_aset(l, MPDM_MBS(tmp), n);*/
+/*      mpdm_aset(l, MPDM_MBS(tmp), n);*/
         mpdm_aset(l, MPDM_I(n), n);
     }
 
@@ -1402,8 +1402,8 @@ void test_sprintf(void)
     do_test("sprintf 2.1",
             mpdm_cmp(w, MPDM_LS(L"Value for PI is 3.1416")) == 0);
 
-/*	w = mpdm_sprintf(MPDM_LS(L"Value for PI is %08.2f"), v);
-	do_test("sprintf 2.2", mpdm_cmp(w, MPDM_LS(L"Value for PI is 00003.14")) == 0);
+/*  w = mpdm_sprintf(MPDM_LS(L"Value for PI is %08.2f"), v);
+    do_test("sprintf 2.2", mpdm_cmp(w, MPDM_LS(L"Value for PI is 00003.14")) == 0);
 */
     mpdm_unref(v);
 
