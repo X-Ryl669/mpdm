@@ -81,6 +81,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
             free(wptr);
         }
     }
+    else
+        ptr = mpdm_pokews(ptr, size, L"[NULL]");
 
     /* add the visual representation of the value */
     ptr = mpdm_pokev(ptr, size, v);
