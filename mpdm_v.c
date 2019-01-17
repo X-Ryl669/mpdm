@@ -345,12 +345,8 @@ mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2)
     x = MPDM_A(2);
     x->flags |= MPDM_EXEC;
 
-    mpdm_ref(x);
-
     mpdm_aset(x, MPDM_X(a1), 0);
     mpdm_aset(x, a2, 1);
-
-    mpdm_unrefnd(x);
 
     return x;
 }
