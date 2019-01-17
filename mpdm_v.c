@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_v.c - Basic value management
 
@@ -41,6 +41,9 @@ struct mpdm_control *mpdm = NULL;
 
 
 /** code **/
+
+#define V_SIZE(f) f & MPDM_EXTENDED ? sizeof(struct mpdm_val_ex) : sizeof(struct mpdm_val)
+
 
 static mpdm_t destroy_value(mpdm_t v)
 /* destroys a value */
@@ -111,8 +114,7 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
 {
     mpdm_t v;
 
-    v = (mpdm_t) calloc(flags & MPDM_EXTENDED ?
-                sizeof(struct mpdm_val_ex) : sizeof(struct mpdm_val), 1);
+    v = (mpdm_t) calloc(V_SIZE(flags), 1);
 
     return mpdm_init(v, flags, data, size);
 }
@@ -178,13 +180,7 @@ mpdm_t mpdm_unrefnd(mpdm_t v)
  */
 int mpdm_size(const mpdm_t v)
 {
-    int r = 0;
-
-    /* NULL values have no size */
-    if (v != NULL)
-        r = v->size;
-
-    return r;
+    return v ? v->size : 0;
 }
 
 
