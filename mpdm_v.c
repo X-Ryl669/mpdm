@@ -59,8 +59,7 @@ static mpdm_t destroy_value(mpdm_t v)
 
     mpdm->count--;
 
-    if (!(v->flags & MPDM_NONDYN))
-        free(v);
+    free(v);
 
     return NULL;
 }
@@ -115,7 +114,7 @@ mpdm_t mpdm_new(int flags, const void *data, int size)
     v = (mpdm_t) calloc(flags & MPDM_EXTENDED ?
                 sizeof(struct mpdm_val_ex) : sizeof(struct mpdm_val), 1);
 
-    return mpdm_init(v, flags & ~MPDM_NONDYN, data, size);
+    return mpdm_init(v, flags, data, size);
 }
 
 
@@ -311,52 +310,34 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 {
-    mpdm_t r;
-    mpdm_t a = MPDM_AA(1);
+    mpdm_t a = MPDM_A(1);
 
-    mpdm_ref(a);
     mpdm_aset(a, a1, 0);
 
-    r = mpdm_exec(c, a, ctxt);
-
-    mpdm_unref(a);
-
-    return r;
+    return mpdm_exec(c, a, ctxt);
 }
 
 
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 {
-    mpdm_t r;
-    mpdm_t a = MPDM_AA(2);
+    mpdm_t a = MPDM_A(2);
 
-    mpdm_ref(a);
     mpdm_aset(a, a1, 0);
     mpdm_aset(a, a2, 1);
 
-    r = mpdm_exec(c, a, ctxt);
-
-    mpdm_unref(a);
-
-    return r;
+    return mpdm_exec(c, a, ctxt);
 }
 
 
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 {
-    mpdm_t r;
-    mpdm_t a = MPDM_AA(3);
+    mpdm_t a = MPDM_A(3);
 
-    mpdm_ref(a);
     mpdm_aset(a, a1, 0);
     mpdm_aset(a, a2, 1);
     mpdm_aset(a, a3, 2);
 
-    r = mpdm_exec(c, a, ctxt);
-
-    mpdm_unref(a);
-
-    return r;
+    return mpdm_exec(c, a, ctxt);
 }
 
 
@@ -511,19 +492,6 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
- * MPDM_AA - Creates an array value (using alloca()).
- * @n: Number of elements
- *
- * Creates a new array value with @n elements on the local
- * function's stack. These values are destroyed when the
- * function exits. They should only be used for temporary
- * issues.
- * [Value Creation]
- */
-/** mpdm_t MPDM_AA(int n); */
-/* ; */
-
-/**
  * MPDM_H - Creates a hash value.
  * @n: Number of buckets in the hash (0: use default)
  *
@@ -544,20 +512,6 @@ void mpdm_shutdown(void)
  * [Value Creation]
  */
 /** mpdm_t MPDM_LS(wchar_t * wcs); */
-/* ; */
-
-/**
- * MPDM_AS - Creates a string value from a literal string using alloca().
- * @wcs: the wide character string
- *
- * Creates a new string value from a literal, wide character string.
- * A pointer to the string will be stored in the value (not a copy).
- * These values are destroyed when the function exits. They should
- * only be used for temporary issues and cannot be assigned to arrays
- * nor hashes.
- * [Value Creation]
- */
-/** mpdm_t MPDM_AS(wchar_t * wcs); */
 /* ; */
 
 /**

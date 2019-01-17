@@ -47,7 +47,6 @@ enum {
     _MPDM_MUTEX,
     _MPDM_SEMAPHORE,
     _MPDM_THREAD,
-    _MPDM_NONDYN,
     _MPDM_CHANNEL,
     _MPDM_EXTENDED
 };
@@ -65,7 +64,6 @@ enum {
     MPDM_MUTEX      = (1<<_MPDM_MUTEX),     /* data is a mutex */
     MPDM_SEMAPHORE  = (1<<_MPDM_SEMAPHORE), /* data is a semaphore */
     MPDM_THREAD     = (1<<_MPDM_THREAD),    /* data is a thread handle */
-    MPDM_NONDYN     = (1<<_MPDM_NONDYN),    /* data is non-dynamic (do not free()) */
     MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };
@@ -265,15 +263,6 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_X2(f,b)    mpdm_xnew(f,b)
 
 #define MPDM_F(f)       mpdm_new_f(f)
-
-#define MPDM_AA(n)      mpdm_init(alloca(sizeof(struct mpdm_val)), \
-                            MPDM_NONDYN | MPDM_MULTIPLE, \
-                            memset(alloca(sizeof(mpdm_t) * n), '\0', sizeof(mpdm_t) * n), \
-                            n)
-
-#define MPDM_AS(s)      mpdm_init(alloca(sizeof(struct mpdm_val)), \
-                            MPDM_NONDYN | MPDM_STRING, \
-                            s, wcslen(s))
 
 int mpdm_startup(void);
 void mpdm_shutdown(void);
