@@ -62,6 +62,9 @@ static mpdm_t destroy_value(mpdm_t v)
 
     mpdm->count--;
 
+    /* garble the memory block */
+    memset(v, 0xaa, V_SIZE(v->flags));
+
     free(v);
 
     return NULL;
