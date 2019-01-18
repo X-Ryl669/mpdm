@@ -1870,7 +1870,7 @@ mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2)
     mpdm_ref(s2);
 
     /* create a copy of the string */
-    r = MPDM_NS(mpdm_string(str), mpdm_size(str));
+    r = MPDM_S(mpdm_string(str));
 
     ptr = mpdm_string(r);
     cs1 = mpdm_string(s1);
