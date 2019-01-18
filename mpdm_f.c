@@ -2203,7 +2203,7 @@ mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv)
 static int file_close(mpdm_t v)
 /* close any type of file / pipe / socket */
 {
-    int r = 0;
+    int r = -1;
     struct mpdm_file *fs;
 
     if (v && (fs = (struct mpdm_file *) v->data)) {
