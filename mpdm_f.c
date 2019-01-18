@@ -2204,9 +2204,9 @@ static int file_close(mpdm_t v)
 /* close any type of file / pipe / socket */
 {
     int r = 0;
-    struct mpdm_file *fs = (struct mpdm_file *) v->data;
+    struct mpdm_file *fs;
 
-    if (fs) {
+    if (v && (fs = (struct mpdm_file *) v->data)) {
 #ifdef CONFOPT_ICONV
         if (fs->ic_enc != (iconv_t) - 1)
             iconv_close(fs->ic_enc);
