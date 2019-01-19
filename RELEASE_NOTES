@@ -11,7 +11,6 @@ MPDM Release Notes
      This way, many values use much less memory.
  - Other changes:
    - The version numbering has changed from X.X.X to X.XXX (real number).
-     This release would be 2.2.0 using previous system.
 
 2.1.6
 -----
