@@ -127,3 +127,42 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
     return mpdm_exec(c, a, ctxt);
 }
 
+
+mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
+{
+    mpdm_t out = NULL;
+    mpdm_t k, v;
+
+    if (set != NULL) {
+        int n = 0;
+        out = MPDM_A(0);
+
+        while (mpdm_iterator(set, &n, &k, &v)) {
+            mpdm_t w = NULL;
+            mpdm_ref(k);
+            mpdm_ref(v);
+
+            if (MPDM_IS_EXEC(filter)) {
+                if (MPDM_IS_HASH(set))
+                    w = mpdm_exec_2(filter, k, v, ctxt);
+                else
+                    w = mpdm_exec_2(filter, v, k, ctxt);
+            }
+            else
+            if (MPDM_IS_HASH(filter))
+                w = mpdm_hget(filter, v);
+            else
+            if (MPDM_IS_STRING(filter))
+                w = mpdm_regex(v, filter, 0);
+            else
+                w = v;
+
+            mpdm_push(out, w);
+
+            mpdm_unref(v);
+            mpdm_unref(k);
+        }
+    }
+
+    return out;
+}
