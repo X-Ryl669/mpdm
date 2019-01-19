@@ -1,7 +1,7 @@
 MPDM Release Notes
 ==================
 
-2.1.8-dev
+2.20-dev
 ---------
 
  - New features:
@@ -9,6 +9,9 @@ MPDM Release Notes
      addition "destroy" function, called when the value is destroyed.
      Also, only these extended values stored cached ival and rval.
      This way, many values use much less memory.
+ - Other changes:
+   - The version numbering has changed from X.X.X to X.XXX (real number).
+     This release would be 2.2.0 using previous system.
 
 2.1.6
 -----
