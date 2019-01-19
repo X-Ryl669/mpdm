@@ -128,6 +128,102 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 }
 
 
+/**
+ * mpdm_iterator - Iterates through the content of an object.
+ * @o: the object
+ * @context: A pointer to an opaque context
+ * @k: a pointer to a value to store the key
+ * @v: a pointer to a value to store the value
+ *
+ * Iterates through the @o value. If it's a hash, every key/value pair
+ * is returned on each call. If it's an array, @v contains the
+ * element and @k the index number on each call. Otherwise, it's assumed
+ * to be a string containing a numeral and @k and @v are filled with
+ * values from 0 to @o - 1 on each call.
+ *
+ * Any of @k and @v pointers can be NULL if the value is not of interest.
+ *
+ * The @context pointer to integer is opaque and should be
+ * initialized to zero on the first call.
+ *
+ * Returns 0 if no more data is left in @h.
+ * [Hashes]
+ * [Arrays]
+ */
+int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
+{
+    int ret = 0;
+
+    if (MPDM_IS_HASH(o)) {
+        int bi, ei;
+
+        if (mpdm_size(o)) {
+            /* get bucket and element index */
+            bi = (*context) % mpdm_size(o);
+            ei = (*context) / mpdm_size(o);
+
+            while (ret == 0 && bi < mpdm_size(o)) {
+                mpdm_t b;
+
+                /* if bucket is empty or there are no more
+                   elements in it, pick the next one */
+                if (!(b = mpdm_aget(o, bi)) || ei >= mpdm_size(b)) {
+                    ei = 0;
+                    bi++;
+                }
+                else {
+                    /* get pair */
+                    if (k) *k = mpdm_aget(b, ei);
+                    if (v) *v = mpdm_aget(b, ei + 1);
+
+                    ei += 2;
+
+                    /* update context */
+                    *context = (ei * mpdm_size(o)) + bi;
+                    ret = 1;
+                }
+            }
+        }
+    }
+    else
+    if (MPDM_IS_ARRAY(o)) {
+        if (*context < mpdm_size(o)) {
+            if (k) *k = MPDM_I(*context);
+            if (v) *v = mpdm_aget(o, (*context));
+
+            (*context)++;
+            ret = 1;
+        }
+    }
+    else
+    if (MPDM_IS_FILE(o)) {
+        mpdm_t w = mpdm_read(o);
+
+        if (w != NULL) {
+            if (k) *k = MPDM_I(*context);
+            if (v) *v = w;
+
+            if (!v) mpdm_void(w);
+
+            (*context)++;
+            ret = 1;
+        }
+    }
+    else {
+        /* assume it's a number */
+        if (*context < mpdm_ival(o)) {
+            if (k) *k = MPDM_I(*context);
+            if (v) *v = MPDM_I(*context);
+
+            (*context)++;
+            ret = 1;
+        }
+    }
+
+    return ret;
+}
+
+
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 {
     mpdm_t out = NULL;

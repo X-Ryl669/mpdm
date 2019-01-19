@@ -188,7 +188,6 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
 mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
-int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2);
 
 extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size);
 mpdm_t mpdm_dumper(const mpdm_t v);
@@ -285,6 +284,7 @@ void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
 mpdm_t mpdm_channel_read(mpdm_t channel);
 void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
+int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2);
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 
 #ifdef __cplusplus
