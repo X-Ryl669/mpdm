@@ -1466,6 +1466,11 @@ wchar_t *json_parser(wchar_t *s, int *t, mpdm_t *pv)
 
             s = json_lexer(s, t, &k);
 
+            if (*t == JS_CCURLY) {
+                *t = JS_OBJECT;
+                break;
+            }
+
             if (*t != JS_STRING) {
                 *t = JS_ERROR;
                 break;
@@ -1515,6 +1520,11 @@ wchar_t *json_parser(wchar_t *s, int *t, mpdm_t *pv)
             wchar_t *os = s;
 
             s = json_lexer(os, t, &w);
+
+            if (*t == JS_CBRACK) {
+                *t = JS_ARRAY;
+                break;
+            }
 
             if (*t == JS_OCURLY || *t == JS_OBRACK)
                 s = json_parser(os, t, &w);
