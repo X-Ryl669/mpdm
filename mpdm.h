@@ -285,6 +285,8 @@ void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
 mpdm_t mpdm_channel_read(mpdm_t channel);
 void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
+mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
+
 #ifdef __cplusplus
 }
 #endif
