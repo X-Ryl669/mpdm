@@ -276,7 +276,6 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 }
 
 
-#if 0
 mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 {
     mpdm_t out = NULL;
@@ -326,4 +325,3 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 
     return out;
 }
-#endif

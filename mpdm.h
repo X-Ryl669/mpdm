@@ -286,6 +286,7 @@ void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
 int mpdm_iterator(mpdm_t h, int *context, mpdm_t *v1, mpdm_t *v2);
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
+mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 
 #ifdef __cplusplus
 }
