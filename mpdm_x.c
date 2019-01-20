@@ -239,6 +239,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     if (set != NULL) {
         mpdm_t k, v;
         int n = 0;
+
         out = MPDM_A(0);
 
         while (mpdm_iterator(set, &n, &k, &v)) {
@@ -287,6 +288,7 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     if (set != NULL) {
         mpdm_t k, v;
         int n = 0;
+
         out = MPDM_H(0);
 
         while (mpdm_iterator(set, &n, &k, &v)) {
