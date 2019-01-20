@@ -129,83 +129,86 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 
 
 /**
- * mpdm_iterator - Iterates through the content of an object.
- * @o: the object
+ * mpdm_iterator - Iterates through the content of a set.
+ * @set: the set (hash, array, file or scalar)
  * @context: A pointer to an opaque context
- * @k: a pointer to a value to store the key
- * @v: a pointer to a value to store the value
+ * @v: a pointer to a value to store the key
+ * @i: a pointer to a value to store the index
  *
- * Iterates through the @o value. If it's a hash, every key/value pair
+ * Iterates through the @set. If it's a hash, every value/index pair
  * is returned on each call. If it's an array, @v contains the
- * element and @k the index number on each call. Otherwise, it's assumed
- * to be a string containing a numeral and @k and @v are filled with
- * values from 0 to @o - 1 on each call.
+ * element and @i the index number on each call. If it's a file,
+ * @v contains the line read and @i the index number. Otherwise, it's
+ * assumed to be a string containing a numeral and @v and @i are filled
+ * with values from 0 to @set - 1 on each call.
  *
- * Any of @k and @v pointers can be NULL if the value is not of interest.
+ * Any of @v and @i pointers can be NULL if the value is not of interest.
  *
  * The @context pointer to integer is opaque and should be
  * initialized to zero on the first call.
  *
- * Returns 0 if no more data is left in @h.
+ * Returns 0 if no more data is left in @set.
  * [Hashes]
  * [Arrays]
  */
-int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
+int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 {
     int ret = 0;
 
-    mpdm_ref(o);
+    mpdm_ref(set);
 
-    if (MPDM_IS_HASH(o)) {
+    if (MPDM_IS_HASH(set)) {
         int bi, ei;
 
-        if (mpdm_size(o)) {
+        if (mpdm_size(set)) {
             /* get bucket and element index */
-            bi = (*context) % mpdm_size(o);
-            ei = (*context) / mpdm_size(o);
+            bi = (*context) % mpdm_size(set);
+            ei = (*context) / mpdm_size(set);
 
-            while (ret == 0 && bi < mpdm_size(o)) {
+            while (ret == 0 && bi < mpdm_size(set)) {
                 mpdm_t b;
 
                 /* if bucket is empty or there are no more
                    elements in it, pick the next one */
-                if (!(b = mpdm_aget(o, bi)) || ei >= mpdm_size(b)) {
+                if (!(b = mpdm_aget(set, bi)) || ei >= mpdm_size(b)) {
                     ei = 0;
                     bi++;
                 }
                 else {
                     /* get pair */
-                    if (k) *k = mpdm_aget(b, ei);
                     if (v) *v = mpdm_aget(b, ei + 1);
+                    if (i) *i = mpdm_aget(b, ei);
 
                     ei += 2;
 
                     /* update context */
-                    *context = (ei * mpdm_size(o)) + bi;
+                    *context = (ei * mpdm_size(set)) + bi;
                     ret = 1;
                 }
             }
         }
     }
     else
-    if (MPDM_IS_ARRAY(o)) {
-        if (*context < mpdm_size(o)) {
-            if (k) *k = MPDM_I(*context);
-            if (v) *v = mpdm_aget(o, (*context));
+    if (MPDM_IS_ARRAY(set)) {
+        if (*context < mpdm_size(set)) {
+            if (v) *v = mpdm_aget(set, (*context));
+            if (i) *i = MPDM_I(*context);
 
             (*context)++;
             ret = 1;
         }
     }
     else
-    if (MPDM_IS_FILE(o)) {
-        mpdm_t w = mpdm_read(o);
+    if (MPDM_IS_FILE(set)) {
+        mpdm_t w = mpdm_read(set);
 
         if (w != NULL) {
-            if (k) *k = MPDM_I(*context);
-            if (v) *v = w;
+            if (v)
+                *v = w;
+            else
+                mpdm_void(w);
 
-            if (!v) mpdm_void(w);
+            if (i) *i = MPDM_I(*context);
 
             (*context)++;
             ret = 1;
@@ -213,16 +216,16 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
     }
     else {
         /* assume it's a number */
-        if (*context < mpdm_ival(o)) {
-            if (k) *k = MPDM_I(*context);
+        if (*context < mpdm_ival(set)) {
             if (v) *v = MPDM_I(*context);
+            if (i) *i = MPDM_I(*context);
 
             (*context)++;
             ret = 1;
         }
     }
 
-    mpdm_unrefnd(o);
+    mpdm_unrefnd(set);
 
     return ret;
 }
@@ -237,21 +240,21 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     mpdm_ref(ctxt);
 
     if (set != NULL) {
-        mpdm_t k, v;
+        mpdm_t v, i;
         int n = 0;
 
         out = MPDM_A(0);
 
-        while (mpdm_iterator(set, &n, &k, &v)) {
+        while (mpdm_iterator(set, &n, &v, &i)) {
             mpdm_t w = NULL;
-            mpdm_ref(k);
             mpdm_ref(v);
+            mpdm_ref(i);
 
             if (MPDM_IS_EXEC(filter)) {
                 if (MPDM_IS_HASH(set))
-                    w = mpdm_exec_2(filter, k, v, ctxt);
+                    w = mpdm_exec_2(filter, i, v, ctxt);
                 else
-                    w = mpdm_exec_2(filter, v, k, ctxt);
+                    w = mpdm_exec_2(filter, v, i, ctxt);
             }
             else
             if (MPDM_IS_HASH(filter))
@@ -264,8 +267,8 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 
             mpdm_push(out, w);
 
+            mpdm_unref(i);
             mpdm_unref(v);
-            mpdm_unref(k);
         }
     }
 
@@ -286,28 +289,28 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     mpdm_ref(ctxt);
 
     if (set != NULL) {
-        mpdm_t k, v;
+        mpdm_t v, i;
         int n = 0;
 
         out = MPDM_H(0);
 
-        while (mpdm_iterator(set, &n, &k, &v)) {
+        while (mpdm_iterator(set, &n, &v, &i)) {
             mpdm_t w = NULL;
-            mpdm_ref(k);
+            mpdm_ref(i);
             mpdm_ref(v);
 
             if (MPDM_IS_EXEC(filter)) {
                 if (MPDM_IS_HASH(set))
-                    w = mpdm_exec_2(filter, k, v, ctxt);
+                    w = mpdm_exec_2(filter, i, v, ctxt);
                 else
-                    w = mpdm_exec_2(filter, v, k, ctxt);
+                    w = mpdm_exec_2(filter, v, i, ctxt);
             }
             else
             if (filter == NULL) {
                 /* invert hash */
                 w = MPDM_A(2);
                 mpdm_aset(w, v, 0);
-                mpdm_aset(w, k, 1);
+                mpdm_aset(w, i, 1);
             }
 
             mpdm_ref(w);
@@ -317,7 +320,7 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 
             mpdm_unref(w);
             mpdm_unref(v);
-            mpdm_unref(k);
+            mpdm_unref(i);
         }
     }
 

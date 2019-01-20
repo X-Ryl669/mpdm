@@ -92,10 +92,10 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
         /* if it's a hash, iterate it */
         if (v->flags & MPDM_HASH) {
             int c = 0;
-            mpdm_t k, w;
+            mpdm_t w, i;
 
-            while (mpdm_iterator(v, &c, &k, &w)) {
-                ptr = dump_1(k, l + 1, ptr, size);
+            while (mpdm_iterator(v, &c, &w, &i)) {
+                ptr = dump_1(i, l + 1, ptr, size);
                 ptr = dump_1(w, l + 2, ptr, size);
             }
         }

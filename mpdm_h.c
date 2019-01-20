@@ -299,17 +299,17 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_keys(const mpdm_t h)
 {
-    int n, c;
-    mpdm_t a, k;
+    int c;
+    mpdm_t a, i;
 
     mpdm_ref(h);
 
     /* create an array with the same number of elements */
-    a = MPDM_A(mpdm_hsize(h));
+    a = MPDM_A(0);
 
-    c = n = 0;
-    while (mpdm_iterator(h, &c, &k, NULL))
-        mpdm_aset(a, k, n++);
+    c = 0;
+    while (mpdm_iterator(h, &c, NULL, &i))
+        mpdm_push(a, i);
 
     mpdm_unref(h);
 

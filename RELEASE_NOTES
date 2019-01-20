@@ -1,8 +1,8 @@
 MPDM Release Notes
 ==================
 
-2.20-dev
----------
+2.21-dev
+--------
 
  - New features:
    - Added the concept of "extended" values: they contain an
@@ -10,6 +10,7 @@ MPDM Release Notes
      Also, only these extended values stored cached ival and rval.
      This way, many values use much less memory.
  - Other changes:
+   - mpdm_iterator() has changed the order of args from k, v to v, i.
    - The version numbering has changed from X.X.X to X.XXX (real number).
 
 2.1.6

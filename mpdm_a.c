@@ -739,19 +739,19 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
     mpdm_ref(b);
 
     if (MPDM_IS_HASH(a)) {
-        int n = 0, i = 0;
-        mpdm_t k, v;
+        int n = 0, c = 0;
+        mpdm_t v, i;
 
         if (MPDM_IS_HASH(b)) {
             /* hash-hash */
             r = MPDM_H(0);
 
             n = 0;
-            while (mpdm_iterator(a, &n, &k, &v))
-                mpdm_hset(r, k, v);
+            while (mpdm_iterator(a, &n, &v, &i))
+                mpdm_hset(r, i, v);
             n = 0;
-            while (mpdm_iterator(b, &n, &k, &v))
-                mpdm_hset(r, k, v);
+            while (mpdm_iterator(b, &n, &v, &i))
+                mpdm_hset(r, i, v);
         }
         else
         if (MPDM_IS_ARRAY(b)) {
@@ -766,8 +766,8 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
             /* hash-string */
             r = MPDM_A(mpdm_hsize(a));
 
-            while (mpdm_iterator(a, &n, &k, &v))
-                mpdm_aset(r, mpdm_strcat(k, mpdm_strcat(b, v)), i++);
+            while (mpdm_iterator(a, &n, &v, &i))
+                mpdm_aset(r, mpdm_strcat(i, mpdm_strcat(b, v)), c++);
         }
     }
     else

@@ -1043,17 +1043,18 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
 /* fills a %j JSON format */
 {
     int n = 0, c = 0;
-    mpdm_t k, w;
 
     if (MPDM_IS_HASH(v)) {
+        mpdm_t w, i;
+
         o = mpdm_pokews(o, l, L"{");
 
-        while (mpdm_iterator(v, &n, &k, &w)) {
+        while (mpdm_iterator(v, &n, &w, &i)) {
             if (c)
                 o = mpdm_pokews(o, l, L",");
 
             o = mpdm_pokews(o, l, L"\"");
-            o = json_s(o, l, k);
+            o = json_s(o, l, i);
             o = mpdm_pokews(o, l, L"\":");
 
             if (w == NULL)
@@ -1078,9 +1079,11 @@ static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
     }
     else
     if (MPDM_IS_ARRAY(v)) {
+        mpdm_t w;
+
         o = mpdm_pokews(o, l, L"[");
 
-        while (mpdm_iterator(v, &n, &k, &w)) {
+        while (mpdm_iterator(v, &n, &w, NULL)) {
             if (c)
                 o = mpdm_pokews(o, l, L",");
 
