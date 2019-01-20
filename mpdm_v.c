@@ -208,9 +208,9 @@ mpdm_t mpdm_root(void)
  * the output of mpdm_exec() in case of it being void (i.e.
  * its return value ignored).
  */
-void mpdm_void(mpdm_t v)
+mpdm_t mpdm_void(mpdm_t v)
 {
-    mpdm_unref(mpdm_ref(v));
+    return mpdm_unref(mpdm_ref(v));
 }
 
 

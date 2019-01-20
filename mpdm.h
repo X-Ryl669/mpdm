@@ -111,7 +111,7 @@ int mpdm_size(const mpdm_t v);
 mpdm_t mpdm_clone(const mpdm_t v);
 mpdm_t mpdm_root(void);
 
-void mpdm_void(mpdm_t v);
+mpdm_t mpdm_void(mpdm_t v);
 int mpdm_is_null(mpdm_t v);
 mpdm_t mpdm_set(mpdm_t *v, mpdm_t w);
 
