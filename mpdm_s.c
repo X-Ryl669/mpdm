@@ -1327,6 +1327,7 @@ mpdm_t mpdm_ulc(const mpdm_t s, int u)
 
 enum {
     JS_ERROR = -1,
+    JS_INCOMPLETE,
     JS_OCURLY,
     JS_OBRACK,
     JS_CCURLY,
@@ -1335,8 +1336,9 @@ enum {
     JS_COLON,
     JS_VALUE,
     JS_STRING,
-    JS_SSTRING,
     JS_NUMBER,
+    JS_TRUE,
+    JS_FALSE,
     JS_NULL,
     JS_ARRAY,
     JS_OBJECT
@@ -1429,13 +1431,13 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
     else
     if (c == 't' && wcsncmp(s, L"rue", 3) == 0) {
         s += 3;
-        *t = JS_NUMBER;
+        *t = JS_TRUE;
         v = MPDM_I(1);
     }
     else
     if (c == 'f' && wcsncmp(s, L"alse", 4) == 0) {
         s += 4;
-        *t = JS_NUMBER;
+        *t = JS_FALSE;
         v = MPDM_I(0);
     }
     else
@@ -1451,110 +1453,174 @@ static wchar_t *json_lexer(wchar_t *s, int *t, mpdm_t *pv)
     return s;
 }
 
-wchar_t *json_parser(wchar_t *s, int *t, mpdm_t *pv)
+
+static wchar_t *json_parse_array(wchar_t *s, int *t, mpdm_t *pv);
+static wchar_t *json_parse_object(wchar_t *s, int *t, mpdm_t *pv);
+
+static wchar_t *json_value(wchar_t *s, int *t, mpdm_t *pv)
 {
-    mpdm_t v = NULL;
+    int tt = *t;
 
-    s = json_lexer(s, t, &v);
-
-    if (*t == JS_OCURLY) {
-        v = mpdm_ref(MPDM_H(0));
-
-        for (;;) {
-            wchar_t *os;
-            mpdm_t k, w;
-
-            s = json_lexer(s, t, &k);
-
-            if (*t == JS_CCURLY) {
-                *t = JS_OBJECT;
-                break;
-            }
-
-            if (*t != JS_STRING) {
-                *t = JS_ERROR;
-                break;
-            }
-
-            s = json_lexer(s, t, &w);
-
-            if (*t != JS_COLON) {
-                *t = JS_ERROR;
-                break;
-            }
-
-            os = s;
-            s = json_lexer(os, t, &w);
-
-            if (*t == JS_OCURLY || *t == JS_OBRACK)
-                s = json_parser(os, t, &w);
-
-            if (*t > JS_VALUE)
-                mpdm_hset(v, k, w);
-            else {
-                *t = JS_ERROR;
-                break;
-            }
-
-            s = json_lexer(s, t, &w);
-
-            if (*t == JS_CCURLY) {
-                *t = JS_OBJECT;
-                break;
-            }
-            else
-            if (*t != JS_COMMA) {
-                *t = JS_ERROR;
-                break;
-            }
-        }
-
-        mpdm_unrefnd(v);
-    }
+    if (*t == JS_OBRACK)
+        s = json_parse_array(s, &tt, pv);
     else
-    if (*t == JS_OBRACK) {
-        v = mpdm_ref(MPDM_A(0));
+    if (*t == JS_OCURLY)
+        s = json_parse_object(s, &tt, pv);
 
-        for (;;) {
-            mpdm_t w;
-            wchar_t *os = s;
-
-            s = json_lexer(os, t, &w);
-
-            if (*t == JS_CBRACK) {
-                *t = JS_ARRAY;
-                break;
-            }
-
-            if (*t == JS_OCURLY || *t == JS_OBRACK)
-                s = json_parser(os, t, &w);
-
-            if (*t > JS_VALUE)
-                mpdm_push(v, w);
-            else {
-                *t = JS_ERROR;
-                break;
-            }
-
-            s = json_lexer(s, t, &w);
-
-            if (*t == JS_CBRACK) {
-                *t = JS_ARRAY;
-                break;
-            }
-            else
-            if (*t != JS_COMMA) {
-                *t = JS_ERROR;
-                break;
-            }
-        }
-
-        mpdm_unrefnd(v);
-    }
-    else
+    if (tt >= JS_VALUE)
+        *t = JS_VALUE;
+    else {
+        *pv = mpdm_void(*pv);
         *t = JS_ERROR;
+    }
 
-    *pv = v;
+    return s;
+}
+
+
+static wchar_t *json_pair(wchar_t *s, int *t, mpdm_t *pk, mpdm_t *pv)
+{
+    int tt = *t;
+
+    if (tt == JS_STRING) {
+        s = json_lexer(s, &tt, pv);
+
+        if (tt == JS_COLON) {
+            s = json_lexer(s, &tt, pv);
+            s = json_value(s, &tt, pv);
+        }
+        else
+            tt = JS_ERROR;
+    }
+    else
+        tt = JS_ERROR;
+
+    if (tt >= JS_VALUE)
+        *t = JS_VALUE;
+    else {
+        *pk = mpdm_void(*pk);
+        *pv = mpdm_void(*pv);
+        *t = JS_ERROR;
+    }
+
+    return s;
+}
+
+
+static wchar_t *json_parse_object(wchar_t *s, int *t, mpdm_t *h)
+{
+    mpdm_t k = NULL;
+    int tt;
+
+    *h = MPDM_H(0);
+    *t = JS_INCOMPLETE;
+
+    s = json_lexer(s, &tt, &k);
+
+    if (tt == JS_CCURLY)
+        *t = JS_OBJECT;
+    else {
+        mpdm_t w = NULL;
+
+        s = json_pair(s, &tt, &k, &w);
+
+        if (tt == JS_VALUE) {
+            mpdm_hset(*h, k, w);
+
+            while (*t == JS_INCOMPLETE) {
+                s = json_lexer(s, &tt, &k);
+
+                if (tt == JS_CCURLY)
+                    *t = JS_OBJECT;
+                else
+                if (tt == JS_COMMA) {
+                    s = json_lexer(s, &tt, &k);
+                    s = json_pair(s, &tt, &k, &w);
+
+                    if (tt == JS_VALUE)
+                        mpdm_hset(*h, k, w);
+                    else
+                        *t = JS_ERROR;
+                }
+                else
+                    *t = JS_ERROR;
+            }
+        }
+        else
+            *t = JS_ERROR;
+    }
+
+    if (*t == JS_ERROR)
+        *h = mpdm_void(*h);
+
+    return s;
+}
+
+
+static wchar_t *json_parse_array(wchar_t *s, int *t, mpdm_t *a)
+{
+    mpdm_t w = NULL;
+    int tt;
+
+    *a = MPDM_A(0);
+    *t = JS_INCOMPLETE;
+
+    s = json_lexer(s, &tt, &w);
+
+    if (tt == JS_CBRACK)
+        *t = JS_ARRAY;
+    else {
+        s = json_value(s, &tt, &w);
+
+        if (tt == JS_VALUE) {
+            mpdm_push(*a, w);
+
+            while (*t == JS_INCOMPLETE) {
+                s = json_lexer(s, &tt, &w);
+
+                if (tt == JS_CBRACK)
+                    *t = JS_ARRAY;
+                else
+                if (tt == JS_COMMA) {
+                    s = json_lexer(s, &tt, &w);
+                    s = json_value(s, &tt, &w);
+
+                    if (tt == JS_VALUE)
+                        mpdm_push(*a, w);
+                    else
+                        *t = JS_ERROR;
+                }
+                else
+                    *t = JS_ERROR;
+            }
+        }
+        else
+            *t = JS_ERROR;
+    }
+
+    if (*t == JS_ERROR)
+        *a = mpdm_void(*a);
+
+    return s;
+}
+
+
+wchar_t *json_parser(wchar_t *s, mpdm_t *v)
+{
+    int t;
+
+    s = json_lexer(s, &t, v);
+
+    if (t == JS_OCURLY)
+        s = json_parse_object(s, &t, v);
+    else
+    if (t == JS_OBRACK)
+        s = json_parse_array(s, &t, v);
+    else
+        t = JS_ERROR;
+
+    if (t != JS_ARRAY && t != JS_OBJECT)
+        *v = mpdm_void(*v);
 
     return s;
 }
@@ -1789,15 +1855,11 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
             else
                 /* JSON parsing */
             if (cmd == L'j') {
-                int t;
-                mpdm_t v;
+                mpdm_t v = NULL;
 
-                i = json_parser(i, &t, &v);
+                i = json_parser(i, &v);
 
-                if (t == -1)
-                    break;
-                else
-                    mpdm_push(r, v);
+                mpdm_push(r, v);
             }
             else
                 /* a standard set? */
