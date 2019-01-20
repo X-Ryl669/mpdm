@@ -154,6 +154,8 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
 {
     int ret = 0;
 
+    mpdm_ref(o);
+
     if (MPDM_IS_HASH(o)) {
         int bi, ei;
 
@@ -220,6 +222,8 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
         }
     }
 
+    mpdm_unrefnd(o);
+
     return ret;
 }
 
@@ -227,9 +231,13 @@ int mpdm_iterator(mpdm_t o, int *context, mpdm_t *k, mpdm_t *v)
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 {
     mpdm_t out = NULL;
-    mpdm_t k, v;
+
+    mpdm_ref(set);
+    mpdm_ref(filter);
+    mpdm_ref(ctxt);
 
     if (set != NULL) {
+        mpdm_t k, v;
         int n = 0;
         out = MPDM_A(0);
 
@@ -260,5 +268,62 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
         }
     }
 
+    mpdm_unref(ctxt);
+    mpdm_unref(filter);
+    mpdm_unref(set);
+
     return out;
 }
+
+
+#if 0
+mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
+{
+    mpdm_t out = NULL;
+
+    mpdm_ref(set);
+    mpdm_ref(filter);
+    mpdm_ref(ctxt);
+
+    if (set != NULL) {
+        mpdm_t k, v;
+        int n = 0;
+        out = MPDM_H(0);
+
+        while (mpdm_iterator(set, &n, &k, &v)) {
+            mpdm_t w = NULL;
+            mpdm_ref(k);
+            mpdm_ref(v);
+
+            if (MPDM_IS_EXEC(filter)) {
+                if (MPDM_IS_HASH(set))
+                    w = mpdm_exec_2(filter, k, v, ctxt);
+                else
+                    w = mpdm_exec_2(filter, v, k, ctxt);
+            }
+            else
+            if (filter == NULL) {
+                /* invert hash */
+                w = MPDM_A(2);
+                mpdm_aset(w, v, 0);
+                mpdm_aset(w, k, 1);
+            }
+
+            mpdm_ref(w);
+
+            if (MPDM_IS_ARRAY(w))
+                mpdm_hset(out, mpdm_aget(w, 0), mpdm_aget(w, 1));
+
+            mpdm_unref(w);
+            mpdm_unref(v);
+            mpdm_unref(k);
+        }
+    }
+
+    mpdm_unref(ctxt);
+    mpdm_unref(filter);
+    mpdm_unref(set);
+
+    return out;
+}
+#endif
