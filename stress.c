@@ -1800,47 +1800,53 @@ void test_channel(void)
     mpdm_unref(p);
 }
 
-wchar_t *json_parser(wchar_t *s, mpdm_t *pv);
+mpdm_t json_parser(wchar_t **s);
+
+mpdm_t json_parser_t(wchar_t *s)
+{
+    return json_parser(&s);
+}
+
 
 void test_json_in(void)
 {
     mpdm_t v;
 
-    json_parser(L"1234", &v);
+    v = json_parser_t(L"1234");
     do_test("JSON 1", v == NULL);
 
-    json_parser(L" [1,2]", &v);
+    v = json_parser_t(L" [1,2]");
     mpdm_ref(v);
     do_test("JSON 2", MPDM_IS_ARRAY(v));
     do_test("JSON 2.1", mpdm_ival(mpdm_aget(v, 0)) == 1);
     do_test("JSON 2.2", mpdm_ival(mpdm_aget(v, 1)) == 2);
     mpdm_unref(v);
 
-    json_parser(L"[3, [4, 5]]", &v);
+    v = json_parser_t(L"[3, [4, 5]]");
     mpdm_ref(v);
     do_test("JSON 3", MPDM_IS_ARRAY(v));
     do_test("JSON 3.1", mpdm_ival(mpdm_aget(v, 0)) == 3);
     do_test("JSON 3.2", mpdm_ival(mpdm_aget(mpdm_aget(v, 1), 1)) == 5);
     mpdm_unref(v);
 
-    json_parser(L"{\"k1\": 10, \"k2\":20}", &v);
+    v = json_parser_t(L"{\"k1\": 10, \"k2\":20}");
     mpdm_ref(v);
     do_test("JSON 4", MPDM_IS_HASH(v));
     do_test("JSON 4.1", mpdm_ival(mpdm_hget_s(v, L"k2")) == 20);
     do_test("JSON 4.2", mpdm_ival(mpdm_hget_s(v, L"k1")) == 10);
     mpdm_unref(v);
 
-    json_parser(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}", &v);
+    v = json_parser_t(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}");
     mpdm_ref(v);
     do_test("JSON 5", MPDM_IS_HASH(v));
     mpdm_unref(v);
 
-    json_parser(L"{\"k1\":true,\"k2\":false,\"k3\":null}", &v);
+    v = json_parser_t(L"{\"k1\":true,\"k2\":false,\"k3\":null}");
     mpdm_ref(v);
     do_test("JSON 6", MPDM_IS_HASH(v));
     mpdm_unref(v);
 
-    json_parser(L"{\"k1\":\"-\\u005f-\"}", &v);
+    v = json_parser_t(L"{\"k1\":\"-\\u005f-\"}");
     mpdm_ref(v);
     do_test("JSON 7", MPDM_IS_HASH(v));
     mpdm_unref(v);
