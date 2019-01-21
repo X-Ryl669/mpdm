@@ -242,20 +242,6 @@ mpdm_t mpdm_set(mpdm_t *v, mpdm_t w)
 }
 
 
-mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2)
-{
-    mpdm_t x;
-
-    x = MPDM_A(2);
-    x->flags |= MPDM_EXEC;
-
-    mpdm_aset(x, MPDM_X(a1), 0);
-    mpdm_aset(x, a2, 1);
-
-    return x;
-}
-
-
 mpdm_t mpdm_new_copy(int flags, void *ptr, int size)
 {
     mpdm_t r = NULL;
