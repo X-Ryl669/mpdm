@@ -42,28 +42,28 @@ done
 
 if [ "$CONFIG_HELP" = "1" ] ; then
 
-	echo "Available options:"
-	echo "--prefix=PREFIX       Installation prefix ($PREFIX)."
-	echo "--docdir=DOCDIR       Instalation directory for documentation."
-	echo "--without-win32       Disable win32 interface detection."
-	echo "--without-unix-glob   Disable glob.h usage (use workaround)."
-	echo "--with-included-regex Use included regex code (gnu_regex.c)."
-	echo "--with-pcre           Enable PCRE library detection."
-	echo "--without-gettext     Disable gettext usage."
-	echo "--without-iconv       Disable iconv usage."
-	echo "--without-wcwidth     Disable system wcwidth() (use Marcus Kuhn's)."
-	echo "--mingw32             Build using the mingw32 compiler."
+    echo "Available options:"
+    echo "--prefix=PREFIX       Installation prefix ($PREFIX)."
+    echo "--docdir=DOCDIR       Instalation directory for documentation."
+    echo "--without-win32       Disable win32 interface detection."
+    echo "--without-unix-glob   Disable glob.h usage (use workaround)."
+    echo "--with-included-regex Use included regex code (gnu_regex.c)."
+    echo "--with-pcre           Enable PCRE library detection."
+    echo "--without-gettext     Disable gettext usage."
+    echo "--without-iconv       Disable iconv usage."
+    echo "--without-wcwidth     Disable system wcwidth() (use Marcus Kuhn's)."
+    echo "--mingw32             Build using the mingw32 compiler."
 
-	echo
-	echo "Environment variables:"
-	echo "CC                    C Compiler."
-	echo "AR                    Library Archiver."
+    echo
+    echo "Environment variables:"
+    echo "CC                    C Compiler."
+    echo "AR                    Library Archiver."
 
-	exit 1
+    exit 1
 fi
 
 if [ "$DOCDIR" = "" ] ; then
-	DOCDIR=$PREFIX/share/doc/mpdm
+    DOCDIR=$PREFIX/share/doc/mpdm
 fi
 
 echo "Configuring MPDM..."
@@ -76,20 +76,20 @@ echo "# automatically created by config.sh - do not modify" > makefile.opts
 
 # set compiler
 if [ "$CC" = "" ] ; then
-	CC=cc
-	# if CC is unset, try if gcc is available
-	which gcc > /dev/null 2>&1
+    CC=cc
+    # if CC is unset, try if gcc is available
+    which gcc > /dev/null 2>&1
 
-	if [ $? = 0 ] ; then
-		CC=gcc
-	fi
+    if [ $? = 0 ] ; then
+        CC=gcc
+    fi
 fi
 
 echo "CC=$CC" >> makefile.opts
 
 # set archiver
 if [ "$AR" = "" ] ; then
-	AR=ar
+    AR=ar
 fi
 
 echo "AR=$AR" >> makefile.opts
@@ -171,72 +171,72 @@ fi
 
 # glob.h support
 if [ "$WITHOUT_UNIX_GLOB" != 1 ] ; then
-	echo -n "Testing for unix-like glob.h... "
-	echo "#include <stdio.h>" > .tmp.c
-	echo "#include <glob.h>" >> .tmp.c
-	echo "int main(void) { glob_t g; g.gl_offs=1; glob(\"*\",GLOB_MARK,NULL,&g); return 0; }" >> .tmp.c
+    echo -n "Testing for unix-like glob.h... "
+    echo "#include <stdio.h>" > .tmp.c
+    echo "#include <glob.h>" >> .tmp.c
+    echo "int main(void) { glob_t g; g.gl_offs=1; glob(\"*\",GLOB_MARK,NULL,&g); return 0; }" >> .tmp.c
 
-	$CC .tmp.c -o .tmp.o 2>> .config.log
+    $CC .tmp.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "#define CONFOPT_GLOB_H 1" >> config.h
-		echo "OK"
-	else
-		echo "No; activating workaround"
-	fi
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_GLOB_H 1" >> config.h
+        echo "OK"
+    else
+        echo "No; activating workaround"
+    fi
 fi
 
 # regex
 echo -n "Testing for regular expressions... "
 
 if [ "$WITH_PCRE" = 1 ] ; then
-	# try first the pcre library
-	TMP_CFLAGS="-I/usr/local/include"
-	TMP_LDFLAGS="-L/usr/local/lib -lpcre -lpcreposix"
-	echo "#include <pcreposix.h>" > .tmp.c
-	echo "int main(void) { regex_t r; regmatch_t m; regcomp(&r,\".*\",REG_EXTENDED|REG_ICASE); return 0; }" >> .tmp.c
+    # try first the pcre library
+    TMP_CFLAGS="-I/usr/local/include"
+    TMP_LDFLAGS="-L/usr/local/lib -lpcre -lpcreposix"
+    echo "#include <pcreposix.h>" > .tmp.c
+    echo "int main(void) { regex_t r; regmatch_t m; regcomp(&r,\".*\",REG_EXTENDED|REG_ICASE); return 0; }" >> .tmp.c
 
-	$CC $TMP_CFLAGS .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+    $CC $TMP_CFLAGS .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "OK (using pcre library)"
-		echo "#define CONFOPT_PCRE 1" >> config.h
-		echo "$TMP_CFLAGS " >> config.cflags
-		echo "$TMP_LDFLAGS " >> config.ldflags
-		REGEX_YET=1
-	fi
+    if [ $? = 0 ] ; then
+        echo "OK (using pcre library)"
+        echo "#define CONFOPT_PCRE 1" >> config.h
+        echo "$TMP_CFLAGS " >> config.cflags
+        echo "$TMP_LDFLAGS " >> config.ldflags
+        REGEX_YET=1
+    fi
 fi
 
 if [ "$REGEX_YET" != 1 -a "$WITH_INCLUDED_REGEX" != 1 ] ; then
-	echo "#include <sys/types.h>" > .tmp.c
-	echo "#include <regex.h>" >> .tmp.c
-	echo "int main(void) { regex_t r; regmatch_t m; regcomp(&r,\".*\",REG_EXTENDED|REG_ICASE); return 0; }" >> .tmp.c
+    echo "#include <sys/types.h>" > .tmp.c
+    echo "#include <regex.h>" >> .tmp.c
+    echo "int main(void) { regex_t r; regmatch_t m; regcomp(&r,\".*\",REG_EXTENDED|REG_ICASE); return 0; }" >> .tmp.c
 
-	$CC .tmp.c -o .tmp.o 2>> .config.log
+    $CC .tmp.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "OK (using system one)"
-		echo "#define CONFOPT_SYSTEM_REGEX 1" >> config.h
-		REGEX_YET=1
-	fi
+    if [ $? = 0 ] ; then
+        echo "OK (using system one)"
+        echo "#define CONFOPT_SYSTEM_REGEX 1" >> config.h
+        REGEX_YET=1
+    fi
 fi
 
 if [ "$REGEX_YET" != 1 ] ; then
-	# if system libraries lack regex, try compiling the
-	# included gnu_regex.c
+    # if system libraries lack regex, try compiling the
+    # included gnu_regex.c
 
-	$CC -c -DSTD_HEADERS -DREGEX gnu_regex.c -o .tmp.o 2>> .config.log
+    $CC -c -DSTD_HEADERS -DREGEX gnu_regex.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "OK (using included gnu_regex.c)"
-		echo "#define HAVE_STRING_H 1" >> config.h
-		echo "#define REGEX 1" >> config.h
-		echo "#define CONFOPT_INCLUDED_REGEX 1" >> config.h
-	else
-		echo "#define CONFOPT_NO_REGEX 1" >> config.h
-		echo "No (No usable regex library)"
-		exit 1
-	fi
+    if [ $? = 0 ] ; then
+        echo "OK (using included gnu_regex.c)"
+        echo "#define HAVE_STRING_H 1" >> config.h
+        echo "#define REGEX 1" >> config.h
+        echo "#define CONFOPT_INCLUDED_REGEX 1" >> config.h
+    else
+        echo "#define CONFOPT_NO_REGEX 1" >> config.h
+        echo "No (No usable regex library)"
+        exit 1
+    fi
 fi
 
 # unistd.h detection
@@ -247,10 +247,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_UNISTD_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_UNISTD_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # sys/types.h detection
@@ -261,10 +261,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_SYS_TYPES_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_SYS_TYPES_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # sys/wait.h detection
@@ -275,10 +275,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_SYS_WAIT_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_SYS_WAIT_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # sys/stat.h detection
@@ -289,10 +289,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_SYS_STAT_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_SYS_STAT_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # pwd.h detection
@@ -303,10 +303,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_PWD_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_PWD_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # sys/socket.h detection
@@ -317,10 +317,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_SYS_SOCKET_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_SYS_SOCKET_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # netdb.h detection
@@ -331,10 +331,10 @@ echo "int main(void) { return(0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_NETDB_H 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_NETDB_H 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # chown() detection
@@ -346,42 +346,42 @@ echo "int main(void) { chown(\"file\", 0, 0); }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_CHOWN 1" >> config.h
-	echo "OK"
+    echo "#define CONFOPT_CHOWN 1" >> config.h
+    echo "OK"
 else
-	echo "No"
+    echo "No"
 fi
 
 # gettext support
 echo -n "Testing for gettext... "
 
 if [ "$WITHOUT_GETTEXT" = "1" ] ; then
-	echo "Disabled by user"
+    echo "Disabled by user"
 else
-	echo "#include <libintl.h>" > .tmp.c
-	echo "#include <locale.h>" >> .tmp.c
-	echo "int main(void) { setlocale(LC_ALL, \"\"); gettext(\"hi\"); return 0; }" >> .tmp.c
+    echo "#include <libintl.h>" > .tmp.c
+    echo "#include <locale.h>" >> .tmp.c
+    echo "int main(void) { setlocale(LC_ALL, \"\"); gettext(\"hi\"); return 0; }" >> .tmp.c
 
-	# try first to compile without -lintl
-	$CC .tmp.c -o .tmp.o 2>> .config.log
+    # try first to compile without -lintl
+    $CC .tmp.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "OK"
-		echo "#define CONFOPT_GETTEXT 1" >> config.h
-	else
-		# try now with -lintl
-		TMP_LDFLAGS="-lintl"
+    if [ $? = 0 ] ; then
+        echo "OK"
+        echo "#define CONFOPT_GETTEXT 1" >> config.h
+    else
+        # try now with -lintl
+        TMP_LDFLAGS="-lintl"
 
-		$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+        $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
 
-		if [ $? = 0 ] ; then
-			echo "OK (libintl needed)"
-			echo "#define CONFOPT_GETTEXT 1" >> config.h
-			echo "$TMP_LDFLAGS" >> config.ldflags
-		else
-			echo "No"
-		fi
-	fi
+        if [ $? = 0 ] ; then
+            echo "OK (libintl needed)"
+            echo "#define CONFOPT_GETTEXT 1" >> config.h
+            echo "$TMP_LDFLAGS" >> config.ldflags
+        else
+            echo "No"
+        fi
+    fi
 fi
 
 
@@ -389,51 +389,51 @@ fi
 echo -n "Testing for iconv... "
 
 if [ "$WITHOUT_ICONV" = "1" ] ; then
-	echo "Disabled by user"
+    echo "Disabled by user"
 else
-	echo "#include <iconv.h>" > .tmp.c
-	echo "#include <locale.h>" >> .tmp.c
-	echo "int main(void) { setlocale(LC_ALL, \"\"); iconv_open(\"WCHAR_T\", \"ISO-8859-1\"); return 0; }" >> .tmp.c
+    echo "#include <iconv.h>" > .tmp.c
+    echo "#include <locale.h>" >> .tmp.c
+    echo "int main(void) { setlocale(LC_ALL, \"\"); iconv_open(\"WCHAR_T\", \"ISO-8859-1\"); return 0; }" >> .tmp.c
 
-	# try first to compile without -liconv
-	$CC .tmp.c -o .tmp.o 2>> .config.log
+    # try first to compile without -liconv
+    $CC .tmp.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "OK"
-		echo "#define CONFOPT_ICONV 1" >> config.h
-	else
-		# try now with -liconv
-		TMP_LDFLAGS="-liconv"
+    if [ $? = 0 ] ; then
+        echo "OK"
+        echo "#define CONFOPT_ICONV 1" >> config.h
+    else
+        # try now with -liconv
+        TMP_LDFLAGS="-liconv"
 
-		$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+        $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
 
-		if [ $? = 0 ] ; then
-			echo "OK (libiconv needed)"
-			echo "#define CONFOPT_ICONV 1" >> config.h
-			echo "$TMP_LDFLAGS" >> config.ldflags
-		else
-			echo "No"
-		fi
-	fi
+        if [ $? = 0 ] ; then
+            echo "OK (libiconv needed)"
+            echo "#define CONFOPT_ICONV 1" >> config.h
+            echo "$TMP_LDFLAGS" >> config.ldflags
+        else
+            echo "No"
+        fi
+    fi
 fi
 
 # wcwidth() existence
 echo -n "Testing for wcwidth()... "
 
 if [ "$WITHOUT_WCWIDTH" = "1" ] ; then
-	echo "Disabled by user (using Markus Kuhn's)"
+    echo "Disabled by user (using Markus Kuhn's)"
 else
-	echo "#include <wchar.h>" > .tmp.c
-	echo "int main(void) { wcwidth(L'a'); return 0; }" >> .tmp.c
+    echo "#include <wchar.h>" > .tmp.c
+    echo "int main(void) { wcwidth(L'a'); return 0; }" >> .tmp.c
 
-	$CC .tmp.c -o .tmp.o 2>> .config.log
+    $CC .tmp.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "OK"
-		echo "#define CONFOPT_WCWIDTH 1" >> config.h
-	else
-		echo "No; using Markus Kuhn's wcwidth()"
-	fi
+    if [ $? = 0 ] ; then
+        echo "OK"
+        echo "#define CONFOPT_WCWIDTH 1" >> config.h
+    else
+        echo "No; using Markus Kuhn's wcwidth()"
+    fi
 fi
 
 # canonicalize_file_name() detection
@@ -444,32 +444,32 @@ echo "int main(void) { canonicalize_file_name(\"file\"); return 0; }" >> .tmp.c
 $CC .tmp.c -o .tmp.o 2>> .config.log
 
 if [ $? = 0 ] ; then
-	echo "#define CONFOPT_CANONICALIZE_FILE_NAME 1" >> config.h
-	echo "canonicalize_file_name()"
+    echo "#define CONFOPT_CANONICALIZE_FILE_NAME 1" >> config.h
+    echo "canonicalize_file_name()"
 else
-	# try now realpath
-	echo "#include <stdlib.h>" > .tmp.c
-	echo "int main(void) { char tmp[2048]; realpath(\"file\", tmp); return 0; }" >> .tmp.c
+    # try now realpath
+    echo "#include <stdlib.h>" > .tmp.c
+    echo "int main(void) { char tmp[2048]; realpath(\"file\", tmp); return 0; }" >> .tmp.c
 
-	$CC .tmp.c -o .tmp.o 2>> .config.log
+    $CC .tmp.c -o .tmp.o 2>> .config.log
 
-	if [ $? = 0 ] ; then
-		echo "#define CONFOPT_REALPATH 1" >> config.h
-		echo "realpath()"
-	else
-		# try now _fullpath
-		echo "#include <stdlib.h>" > .tmp.c
-		echo "int main(void) { char tmp[2048]; _fullpath(tmp, \"file\", _MAX_PATH); return 0; }" >> .tmp.c
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_REALPATH 1" >> config.h
+        echo "realpath()"
+    else
+        # try now _fullpath
+        echo "#include <stdlib.h>" > .tmp.c
+        echo "int main(void) { char tmp[2048]; _fullpath(tmp, \"file\", _MAX_PATH); return 0; }" >> .tmp.c
 
-		$CC .tmp.c -o .tmp.o 2>> .config.log
+        $CC .tmp.c -o .tmp.o 2>> .config.log
 
-		if [ $? = 0 ] ; then
-			echo "#define CONFOPT_FULLPATH 1" >> config.h
-			echo "_fullpath()"
-		else
-			echo "No"
-		fi
-	fi
+        if [ $? = 0 ] ; then
+            echo "#define CONFOPT_FULLPATH 1" >> config.h
+            echo "_fullpath()"
+        else
+            echo "No"
+        fi
+    fi
 fi
 
 if [ "$WITH_WIN32" != 1 ] ; then
@@ -553,12 +553,12 @@ echo -n "Testing if Grutatxt is installed... "
 DOCS="\$(ADD_DOCS)"
 
 if which grutatxt > /dev/null 2>&1 ; then
-	echo "OK"
-	echo "GRUTATXT=yes" >> makefile.opts
-	DOCS="$DOCS \$(GRUTATXT_DOCS)"
+    echo "OK"
+    echo "GRUTATXT=yes" >> makefile.opts
+    DOCS="$DOCS \$(GRUTATXT_DOCS)"
 else
-	echo "No"
-	echo "GRUTATXT=no" >> makefile.opts
+    echo "No"
+    echo "GRUTATXT=no" >> makefile.opts
 fi
 
 # test for mp_doccer
@@ -567,27 +567,27 @@ MP_DOCCER=$(which mp_doccer||which mp-doccer)
 
 if [ $? = 0 ] ; then
 
-	if ${MP_DOCCER} --help | grep grutatxt > /dev/null ; then
+    if ${MP_DOCCER} --help | grep grutatxt > /dev/null ; then
 
-		echo "OK"
+        echo "OK"
 
-		echo "MP_DOCCER=yes" >> makefile.opts
-		DOCS="$DOCS \$(MP_DOCCER_DOCS)"
+        echo "MP_DOCCER=yes" >> makefile.opts
+        DOCS="$DOCS \$(MP_DOCCER_DOCS)"
 
-		grep GRUTATXT=yes makefile.opts > /dev/null && DOCS="$DOCS \$(G_AND_MP_DOCS)"
-	else
-		echo "Outdated (No)"
-		echo "MP_DOCCER=no" >> makefile.opts
-	fi
+        grep GRUTATXT=yes makefile.opts > /dev/null && DOCS="$DOCS \$(G_AND_MP_DOCS)"
+    else
+        echo "Outdated (No)"
+        echo "MP_DOCCER=no" >> makefile.opts
+    fi
 else
-	echo "No"
-	echo "MP_DOCCER=no" >> makefile.opts
+    echo "No"
+    echo "MP_DOCCER=no" >> makefile.opts
 fi
 
 if [ "$WITH_NULL_HASH" = "1" ] ; then
-	echo "Selecting NULL hash function"
+    echo "Selecting NULL hash function"
 
-	echo "#define CONFOPT_NULL_HASH 1" >> config.h
+    echo "#define CONFOPT_NULL_HASH 1" >> config.h
 fi
 
 #########################################################
