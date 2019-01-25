@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_f.c - File management
 
@@ -66,6 +66,8 @@
 #ifdef CONFOPT_NETDB_H
 #include <netdb.h>
 #endif
+
+#include <fcntl.h>
 
 #endif /* CONFOPT_WIN32 */
 
@@ -1792,6 +1794,8 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
         pipe(pw);
 
     if (fork() == 0) {
+        setsid();
+
         /* child process */
         if (rw & 0x01) {
             close(1);
