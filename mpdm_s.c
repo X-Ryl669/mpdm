@@ -1420,16 +1420,26 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
     else
     if ((c >= L'0' && c <= L'9') || c == L'.') {
         *t = JS_NUMBER;
+        int is_real = 0;
 
         ptr = mpdm_pokewsn(ptr, &size, &c, 1);
 
         while (((c = *s) >= L'0' && c <= L'9') || c == L'.') {
+            if (c == L'.')
+                is_real = 1;
+
             ptr = mpdm_pokewsn(ptr, &size, &c, 1);
             s++;
         }
 
         ptr = mpdm_pokewsn(ptr, &size, L"", 1);
+
         v = MPDM_ENS(ptr, size);
+
+        if (is_real)
+            v = MPDM_R(mpdm_rval(v));
+        else
+            v = MPDM_I(mpdm_ival(v));
     }
     else
     if (c == 't' && wcsncmp(s, L"rue", 3) == 0) {
