@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -76,7 +76,7 @@ typedef struct mpdm_val_ex *mpdm_ex_t;
 struct mpdm_val {
     int flags;          /* value flags */
     int ref;            /* reference count */
-    int size;           /* data size */
+    size_t size;        /* data size */
     const void *data;   /* the real data */
 };
 
@@ -84,7 +84,7 @@ struct mpdm_val {
 struct mpdm_val_ex {
     int flags;                  /* value flags */
     int ref;                    /* reference count */
-    int size;                   /* data size */
+    size_t size;                /* data size */
     const void *data;           /* the real data */
     int ival;                   /* cached integer value */
     double rval;                /* cache real value */
@@ -101,49 +101,56 @@ struct mpdm_control {
 
 extern struct mpdm_control *mpdm;
 
-mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, int size);
-mpdm_t mpdm_new(int flags, const void *data, int size);
+mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, size_t size);
+mpdm_t mpdm_new(int flags, const void *data, size_t size);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 mpdm_t mpdm_unrefnd(mpdm_t v);
-
-int mpdm_size(const mpdm_t v);
-mpdm_t mpdm_clone(const mpdm_t v);
+size_t mpdm_size(const mpdm_t v);
 mpdm_t mpdm_root(void);
-
 mpdm_t mpdm_void(mpdm_t v);
 int mpdm_is_null(mpdm_t v);
 mpdm_t mpdm_store(mpdm_t *v, mpdm_t w);
+mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size);
+int mpdm_startup(void);
+void mpdm_shutdown(void);
+
+extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, size_t *size);
+mpdm_t mpdm_dumper(const mpdm_t v);
+void mpdm_dump(const mpdm_t v);
+
+
+mpdm_t mpdm_new_a(int flags, size_t size);
+mpdm_t mpdm_expand(mpdm_t a, int index, int num);
+mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
+mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index);
+mpdm_t mpdm_aget(const mpdm_t a, int index);
+mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int index);
+mpdm_t mpdm_adel(mpdm_t a, int index);
+mpdm_t mpdm_shift(mpdm_t a);
+mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
+mpdm_t mpdm_pop(mpdm_t a);
+mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, size_t size);
+mpdm_t mpdm_clone(const mpdm_t v);
+int mpdm_seek_s(const mpdm_t a, const wchar_t *v, int step);
+int mpdm_seek(const mpdm_t a, const mpdm_t v, int step);
+int mpdm_bseek_s(const mpdm_t a, const wchar_t *v, int step, int *pos);
+int mpdm_bseek(const mpdm_t a, const mpdm_t v, int step, int *pos);
+mpdm_t mpdm_sort(mpdm_t a, int step);
+mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
+mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s);
+mpdm_t mpdm_split(const mpdm_t a, const mpdm_t s);
+mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s);
+mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
+mpdm_t mpdm_reverse(const mpdm_t a);
+
+
 
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt);
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt);
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt);
 
-mpdm_t mpdm_new_a(int flags, int size);
-
-mpdm_t mpdm_expand(mpdm_t a, int offset, int num);
-mpdm_t mpdm_collapse(mpdm_t a, int offset, int num);
-mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset);
-mpdm_t mpdm_aget(const mpdm_t a, int offset);
-mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset);
-mpdm_t mpdm_adel(mpdm_t a, int offset);
-mpdm_t mpdm_shift(mpdm_t a);
-mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
-mpdm_t mpdm_pop(mpdm_t a);
-mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size);
-int mpdm_seek(const mpdm_t a, const mpdm_t k, int step);
-int mpdm_seek_s(const mpdm_t a, const wchar_t * k, int step);
-int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos);
-int mpdm_bseek_s(const mpdm_t a, const wchar_t * k, int step, int *pos);
-mpdm_t mpdm_sort(mpdm_t a, int step);
-mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
-
-mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s);
-mpdm_t mpdm_split(const mpdm_t a, const mpdm_t s);
-mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s);
-mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
-mpdm_t mpdm_reverse(const mpdm_t a);
 
 void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);
 void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize);
@@ -178,7 +185,6 @@ int mpdm_ival_mbs(char *str);
 double mpdm_rval_mbs(char *str);
 
 mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2);
-mpdm_t mpdm_new_copy(int flags, void *ptr, int size);
 
 int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
@@ -189,9 +195,10 @@ mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
 
-extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size);
-mpdm_t mpdm_dumper(const mpdm_t v);
-void mpdm_dump(const mpdm_t v);
+
+
+
+
 
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
 mpdm_t mpdm_new_f(FILE * f);
@@ -261,9 +268,6 @@ mpdm_t mpdm_app_dir(void);
 #define MPDM_X(f)       mpdm_new(MPDM_EXEC, (const void *)f, 0)
 
 #define MPDM_F(f)       mpdm_new_f(f)
-
-int mpdm_startup(void);
-void mpdm_shutdown(void);
 
 void mpdm_sleep(int msecs);
 

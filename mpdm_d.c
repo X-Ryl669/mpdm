@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2010 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_d.c - Debugging utilities
 
@@ -34,13 +34,12 @@
 
 /** data **/
 
-static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size);
-wchar_t *(*mpdm_dump_1) (const mpdm_t v, int l, wchar_t * ptr, int *size) =
-    NULL;
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size);
+wchar_t *(*mpdm_dump_1) (const mpdm_t v, int l, wchar_t * ptr, size_t *size) = NULL;
 
 /** code **/
 
-static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
 /* dumps one value to the ptr dynamic string with 'l' indenting level */
 {
     int n;
@@ -112,7 +111,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, int *size)
 }
 
 
-static wchar_t *do_dump(mpdm_t v, int *size)
+static wchar_t *do_dump(mpdm_t v, size_t *size)
 {
     wchar_t *ptr;
 
@@ -136,7 +135,7 @@ static wchar_t *do_dump(mpdm_t v, int *size)
  */
 mpdm_t mpdm_dumper(const mpdm_t v)
 {
-    int size = 0;
+    size_t size = 0;
     wchar_t *ptr;
 
     ptr = do_dump(v, &size);
@@ -154,7 +153,7 @@ mpdm_t mpdm_dumper(const mpdm_t v)
  */
 void mpdm_dump(const mpdm_t v)
 {
-    int size = 0;
+    size_t size = 0;
     wchar_t *ptr;
 
     mpdm_ref(v);

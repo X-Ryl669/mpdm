@@ -51,7 +51,7 @@ void multiple_destroy(mpdm_ex_t ev)
 }
 
 
-mpdm_t mpdm_new_a(int flags, int size)
+mpdm_t mpdm_new_a(int flags, size_t size)
 /* creates a new array value */
 {
     mpdm_ex_t ev;
@@ -78,14 +78,14 @@ static int wrap_offset(const mpdm_t a, int offset)
 /**
  * mpdm_expand - Expands an array.
  * @a: the array
- * @offset: insertion offset
+ * @index: insertion index
  * @num: number of elements to insert
  *
  * Expands an array value, inserting @num elements (initialized
- * to NULL) at the specified @offset.
+ * to NULL) at the specified @index.
  * [Arrays]
  */
-mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
+mpdm_t mpdm_expand(mpdm_t a, int index, int num)
 {
     int n;
     mpdm_t *p;
@@ -99,11 +99,11 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
         p = (mpdm_t *) realloc((mpdm_t *) a->data, a->size * sizeof(mpdm_t));
 
         /* moves up from top of the array */
-        for (n = a->size - 1; n >= offset + num; n--)
+        for (n = a->size - 1; n >= index + num; n--)
             p[n] = p[n - num];
 
         /* fills the new space with blanks */
-        for (; n >= offset; n--)
+        for (; n >= index; n--)
             p[n] = NULL;
 
         a->data = p;
@@ -116,34 +116,34 @@ mpdm_t mpdm_expand(mpdm_t a, int offset, int num)
 /**
  * mpdm_collapse - Collapses an array.
  * @a: the array
- * @offset: deletion offset
+ * @index: deletion index
  * @num: number of elements to collapse
  *
  * Collapses an array value, deleting @num elements at
- * the specified @offset.
+ * the specified @index.
  * [Arrays]
  */
-mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
+mpdm_t mpdm_collapse(mpdm_t a, int index, int num)
 {
     int n;
     mpdm_t *p;
 
     if (a->size && num > 0) {
         /* don't try to delete beyond the limit */
-        if (offset + num > a->size)
-            num = a->size - offset;
+        if (index + num > a->size)
+            num = a->size - index;
 
         p = (mpdm_t *) a->data;
 
         /* unrefs the about-to-be-deleted elements */
-        for (n = offset; n < offset + num; n++)
+        for (n = index; n < index + num; n++)
             mpdm_unref(p[n]);
 
         /* array is now shorter */
         a->size -= num;
 
         /* moves down the elements */
-        for (n = offset; n < a->size; n++)
+        for (n = index; n < a->size; n++)
             p[n] = p[n + num];
 
         /* finally shrinks the memory block */
@@ -158,28 +158,28 @@ mpdm_t mpdm_collapse(mpdm_t a, int offset, int num)
  * mpdm_aset - Sets the value of an array's element.
  * @a: the array
  * @e: the element to be assigned
- * @offset: the subscript of the element
+ * @index: the subscript of the element
  *
- * Sets the element of the array @a at @offset to be the @e value.
+ * Sets the element of the array @a at @index to be the @e value.
  * Returns the new element (versions prior to 1.0.10 returned the
  * old element).
  * [Arrays]
  */
-mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
+mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index)
 {
-    offset = wrap_offset(a, offset);
+    index = wrap_offset(a, index);
 
-    if (offset >= 0) {
+    if (index >= 0) {
         /* if the array is shorter than offset, expand to make room for it */
-        if (offset >= a->size)
-            mpdm_expand(a, a->size, offset - a->size + 1);
+        if (index >= a->size)
+            mpdm_expand(a, a->size, index - a->size + 1);
 
         mpdm_t *p = (mpdm_t *) a->data;
 
         /* assigns and references */
         mpdm_ref(e);
-        mpdm_unref(p[offset]);
-        p[offset] = e;
+        mpdm_unref(p[index]);
+        p[index] = e;
     }
 
     return e;
@@ -189,21 +189,21 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int offset)
 /**
  * mpdm_aget - Gets an element of an array.
  * @a: the array
- * @offset: the subscript of the element
+ * @index: the subscript of the element
  *
- * Returns the element at @offset of the array @a.
+ * Returns the element at @index of the array @a.
  * [Arrays]
  */
-mpdm_t mpdm_aget(const mpdm_t a, int offset)
+mpdm_t mpdm_aget(const mpdm_t a, int index)
 {
     mpdm_t r = NULL;
 
-    offset = wrap_offset(a, offset);
+    index = wrap_offset(a, index);
 
     /* boundary checks */
-    if (offset >= 0 && offset < mpdm_size(a)) {
+    if (index >= 0 && index < mpdm_size(a)) {
         mpdm_t *p = (mpdm_t *) a->data;
-        r = p[offset];
+        r = p[index];
     }
 
     return r;
@@ -214,20 +214,20 @@ mpdm_t mpdm_aget(const mpdm_t a, int offset)
  * mpdm_ins - Insert an element in an array.
  * @a: the array
  * @e: the element to be inserted
- * @offset: subscript where the element is going to be inserted
+ * @index: subscript where the element is going to be inserted
  *
- * Inserts the @e value in the @a array at @offset.
+ * Inserts the @e value in the @a array at @index.
  * Further elements are pushed up, so the array increases its size
  * by one. Returns the inserted element.
  * [Arrays]
  */
-mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
+mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int index)
 {
-    offset = wrap_offset(a, offset);
+    index = wrap_offset(a, index);
 
     /* open room and set value */
-    mpdm_expand(a, offset, 1);
-    mpdm_aset(a, e, offset);
+    mpdm_expand(a, index, 1);
+    mpdm_aset(a, e, index);
 
     return e;
 }
@@ -236,10 +236,10 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
 /**
  * mpdm_adel - Deletes an element of an array.
  * @a: the array
- * @offset: subscript of the element to be deleted
+ * @index: subscript of the element to be deleted
  *
- * Deletes the element at @offset of the @a array. The array
- * is shrinked by one. If @offset is negative, is counted from
+ * Deletes the element at @index of the @a array. The array
+ * is shrinked by one. If @index is negative, is counted from
  * the end of the array (so a value of -1 means delete the
  * last element of the array).
  *
@@ -247,9 +247,9 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int offset)
  * the deleted element).
  * [Arrays]
  */
-mpdm_t mpdm_adel(mpdm_t a, int offset)
+mpdm_t mpdm_adel(mpdm_t a, int index)
 {
-    mpdm_collapse(a, wrap_offset(a, offset), 1);
+    mpdm_collapse(a, wrap_offset(a, index), 1);
 
     return NULL;
 }
@@ -326,7 +326,7 @@ mpdm_t mpdm_pop(mpdm_t a)
  * @size elements yet.
  * [Arrays]
  */
-mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
+mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, size_t size)
 {
     mpdm_t v = NULL;
 
@@ -379,40 +379,17 @@ mpdm_t mpdm_clone(const mpdm_t v)
 
 
 /**
- * mpdm_seek - Seeks a value in an array (sequential).
- * @a: the array
- * @k: the key
- * @step: number of elements to step
- *
- * Seeks sequentially the value @k in the @a array in
- * increments of @step. A complete search should use a step of 1.
- * Returns the offset of the element if found, or -1 otherwise.
- * [Arrays]
- */
-int mpdm_seek(const mpdm_t a, const mpdm_t k, int step)
-{
-    int r;
-
-    mpdm_ref(k);
-    r = mpdm_seek_s(a, mpdm_string(k), step);
-    mpdm_unref(k);
-
-    return r;
-}
-
-
-/**
  * mpdm_seek_s - Seeks a value in an array (sequential, string version).
  * @a: the array
- * @k: the key
+ * @v: the value
  * @step: number of elements to step
  *
- * Seeks sequentially the value @k in the @a array in
+ * Seeks sequentially the value @v in the @a array in
  * increments of @step. A complete search should use a step of 1.
  * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
+int mpdm_seek_s(const mpdm_t a, const wchar_t *v, int step)
 {
     int n, o;
 
@@ -425,9 +402,7 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
     for (n = 0; o == -1 && n < mpdm_size(a); n += step) {
         int r;
 
-        mpdm_t v = mpdm_aget(a, n);
-
-        r = mpdm_cmp_s(v, k);
+        r = mpdm_cmp_s(mpdm_aget(a, n), v);
 
         if (r == 0)
             o = n;
@@ -438,29 +413,23 @@ int mpdm_seek_s(const mpdm_t a, const wchar_t *k, int step)
 
 
 /**
- * mpdm_bseek - Seeks a value in an array (binary).
- * @a: the ordered array
- * @k: the key
+ * mpdm_seek - Seeks a value in an array (sequential).
+ * @a: the array
+ * @v: the value
  * @step: number of elements to step
- * @pos: the position where the element should be, if it's not found
  *
- * Seeks the value @k in the @a array in increments of @step.
- * The array should be sorted to work correctly. A complete search
- * should use a step of 1.
- *
- * If the element is found, returns the offset of the element
- * as a positive number; otherwise, -1 is returned and the position
- * where the element should be is stored in @pos. You can set @pos
- * to NULL if you don't mind.
+ * Seeks sequentially the value @v in the @a array in
+ * increments of @step. A complete search should use a step of 1.
+ * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
+int mpdm_seek(const mpdm_t a, const mpdm_t v, int step)
 {
     int r;
 
-    mpdm_ref(k);
-    r = mpdm_bseek_s(a, mpdm_string(k), step, pos);
-    mpdm_unref(k);
+    mpdm_ref(v);
+    r = mpdm_seek_s(a, mpdm_string(v), step);
+    mpdm_unref(v);
 
     return r;
 }
@@ -469,11 +438,11 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
 /**
  * mpdm_bseek_s - Seeks a value in an array (binary, string version).
  * @a: the ordered array
- * @k: the key
+ * @v: the value
  * @step: number of elements to step
  * @pos: the position where the element should be, if it's not found
  *
- * Seeks the value @k in the @a array in increments of @step.
+ * Seeks the value @v in the @a array in increments of @step.
  * The array should be sorted to work correctly. A complete search
  * should use a step of 1.
  *
@@ -483,7 +452,7 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t k, int step, int *pos)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek_s(const mpdm_t a, const wchar_t *k, int step, int *pos)
+int mpdm_bseek_s(const mpdm_t a, const wchar_t *v, int step, int *pos)
 {
     int b, t, n, c, o;
 
@@ -497,13 +466,13 @@ int mpdm_bseek_s(const mpdm_t a, const wchar_t *k, int step, int *pos)
     o = -1;
 
     while (o == -1 && t >= b) {
-        mpdm_t v;
+        mpdm_t w;
 
         n = (b + t) / 2;
-        if ((v = mpdm_aget(a, n * step)) == NULL)
+        if ((w = mpdm_aget(a, n * step)) == NULL)
             break;
 
-        c = mpdm_cmp_s(v, k);
+        c = mpdm_cmp_s(w, v);
 
         if (c == 0)
             o = n * step;
@@ -521,6 +490,35 @@ int mpdm_bseek_s(const mpdm_t a, const wchar_t *k, int step, int *pos)
 }
 
 
+/**
+ * mpdm_bseek - Seeks a value in an array (binary).
+ * @a: the ordered array
+ * @v: the value
+ * @step: number of elements to step
+ * @pos: the position where the element should be, if it's not found
+ *
+ * Seeks the value @v in the @a array in increments of @step.
+ * The array should be sorted to work correctly. A complete search
+ * should use a step of 1.
+ *
+ * If the element is found, returns the offset of the element
+ * as a positive number; otherwise, -1 is returned and the position
+ * where the element should be is stored in @pos. You can set @pos
+ * to NULL if you don't mind.
+ * [Arrays]
+ */
+int mpdm_bseek(const mpdm_t a, const mpdm_t v, int step, int *pos)
+{
+    int r;
+
+    mpdm_ref(v);
+    r = mpdm_bseek_s(a, mpdm_string(v), step, pos);
+    mpdm_unref(v);
+
+    return r;
+}
+
+
 static int sort_cmp(const void *s1, const void *s2)
 /* qsort help function */
 {
@@ -532,8 +530,8 @@ static int sort_cmp(const void *s1, const void *s2)
     else {
         /* executes the callback and converts to integer */
         ret = mpdm_ival(mpdm_exec_2(sort_cb,
-                                    (mpdm_t) * ((mpdm_t *) s1),
-                                    (mpdm_t) * ((mpdm_t *) s2), NULL));
+                                    (mpdm_t) *((mpdm_t *) s1),
+                                    (mpdm_t) *((mpdm_t *) s2), NULL));
     }
 
     return ret;
@@ -576,17 +574,12 @@ mpdm_t mpdm_sort(const mpdm_t a, int step)
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 {
     if (a != NULL) {
-        sort_cb = cb;
-
-        mpdm_ref(sort_cb);
+        mpdm_store(&sort_cb, cb);
 
         qsort((mpdm_t *) a->data, mpdm_size(a) / step,
-              sizeof(mpdm_t) * step, sort_cmp);
+            sizeof(mpdm_t) * step, sort_cmp);
 
-        /* unreferences */
-        mpdm_unrefnd(sort_cb);
-
-        sort_cb = NULL;
+        mpdm_store(&sort_cb, NULL);
     }
 
     return a;
