@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include <wchar.h>
 
 #include "mpdm.h"
 
@@ -49,17 +50,13 @@ int mpdm_is_true(mpdm_t v)
         mpdm_ref(v);
 
         if (MPDM_HAS_IVAL(v))
-            r = mpdm_ival(v);
-        else
-        if (MPDM_HAS_RVAL(v))
-            r = (mpdm_rval(v) == 0.0);
+            r = !!(mpdm_ival(v));
         else
         if (MPDM_IS_STRING(v)) {
             wchar_t *ptr = mpdm_string(v);
 
             /* ... and it's "" or "0", it's false */
-            if (*ptr && (*ptr != '0' && *(ptr + 1) != L'\0'))
-                r = 1;
+            r = !(*ptr == L'\0' || wcscmp(ptr, L"0") == 0);
         }
         else
             r = 1;
