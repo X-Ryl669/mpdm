@@ -119,7 +119,6 @@ extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, size_t *si
 mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
 
-
 mpdm_t mpdm_new_a(int flags, size_t size);
 mpdm_t mpdm_expand(mpdm_t a, int index, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
@@ -146,39 +145,39 @@ mpdm_t mpdm_reverse(const mpdm_t a);
 
 
 
-mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
-mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt);
-mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt);
-mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt);
-
-
-void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);
-void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize);
-wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen);
-wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str);
-wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v);
-wchar_t *mpdm_mbstowcs(const char *str, int *s, int l);
-char *mpdm_wcstombs(const wchar_t * str, int *s);
-mpdm_t mpdm_new_wcs(int flags, const wchar_t * str, int size, int cpy);
-mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l);
-mpdm_t mpdm_new_wcstombs(int flags, const wchar_t * str);
+void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org, size_t osize, size_t esize);
+void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t esize);
+wchar_t *mpdm_pokewsn(wchar_t *dst, size_t *dsize, const wchar_t *str, size_t slen);
+wchar_t *mpdm_pokews(wchar_t *dst, size_t *dsize, const wchar_t *str);
+wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v);
+wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l);
+char *mpdm_wcstombs(const wchar_t * str, size_t *s);
+mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy);
+mpdm_t mpdm_new_mbstowcs(int flags, const char *str, size_t l);
+mpdm_t mpdm_new_wcstombs(int flags, const wchar_t *str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
+wchar_t *mpdm_string(const mpdm_t v);
+int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
+int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2);
+mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del);
+mpdm_t mpdm_slice(const mpdm_t s, int offset, int num);
+mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size);
+mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2);
+mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);
+
+
+
 int mpdm_wcwidth(wchar_t c);
+
+
+
 mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg);
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args);
 mpdm_t mpdm_ulc(const mpdm_t s, int u);
 mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 
-wchar_t *mpdm_string(const mpdm_t v);
-mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del);
-mpdm_t mpdm_slice(const mpdm_t s, int offset, int num);
-mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size);
-mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2);
-mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);
-int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
-int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2);
 int mpdm_ival(mpdm_t v);
 double mpdm_rval(mpdm_t v);
 int mpdm_ival_mbs(char *str);
@@ -287,6 +286,10 @@ void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
 mpdm_t mpdm_channel_read(mpdm_t channel);
 void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
+mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
+mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt);
+mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt);
+mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt);
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);
 int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);

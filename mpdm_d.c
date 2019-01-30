@@ -53,7 +53,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
 
     if (v != NULL) {
         char tmp[256];
-        int s;
+        size_t s;
 
         sprintf(tmp, "%d,%c%c%c%c:", v->ref,
                 v->flags & MPDM_FILE ? 'F' :
@@ -74,7 +74,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
         /* if it's a multiple value, add also the number
            of elements */
         if (v->flags & MPDM_MULTIPLE) {
-            sprintf(tmp, "[%d] ", mpdm_size(v));
+            sprintf(tmp, "[%d] ", (int) mpdm_size(v));
             wptr = mpdm_mbstowcs(tmp, &s, -1);
             ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
             free(wptr);

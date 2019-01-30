@@ -680,7 +680,7 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
 {
     int n;
     wchar_t *ptr = NULL;
-    int l = 0;
+    size_t l = 0;
     int ss;
     mpdm_t r = NULL;
 

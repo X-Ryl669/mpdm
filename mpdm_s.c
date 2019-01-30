@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_s.c - String management
 
@@ -46,8 +46,8 @@
 
 /** code **/
 
-void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org,
-                  int osize, int esize)
+void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org,
+                  size_t osize, size_t esize)
 {
     if (org != NULL && osize) {
         /* enough room? */
@@ -66,7 +66,7 @@ void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org,
 }
 
 
-void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
+void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t esize)
 /* pokes (adds) org into dst, which is a dynamic string, making it grow */
 {
     int offset = *dsize;
@@ -75,21 +75,21 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 }
 
 
-wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
+wchar_t *mpdm_pokewsn(wchar_t *dst, size_t *dsize, const wchar_t *str, size_t slen)
 /* adds a wide string to dst using mpdm_poke() with size */
 {
     return mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
 }
 
 
-wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
+wchar_t *mpdm_pokews(wchar_t *dst, size_t *dsize, const wchar_t *str)
 /* adds a wide string to dst using mpdm_poke() */
 {
     return mpdm_pokewsn(dst, dsize, str, wcslen(str));
 }
 
 
-wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v)
+wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
     if (v != NULL) {
@@ -102,14 +102,15 @@ wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v)
 }
 
 
-wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
+wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
     wchar_t *ptr = NULL;
     char tmp[64];               /* really MB_CUR_MAX + 1 */
     wchar_t wc;
-    int n, i, c, t = 0;
+    int n, i, c;
+    size_t t = 0;
     char *cstr;
 
     /* allow NULL values for s */
@@ -179,13 +180,14 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 }
 
 
-char *mpdm_wcstombs(const wchar_t *str, int *s)
+char *mpdm_wcstombs(const wchar_t *str, size_t *s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
     char *ptr = NULL;
     char tmp[64];               /* really MB_CUR_MAX + 1 */
-    int l, t = 0;
+    int l;
+    size_t t = 0;
 
     /* allow NULL values for s */
     if (s == NULL)
@@ -226,7 +228,7 @@ char *mpdm_wcstombs(const wchar_t *str, int *s)
 }
 
 
-mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, int size, int cpy)
+mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy)
 /* creates a new string value from a wcs */
 {
     wchar_t *ptr = NULL;
@@ -251,11 +253,11 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, int size, int cpy)
 }
 
 
-mpdm_t mpdm_new_mbstowcs(int flags, const char *str, int l)
+mpdm_t mpdm_new_mbstowcs(int flags, const char *str, size_t l)
 /* creates a new string value from an mbs */
 {
     wchar_t *ptr;
-    int size;
+    size_t size;
 
     ptr = mpdm_mbstowcs(str, &size, l);
 
@@ -267,7 +269,7 @@ mpdm_t mpdm_new_wcstombs(int flags, const wchar_t *str)
 /* creates a new mbs value from a wbs */
 {
     char *ptr;
-    int size;
+    size_t size;
 
     ptr = mpdm_wcstombs(str, &size);
 
@@ -390,6 +392,25 @@ wchar_t *mpdm_string(const mpdm_t v)
 
 
 /**
+ * mpdm_cmp_s - Compares two values (string version).
+ * @v1: the first value
+ * @v2: the second value
+ *
+ * Compares the @v2 string against the stringified view of @v1.
+ */
+int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
+{
+    int r;
+
+    mpdm_ref(v1);
+    r = wcscoll(mpdm_string(v1), v2);
+    mpdm_unref(v1);
+
+    return r;
+}
+
+
+/**
  * mpdm_cmp - Compares two values.
  * @v1: the first value
  * @v2: the second value
@@ -437,25 +458,6 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
         r = mpdm_cmp_s(v1, mpdm_string(v2));
 
     mpdm_unref(v2);
-    mpdm_unref(v1);
-
-    return r;
-}
-
-
-/**
- * mpdm_cmp_s - Compares two values (string version).
- * @v1: the first value
- * @v2: the second value
- *
- * Compares the @v2 string against the stringified view of @v1.
- */
-int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
-{
-    int r;
-
-    mpdm_ref(v1);
-    r = wcscoll(mpdm_string(v1), v2);
     mpdm_unref(v1);
 
     return r;
@@ -622,7 +624,7 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, int size)
+mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size)
 {
     mpdm_t r = NULL;
 
