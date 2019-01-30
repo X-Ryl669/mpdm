@@ -232,7 +232,7 @@ int mpdm_is_null(mpdm_t v)
 }
 
 
-mpdm_t mpdm_set(mpdm_t *v, mpdm_t w)
+mpdm_t mpdm_store(mpdm_t *v, mpdm_t w)
 {
     mpdm_ref(w);
     mpdm_unref(*v);
