@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_r.c - Regular expressions
 
@@ -49,8 +49,8 @@
 
 /* matching of the last regex */
 
-int mpdm_regex_offset = -1;
-int mpdm_regex_size = 0;
+size_t mpdm_regex_offset = -1;
+size_t mpdm_regex_size = 0;
 
 /* number of substitutions in last sregex */
 
@@ -312,7 +312,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
     const wchar_t *sptr = mpdm_string(s);
     wchar_t *wptr;
     wchar_t *optr = NULL;
-    int osize = 0;
+    size_t osize = 0;
     mpdm_t r = NULL;
 
     mpdm_ref(s);
@@ -387,7 +387,7 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
 {
     mpdm_t cr;
     wchar_t *optr = NULL;
-    int osize = 0;
+    size_t osize = 0;
     mpdm_t o = NULL;
 
     mpdm_ref(r);

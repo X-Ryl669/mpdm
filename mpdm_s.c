@@ -630,7 +630,7 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size)
 
     if (s1 != NULL || s2 != NULL) {
         wchar_t *ptr = NULL;
-        int s = 0;
+        size_t s = 0;
 
         ptr = mpdm_pokev(ptr, &s, s1);
         ptr = mpdm_pokewsn(ptr, &s, s2, size);
@@ -1013,7 +1013,7 @@ static wchar_t *s_mbstowcs(char *mbs, wchar_t *wcs)
 }
 
 
-static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
+static wchar_t *json_s(wchar_t *o, size_t *l, mpdm_t v)
 {
     wchar_t *p = mpdm_string(v);
 
@@ -1041,7 +1041,7 @@ static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
 }
 
 
-static wchar_t *json_f(wchar_t *o, int *l, mpdm_t v)
+static wchar_t *json_f(wchar_t *o, size_t *l, mpdm_t v)
 /* fills a %j JSON format */
 {
     int n = 0, c = 0;
@@ -1118,7 +1118,8 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
 {
     const wchar_t *i = fmt->data;
     wchar_t c, *o = NULL;
-    int l = 0, n = 0;
+    size_t l = 0;
+    int n = 0;
 
     mpdm_ref(fmt);
     mpdm_ref(arg);
@@ -1136,7 +1137,7 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
         char tmp[1024];
         char *ptr = NULL;
         wchar_t *wptr = NULL;
-        int m = 0;
+        size_t m = 0;
 
         /* transfer the % */
         t_fmt[m++] = '%';
@@ -1353,7 +1354,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
 {
     wchar_t c;
     wchar_t *ptr = NULL;
-    int size = 0;
+    size_t size = 0;
     mpdm_t v = NULL;
     wchar_t *s = *sp;
 
@@ -1695,9 +1696,9 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
     while (*f) {
         if (*f == L'%') {
             wchar_t *ptr = NULL;
-            int size = 0;
+            size_t size = 0;
             wchar_t cmd;
-            int vsize = 0;
+            size_t vsize = 0;
             int ignore = 0;
             int msize = 0;
 

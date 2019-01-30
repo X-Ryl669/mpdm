@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_t.c - Threading primitives
 

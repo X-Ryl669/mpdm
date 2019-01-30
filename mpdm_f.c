@@ -97,8 +97,8 @@ struct mpdm_file {
     int sock;
     int is_pipe;
 
-    wchar_t *(*f_read) (struct mpdm_file *, int *);
-    int (*f_write) (struct mpdm_file *, const wchar_t *);
+    wchar_t *(*f_read) (struct mpdm_file *, size_t *);
+    size_t (*f_write) (struct mpdm_file *, const wchar_t *);
 
 #ifdef CONFOPT_ICONV
     iconv_t ic_enc;
@@ -160,7 +160,7 @@ static int get_char(struct mpdm_file *f)
 }
 
 
-static int put_buf(const char *ptr, int s, struct mpdm_file *f)
+static size_t put_buf(const char *ptr, size_t s, struct mpdm_file *f)
 /* writes s bytes in the buffer in ptr to f */
 {
 #ifdef CONFOPT_WIN32
@@ -196,13 +196,14 @@ static int put_char(int c, struct mpdm_file *f)
 }
 
 
-static wchar_t *read_mbs(struct mpdm_file *f, int *s)
+static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
     wchar_t *ptr = NULL;
     char *auxptr = NULL;
     char tmp[100];
-    int c, i = 0, n = 0;
+    int c, i = 0;
+    size_t n = 0;
 
     while ((c = get_char(f)) != EOF) {
         tmp[i++] = c;
@@ -240,10 +241,10 @@ static wchar_t *read_mbs(struct mpdm_file *f, int *s)
 }
 
 
-static int write_wcs(struct mpdm_file *f, const wchar_t *str)
+static size_t write_wcs(struct mpdm_file *f, const wchar_t *str)
 /* writes a wide string to an struct mpdm_file */
 {
-    int s;
+    size_t s;
     char *ptr;
 
     ptr = mpdm_wcstombs(str, &s);
@@ -256,7 +257,7 @@ static int write_wcs(struct mpdm_file *f, const wchar_t *str)
 
 #ifdef CONFOPT_ICONV
 
-static wchar_t *read_iconv(struct mpdm_file *f, int *s)
+static wchar_t *read_iconv(struct mpdm_file *f, size_t *s)
 /* reads a multibyte string transforming with iconv */
 {
     char tmp[128];
@@ -313,11 +314,11 @@ static wchar_t *read_iconv(struct mpdm_file *f, int *s)
 }
 
 
-static int write_iconv(struct mpdm_file *f, const wchar_t *str)
+static size_t write_iconv(struct mpdm_file *f, const wchar_t *str)
 /* writes a wide string to a stream using iconv */
 {
     char tmp[128];
-    int cnt = 0;
+    size_t cnt = 0;
 
     /* resets the encoder */
     iconv(f->ic_enc, NULL, NULL, NULL, NULL);
@@ -360,7 +361,7 @@ static int write_iconv(struct mpdm_file *f, const wchar_t *str)
 
 #define CHAR_OR_BREAK(c, f) if((c = get_char(f)) == EOF) break
 
-static wchar_t *read_utf8(struct mpdm_file *f, int *s)
+static wchar_t *read_utf8(struct mpdm_file *f, size_t *s)
 /* utf8 reader */
 {
     wchar_t *ptr = NULL;
@@ -408,7 +409,7 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf8(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf8(struct mpdm_file *f, const wchar_t *str)
 /* utf8 writer */
 {
     int cnt = 0;
@@ -438,7 +439,7 @@ static int write_utf8(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s)
+static wchar_t *read_utf8_bom(struct mpdm_file *f, size_t *s)
 /* utf-8 reader with BOM detection */
 {
     wchar_t *enc = L"";
@@ -462,7 +463,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf8_bom(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf8_bom(struct mpdm_file *f, const wchar_t *str)
 /* utf-8 writer with BOM */
 {
     /* store the BOM */
@@ -477,7 +478,7 @@ static int write_utf8_bom(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
+static wchar_t *read_iso8859_1(struct mpdm_file *f, size_t *s)
 /* iso8859-1 reader */
 {
     wchar_t *ptr = NULL;
@@ -507,10 +508,10 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, int *s)
 }
 
 
-static int write_iso8859_1(struct mpdm_file *f, const wchar_t *str)
+static size_t write_iso8859_1(struct mpdm_file *f, const wchar_t *str)
 /* iso8859-1 writer */
 {
-    int cnt = 0;
+    size_t cnt = 0;
     wchar_t wc;
 
     /* convert char by char */
@@ -521,7 +522,7 @@ static int write_iso8859_1(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
+static wchar_t *read_utf16ae(struct mpdm_file *f, size_t *s, int le)
 /* utf16 reader, ANY ending */
 {
     wchar_t *ptr = NULL;
@@ -559,10 +560,10 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, int *s, int le)
 }
 
 
-static int write_utf16ae(struct mpdm_file *f, const wchar_t *str, int le)
+static size_t write_utf16ae(struct mpdm_file *f, const wchar_t *str, int le)
 /* utf16 writer, ANY ending */
 {
-    int cnt = 0;
+    size_t cnt = 0;
     wchar_t wc;
 
     /* convert char by char */
@@ -582,31 +583,31 @@ static int write_utf16ae(struct mpdm_file *f, const wchar_t *str, int le)
 }
 
 
-static wchar_t *read_utf16le(struct mpdm_file *f, int *s)
+static wchar_t *read_utf16le(struct mpdm_file *f, size_t *s)
 {
     return read_utf16ae(f, s, 1);
 }
 
 
-static int write_utf16le(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf16le(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf16ae(f, str, 1);
 }
 
 
-static wchar_t *read_utf16be(struct mpdm_file *f, int *s)
+static wchar_t *read_utf16be(struct mpdm_file *f, size_t *s)
 {
     return read_utf16ae(f, s, 0);
 }
 
 
-static int write_utf16be(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf16be(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf16ae(f, str, 0);
 }
 
 
-static wchar_t *read_utf16(struct mpdm_file *f, int *s)
+static wchar_t *read_utf16(struct mpdm_file *f, size_t *s)
 {
     int c1, c2;
     wchar_t *enc = L"utf-16le";
@@ -634,7 +635,7 @@ static wchar_t *read_utf16(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf16le_bom(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf16le_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the LE signature */
     put_char(0xff, f);
@@ -647,7 +648,7 @@ static int write_utf16le_bom(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static int write_utf16be_bom(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf16be_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the BE signature */
     put_char(0xfe, f);
@@ -660,7 +661,7 @@ static int write_utf16be_bom(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
+static wchar_t *read_utf32ae(struct mpdm_file *f, size_t *s, int le)
 /* utf32 reader, ANY ending */
 {
     wchar_t *ptr = NULL;
@@ -699,10 +700,10 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, int *s, int le)
 }
 
 
-static int write_utf32ae(struct mpdm_file *f, const wchar_t *str, int le)
+static size_t write_utf32ae(struct mpdm_file *f, const wchar_t *str, int le)
 /* utf32 writer, ANY ending */
 {
-    int cnt = 0;
+    size_t cnt = 0;
     wchar_t wc;
 
     /* convert char by char */
@@ -726,31 +727,31 @@ static int write_utf32ae(struct mpdm_file *f, const wchar_t *str, int le)
 }
 
 
-static wchar_t *read_utf32le(struct mpdm_file *f, int *s)
+static wchar_t *read_utf32le(struct mpdm_file *f, size_t *s)
 {
     return read_utf32ae(f, s, 1);
 }
 
 
-static int write_utf32le(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf32le(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf32ae(f, str, 1);
 }
 
 
-static wchar_t *read_utf32be(struct mpdm_file *f, int *s)
+static wchar_t *read_utf32be(struct mpdm_file *f, size_t *s)
 {
     return read_utf32ae(f, s, 0);
 }
 
 
-static int write_utf32be(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf32be(struct mpdm_file *f, const wchar_t *str)
 {
     return write_utf32ae(f, str, 0);
 }
 
 
-static wchar_t *read_utf32(struct mpdm_file *f, int *s)
+static wchar_t *read_utf32(struct mpdm_file *f, size_t *s)
 {
     int c1, c2, c3, c4;
     wchar_t *enc = L"utf-32le";
@@ -778,7 +779,7 @@ static wchar_t *read_utf32(struct mpdm_file *f, int *s)
 }
 
 
-static int write_utf32le_bom(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf32le_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the LE signature */
     put_char(0xff, f);
@@ -793,7 +794,7 @@ static int write_utf32le_bom(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static int write_utf32be_bom(struct mpdm_file *f, const wchar_t *str)
+static size_t write_utf32be_bom(struct mpdm_file *f, const wchar_t *str)
 {
     /* store the BE signature */
     put_char(0, f);
@@ -808,7 +809,7 @@ static int write_utf32be_bom(struct mpdm_file *f, const wchar_t *str)
 }
 
 
-static wchar_t *read_auto(struct mpdm_file *f, int *s)
+static wchar_t *read_auto(struct mpdm_file *f, size_t *s)
 /* autodetects different encodings based on the BOM */
 {
     wchar_t *enc = L"";
@@ -922,7 +923,7 @@ got_encoding:
 
 /** interface **/
 
-wchar_t *mpdm_read_mbs(FILE *f, int *s)
+wchar_t *mpdm_read_mbs(FILE *f, size_t *s)
 /* reads a multibyte string from a stream into a dynamic string */
 {
     struct mpdm_file fs;
@@ -935,7 +936,7 @@ wchar_t *mpdm_read_mbs(FILE *f, int *s)
 }
 
 
-int mpdm_write_wcs(FILE *f, const wchar_t *str)
+size_t mpdm_write_wcs(FILE *f, const wchar_t *str)
 /* writes a wide string to a stream */
 {
     struct mpdm_file fs;
@@ -1029,7 +1030,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
             if (fs != NULL) {
                 wchar_t *ptr;
-                int s;
+                size_t s;
 
                 ptr = fs->f_read(fs, &s);
 
@@ -1088,9 +1089,9 @@ int mpdm_putchar(const mpdm_t fd, const mpdm_t c)
  * [File Management]
  * [Character Set Conversion]
  */
-int mpdm_write(const mpdm_t fd, const mpdm_t v)
+size_t mpdm_write(const mpdm_t fd, const mpdm_t v)
 {
-    int ret = -1;
+    size_t ret = -1;
 
     mpdm_ref(v);
 

@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_h.c - Hash management
 
@@ -40,7 +40,7 @@ static int switch_hash_func(const wchar_t *, int);
 /* pointer to the hashing function */
 static int (*mpdm_hash_func) (const wchar_t *, int) = switch_hash_func;
 
-static int standard_hash_func(const wchar_t * string, int mod)
+static int standard_hash_func(const wchar_t *string, int mod)
 /* computes a hashing function on string */
 {
     int c;
@@ -52,12 +52,12 @@ static int standard_hash_func(const wchar_t * string, int mod)
 }
 
 
-static int null_hash_func(const wchar_t * string, int mod)
+static int null_hash_func(const wchar_t *string, int mod)
 {
     return *string % mod;
 }
 
-static int switch_hash_func(const wchar_t * string, int mod)
+static int switch_hash_func(const wchar_t *string, int mod)
 /* one-time wrapper for hash method autodetection */
 {
     /* commute the real hashing function on
@@ -83,7 +83,7 @@ static int switch_hash_func(const wchar_t * string, int mod)
  * Returns the number of key-value pairs of a hash.
  * [Hashes]
  */
-int mpdm_hsize(const mpdm_t h)
+size_t mpdm_hsize(const mpdm_t h)
 {
     int n;
     int ret = 0;
@@ -94,27 +94,6 @@ int mpdm_hsize(const mpdm_t h)
     }
 
     return ret / 2;
-}
-
-
-/**
- * mpdm_hget - Gets a value from a hash.
- * @h: the hash
- * @k: the key
- *
- * Gets the value from the hash @h having @k as key, or
- * NULL if the key does not exist.
- * [Hashes]
- */
-mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
-{
-    mpdm_t r;
-
-    mpdm_ref(k);
-    r = mpdm_hget_s(h, mpdm_string(k));
-    mpdm_unref(k);
-
-    return r;
 }
 
 
@@ -143,6 +122,27 @@ mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
     }
 
     return v;
+}
+
+
+/**
+ * mpdm_hget - Gets a value from a hash.
+ * @h: the hash
+ * @k: the key
+ *
+ * Gets the value from the hash @h having @k as key, or
+ * NULL if the key does not exist.
+ * [Hashes]
+ */
+mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
+{
+    mpdm_t r;
+
+    mpdm_ref(k);
+    r = mpdm_hget_s(h, mpdm_string(k));
+    mpdm_unref(k);
+
+    return r;
 }
 
 

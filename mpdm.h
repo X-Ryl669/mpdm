@@ -101,6 +101,37 @@ struct mpdm_control {
 
 extern struct mpdm_control *mpdm;
 
+/* value type testing macros */
+
+#define MPDM_IS_ARRAY(v)    ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
+#define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
+#define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
+#define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
+#define MPDM_IS_FILE(v)     ((v != NULL) && ((v)->flags) & MPDM_FILE)
+#define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
+#define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
+
+/* value creation utility macros */
+
+#define MPDM_A(n)       mpdm_new_a(0,n)
+#define MPDM_H(n)       mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
+#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 0)
+#define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
+#define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
+#define MPDM_ENS(s,n)   mpdm_new(MPDM_STRING|MPDM_FREE, s, n)
+#define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
+
+#define MPDM_I(i)       mpdm_new_i((i))
+#define MPDM_R(r)       mpdm_new_r((r))
+#define MPDM_P(p)       mpdm_new(0,(void *)p, 0, NULL)
+#define MPDM_MBS(s)     mpdm_new_mbstowcs(0, s, -1)
+#define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(0, s, n)
+#define MPDM_2MBS(s)    mpdm_new_wcstombs(0, s)
+
+#define MPDM_X(f)       mpdm_new(MPDM_EXEC, (const void *)f, 0)
+
+#define MPDM_F(f)       mpdm_new_f(f)
+
 mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, size_t size);
 mpdm_t mpdm_new(int flags, const void *data, size_t size);
 mpdm_t mpdm_ref(mpdm_t v);
@@ -143,8 +174,6 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s);
 mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_reverse(const mpdm_t a);
 
-
-
 void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org, size_t osize, size_t esize);
 void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t esize);
 wchar_t *mpdm_pokewsn(wchar_t *dst, size_t *dsize, const wchar_t *str, size_t slen);
@@ -165,48 +194,35 @@ mpdm_t mpdm_slice(const mpdm_t s, int offset, int num);
 mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size);
 mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2);
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);
-
-
-
+int mpdm_ival_mbs(char *str);
+int mpdm_ival(mpdm_t v);
+double mpdm_rval_mbs(char *str);
+double mpdm_rval(mpdm_t v);
+mpdm_t mpdm_gettext(const mpdm_t str);
+int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data);
 int mpdm_wcwidth(wchar_t c);
-
-
-
 mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg);
 mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args);
 mpdm_t mpdm_ulc(const mpdm_t s, int u);
 mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 
-int mpdm_ival(mpdm_t v);
-double mpdm_rval(mpdm_t v);
-int mpdm_ival_mbs(char *str);
-double mpdm_rval_mbs(char *str);
-
-mpdm_t mpdm_xnew(mpdm_t(*a1) (mpdm_t, mpdm_t, mpdm_t), mpdm_t a2);
-
-int mpdm_hsize(const mpdm_t h);
-mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
+size_t mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
+mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
 int mpdm_exists(const mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
 mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
 
-
-
-
-
-
-int mpdm_write_wcs(FILE * f, const wchar_t * str);
-mpdm_t mpdm_new_f(FILE * f);
+wchar_t *mpdm_read_mbs(FILE *f, size_t *s);
+size_t mpdm_write_wcs(FILE * f, const wchar_t * str);
 mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode);
-int mpdm_close(mpdm_t fd);
 mpdm_t mpdm_read(const mpdm_t fd);
-int mpdm_write(const mpdm_t fd, const mpdm_t v);
 mpdm_t mpdm_getchar(const mpdm_t fd);
 int mpdm_putchar(const mpdm_t fd, const mpdm_t c);
+size_t mpdm_write(const mpdm_t fd, const mpdm_t v);
 int mpdm_fseek(const mpdm_t fd, long offset, int whence);
 long mpdm_ftell(const mpdm_t fd);
 FILE * mpdm_get_filehandle(const mpdm_t fd);
@@ -219,79 +235,41 @@ int mpdm_chdir(const mpdm_t dir);
 mpdm_t mpdm_getcwd(void);
 int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid);
 mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base);
-
 mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode);
 mpdm_t mpdm_popen2(const mpdm_t prg);
 int mpdm_pclose(mpdm_t fd);
+mpdm_t mpdm_home_dir(void);
+mpdm_t mpdm_app_dir(void);
+mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
+mpdm_t mpdm_new_f(FILE * f);
+int mpdm_close(mpdm_t fd);
 
-extern int mpdm_regex_offset;
-extern int mpdm_regex_size;
+extern size_t mpdm_regex_offset;
+extern size_t mpdm_regex_size;
 extern int mpdm_sregex_count;
 
 mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset);
 mpdm_t mpdm_sregex(const mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
 
-mpdm_t mpdm_gettext(const mpdm_t str);
-int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data);
-
-mpdm_t mpdm_home_dir(void);
-mpdm_t mpdm_app_dir(void);
-
-/* value type testing macros */
-
-#define MPDM_IS_ARRAY(v)    ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
-#define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
-#define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
-#define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
-#define MPDM_IS_FILE(v)     ((v != NULL) && ((v)->flags) & MPDM_FILE)
-#define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
-#define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
-
-/* value creation utility macros */
-
-#define MPDM_A(n)       mpdm_new_a(0,n)
-#define MPDM_H(n)       mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
-#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 0)
-#define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
-#define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
-#define MPDM_ENS(s,n)   mpdm_new(MPDM_STRING|MPDM_FREE, s, n)
-#define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
-
-#define MPDM_I(i)       mpdm_new_i((i))
-#define MPDM_R(r)       mpdm_new_r((r))
-#define MPDM_P(p)       mpdm_new(0,(void *)p, 0, NULL)
-#define MPDM_MBS(s)     mpdm_new_mbstowcs(0, s, -1)
-#define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(0, s, n)
-#define MPDM_2MBS(s)    mpdm_new_wcstombs(0, s)
-
-#define MPDM_X(f)       mpdm_new(MPDM_EXEC, (const void *)f, 0)
-
-#define MPDM_F(f)       mpdm_new_f(f)
-
 void mpdm_sleep(int msecs);
-
 mpdm_t mpdm_new_mutex(void);
 void mpdm_mutex_lock(mpdm_t mutex);
 void mpdm_mutex_unlock(mpdm_t mutex);
-
 mpdm_t mpdm_new_semaphore(int init_value);
 void mpdm_semaphore_wait(mpdm_t sem);
 void mpdm_semaphore_post(mpdm_t sem);
-
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
-
-mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
-
 void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
 mpdm_t mpdm_channel_read(mpdm_t channel);
 void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
+int mpdm_is_true(mpdm_t v);
+mpdm_t mpdm_bool(int b);
+mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i);
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt);
 mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt);
 mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt);
-int mpdm_is_true(mpdm_t v);
-mpdm_t mpdm_bool(int b);
 int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
