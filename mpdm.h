@@ -287,6 +287,7 @@ int mpdm_is_true(mpdm_t v);
 int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
+mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 
 #ifdef __cplusplus
 }

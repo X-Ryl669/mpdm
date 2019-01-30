@@ -49,9 +49,6 @@ int mpdm_is_true(mpdm_t v)
     if (v) {
         mpdm_ref(v);
 
-        if (MPDM_HAS_IVAL(v))
-            r = !!(mpdm_ival(v));
-        else
         if (MPDM_IS_STRING(v)) {
             wchar_t *ptr = mpdm_string(v);
 
