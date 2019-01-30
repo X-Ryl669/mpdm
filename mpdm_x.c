@@ -295,12 +295,8 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             mpdm_ref(i);
             mpdm_ref(v);
 
-            if (MPDM_IS_EXEC(filter)) {
-                if (MPDM_IS_HASH(set))
-                    w = mpdm_exec_2(filter, i, v, ctxt);
-                else
-                    w = mpdm_exec_2(filter, v, i, ctxt);
-            }
+            if (MPDM_IS_EXEC(filter))
+                w = mpdm_exec_2(filter, v, i, ctxt);
             else
             if (filter == NULL) {
                 /* invert hash */
