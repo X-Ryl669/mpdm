@@ -33,6 +33,45 @@
 #include "mpdm.h"
 
 /**
+ * mpdm_is_true - Returns 1 if a value is true.
+ * @v: the value
+ *
+ * Returns 1 if @v is true. False values are: NULL, those with
+ * cached integer values of 0, those with cached real values
+ * of 0.0, empty strings and the special string "0".
+ * The reference count is touched.
+ */
+int mpdm_is_true(mpdm_t v)
+{
+    int r = 0;
+
+    if (v) {
+        mpdm_ref(v);
+
+        if (MPDM_HAS_IVAL(v))
+            r = mpdm_ival(v);
+        else
+        if (MPDM_HAS_RVAL(v))
+            r = (mpdm_rval(v) == 0.0);
+        else
+        if (MPDM_IS_STRING(v)) {
+            wchar_t *ptr = mpdm_string(v);
+
+            /* ... and it's "" or "0", it's false */
+            if (*ptr && (*ptr != '0' && *(ptr + 1) != L'\0'))
+                r = 1;
+        }
+        else
+            r = 1;
+
+        mpdm_unref(v);
+    }
+
+    return r;
+}
+
+
+/**
  * mpdm_exec - Executes an executable value.
  * @c: the code value
  * @args: the arguments
