@@ -77,6 +77,21 @@ mpdm_t mpdm_bool(int b)
 }
 
 
+/* this is cool, but... is it really necessary? */
+mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
+{
+    mpdm_t r = NULL;
+
+    if (MPDM_IS_ARRAY(set))
+        r = mpdm_aset(set, v, mpdm_ival(i));
+    else
+    if (MPDM_IS_HASH(set))
+        r = mpdm_hset(set, v, i);
+
+    return r;
+}
+
+
 /**
  * mpdm_exec - Executes an executable value.
  * @c: the code value
