@@ -250,12 +250,8 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             mpdm_ref(v);
             mpdm_ref(i);
 
-            if (MPDM_IS_EXEC(filter)) {
-                if (MPDM_IS_HASH(set))
-                    w = mpdm_exec_2(filter, i, v, ctxt);
-                else
-                    w = mpdm_exec_2(filter, v, i, ctxt);
-            }
+            if (MPDM_IS_EXEC(filter))
+                w = mpdm_exec_2(filter, v, i, ctxt);
             else
             if (MPDM_IS_HASH(filter))
                 w = mpdm_hget(filter, v);
