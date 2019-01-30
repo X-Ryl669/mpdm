@@ -66,6 +66,18 @@ int mpdm_is_true(mpdm_t v)
 
 
 /**
+ * mpdm_bool - Returns a boolean value.
+ * @b: true or false
+ *
+ * Returns the stored values for TRUE or FALSE.
+ */
+mpdm_t mpdm_bool(int b)
+{
+    return mpdm_hget_s(mpdm_root(), b ? L"TRUE" : L"FALSE");
+}
+
+
+/**
  * mpdm_exec - Executes an executable value.
  * @c: the code value
  * @args: the arguments

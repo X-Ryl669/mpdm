@@ -284,6 +284,7 @@ mpdm_t mpdm_channel_read(mpdm_t channel);
 void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
 int mpdm_is_true(mpdm_t v);
+mpdm_t mpdm_bool(int b);
 int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt);

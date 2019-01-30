@@ -347,6 +347,10 @@ int mpdm_startup(void)
 
         /* store the ENV hash */
         mpdm_hset_s(mpdm_root(), L"ENV", build_env());
+
+        /* store the special values TRUE and FALSE */
+        mpdm_hset_s(mpdm_root(), L"TRUE",  MPDM_I(1));
+        mpdm_hset_s(mpdm_root(), L"FALSE", MPDM_I(0));
     }
 
     /* everything went OK */
