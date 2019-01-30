@@ -446,7 +446,7 @@ void test_hash(void)
     }
 
     if (verbose)
-        printf("h's size: %d\n", mpdm_hsize(h));
+        printf("h's size: %d\n", (int) mpdm_hsize(h));
 
     mpdm_hdel(h, MPDM_LS(L"mp"));
     do_test("hsize 5", mpdm_hsize(h) == 102);
@@ -1327,7 +1327,7 @@ void test_conversion(void)
 {
     wchar_t *wptr = NULL;
     char *ptr = NULL;
-    int size = 0;
+    size_t size = 0;
 
     ptr = mpdm_wcstombs(L"", &size);
     do_test("mpdm_wcstombs converts an empty string", ptr != NULL);
