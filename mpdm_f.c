@@ -208,7 +208,7 @@ static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
     *s = i = 0;
 
     while ((c = get_byte(f)) != EOF) {
-        size_t r;
+        size_t r = -1;
 
         if (i < sizeof(tmp)) {
             tmp[i++] = c;
@@ -220,15 +220,13 @@ static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
             /* incomplete sequence? keep trying */
             if (r == -2)
                 continue;
-
-            /* invalid sequence: set to Unicode replacement char */
-            if (r == -1)
-                wc = L'\xfffd';
         }
-        else
-            /* too many failing bytes; skip 1 byte
-               and use the Unicode replacement char */
+
+        if (r == -1) {
+            /* too many failing bytes or invalid sequence;
+               use the Unicode replacement char */
             wc = L'\xfffd';
+        }
 
         i = 0;
 
