@@ -199,42 +199,49 @@ static int put_char(int c, struct mpdm_file *f)
 static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
+    char tmp[128];
     wchar_t *ptr = NULL;
-    char *auxptr = NULL;
-    char tmp[100];
-    int c, i = 0;
-    size_t n = 0;
+    int c, i;
+    wchar_t wc;
+    mbstate_t ps;
+
+    *s = i = 0;
 
     while ((c = get_char(f)) != EOF) {
-        tmp[i++] = c;
+        size_t r;
 
-        if (c == '\n')
-            break;
+        if (i < sizeof(tmp)) {
+            tmp[i++] = c;
 
-        if (i == sizeof(tmp) - 1) {
-            /* out of space; start allocating */
-            auxptr = mpdm_poke(auxptr, &n, tmp, i, sizeof(char));
+            /* try to convert what is read by now */
+            memset(&ps, '\0', sizeof(ps));
+            r = mbrtowc(&wc, tmp, i, &ps);
 
-            i = 0;
-        }
-    }
+            /* incomplete sequence? keep trying */
+            if (r == -2)
+                continue;
 
-    /* is there something to return? */
-    if (i || n) {
-        /* NULL-terminate */
-        tmp[i++] = '\0';
-
-        if (n) {
-            /* auxiliary space used; concat all */
-            auxptr = mpdm_poke(auxptr, &n, tmp, i, sizeof(char));
-
-            /* do the conversion */
-            ptr = mpdm_mbstowcs(auxptr, s, -1);
-
-            free(auxptr);
+            /* invalid sequence: set to Unicode replacement char */
+            if (r == -1)
+                wc = L'\xfffd';
         }
         else
-            ptr = mpdm_mbstowcs(tmp, s, -1);
+            /* too many failing bytes; skip 1 byte
+               and use the Unicode replacement char */
+            wc = L'\xfffd';
+
+        i = 0;
+
+        ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t));
+
+        /* if it's an end of line, finish */
+        if (wc == L'\n')
+            break;
+    }
+
+    if (ptr != NULL) {
+        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
+        (*s)--;
     }
 
     return ptr;
@@ -292,13 +299,12 @@ static wchar_t *read_iconv(struct mpdm_file *f, size_t *s)
                 continue;
 
             /* otherwise, return '?' */
-            wc = L'?';
+            wc = L'\xfffd';
         }
 
         i = 0;
 
-        if ((ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t))) == NULL)
-            break;
+        ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t));
 
         /* if it's an end of line, finish */
         if (wc == L'\n')
