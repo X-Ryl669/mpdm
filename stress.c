@@ -1779,8 +1779,8 @@ void test_channel(void)
     mpdm_ref(c);
 
     v1 = mpdm_ref(MPDM_LS(L"Testing"));
-    mpdm_write(p, v1);
-    v2 = mpdm_read(c);
+    mpdm_channel_write(p, v1);
+    v2 = mpdm_channel_read(c);
 
     do_test("Channel (scalar)", mpdm_cmp(v1, v2) == 0);
 
@@ -1789,8 +1789,8 @@ void test_channel(void)
     v1 = mpdm_ref(MPDM_H(0));
     mpdm_hset_s(v1, L"ein",     MPDM_I(1));
     mpdm_hset_s(v1, L"zwei",    MPDM_I(2));
-    mpdm_write(p, v1);
-    v2 = mpdm_read(c);
+    mpdm_channel_write(p, v1);
+    v2 = mpdm_channel_read(c);
 
     do_test("Channel (hash)", mpdm_cmp(v1, v2) == 0);
 
