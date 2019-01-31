@@ -1359,7 +1359,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
     wchar_t *s = *sp;
 
     /* skip blanks */
-    while (*s == L' '  || *s == L'\t' || *s == L'\n' || *s == L'\r')
+    while (*s == L' ' || *s == L'\t' || *s == L'\n' || *s == L'\r')
         s++;
 
     c = *s++;
@@ -1389,7 +1389,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
             char tmp[5];
             int i;
 
-            if (c == '\\') {
+            if (c == L'\\') {
                 s++;
                 c = *s;
                 switch (c) {
@@ -1418,7 +1418,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
             s++;
 
         ptr = mpdm_pokewsn(ptr, &size, L"", 1);
-        v = MPDM_ENS(ptr, size);
+        v = MPDM_ENS(ptr, size - 1);
     }
     else
     if ((c >= L'0' && c <= L'9') || c == L'.') {
@@ -1436,8 +1436,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
         }
 
         ptr = mpdm_pokewsn(ptr, &size, L"", 1);
-
-        v = MPDM_ENS(ptr, size);
+        v = MPDM_ENS(ptr, size - 1);
 
         if (is_real)
             v = MPDM_R(mpdm_rval(v));
@@ -1448,13 +1447,13 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
     if (c == 't' && wcsncmp(s, L"rue", 3) == 0) {
         s += 3;
         *t = JS_TRUE;
-        v = MPDM_I(1);
+        v = mpdm_bool(1);
     }
     else
     if (c == 'f' && wcsncmp(s, L"alse", 4) == 0) {
         s += 4;
         *t = JS_FALSE;
-        v = MPDM_I(0);
+        v = mpdm_bool(0);
     }
     else
     if (c == 'n' && wcsncmp(s, L"ull", 3) == 0) {
