@@ -196,13 +196,28 @@ static int put_char(int c, struct mpdm_file *f)
 }
 
 
-static void track_eol(wchar_t c, size_t *s, size_t *eol)
-/* tracks the position of the start of the EOL sequence */
+static int store_in_line(wchar_t **ptr, size_t *s, size_t *eol, wchar_t c)
+/* store the c in the line, keeping track for EOLs */
 {
+    int done = 0;
+
+    /* track EOL sequence position */
     if (eol && *eol == -1) {
         if (c == L'\r' || c == L'\n')
             *eol = *s;
     }
+
+    /* store */
+    *ptr = mpdm_pokewsn(*ptr, s, &c, 1);
+
+    /* end of line? finish */
+    if (c == L'\n') {
+        *ptr = mpdm_pokewsn(*ptr, s, L"", 1);
+        (*s)--;
+        done = 1;
+    }
+
+    return done;
 }
 
 
@@ -238,16 +253,8 @@ static wchar_t *read_mbs(struct mpdm_file *f, size_t *s, size_t *eol)
 
         i = 0;
 
-        ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t));
-
-        /* if it's an end of line, finish */
-        if (wc == L'\n')
+        if (store_in_line(&ptr, s, eol, wc))
             break;
-    }
-
-    if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
-        (*s)--;
     }
 
     return ptr;
