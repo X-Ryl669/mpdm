@@ -315,16 +315,8 @@ static wchar_t *read_iconv(struct mpdm_file *f, size_t *s, size_t *eol)
 
         i = 0;
 
-        ptr = mpdm_poke(ptr, s, &wc, 1, sizeof(wchar_t));
-
-        /* if it's an end of line, finish */
-        if (wc == L'\n')
+        if (store_in_line(&ptr, s, eol, wc))
             break;
-    }
-
-    if (ptr != NULL) {
-        ptr = mpdm_poke(ptr, s, L"", 1, sizeof(wchar_t));
-        (*s)--;
     }
 
     return ptr;
@@ -406,18 +398,8 @@ static wchar_t *read_utf8(struct mpdm_file *f, size_t *s, size_t *eol)
             wc |= (c & 0x3f);
         }
 
-        /* store */
-        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
+        if (store_in_line(&ptr, s, eol, wc))
             break;
-
-        /* if it's an end of line, finish */
-        if (wc == L'\n')
-            break;
-    }
-
-    if (ptr != NULL) {
-        ptr = mpdm_pokewsn(ptr, s, L"", 1);
-        (*s)--;
     }
 
     return ptr;
@@ -503,18 +485,8 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, size_t *s, size_t *eol)
     while ((c = get_byte(f)) != EOF) {
         wc = c;
 
-        /* store */
-        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
+        if (store_in_line(&ptr, s, eol, wc))
             break;
-
-        /* if it's an end of line, finish */
-        if (wc == L'\n')
-            break;
-    }
-
-    if (ptr != NULL) {
-        ptr = mpdm_pokewsn(ptr, s, L"", 1);
-        (*s)--;
     }
 
     return ptr;
@@ -553,18 +525,8 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, size_t *s, size_t *eol, int le
         else
             wc = c2 | (c1 << 8);
 
-        /* store */
-        if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
+        if (store_in_line(&ptr, s, eol, wc))
             break;
-
-        /* if it's an end of line, finish */
-        if (wc == L'\n')
-            break;
-    }
-
-    if (ptr != NULL) {
-        ptr = mpdm_pokewsn(ptr, s, L"", 1);
-        (*s)--;
     }
 
     return ptr;
@@ -692,17 +654,8 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, size_t *s, size_t *eol, int le
         else
             wc = c4 | (c3 << 8) | (c2 << 16) | (c1 << 24);
 
-        /* store */
-        ptr = mpdm_pokewsn(ptr, s, &wc, 1);
-
-        /* if it's an end of line, finish */
-        if (wc == L'\n')
+        if (store_in_line(&ptr, s, eol, wc))
             break;
-    }
-
-    if (ptr != NULL) {
-        ptr = mpdm_pokewsn(ptr, s, L"", 1);
-        (*s)--;
     }
 
     return ptr;
