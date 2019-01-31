@@ -196,6 +196,16 @@ static int put_char(int c, struct mpdm_file *f)
 }
 
 
+static void track_eol(wchar_t c, size_t *s, size_t *eol)
+/* tracks the position of the start of the EOL sequence */
+{
+    if (eol && *eol == -1) {
+        if (c == L'\r' || c == L'\n')
+            *eol = *s;
+    }
+}
+
+
 static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
 /* reads a multibyte string from a mpdm_file into a dynamic string */
 {
