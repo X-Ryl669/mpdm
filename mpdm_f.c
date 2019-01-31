@@ -126,8 +126,8 @@ static void store_syserr(void)
 }
 
 
-static int get_char(struct mpdm_file *f)
-/* reads a character from a file structure */
+static int get_byte(struct mpdm_file *f)
+/* reads a byte from a file structure */
 {
     int c = EOF;
 
@@ -207,7 +207,7 @@ static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
 
     *s = i = 0;
 
-    while ((c = get_char(f)) != EOF) {
+    while ((c = get_byte(f)) != EOF) {
         size_t r;
 
         if (i < sizeof(tmp)) {
@@ -277,7 +277,7 @@ static wchar_t *read_iconv(struct mpdm_file *f, size_t *s)
     /* resets the decoder */
     iconv(f->ic_dec, NULL, NULL, NULL, NULL);
 
-    while ((c = get_char(f)) != EOF) {
+    while ((c = get_byte(f)) != EOF) {
         size_t il, ol;
         char *iptr, *optr;
 
@@ -365,7 +365,7 @@ static size_t write_iconv(struct mpdm_file *f, const wchar_t *str)
 
 #endif /* CONFOPT_ICONV */
 
-#define CHAR_OR_BREAK(c, f) if((c = get_char(f)) == EOF) break
+#define BYTE_OR_BREAK(c, f) if((c = get_byte(f)) == EOF) break
 
 static wchar_t *read_utf8(struct mpdm_file *f, size_t *s)
 /* utf8 reader */
@@ -379,21 +379,21 @@ static wchar_t *read_utf8(struct mpdm_file *f, size_t *s)
     for (;;) {
         wc = L'\0';
 
-        CHAR_OR_BREAK(c, f);
+        BYTE_OR_BREAK(c, f);
 
         if ((c & 0x80) == 0)
             wc = c;
         else
         if ((c & 0xe0) == 0xe0) {
             wc = (c & 0x1f) << 12;
-            CHAR_OR_BREAK(c, f);
+            BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f) << 6;
-            CHAR_OR_BREAK(c, f);
+            BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
         else {
             wc = (c & 0x3f) << 6;
-            CHAR_OR_BREAK(c, f);
+            BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
 
@@ -453,7 +453,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, size_t *s)
     f->f_read = NULL;
 
     /* autodetection */
-    if (get_char(f) == 0xef && get_char(f) == 0xbb && get_char(f) == 0xbf)
+    if (get_byte(f) == 0xef && get_byte(f) == 0xbb && get_byte(f) == 0xbf)
         enc = L"utf-8bom";
     else {
         enc = L"utf-8";
@@ -493,7 +493,7 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, size_t *s)
 
     *s = 0;
 
-    while ((c = get_char(f)) != EOF) {
+    while ((c = get_byte(f)) != EOF) {
         wc = c;
 
         /* store */
@@ -540,8 +540,8 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, size_t *s, int le)
     for (;;) {
         wc = L'\0';
 
-        CHAR_OR_BREAK(c1, f);
-        CHAR_OR_BREAK(c2, f);
+        BYTE_OR_BREAK(c1, f);
+        BYTE_OR_BREAK(c2, f);
 
         if (le)
             wc = c1 | (c2 << 8);
@@ -622,8 +622,8 @@ static wchar_t *read_utf16(struct mpdm_file *f, size_t *s)
     f->f_read = read_utf16le;
 
     /* autodetection */
-    c1 = get_char(f);
-    c2 = get_char(f);
+    c1 = get_byte(f);
+    c2 = get_byte(f);
 
     if (c1 == 0xfe && c2 == 0xff) {
         enc = L"utf-16be";
@@ -679,10 +679,10 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, size_t *s, int le)
     for (;;) {
         wc = L'\0';
 
-        CHAR_OR_BREAK(c1, f);
-        CHAR_OR_BREAK(c2, f);
-        CHAR_OR_BREAK(c3, f);
-        CHAR_OR_BREAK(c4, f);
+        BYTE_OR_BREAK(c1, f);
+        BYTE_OR_BREAK(c2, f);
+        BYTE_OR_BREAK(c3, f);
+        BYTE_OR_BREAK(c4, f);
 
         if (le)
             wc = c1 | (c2 << 8) | (c3 << 16) | (c4 << 24);
@@ -765,10 +765,10 @@ static wchar_t *read_utf32(struct mpdm_file *f, size_t *s)
     f->f_read = read_utf32le;
 
     /* autodetection */
-    c1 = get_char(f);
-    c2 = get_char(f);
-    c3 = get_char(f);
-    c4 = get_char(f);
+    c1 = get_byte(f);
+    c2 = get_byte(f);
+    c3 = get_byte(f);
+    c4 = get_byte(f);
 
     if (c1 == 0 && c2 == 0 && c3 == 0xfe && c4 == 0xff) {
         enc = L"utf-32be";
@@ -827,13 +827,13 @@ static wchar_t *read_auto(struct mpdm_file *f, size_t *s)
     if (f->in != NULL && fseek(f->in, 0, SEEK_CUR) != -1) {
         int c;
 
-        c = get_char(f);
+        c = get_byte(f);
 
         if (c == 0xff) {
             /* can be utf32le or utf16le */
-            if (get_char(f) == 0xfe) {
+            if (get_byte(f) == 0xfe) {
                 /* if next 2 chars are 0x00, it's utf32; otherwise utf16 */
-                if (get_char(f) == 0x00 && get_char(f) == 0x00) {
+                if (get_byte(f) == 0x00 && get_byte(f) == 0x00) {
                     enc = L"utf-32le";
                     f->f_read = read_utf32le;
                     goto got_encoding;
@@ -851,8 +851,8 @@ static wchar_t *read_auto(struct mpdm_file *f, size_t *s)
         else
         if (c == 0x00) {
             /* can be utf32be */
-            if (get_char(f) == 0x00 && get_char(f) == 0xfe
-                && get_char(f) == 0xff) {
+            if (get_byte(f) == 0x00 && get_byte(f) == 0xfe
+                && get_byte(f) == 0xff) {
                 enc = L"utf-32be";
                 f->f_read = read_utf32be;
                 goto got_encoding;
@@ -861,7 +861,7 @@ static wchar_t *read_auto(struct mpdm_file *f, size_t *s)
         else
         if (c == 0xfe) {
             /* can be utf16be */
-            if (get_char(f) == 0xff) {
+            if (get_byte(f) == 0xff) {
                 enc = L"utf-16be";
                 f->f_read = read_utf16be;
                 goto got_encoding;
@@ -870,7 +870,7 @@ static wchar_t *read_auto(struct mpdm_file *f, size_t *s)
         else
         if (c == 0xef) {
             /* can be utf8 with BOM */
-            if (get_char(f) == 0xbb && get_char(f) == 0xbf) {
+            if (get_byte(f) == 0xbb && get_byte(f) == 0xbf) {
                 enc = L"utf-8bom";
                 f->f_read = read_utf8;
                 goto got_encoding;
@@ -882,7 +882,7 @@ static wchar_t *read_auto(struct mpdm_file *f, size_t *s)
             int n = 10000;
             int u = 0;
 
-            while (--n && (c = get_char(f)) != EOF) {
+            while (--n && (c = get_byte(f)) != EOF) {
                 if ((c & 0xc0) == 0x80) {
                     if ((p & 0xc0) == 0xc0)
                         u++;
@@ -1057,7 +1057,7 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
     mpdm_t r = NULL;
     struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-    if (fs != NULL && (c = get_char(fs)) != EOF) {
+    if (fs != NULL && (c = get_byte(fs)) != EOF) {
         /* get the char as-is */
         tmp[0] = (wchar_t) c;
         tmp[1] = L'\0';
