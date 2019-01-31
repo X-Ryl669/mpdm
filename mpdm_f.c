@@ -196,26 +196,27 @@ static int put_char(int c, struct mpdm_file *f)
 }
 
 
-static int store_in_line(wchar_t **ptr, size_t *s, size_t *eol, wchar_t c)
+static int store_in_line(wchar_t **ptr, size_t *s, size_t *eol, wchar_t wc)
 /* store the c in the line, keeping track for EOLs */
 {
+    wchar_t ws[2];
     int done = 0;
 
     /* track EOL sequence position */
     if (eol && *eol == -1) {
-        if (c == L'\r' || c == L'\n')
+        if (wc == L'\r' || wc == L'\n')
             *eol = *s;
     }
 
     /* store */
-    *ptr = mpdm_pokewsn(*ptr, s, &c, 1);
+    ws[0] = wc;
+    ws[1] = L'\0';
+    *ptr = mpdm_pokewsn(*ptr, s, ws, 2);
+    (*s)--;
 
     /* end of line? finish */
-    if (c == L'\n') {
-        *ptr = mpdm_pokewsn(*ptr, s, L"", 1);
-        (*s)--;
+    if (wc == L'\n')
         done = 1;
-    }
 
     return done;
 }
