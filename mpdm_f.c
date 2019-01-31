@@ -201,11 +201,9 @@ static wchar_t *read_mbs(struct mpdm_file *f, size_t *s)
 {
     char tmp[128];
     wchar_t *ptr = NULL;
-    int c, i;
+    int c, i = 0;
     wchar_t wc;
     mbstate_t ps;
-
-    *s = i = 0;
 
     while ((c = get_byte(f)) != EOF) {
         size_t r = -1;
@@ -267,10 +265,8 @@ static wchar_t *read_iconv(struct mpdm_file *f, size_t *s)
 {
     char tmp[128];
     wchar_t *ptr = NULL;
-    int c, i;
+    int c, i = 0;
     wchar_t wc;
-
-    *s = i = 0;
 
     /* resets the decoder */
     iconv(f->ic_dec, NULL, NULL, NULL, NULL);
@@ -371,8 +367,6 @@ static wchar_t *read_utf8(struct mpdm_file *f, size_t *s)
     wchar_t *ptr = NULL;
     wchar_t wc;
     int c;
-
-    *s = 0;
 
     for (;;) {
         wc = L'\0';
@@ -489,8 +483,6 @@ static wchar_t *read_iso8859_1(struct mpdm_file *f, size_t *s)
     wchar_t wc;
     int c;
 
-    *s = 0;
-
     while ((c = get_byte(f)) != EOF) {
         wc = c;
 
@@ -532,8 +524,6 @@ static wchar_t *read_utf16ae(struct mpdm_file *f, size_t *s, int le)
     wchar_t *ptr = NULL;
     wchar_t wc;
     int c1, c2;
-
-    *s = 0;
 
     for (;;) {
         wc = L'\0';
@@ -671,8 +661,6 @@ static wchar_t *read_utf32ae(struct mpdm_file *f, size_t *s, int le)
     wchar_t *ptr = NULL;
     wchar_t wc;
     int c1, c2, c3, c4;
-
-    *s = 0;
 
     for (;;) {
         wc = L'\0';
@@ -936,6 +924,7 @@ wchar_t *mpdm_read_mbs(FILE *f, size_t *s)
     memset(&fs, '\0', sizeof(fs));
     fs.in = f;
 
+    *s = 0;
     return read_mbs(&fs, s);
 }
 
@@ -1031,7 +1020,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
         if (fs != NULL) {
             wchar_t *ptr;
-            size_t s;
+            size_t s = 0;
 
             ptr = fs->f_read(fs, &s);
 
