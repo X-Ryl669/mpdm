@@ -55,7 +55,6 @@ enum {
     _MPDM_IVAL,
     _MPDM_RVAL,
     _MPDM_HASH,
-    _MPDM_FILE,
     _MPDM_EXEC,
     _MPDM_CHANNEL,
     _MPDM_EXTENDED
@@ -68,7 +67,6 @@ enum {
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
-    MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a file */
     MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
     MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
@@ -113,7 +111,7 @@ extern struct mpdm_control *mpdm;
 #define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
 #define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
 #define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
-#define MPDM_IS_FILE(v)     ((v != NULL) && ((v)->flags) & MPDM_FILE)
+#define MPDM_IS_FILE(v)     (mpdm_type(v) == MPDM_TYPE_FILE)
 #define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
 #define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
 

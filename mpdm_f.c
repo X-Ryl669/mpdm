@@ -2236,7 +2236,7 @@ mpdm_t mpdm_new_f(FILE *f)
     fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
 #endif
 
-    ev = (mpdm_ex_t) mpdm_new(MPDM_FILE | MPDM_FREE | MPDM_EXTENDED, fs, sizeof(struct mpdm_file));
+    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_FILE | MPDM_FREE | MPDM_EXTENDED, fs, sizeof(struct mpdm_file));
     ev->destroy = file_destroy;
     v = (mpdm_t) ev;
 
