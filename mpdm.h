@@ -127,9 +127,9 @@ extern struct mpdm_control *mpdm;
 
 #define MPDM_A(n)       mpdm_new_a(0, n)
 #define MPDM_H(n)       mpdm_new_h(n)
-#define MPDM_LS(s)      mpdm_new_wcs(s, -1, 0)
-#define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
-#define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
+#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 0)
+#define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
+#define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
 #define MPDM_ENS(s,n)   mpdm_new(MPDM_STRING|MPDM_FREE, s, n)
 #define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
 
@@ -195,7 +195,7 @@ wchar_t *mpdm_pokews(wchar_t *dst, size_t *dsize, const wchar_t *str);
 wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v);
 wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l);
 char *mpdm_wcstombs(const wchar_t * str, size_t *s);
-mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy);
+mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy);
 mpdm_t mpdm_new_mbstowcs(const char *str, size_t l);
 mpdm_t mpdm_new_wcstombs(const wchar_t *str);
 mpdm_t mpdm_new_i(int ival);

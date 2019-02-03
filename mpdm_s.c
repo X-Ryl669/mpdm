@@ -228,11 +228,10 @@ char *mpdm_wcstombs(const wchar_t *str, size_t *s)
 }
 
 
-mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy)
+mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy)
 /* creates a new string value from a wcs */
 {
     wchar_t *ptr = NULL;
-    int flags = MPDM_STRING;
 
     /* a size of -1 means 'calculate it' */
     if (size == -1 && str != NULL)
@@ -250,7 +249,7 @@ mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy)
             wcsncpy(ptr, str, size);
     }
 
-    return mpdm_new(MPDM_TYPE_SCALAR | flags, ptr ? ptr : str, size);
+    return mpdm_new(MPDM_TYPE_SCALAR | MPDM_STRING | flags, ptr ? ptr : str, size);
 }
 
 
