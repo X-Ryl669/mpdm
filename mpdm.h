@@ -266,12 +266,15 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset);
 mpdm_t mpdm_sregex(const mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
 
 void mpdm_sleep(int msecs);
+void mpdm_mutex__destroy(mpdm_t v);
 mpdm_t mpdm_new_mutex(void);
 void mpdm_mutex_lock(mpdm_t mutex);
 void mpdm_mutex_unlock(mpdm_t mutex);
+void mpdm_semaphore__destroy(mpdm_t v);
 mpdm_t mpdm_new_semaphore(int init_value);
 void mpdm_semaphore_wait(mpdm_t sem);
 void mpdm_semaphore_post(mpdm_t sem);
+void mpdm_thread__destroy(mpdm_t v);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
 mpdm_t mpdm_channel_read(mpdm_t channel);

@@ -76,16 +76,16 @@ void mpdm_sleep(int msecs)
 
 /** mutexes **/
 
-static void mutex_destroy(mpdm_ex_t ev)
+void mpdm_mutex__destroy(mpdm_t v)
 {
 #ifdef CONFOPT_WIN32
-    HANDLE *h = (HANDLE *) ev->data;
+    HANDLE *h = (HANDLE *) v->data;
 
     CloseHandle(*h);
 #endif
 
 #ifdef CONFOPT_PTHREADS
-    pthread_mutex_t *m = (pthread_mutex_t *) ev->data;
+    pthread_mutex_t *m = (pthread_mutex_t *) v->data;
 
     pthread_mutex_destroy(m);
 #endif
@@ -102,7 +102,6 @@ mpdm_t mpdm_new_mutex(void)
 {
     char *ptr = NULL;
     int size = 0;
-    mpdm_ex_t ev;
 
 #ifdef CONFOPT_WIN32
     HANDLE h;
@@ -125,10 +124,7 @@ mpdm_t mpdm_new_mutex(void)
 
 #endif
 
-    ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_MUTEX | MPDM_EXTENDED, ptr, size);
-    ev->destroy = mutex_destroy;
-
-    return (mpdm_t) ev;
+    return MPDM_C(MPDM_TYPE_MUTEX, ptr, size);
 }
 
 
@@ -182,16 +178,16 @@ void mpdm_mutex_unlock(mpdm_t mutex)
 
 /** semaphores **/
 
-static void semaphore_destroy(mpdm_ex_t ev)
+void mpdm_semaphore__destroy(mpdm_t v)
 {
 #ifdef CONFOPT_WIN32
-    HANDLE *h = (HANDLE *) ev->data;
+    HANDLE *h = (HANDLE *) v->data;
 
     CloseHandle(*h);
 #endif
 
 #ifdef CONFOPT_POSIXSEMS
-    sem_t *s = (sem_t *) ev->data;
+    sem_t *s = (sem_t *) v->data;
 
     sem_destroy(s);
 #endif
@@ -209,7 +205,6 @@ mpdm_t mpdm_new_semaphore(int init_value)
 {
     char *ptr = NULL;
     int size = 0;
-    mpdm_ex_t ev;
 
 #ifdef CONFOPT_WIN32
     HANDLE h;
@@ -231,10 +226,7 @@ mpdm_t mpdm_new_semaphore(int init_value)
 
 #endif
 
-    ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_SEMAPHORE | MPDM_EXTENDED, ptr, size);
-    ev->destroy = semaphore_destroy;
-
-    return (mpdm_t) ev;
+    return MPDM_C(MPDM_TYPE_SEMAPHORE, ptr, size);
 }
 
 
@@ -287,7 +279,7 @@ void mpdm_semaphore_post(mpdm_t sem)
 
 /** threads **/
 
-static void thread_destroy(mpdm_ex_t ev)
+void mpdm_thread__destroy(mpdm_t v)
 {
 }
 
@@ -338,7 +330,6 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
     mpdm_t a;
     char *ptr = NULL;
     int size = 0;
-    mpdm_ex_t ev;
 
     if (ctxt == NULL)
         ctxt = MPDM_A(0);
@@ -372,10 +363,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 #endif
 
-    ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_THREAD | MPDM_EXTENDED, ptr, size);
-    ev->destroy = thread_destroy;
-
-    return (mpdm_t) ev;
+    return MPDM_C(MPDM_TYPE_THREAD, ptr, size);
 }
 
 
