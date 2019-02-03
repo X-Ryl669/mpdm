@@ -123,6 +123,12 @@ mpdm_t mpdm_new(int flags, const void *data, size_t size)
 }
 
 
+mpdm_type_t mpdm_type(mpdm_t v)
+{
+    return (mpdm_type_t) (v ? (v->flags & ((1 << MPDM_TYPE_BITS) - 1)) : MPDM_TYPE_NULL);
+}
+
+
 /**
  * mpdm_ref - Increments the reference count of a value.
  * @v: the value

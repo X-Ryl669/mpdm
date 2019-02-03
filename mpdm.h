@@ -34,19 +34,22 @@
 extern "C" {
 #endif
 
-enum {
+typedef enum {
+    MPDM_TYPE_NULL,
     MPDM_TYPE_SCALAR,
-    MDPM_TYPE_ARRAY,
+    MPDM_TYPE_ARRAY,
 	MPDM_TYPE_OBJECT,
-	MDPM_TYPE_FILE,
+	MPDM_TYPE_FILE,
     MPDM_TYPE_REGEX,
     MPDM_TYPE_MUTEX,
 	MPDM_TYPE_SEMAPHORE,
 	MPDM_TYPE_THREAD
-};
+} mpdm_type_t;
+
+#define MPDM_TYPE_BITS 4
 
 enum {
-    _MPDM_STRING = 4,
+    _MPDM_STRING = MPDM_TYPE_BITS,
     _MPDM_MULTIPLE,
     _MPDM_FREE,
     _MPDM_IVAL,
@@ -145,6 +148,7 @@ extern struct mpdm_control *mpdm;
 
 mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, size_t size);
 mpdm_t mpdm_new(int flags, const void *data, size_t size);
+mpdm_type_t mpdm_type(mpdm_t v);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 mpdm_t mpdm_unrefnd(mpdm_t v);
