@@ -97,6 +97,8 @@ struct mpdm_file {
     int sock;
     int is_pipe;
 
+    wchar_t eol[8];
+
     wchar_t *(*f_read) (struct mpdm_file *, size_t *, int *);
     size_t (*f_write)  (struct mpdm_file *, const wchar_t *);
 
@@ -994,11 +996,30 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
         ptr = fs->f_read(fs, &s, &eol);
 
-        if (ptr != NULL)
+        if (ptr != NULL) {
+            if (eol != -1)
+                wcsncpy(fs->eol, &ptr[eol], sizeof(fs->eol));
+
             v = MPDM_ENS(ptr, s);
+        }
     }
 
     return v;
+}
+
+
+wchar_t *mpdm_file_eol(mpdm_t fd, wchar_t *buf)
+{
+    if (MPDM_IS_FILE(fd)) {
+        struct mpdm_file *fs = (struct mpdm_file *) fd->data;
+
+        if (buf)
+            wcsncpy(buf, fs->eol, sizeof(fs->eol));
+
+        fs->eol[0] = L'\0';
+    }
+
+    return buf;
 }
 
 
