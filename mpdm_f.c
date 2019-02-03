@@ -999,6 +999,8 @@ mpdm_t mpdm_read(const mpdm_t fd)
         if (ptr != NULL) {
             if (eol != -1)
                 wcscpy(fs->eol, &ptr[eol]);
+            else
+                fs->eol[0] = L'\0';
 
             v = MPDM_ENS(ptr, s);
         }
@@ -1008,18 +1010,17 @@ mpdm_t mpdm_read(const mpdm_t fd)
 }
 
 
-wchar_t *mpdm_file_eol(mpdm_t fd, wchar_t *buf)
+wchar_t *mpdm_file_eol(mpdm_t fd)
 {
+    wchar_t *r = NULL;
+
     if (MPDM_IS_FILE(fd)) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-        if (buf)
-            wcsncpy(buf, fs->eol, sizeof(fs->eol));
-
-        fs->eol[0] = L'\0';
+        r = fs->eol;
     }
 
-    return buf;
+    return r;
 }
 
 
