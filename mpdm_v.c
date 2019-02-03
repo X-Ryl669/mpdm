@@ -36,8 +36,21 @@
 /** data **/
 
 /* control structure */
-
 struct mpdm_control *mpdm = NULL;
+
+/* data information */
+struct _mpdm_type_info mpdm_type_info[MPDM_MAX_TYPES] = {
+    { L"null",      NULL },
+    { L"scalar",    NULL },
+    { L"array",     NULL },
+    { L"object",    NULL },
+    { L"file",      NULL },
+    { L"mbs",       NULL },
+    { L"regex",     NULL },
+    { L"mutex",     NULL },
+    { L"semaphore", NULL },
+    { L"thread",    NULL }
+};
 
 
 /** code **/
@@ -125,7 +138,7 @@ mpdm_t mpdm_new(int flags, const void *data, size_t size)
 
 mpdm_type_t mpdm_type(mpdm_t v)
 {
-    return (mpdm_type_t) (v ? (v->flags & ((1 << MPDM_TYPE_BITS) - 1)) : MPDM_TYPE_NULL);
+    return (mpdm_type_t) (v ? (v->flags & MPDM_MASK_FOR_TYPE) : MPDM_TYPE_NULL);
 }
 
 

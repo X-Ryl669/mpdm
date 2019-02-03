@@ -47,10 +47,11 @@ typedef enum {
 	MPDM_TYPE_THREAD
 } mpdm_type_t;
 
-#define MPDM_TYPE_BITS 4
+#define MPDM_MAX_TYPES 16
+#define MPDM_MASK_FOR_TYPE (MPDM_MAX_TYPES - 1)
 
 enum {
-    _MPDM_STRING = MPDM_TYPE_BITS,
+    _MPDM_STRING = MPDM_MASK_FOR_TYPE + 1,
     _MPDM_MULTIPLE,
     _MPDM_FREE,
     _MPDM_IVAL,
@@ -96,6 +97,13 @@ struct mpdm_val_ex {
     void (*destroy)(mpdm_ex_t); /* destroy function */
 };
 
+/* type information */
+struct _mpdm_type_info {
+    wchar_t *name;
+    void (*destroy)(mpdm_t);
+};
+
+extern struct _mpdm_type_info mpdm_type_info[MPDM_MAX_TYPES];
 
 /* the main control structure */
 struct mpdm_control {
