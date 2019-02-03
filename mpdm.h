@@ -164,6 +164,7 @@ extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, size_t *si
 mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
 
+void mpdm_array__destroy(mpdm_t a);
 mpdm_t mpdm_new_a(int flags, size_t size);
 mpdm_t mpdm_expand(mpdm_t a, int index, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
