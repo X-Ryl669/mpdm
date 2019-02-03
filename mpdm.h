@@ -286,6 +286,7 @@ void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);
+mpdm_t mpdm_get(mpdm_t set, mpdm_t i);
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i);
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt);
