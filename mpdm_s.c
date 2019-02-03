@@ -322,12 +322,12 @@ wchar_t *mpdm_string(const mpdm_t v)
     char tmp[32] = "";
     wchar_t *ret = L"[UNKNOWN]";
 
-    /* if it's NULL, return a constant */
-    if (v == NULL)
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
         ret = L"[NULL]";
-    else
-    /* if it's a string, return it */
-    if (v->flags & MPDM_STRING) {
+        break;
+
+    case MPDM_TYPE_SCALAR:
         if (v->data == NULL) {
             /* for mpdm_ival() and mpdm_rval() */
             mpdm_ref(v);
@@ -366,24 +366,28 @@ wchar_t *mpdm_string(const mpdm_t v)
         }
 
         ret = (wchar_t *) v->data;
-    }
-    else {
-        /* otherwise, return a visual representation */
-        mpdm_t c, w;
-        wchar_t wstr[32];
+        break;
 
-        if ((c = mpdm_hget_s(mpdm_root(), L"__STRINGIFY__")) == NULL)
-            c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
+    default:
+        {
+            mpdm_t c, w;
+            wchar_t wstr[32];
 
-        sprintf(tmp, "%p", v);
-        mbstowcs(wstr, tmp, sizeof(wstr));
+            if ((c = mpdm_hget_s(mpdm_root(), L"__STRINGIFY__")) == NULL)
+                c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
 
-        if ((w = mpdm_hget_s(c, wstr)) == NULL) {
-            w = MPDM_S(wstr);
-            mpdm_hset(c, w, w);
+            sprintf(tmp, "(%p)", v);
+            mbstowcs(wstr, tmp, sizeof(wstr));
+
+            if ((w = mpdm_hget_s(c, wstr)) == NULL) {
+                w = MPDM_S(wstr);
+                mpdm_hset(c, w, w);
+            }
+
+            ret = (wchar_t *) w->data;
         }
 
-        ret = (wchar_t *) w->data;
+        break;
     }
 
     return ret;
