@@ -126,8 +126,8 @@ extern struct mpdm_control *mpdm;
 
 /* value creation utility macros */
 
-#define MPDM_A(n)       mpdm_new_a(0,n)
-#define MPDM_H(n)       mpdm_new_a(MPDM_HASH|MPDM_IVAL,n)
+#define MPDM_A(n)       mpdm_new_a(0, n)
+#define MPDM_H(n)       mpdm_new_a(MPDM_HASH|MPDM_IVAL, n)
 #define MPDM_LS(s)      mpdm_new_wcs(s, -1, 0)
 #define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
@@ -136,7 +136,7 @@ extern struct mpdm_control *mpdm;
 
 #define MPDM_I(i)       mpdm_new_i((i))
 #define MPDM_R(r)       mpdm_new_r((r))
-#define MPDM_P(p)       mpdm_new(0,(void *)p, 0, NULL)
+#define MPDM_P(p)       mpdm_new(0, (void *)p, 0, NULL)
 #define MPDM_MBS(s)     mpdm_new_mbstowcs(s, -1)
 #define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(s, n)
 #define MPDM_2MBS(s)    mpdm_new_wcstombs(s)

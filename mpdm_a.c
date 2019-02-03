@@ -1,7 +1,7 @@
 /*
 
     MPDM - Minimum Profit Data Manager
-    Copyright (C) 2003/2018 Angel Ortega <angel@triptico.com>
+    Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
     mpdm_a.c - Array management
 
@@ -57,7 +57,7 @@ mpdm_t mpdm_new_a(int flags, size_t size)
     mpdm_ex_t ev;
 
     /* creates and expands */
-    ev = (mpdm_ex_t) mpdm_new(flags | MPDM_MULTIPLE | MPDM_FREE | MPDM_EXTENDED, NULL, 0);
+    ev = (mpdm_ex_t) mpdm_new(flags | MPDM_TYPE_ARRAY | MPDM_MULTIPLE | MPDM_FREE | MPDM_EXTENDED, NULL, 0);
     ev->destroy = multiple_destroy;
 
     mpdm_expand((mpdm_t) ev, 0, size);
