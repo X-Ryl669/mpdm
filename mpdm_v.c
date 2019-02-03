@@ -46,7 +46,7 @@ struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES] = {
     { L"object",    NULL },
     { L"file",      NULL },
     { L"mbs",       NULL },
-    { L"regex",     NULL },
+    { L"regex",     mpdm_regex__destroy },
     { L"mutex",     mpdm_mutex__destroy },
     { L"semaphore", mpdm_semaphore__destroy },
     { L"thread",    mpdm_thread__destroy }

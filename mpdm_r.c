@@ -66,9 +66,9 @@ static wchar_t *regex_flags(const mpdm_t r)
 }
 
 
-static void regex_destroy(mpdm_ex_t ev)
+void mpdm_regex__destroy(mpdm_t v)
 {
-    regfree((regex_t *) ev->data);
+    regfree((regex_t *) v->data);
 }
 
 
@@ -110,11 +110,7 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
             *flags = '\0';
 
             if (!regcomp(&re, regex, f)) {
-                mpdm_ex_t ev;
-
-                ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_REGEX | MPDM_EXTENDED, &re, sizeof(regex_t));
-                ev->destroy = regex_destroy;
-                c = (mpdm_t) ev;
+                c = MPDM_C(MPDM_TYPE_REGEX, &re, sizeof(regex_t));
 
                 mpdm_hset(regex_cache, r, c);
             }
