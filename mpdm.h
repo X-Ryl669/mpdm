@@ -40,6 +40,7 @@ typedef enum {
     MPDM_TYPE_ARRAY,
 	MPDM_TYPE_OBJECT,
 	MPDM_TYPE_FILE,
+    MPDM_TYPE_MBS,
     MPDM_TYPE_REGEX,
     MPDM_TYPE_MUTEX,
 	MPDM_TYPE_SEMAPHORE,
@@ -130,7 +131,7 @@ extern struct mpdm_control *mpdm;
 #define MPDM_P(p)       mpdm_new(0,(void *)p, 0, NULL)
 #define MPDM_MBS(s)     mpdm_new_mbstowcs(s, -1)
 #define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(s, n)
-#define MPDM_2MBS(s)    mpdm_new_wcstombs(0, s)
+#define MPDM_2MBS(s)    mpdm_new_wcstombs(s)
 
 #define MPDM_X(f)       mpdm_new(MPDM_EXEC, (const void *)f, 0)
 
@@ -188,7 +189,7 @@ wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l);
 char *mpdm_wcstombs(const wchar_t * str, size_t *s);
 mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy);
 mpdm_t mpdm_new_mbstowcs(const char *str, size_t l);
-mpdm_t mpdm_new_wcstombs(int flags, const wchar_t *str);
+mpdm_t mpdm_new_wcstombs(const wchar_t *str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 wchar_t *mpdm_string(const mpdm_t v);

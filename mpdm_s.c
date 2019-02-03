@@ -266,7 +266,7 @@ mpdm_t mpdm_new_mbstowcs(const char *str, size_t l)
 }
 
 
-mpdm_t mpdm_new_wcstombs(int flags, const wchar_t *str)
+mpdm_t mpdm_new_wcstombs(const wchar_t *str)
 /* creates a new mbs value from a wbs */
 {
     char *ptr;
@@ -274,8 +274,7 @@ mpdm_t mpdm_new_wcstombs(int flags, const wchar_t *str)
 
     ptr = mpdm_wcstombs(str, &size);
 
-    /* unset the string flag; mbs,s are not 'strings' */
-    return mpdm_new((flags | MPDM_FREE) & ~MPDM_STRING, ptr, size);
+    return mpdm_new(MPDM_TYPE_MBS | MPDM_FREE, ptr, size);
 }
 
 
