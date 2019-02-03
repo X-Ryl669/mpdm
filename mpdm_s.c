@@ -228,10 +228,11 @@ char *mpdm_wcstombs(const wchar_t *str, size_t *s)
 }
 
 
-mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy)
+mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy)
 /* creates a new string value from a wcs */
 {
     wchar_t *ptr = NULL;
+    int flags = MPDM_STRING;
 
     /* a size of -1 means 'calculate it' */
     if (size == -1 && str != NULL)
@@ -249,11 +250,11 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy)
             wcsncpy(ptr, str, size);
     }
 
-    return mpdm_new(flags | MPDM_STRING, ptr ? ptr : str, size);
+    return mpdm_new(MPDM_TYPE_SCALAR | flags, ptr ? ptr : str, size);
 }
 
 
-mpdm_t mpdm_new_mbstowcs(int flags, const char *str, size_t l)
+mpdm_t mpdm_new_mbstowcs(const char *str, size_t l)
 /* creates a new string value from an mbs */
 {
     wchar_t *ptr;
@@ -261,7 +262,7 @@ mpdm_t mpdm_new_mbstowcs(int flags, const char *str, size_t l)
 
     ptr = mpdm_mbstowcs(str, &size, l);
 
-    return mpdm_new(flags | MPDM_STRING | MPDM_FREE, ptr, size);
+    return mpdm_new(MPDM_TYPE_SCALAR | MPDM_STRING | MPDM_FREE, ptr, size);
 }
 
 
@@ -284,7 +285,7 @@ mpdm_t mpdm_new_i(int ival)
     mpdm_ex_t ev;
 
     /* create a string value, but without the 'string' */
-    ev = (mpdm_ex_t) mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
+    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_STRING | MPDM_FREE | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
     ev->ival = ival;
 
     return (mpdm_t) ev;
@@ -297,7 +298,7 @@ mpdm_t mpdm_new_r(double rval)
     mpdm_ex_t ev;
 
     /* create a string value, but without the 'string' */
-    ev = (mpdm_ex_t) mpdm_new(MPDM_STRING | MPDM_FREE | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
+    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_STRING | MPDM_FREE | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
     ev->rval = rval;
 
     return (mpdm_t) ev;
