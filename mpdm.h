@@ -98,12 +98,12 @@ struct mpdm_val_ex {
 };
 
 /* type information */
-struct _mpdm_type_info {
+struct mpdm_type_info {
     wchar_t *name;
     void (*destroy)(mpdm_t);
 };
 
-extern struct _mpdm_type_info mpdm_type_info[MPDM_MAX_TYPES];
+extern struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES];
 
 /* the main control structure */
 struct mpdm_control {
