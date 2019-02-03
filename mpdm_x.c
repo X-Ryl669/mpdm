@@ -273,7 +273,7 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 
         break;
 
-    default:
+    case MPDM_TYPE_SCALAR:
         /* assume it's a number */
         if (*context < mpdm_ival(set)) {
             if (v) *v = MPDM_I(*context);
@@ -284,6 +284,9 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
         }
 
         break;
+
+    default:
+        ret = 0;
     }
 
     mpdm_unrefnd(set);
