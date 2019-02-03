@@ -371,13 +371,15 @@ wchar_t *mpdm_string(const mpdm_t v)
     default:
         {
             mpdm_t c, w;
-            wchar_t wstr[32];
+            wchar_t wstr[128];
 
             if ((c = mpdm_hget_s(mpdm_root(), L"__STRINGIFY__")) == NULL)
                 c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
 
-            sprintf(tmp, "(%p)", v);
+            sprintf(tmp, "%p (", v);
             mbstowcs(wstr, tmp, sizeof(wstr));
+            wcscat(wstr, mpdm_type_infos[mpdm_type(v)].name);
+            wcscat(wstr, L")");
 
             if ((w = mpdm_hget_s(c, wstr)) == NULL) {
                 w = MPDM_S(wstr);
