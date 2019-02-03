@@ -112,7 +112,7 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
             if (!regcomp(&re, regex, f)) {
                 mpdm_ex_t ev;
 
-                ev = (mpdm_ex_t) MPDM_C(MPDM_REGEX | MPDM_EXTENDED, &re, sizeof(regex_t));
+                ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_REGEX | MPDM_EXTENDED, &re, sizeof(regex_t));
                 ev->destroy = regex_destroy;
                 c = (mpdm_t) ev;
 

@@ -57,7 +57,6 @@ enum {
     _MPDM_HASH,
     _MPDM_FILE,
     _MPDM_EXEC,
-    _MPDM_REGEX,
     _MPDM_CHANNEL,
     _MPDM_EXTENDED
 };
@@ -71,7 +70,6 @@ enum {
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
     MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a file */
     MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
-    MPDM_REGEX      = (1<<_MPDM_REGEX),     /* data is a compiled regex */
     MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };

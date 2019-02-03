@@ -55,7 +55,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
         char tmp[256];
         size_t s;
 
-        sprintf(tmp, "%d,%c%c%c%c:", v->ref,
+/*        sprintf(tmp, "%d,%c%c%c%c:", v->ref,
                 v->flags & MPDM_FILE ? 'F' :
                 (v->flags & MPDM_STRING ? 'S' :
                  (v->flags & MPDM_EXEC ? 'X' : '-')),
@@ -65,7 +65,8 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
                 (v->flags & MPDM_FREE ? 'A' : '-'),
                 v->flags & MPDM_IVAL ? 'I' :
                 (v->flags & MPDM_RVAL ? 'R' : '-')
-            );
+            );*/
+        sprintf(tmp, "%d, %x:", v->ref, v->flags);
 
         wptr = mpdm_mbstowcs(tmp, &s, -1);
         ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
