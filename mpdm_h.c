@@ -336,3 +336,45 @@ mpdm_t mpdm_keys(const mpdm_t h)
 
     return a;
 }
+
+
+int mpdm_oiterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
+{
+    int ret = 0;
+
+    mpdm_ref(set);
+
+    if (mpdm_size(set)) {
+        int bi, ei;
+
+        /* get bucket and element index */
+        bi = (*context) % mpdm_size(set);
+        ei = (*context) / mpdm_size(set);
+
+        while (ret == 0 && bi < mpdm_size(set)) {
+            mpdm_t b;
+
+            /* if bucket is empty or there are no more
+               elements in it, pick the next one */
+            if (!(b = mpdm_aget(set, bi)) || ei >= mpdm_size(b)) {
+                ei = 0;
+                bi++;
+            }
+            else {
+                /* get pair */
+                if (v) *v = mpdm_aget(b, ei + 1);
+                if (i) *i = mpdm_aget(b, ei);
+
+                ei += 2;
+
+                /* update context */
+                *context = (ei * mpdm_size(set)) + bi;
+                ret = 1;
+            }
+        }
+    }
+
+    mpdm_unrefnd(set);
+
+    return ret;
+}
