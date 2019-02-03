@@ -998,7 +998,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
         if (ptr != NULL) {
             if (eol != -1)
-                wcsncpy(fs->eol, &ptr[eol], sizeof(fs->eol));
+                wcscpy(fs->eol, &ptr[eol]);
 
             v = MPDM_ENS(ptr, s);
         }
