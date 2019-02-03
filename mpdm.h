@@ -255,6 +255,7 @@ int mpdm_pclose(mpdm_t fd);
 mpdm_t mpdm_home_dir(void);
 mpdm_t mpdm_app_dir(void);
 mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
+void mpdm_file__destroy(mpdm_t v);
 mpdm_t mpdm_new_f(FILE * f);
 int mpdm_close(mpdm_t fd);
 

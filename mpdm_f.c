@@ -2205,10 +2205,10 @@ static int file_close(mpdm_t v)
 }
 
 
-static void file_destroy(mpdm_ex_t v)
+void mpdm_file__destroy(mpdm_t v)
 /* destroys and file value */
 {
-    file_close((mpdm_t) v);
+    file_close(v);
 }
 
 
@@ -2216,7 +2216,6 @@ mpdm_t mpdm_new_f(FILE *f)
 /* creates a new file value */
 {
     mpdm_t v = NULL;
-    mpdm_ex_t ev;
     struct mpdm_file *fs;
     mpdm_t e;
 
@@ -2236,9 +2235,7 @@ mpdm_t mpdm_new_f(FILE *f)
     fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
 #endif
 
-    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_FILE | MPDM_FREE | MPDM_EXTENDED, fs, sizeof(struct mpdm_file));
-    ev->destroy = file_destroy;
-    v = (mpdm_t) ev;
+    v = mpdm_new(MPDM_TYPE_FILE | MPDM_FREE, fs, sizeof(struct mpdm_file));
 
     e = mpdm_hget_s(mpdm_root(), L"ENCODING");
 
