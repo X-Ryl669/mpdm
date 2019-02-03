@@ -936,7 +936,7 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 {
     FILE *f = NULL;
     mpdm_t fn;
-    mpdm_t m;
+    mpdm_t fm;
 
     mpdm_ref(filename);
     mpdm_ref(mode);
@@ -944,9 +944,9 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
     if (filename != NULL && mode != NULL) {
         /* convert to mbs,s */
         fn = mpdm_ref(MPDM_2MBS(filename->data));
-        m = mpdm_ref(MPDM_2MBS(mode->data));
+        fm = mpdm_ref(MPDM_2MBS(mode->data));
 
-        if ((f = fopen((char *) fn->data, (char *) m->data)) == NULL)
+        if ((f = fopen((char *) fn->data, (char *) fm->data)) == NULL)
             store_syserr();
         else {
 #if defined(CONFOPT_SYS_STAT_H) && defined(S_ISDIR) && defined(EISDIR)
@@ -963,7 +963,7 @@ mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
 #endif
         }
 
-        mpdm_unref(m);
+        mpdm_unref(fm);
         mpdm_unref(fn);
     }
 
@@ -986,19 +986,16 @@ mpdm_t mpdm_read(const mpdm_t fd)
 {
     mpdm_t v = NULL;
 
-    if (fd != NULL) {
+    if (MPDM_IS_FILE(fd)) {
+        wchar_t *ptr;
+        size_t s = 0;
+        int eol = -1;
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-        if (fs != NULL) {
-            wchar_t *ptr;
-            size_t s = 0;
-            int eol = -1;
+        ptr = fs->f_read(fs, &s, &eol);
 
-            ptr = fs->f_read(fs, &s, &eol);
-
-            if (ptr != NULL)
-                v = MPDM_ENS(ptr, s);
-        }
+        if (ptr != NULL)
+            v = MPDM_ENS(ptr, s);
     }
 
     return v;
@@ -1007,17 +1004,20 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
 mpdm_t mpdm_getchar(const mpdm_t fd)
 {
-    int c;
-    wchar_t tmp[2];
     mpdm_t r = NULL;
-    struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-    if (fs != NULL && (c = get_byte(fs)) != EOF) {
-        /* get the char as-is */
-        tmp[0] = (wchar_t) c;
-        tmp[1] = L'\0';
+    if (MPDM_IS_FILE(fd)) {
+        int c;
+        wchar_t tmp[2];
+        struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-        r = MPDM_S(tmp);
+        if ((c = get_byte(fs)) != EOF) {
+            /* get the char as-is */
+            tmp[0] = (wchar_t) c;
+            tmp[1] = L'\0';
+
+            r = MPDM_S(tmp);
+        }
     }
 
     return r;
@@ -1026,14 +1026,17 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
 
 int mpdm_putchar(const mpdm_t fd, const mpdm_t c)
 {
-    struct mpdm_file *fs = (struct mpdm_file *) fd->data;
-    const wchar_t *ptr = mpdm_string(c);
     int r = 1;
 
     mpdm_ref(c);
 
-    if (fs == NULL || put_char(*ptr, fs) == -1)
-        r = 0;
+    if (MPDM_IS_FILE(fd)) {
+        struct mpdm_file *fs = (struct mpdm_file *) fd->data;
+        const wchar_t *ptr = mpdm_string(c);
+
+        if (put_char(*ptr, fs) == -1)
+            r = 0;
+    }
 
     mpdm_unref(c);
 
@@ -1056,11 +1059,10 @@ size_t mpdm_write(const mpdm_t fd, const mpdm_t v)
 
     mpdm_ref(v);
 
-    if (fd) {
+    if (MPDM_IS_FILE(fd)) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
-        if (fs != NULL)
-            ret = fs->f_write(fs, mpdm_string(v));
+        ret = fs->f_write(fs, mpdm_string(v));
     }
 
     mpdm_unref(v);
@@ -1089,7 +1091,7 @@ FILE *mpdm_get_filehandle(const mpdm_t fd)
 {
     FILE *f = NULL;
 
-    if (fd->flags & MPDM_FILE && fd->data != NULL) {
+    if (MPDM_IS_FILE(fd)) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
         f = fs->in;
     }
@@ -1114,43 +1116,43 @@ static mpdm_t embedded_encodings(void)
 {
     mpdm_t e;
     wchar_t *e2e[] = {
-        L"utf-8", L"utf-8",
-        L"utf8", NULL,
-        L"iso8859-1", L"iso8859-1",
+        L"utf-8",      L"utf-8",
+        L"utf8",       NULL,
+        L"iso8859-1",  L"iso8859-1",
         L"iso-8859-1", NULL,
-        L"8bit", NULL,
-        L"latin1", NULL,
-        L"latin-1", NULL,
-        L"utf-16le", L"utf-16le",
-        L"utf16le", NULL,
-        L"ucs-2le", NULL,
-        L"utf-16be", L"utf-16be",
-        L"utf16be", NULL,
-        L"ucs-2be", NULL,
-        L"utf-16", L"utf-16",
-        L"utf16", NULL,
-        L"ucs-2", NULL,
-        L"ucs2", NULL,
-        L"utf-32le", L"utf-32le",
-        L"utf32le", NULL,
-        L"ucs-4le", NULL,
-        L"utf-32be", L"utf-32be",
-        L"utf32be", NULL,
-        L"ucs-4be", NULL,
-        L"utf-32", L"utf-32",
-        L"utf32", NULL,
-        L"ucs-4", NULL,
-        L"ucs4", NULL,
-        L"utf-8bom", L"utf-8bom",
-        L"utf8bom", NULL,
-        NULL, NULL
+        L"8bit",       NULL,
+        L"latin1",     NULL,
+        L"latin-1",    NULL,
+        L"utf-16le",   L"utf-16le",
+        L"utf16le",    NULL,
+        L"ucs-2le",    NULL,
+        L"utf-16be",   L"utf-16be",
+        L"utf16be",    NULL,
+        L"ucs-2be",    NULL,
+        L"utf-16",     L"utf-16",
+        L"utf16",      NULL,
+        L"ucs-2",      NULL,
+        L"ucs2",       NULL,
+        L"utf-32le",   L"utf-32le",
+        L"utf32le",    NULL,
+        L"ucs-4le",    NULL,
+        L"utf-32be",   L"utf-32be",
+        L"utf32be",    NULL,
+        L"ucs-4be",    NULL,
+        L"utf-32",     L"utf-32",
+        L"utf32",      NULL,
+        L"ucs-4",      NULL,
+        L"ucs4",       NULL,
+        L"utf-8bom",   L"utf-8bom",
+        L"utf8bom",    NULL,
+        NULL,          NULL
     };
 
     if ((e = mpdm_hget_s(mpdm_root(), L"EMBEDDED_ENCODINGS")) == NULL) {
         int n;
         mpdm_t p = NULL;
 
-        e = mpdm_ref(MPDM_H(0));
+        e = mpdm_hset_s(mpdm_root(), L"EMBEDDED_ENCODINGS", MPDM_H(0));
 
         for (n = 0; e2e[n] != NULL; n += 2) {
             mpdm_t v = MPDM_S(e2e[n]);
@@ -1162,9 +1164,6 @@ static mpdm_t embedded_encodings(void)
             mpdm_hset(e, mpdm_ulc(v, 1), p);
         }
 
-        mpdm_hset_s(mpdm_root(), L"EMBEDDED_ENCODINGS", e);
-
-        mpdm_unref(e);
     }
 
     return e;
