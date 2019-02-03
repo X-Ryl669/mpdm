@@ -125,7 +125,7 @@ mpdm_t mpdm_new_mutex(void)
 
 #endif
 
-    ev = (mpdm_ex_t) MPDM_C(MPDM_MUTEX | MPDM_EXTENDED, ptr, size);
+    ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_MUTEX | MPDM_EXTENDED, ptr, size);
     ev->destroy = mutex_destroy;
 
     return (mpdm_t) ev;
@@ -231,7 +231,7 @@ mpdm_t mpdm_new_semaphore(int init_value)
 
 #endif
 
-    ev = (mpdm_ex_t) MPDM_C(MPDM_SEMAPHORE | MPDM_EXTENDED, ptr, size);
+    ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_SEMAPHORE | MPDM_EXTENDED, ptr, size);
     ev->destroy = semaphore_destroy;
 
     return (mpdm_t) ev;
@@ -372,7 +372,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 #endif
 
-    ev = (mpdm_ex_t) MPDM_C(MPDM_THREAD | MPDM_EXTENDED, ptr, size);
+    ev = (mpdm_ex_t) MPDM_C(MPDM_TYPE_THREAD | MPDM_EXTENDED, ptr, size);
     ev->destroy = thread_destroy;
 
     return (mpdm_t) ev;

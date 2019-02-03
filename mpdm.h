@@ -58,9 +58,6 @@ enum {
     _MPDM_FILE,
     _MPDM_EXEC,
     _MPDM_REGEX,
-    _MPDM_MUTEX,
-    _MPDM_SEMAPHORE,
-    _MPDM_THREAD,
     _MPDM_CHANNEL,
     _MPDM_EXTENDED
 };
@@ -75,9 +72,6 @@ enum {
     MPDM_FILE       = (1<<_MPDM_FILE),      /* data is a file */
     MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
     MPDM_REGEX      = (1<<_MPDM_REGEX),     /* data is a compiled regex */
-    MPDM_MUTEX      = (1<<_MPDM_MUTEX),     /* data is a mutex */
-    MPDM_SEMAPHORE  = (1<<_MPDM_SEMAPHORE), /* data is a semaphore */
-    MPDM_THREAD     = (1<<_MPDM_THREAD),    /* data is a thread handle */
     MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };
