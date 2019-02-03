@@ -1342,7 +1342,8 @@ enum {
     JS_COLON,
     JS_VALUE,
     JS_STRING,
-    JS_NUMBER,
+    JS_INTEGER,
+    JS_REAL,
     JS_TRUE,
     JS_FALSE,
     JS_NULL,
@@ -1421,15 +1422,14 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
         v = MPDM_ENS(ptr, size - 1);
     }
     else
-    if ((c >= L'0' && c <= L'9') || c == L'.') {
-        *t = JS_NUMBER;
-        int is_real = 0;
+    if (c == L'-' || (c >= L'0' && c <= L'9') || c == L'.') {
+        *t = JS_INTEGER;
 
         ptr = mpdm_pokewsn(ptr, &size, &c, 1);
 
         while (((c = *s) >= L'0' && c <= L'9') || c == L'.') {
             if (c == L'.')
-                is_real = 1;
+                *t = JS_REAL;
 
             ptr = mpdm_pokewsn(ptr, &size, &c, 1);
             s++;
@@ -1438,7 +1438,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
         ptr = mpdm_pokewsn(ptr, &size, L"", 1);
         v = MPDM_ENS(ptr, size - 1);
 
-        if (is_real)
+        if (*t == JS_REAL)
             v = MPDM_R(mpdm_rval(v));
         else
             v = MPDM_I(mpdm_ival(v));
