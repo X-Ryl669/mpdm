@@ -998,7 +998,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
         if (ptr != NULL) {
             if (eol != -1)
-                wcscpy(fs->eol, &ptr[eol]);
+                wcsncpy(fs->eol, &ptr[eol], (sizeof(fs->eol) / sizeof(wchar_t)) - 1);
             else
                 fs->eol[0] = L'\0';
 
