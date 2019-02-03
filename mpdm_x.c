@@ -235,43 +235,17 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
  */
 int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 {
+    mpdm_t w;
     int ret = 0;
 
     mpdm_ref(set);
 
-    if (MPDM_IS_HASH(set)) {
-        int bi, ei;
+    switch (mpdm_type(set)) {
+    case MPDM_TYPE_OBJECT:
+        ret = mpdm_oiterator(set, context, v, i);
+        break;
 
-        if (mpdm_size(set)) {
-            /* get bucket and element index */
-            bi = (*context) % mpdm_size(set);
-            ei = (*context) / mpdm_size(set);
-
-            while (ret == 0 && bi < mpdm_size(set)) {
-                mpdm_t b;
-
-                /* if bucket is empty or there are no more
-                   elements in it, pick the next one */
-                if (!(b = mpdm_aget(set, bi)) || ei >= mpdm_size(b)) {
-                    ei = 0;
-                    bi++;
-                }
-                else {
-                    /* get pair */
-                    if (v) *v = mpdm_aget(b, ei + 1);
-                    if (i) *i = mpdm_aget(b, ei);
-
-                    ei += 2;
-
-                    /* update context */
-                    *context = (ei * mpdm_size(set)) + bi;
-                    ret = 1;
-                }
-            }
-        }
-    }
-    else
-    if (MPDM_IS_ARRAY(set)) {
+    case MPDM_TYPE_ARRAY:
         if (*context < mpdm_size(set)) {
             if (v) *v = mpdm_aget(set, (*context));
             if (i) *i = MPDM_I(*context);
@@ -279,10 +253,11 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
             (*context)++;
             ret = 1;
         }
-    }
-    else
-    if (MPDM_IS_FILE(set)) {
-        mpdm_t w = mpdm_read(set);
+
+        break;
+
+    case MPDM_TYPE_FILE:
+        w = mpdm_read(set);
 
         if (w != NULL) {
             if (v)
@@ -295,8 +270,10 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
             (*context)++;
             ret = 1;
         }
-    }
-    else {
+
+        break;
+
+    default:
         /* assume it's a number */
         if (*context < mpdm_ival(set)) {
             if (v) *v = MPDM_I(*context);
@@ -305,6 +282,8 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
             (*context)++;
             ret = 1;
         }
+
+        break;
     }
 
     mpdm_unrefnd(set);
