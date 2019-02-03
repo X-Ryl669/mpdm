@@ -94,7 +94,6 @@ struct mpdm_val_ex {
     const void *data;           /* the real data */
     int ival;                   /* cached integer value */
     double rval;                /* cache real value */
-    void (*destroy)(mpdm_ex_t); /* destroy function */
 };
 
 /* type information */

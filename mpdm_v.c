@@ -67,14 +67,6 @@ static mpdm_t destroy_value(mpdm_t v)
     if (ti->destroy)
         ti->destroy(v);
 
-    /* if it's an extended value, call its destroy function */
-    if (v->flags & MPDM_EXTENDED) {
-        mpdm_ex_t ev = (mpdm_ex_t) v;
-
-        if (ev->destroy)
-            ev->destroy(ev);
-    }
-
     /* free data if needed */
     if (v->flags & MPDM_FREE)
         free((void *)v->data);
