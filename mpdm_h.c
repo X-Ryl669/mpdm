@@ -76,6 +76,27 @@ static int switch_hash_func(const wchar_t *string, int mod)
 
 /* interface */
 
+
+void mpdm_object__destroy(mpdm_t o)
+{
+    mpdm_array__destroy(o);
+}
+
+
+mpdm_t mpdm_new_h(size_t size)
+/* creates a new hash value */
+{
+    mpdm_t v;
+
+    /* creates and expands */
+    v = mpdm_new(MPDM_TYPE_OBJECT | MPDM_HASH | MPDM_IVAL | MPDM_EXTENDED | MPDM_MULTIPLE | MPDM_FREE, NULL, 0);
+
+    mpdm_expand(v, 0, size);
+
+    return v;
+}
+
+
 /**
  * mpdm_hsize - Returns the number of pairs of a hash.
  * @h: the hash

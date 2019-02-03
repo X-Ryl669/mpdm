@@ -43,7 +43,7 @@ struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES] = {
     { L"null",      NULL },
     { L"scalar",    NULL },
     { L"array",     mpdm_array__destroy },
-    { L"object",    NULL },
+    { L"object",    mpdm_object__destroy },
     { L"file",      mpdm_file__destroy },
     { L"mbs",       NULL },
     { L"regex",     mpdm_regex__destroy },
