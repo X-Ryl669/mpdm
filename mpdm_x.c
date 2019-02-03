@@ -414,7 +414,7 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 w = mpdm_regex(v, filter, 0);
             else
             if (MPDM_IS_HASH(filter))
-                w = MPDM_I(mpdm_exists(filter, v));
+                w = mpdm_bool(mpdm_exists(filter, v));
 
             if (mpdm_is_true(w)) {
                 if (MPDM_IS_HASH(out))
@@ -422,6 +422,9 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 else
                     mpdm_push(out, v);
             }
+
+            mpdm_unref(v);
+            mpdm_unref(i);
         }
     }
 
