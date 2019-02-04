@@ -29,6 +29,8 @@ dep:
 	gcc -MM *.c > makefile.depend
 
 $(LIB): $(OBJS)
+	./build-info.sh mpdm
+	$(CC) -c .build-info.c
 	$(AR) rv $(LIB) $(OBJS)
 
 stress-test: stress
