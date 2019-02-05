@@ -1,8 +1,15 @@
 MPDM Release Notes
 ==================
 
-2.21-dev
---------
+2.30
+----
+
+ - Architectural changes:
+   - Moved "destroy" functions from the extended values to a global
+     type information structure.
+
+2.21
+----
 
  - New features:
    - Added the concept of "extended" values: they contain an
