@@ -307,28 +307,40 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
         mpdm_t v, i;
         int n = 0;
 
-        out = MPDM_A(0);
+        if (mpdm_type(set) == MPDM_TYPE_SCALAR) {
+            if (mpdm_type(filter) == MPDM_TYPE_SCALAR) {
+                out = MPDM_A(0);
 
-        while (mpdm_iterator(set, &n, &v, &i)) {
-            mpdm_t w = NULL;
-            mpdm_ref(v);
-            mpdm_ref(i);
+                while ((v = mpdm_regex(set, filter, n))) {
+                    mpdm_push(out, v);
+                    n = mpdm_regex_offset + mpdm_regex_size;
+                }
+            }
+        }
+        else {
+            out = MPDM_A(0);
 
-            if (MPDM_IS_EXEC(filter))
-                w = mpdm_exec_2(filter, v, i, ctxt);
-            else
-            if (MPDM_IS_HASH(filter))
-                w = mpdm_hget(filter, v);
-            else
-            if (MPDM_IS_STRING(filter))
-                w = mpdm_regex(v, filter, 0);
-            else
-                w = v;
+            while (mpdm_iterator(set, &n, &v, &i)) {
+                mpdm_t w = NULL;
+                mpdm_ref(v);
+                mpdm_ref(i);
 
-            mpdm_push(out, w);
+                if (MPDM_IS_EXEC(filter))
+                    w = mpdm_exec_2(filter, v, i, ctxt);
+                else
+                if (MPDM_IS_HASH(filter))
+                    w = mpdm_hget(filter, v);
+                else
+                if (MPDM_IS_STRING(filter))
+                    w = mpdm_regex(v, filter, 0);
+                else
+                    w = v;
 
-            mpdm_unref(i);
-            mpdm_unref(v);
+                mpdm_push(out, w);
+
+                mpdm_unref(i);
+                mpdm_unref(v);
+            }
         }
     }
 
