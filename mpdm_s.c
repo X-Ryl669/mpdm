@@ -499,9 +499,9 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
     mpdm_ref(i);
 
     if (v != NULL) {
-        int os, ns, r;
-        int ins = 0;
-        wchar_t *ptr;
+        int os;
+        wchar_t *ptr = NULL;
+        size_t s = 0;
 
         os = mpdm_size(v);
 
@@ -529,40 +529,19 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
         else
             del = 0;
 
-        /* ensure to stringify i (it may be a 'lazy' number) */
-        mpdm_string(i);
+        /* copy the start of the string */
+        ptr = mpdm_pokewsn(ptr, &s, mpdm_string(v), offset);
 
-        ins = mpdm_size(i);
+        /* copy the inserted string */
+        ptr = mpdm_pokev(ptr, &s, i);
 
-        /* new size and remainder */
-        ns = os + ins - del;
-        r = offset + del;
+        /* copy the reminder */
+        ptr = mpdm_pokews(ptr, &s, mpdm_string(v) + offset + del);
 
-        n = MPDM_NS(NULL, ns);
+        /* and null-terminate */
+        ptr = mpdm_pokewsn(ptr, &s, L"", 1);
 
-        ptr = mpdm_string(n);
-
-        /* copy the beginning */
-        if (offset > 0) {
-            wcsncpy(ptr, mpdm_string(v), offset);
-            ptr += offset;
-        }
-
-        /* copy the text to be inserted */
-        if (ins > 0) {
-            wcsncpy(ptr, mpdm_string(i), ins);
-            ptr += ins;
-        }
-
-        /* copy the remaining */
-        os -= r;
-        if (os > 0) {
-            wcsncpy(ptr, mpdm_string(v) + r, os);
-            ptr += os;
-        }
-
-        /* null terminate */
-        *ptr = L'\0';
+        n = MPDM_NS(ptr, s - 1);
     }
     else
         n = i;
