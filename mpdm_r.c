@@ -200,9 +200,8 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
  * for case-insensitive matching, 'm', to treat the string as a
  * multiline string (i.e., one containing newline characters), so
  * that ^ and $ match the boundaries of each line instead of the
- * whole string, 'l', to return the last matching instead of the
- * first one, or 'g', to match globally; in that last case, an array
- * containing all matches is returned instead of a string scalar.
+ * whole string, or 'l', to return the last matching instead of the
+ * first one.
  *
  * If @r is a string, an ordinary regular expression matching is tried
  * over the @v string. If the matching is possible, the match result
@@ -241,7 +240,7 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
     }
     else
     if (v != NULL) {
-        if (r->flags & MPDM_MULTIPLE) {
+        if (mpdm_type(r) == MPDM_TYPE_ARRAY) {
             int n;
             mpdm_t t;
 
@@ -261,28 +260,8 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
                 offset = mpdm_regex_offset + mpdm_regex_size;
             }
         }
-        else {
-            wchar_t *global;
-
-            /* takes pointer to 'global' flag */
-            if ((global = regex_flags(r)) !=NULL)
-                global = wcschr(global, 'g');
-
-            if (global !=NULL) {
-                mpdm_t t;
-
-                /* match sequentially until done */
-                w = MPDM_A(0);
-
-                while ((t = regex1(r, v, offset)) != NULL) {
-                    mpdm_push(w, t);
-
-                    offset = mpdm_regex_offset + mpdm_regex_size;
-                }
-            }
-            else
-                w = regex1(r, v, offset);
-        }
+        else
+            w = regex1(r, v, offset);
     }
 
     mpdm_unref(v);
