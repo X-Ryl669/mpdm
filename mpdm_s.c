@@ -494,14 +494,15 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
     mpdm_t w;
     mpdm_t n = NULL;
     mpdm_t d = NULL;
-    int os, ns, r;
-    int ins = 0;
-    wchar_t *ptr;
 
     mpdm_ref(v);
     mpdm_ref(i);
 
     if (v != NULL) {
+        int os, ns, r;
+        int ins = 0;
+        wchar_t *ptr;
+
         os = mpdm_size(v);
 
         /* negative offsets start from the end */
@@ -523,12 +524,14 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
                 del = os - offset;
 
             /* deleted string */
-            d = MPDM_NS(((wchar_t *) v->data) + offset, del);
+            d = MPDM_NS(mpdm_string(v) + offset, del);
         }
         else
             del = 0;
 
-        /* something to insert? */
+        /* ensure to stringify i (it may be a 'lazy' number) */
+        mpdm_string(i);
+
         ins = mpdm_size(i);
 
         /* new size and remainder */
@@ -537,24 +540,24 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 
         n = MPDM_NS(NULL, ns);
 
-        ptr = (wchar_t *) n->data;
+        ptr = mpdm_string(n);
 
         /* copy the beginning */
         if (offset > 0) {
-            wcsncpy(ptr, v->data, offset);
+            wcsncpy(ptr, mpdm_string(v), offset);
             ptr += offset;
         }
 
         /* copy the text to be inserted */
         if (ins > 0) {
-            wcsncpy(ptr, i->data, ins);
+            wcsncpy(ptr, mpdm_string(i), ins);
             ptr += ins;
         }
 
         /* copy the remaining */
         os -= r;
         if (os > 0) {
-            wcsncpy(ptr, ((wchar_t *) v->data) + r, os);
+            wcsncpy(ptr, mpdm_string(v) + r, os);
             ptr += os;
         }
 

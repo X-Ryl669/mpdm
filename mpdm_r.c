@@ -403,43 +403,44 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
 
         o = mpdm_ref(MPDM_S(mpdm_string(v)));
 
-        do {
-            if ((m = mpdm_regex(o, r2, offset))) {
-                mpdm_t w;
+        while ((m = mpdm_regex(o, r2, offset)) != NULL) {
+            mpdm_t w;
 
-                /* is s an executable value? */
-                if (MPDM_IS_EXEC(s)) {
-                    /* execute s, with match as argument */
-                    w = mpdm_exec_1(s, m, NULL);
-                }
-                else
-                /* is s an object? use match as index */
-                if (mpdm_type(s) == MPDM_TYPE_OBJECT) {
-                    mpdm_ref(m);
-                    w = mpdm_hget(s, m);
-
-                    /* is executable? run it through again */
-                    if (MPDM_IS_EXEC(w))
-                        w = mpdm_exec_1(w, m, NULL);
-
-                    mpdm_unref(m);
-                }
-                else
-                    w = expand_ampersands(s, m);
-
-                offset = mpdm_regex_offset + mpdm_size(w);
-
-                /* splice */
-                w = mpdm_splice(o, w, mpdm_regex_offset, mpdm_regex_size);
-
-                /* take first argument and drop the rest */
-                mpdm_store(&o, mpdm_aget(w, 0));
-                mpdm_void(w);
-
-                /* one more substitution */
-                mpdm_sregex_count++;
+            /* is s an executable value? */
+            if (MPDM_IS_EXEC(s)) {
+                /* execute s, with match as argument */
+                w = mpdm_exec_1(s, m, NULL);
             }
-        } while (m && global);
+            else
+            /* is s an object? use match as index */
+            if (mpdm_type(s) == MPDM_TYPE_OBJECT) {
+                mpdm_ref(m);
+                w = mpdm_hget(s, m);
+
+                /* is executable? run it through again */
+                if (MPDM_IS_EXEC(w))
+                    w = mpdm_exec_1(w, m, NULL);
+
+                mpdm_unref(m);
+            }
+            else
+                w = expand_ampersands(s, m);
+
+            offset = mpdm_regex_offset + mpdm_size(w);
+
+            /* splice */
+            w = mpdm_splice(o, w, mpdm_regex_offset, mpdm_regex_size);
+
+            /* take first argument and drop the rest */
+            mpdm_store(&o, mpdm_aget(w, 0));
+            mpdm_void(w);
+
+            /* one more substitution */
+            mpdm_sregex_count++;
+
+            if (!global)
+                break;
+        }
 
         mpdm_unrefnd(o);
 
