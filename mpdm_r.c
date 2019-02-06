@@ -80,10 +80,8 @@ static mpdm_t mpdm_regcomp(mpdm_t r)
     mpdm_ref(r);
 
     /* if cache does not exist, create it */
-    if ((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL) {
-        regex_cache = MPDM_H(0);
-        mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", regex_cache);
-    }
+    if ((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL)
+        regex_cache = mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", MPDM_H(0));
 
     /* search the regex in the cache */
     if ((c = mpdm_hget(regex_cache, r)) == NULL) {
@@ -237,10 +235,8 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
         if (mpdm_regex_offset != -1) {
             w = MPDM_A(2);
 
-            mpdm_ref(w);
             mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
             mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
-            mpdm_unrefnd(w);
         }
     }
     else
@@ -253,7 +249,6 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
                moving the offset forward */
 
             w = MPDM_A(0);
-            mpdm_ref(w);
 
             for (n = 0; n < mpdm_size(r); n++) {
                 t = mpdm_regex(v, mpdm_aget(r, n), offset);
@@ -265,8 +260,6 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
                 mpdm_push(w, t);
                 offset = mpdm_regex_offset + mpdm_regex_size;
             }
-
-            mpdm_unrefnd(w);
         }
         else {
             wchar_t *global;
@@ -280,15 +273,12 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
 
                 /* match sequentially until done */
                 w = MPDM_A(0);
-                mpdm_ref(w);
 
                 while ((t = regex1(r, v, offset)) != NULL) {
                     mpdm_push(w, t);
 
                     offset = mpdm_regex_offset + mpdm_regex_size;
                 }
-
-                mpdm_unrefnd(w);
             }
             else
                 w = regex1(r, v, offset);
