@@ -412,25 +412,23 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
             offset = mpdm_regex_offset;
             del    = mpdm_regex_size;
 
-            /* is s an executable value? */
-            if (MPDM_IS_EXEC(s)) {
-                /* execute s, with match as argument */
-                w = mpdm_exec_1(s, m, NULL);
-            }
-            else
-            /* is s an object? use match as index */
-            if (mpdm_type(s) == MPDM_TYPE_OBJECT) {
-                mpdm_ref(m);
-                w = mpdm_hget(s, m);
+            mpdm_ref(m);
+            w = s;
 
-                /* is executable? run it through again */
+            /* loop while it's executable or an object */
+            for (;;) {
                 if (MPDM_IS_EXEC(w))
                     w = mpdm_exec_1(w, m, NULL);
-
-                mpdm_unref(m);
+                else
+                if (mpdm_type(w) == MPDM_TYPE_OBJECT)
+                    w = mpdm_hget(w, m);
+                else {
+                    w = expand_ampersands(w, m);
+                    break;
+                }
             }
-            else
-                w = expand_ampersands(s, m);
+
+            mpdm_unref(m);
 
             add = mpdm_size(w);
 
