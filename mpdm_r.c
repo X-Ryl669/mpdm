@@ -363,26 +363,17 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
     else
     if (v != NULL) {
         wchar_t *global;
-        mpdm_t r2;
         mpdm_t m = NULL;
 
         mpdm_sregex_count = 0;
 
-        /* FIXME: this is very ugly */
-
-        /* make a copy of the regex to rewrite the flags */
-        r2 = mpdm_ref(MPDM_S(mpdm_string(r)));
-
-        /* takes pointer to global flag */
-        if ((global = regex_flags(r2)) != NULL) {
-            if ((global = wcschr(global, 'g'))) {
-                *global = ' ';
-            }
-        }
+        /* take pointer to global flag */
+        if ((global = regex_flags(r)) != NULL)
+            global = wcschr(global, 'g');
 
         o = mpdm_ref(MPDM_S(mpdm_string(v)));
 
-        while ((m = mpdm_regex(o, r2, offset)) != NULL) {
+        while ((m = mpdm_regex(o, r, offset)) != NULL) {
             mpdm_t w;
             int del, add;
 
@@ -429,8 +420,6 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
         }
 
         mpdm_unrefnd(o);
-
-        mpdm_unref(r2);
     }
 
     mpdm_unref(s);
