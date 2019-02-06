@@ -405,6 +405,12 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
 
         while ((m = mpdm_regex(o, r2, offset)) != NULL) {
             mpdm_t w;
+            int del, add;
+
+            /* get match information before it gets possibly
+               destroyed by mpdm_exec_1() or others */
+            offset = mpdm_regex_offset;
+            del    = mpdm_regex_size;
 
             /* is s an executable value? */
             if (MPDM_IS_EXEC(s)) {
@@ -426,10 +432,13 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
             else
                 w = expand_ampersands(s, m);
 
-            offset = mpdm_regex_offset + mpdm_size(w);
+            add = mpdm_size(w);
 
             /* splice */
-            w = mpdm_splice(o, w, mpdm_regex_offset, mpdm_regex_size);
+            w = mpdm_splice(o, w, offset, del);
+
+            /* next iteration shall be after the insertion */
+            offset += add;
 
             /* take first argument and drop the rest */
             mpdm_store(&o, mpdm_aget(w, 0));
