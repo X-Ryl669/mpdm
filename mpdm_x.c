@@ -132,13 +132,26 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
 {
-    mpdm_t r = NULL;
+    mpdm_t r;
 
-    if (MPDM_IS_ARRAY(set))
+    switch (mpdm_type(set)) {
+    case MPDM_TYPE_FUNCTION:
+    case MPDM_TYPE_PROGRAM:
+        r = mpdm_exec_2(set, v, i, NULL);
+        break;
+
+    case MPDM_TYPE_ARRAY:
         r = mpdm_aset(set, v, mpdm_ival(i));
-    else
-    if (MPDM_IS_HASH(set))
+        break;
+
+    case MPDM_TYPE_OBJECT:
         r = mpdm_hset(set, v, i);
+        break;
+
+    default:
+        r = NULL;
+        break;
+    }
 
     return r;
 }
