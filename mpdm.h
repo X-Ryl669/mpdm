@@ -56,7 +56,6 @@ enum {
     _MPDM_FREE = MPDM_MASK_FOR_TYPE + 1,
     _MPDM_IVAL,
     _MPDM_RVAL,
-    _MPDM_EXEC,
     _MPDM_CHANNEL,
     _MPDM_EXTENDED
 };
@@ -65,7 +64,6 @@ enum {
     MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
-    MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */
     MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };

@@ -551,12 +551,3 @@ void mpdm_shutdown(void)
  */
 /** mpdm_t MPDM_C(int flags, void *ptr, int size); */
 /* ; */
-
-/**
- * MPDM_IS_EXEC - Tests if a value is executable.
- * @v: the value
- *
- * Returns non-zero if @v is executable.
- */
-/** int MPDM_IS_EXEC(mpdm_t v); */
-/* ; */
