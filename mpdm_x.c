@@ -143,7 +143,14 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
     mpdm_ref(args);
     mpdm_ref(ctxt);
 
-    if (c != NULL && (c->flags & MPDM_EXEC)) {
+    if (MPDM_IS_EXEC(c)) {
+        if (mpdm_type(c) == MPDM_TYPE_FUNCTION) {
+            mpdm_t(*func) (mpdm_t, mpdm_t);
+
+            if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
+                r = func(args, ctxt);
+        }
+        else
         if (c->flags & MPDM_MULTIPLE) {
             mpdm_t x;
             mpdm_t(*func) (mpdm_t, mpdm_t, mpdm_t);
@@ -156,14 +163,6 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
             if ((func = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
                 r = func(mpdm_aget(c, 1), args, ctxt);
-        }
-        else {
-            mpdm_t(*func) (mpdm_t, mpdm_t);
-
-            /* value is scalar; c is the 2 argument
-               version of the executable function */
-            if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
-                r = func(args, ctxt);
         }
     }
 
