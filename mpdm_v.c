@@ -553,15 +553,6 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
- * MPDM_IS_ARRAY - Tests if a value is an array.
- * @v: the value
- *
- * Returns non-zero if @v is an array.
- */
-/** int MPDM_IS_ARRAY(mpdm_t v); */
-/* ; */
-
-/**
  * MPDM_IS_EXEC - Tests if a value is executable.
  * @v: the value
  *

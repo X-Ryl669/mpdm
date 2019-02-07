@@ -113,7 +113,6 @@ extern struct mpdm_control *mpdm;
 
 /* value type testing macros */
 
-#define MPDM_IS_ARRAY(v)    ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
 #define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
 #define MPDM_IS_FILE(v)     (mpdm_type(v) == MPDM_TYPE_FILE)
 #define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)

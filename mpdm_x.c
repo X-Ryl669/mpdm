@@ -399,16 +399,19 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 
 mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 {
+    mpdm_t v, i;
     mpdm_t out = NULL;
+    int n = 0;
 
     mpdm_ref(set);
     mpdm_ref(filter);
     mpdm_ref(ctxt);
 
-    if (set != NULL) {
-        mpdm_t v, i;
-        int n = 0;
+    switch (mpdm_type(set)) {
+    case MPDM_TYPE_NULL:
+        break;
 
+    default:
         out = MPDM_H(0);
 
         while (mpdm_iterator(set, &n, &v, &i)) {
@@ -416,19 +419,27 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             mpdm_ref(i);
             mpdm_ref(v);
 
-            if (MPDM_IS_EXEC(filter))
-                w = mpdm_exec_2(filter, v, i, ctxt);
-            else
-            if (filter == NULL) {
+            switch (mpdm_type(filter)) {
+            case MPDM_TYPE_NULL:
                 /* invert hash */
                 w = MPDM_A(2);
                 mpdm_aset(w, v, 0);
                 mpdm_aset(w, i, 1);
+
+                break;
+
+            case MPDM_TYPE_FUNCTION:
+            case MPDM_TYPE_PROGRAM:
+                w = mpdm_exec_2(filter, v, i, ctxt);
+                break;
+
+            default:
+                break;
             }
 
             mpdm_ref(w);
 
-            if (MPDM_IS_ARRAY(w))
+            if (mpdm_type(w) == MPDM_TYPE_ARRAY)
                 mpdm_hset(out, mpdm_aget(w, 0), mpdm_aget(w, 1));
 
             mpdm_unref(w);
