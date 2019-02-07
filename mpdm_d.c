@@ -34,12 +34,12 @@
 
 /** data **/
 
-static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size);
-wchar_t *(*mpdm_dump_1) (const mpdm_t v, int l, wchar_t * ptr, size_t *size) = NULL;
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, size_t *size);
+wchar_t *(*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, size_t *size) = NULL;
 
 /** code **/
 
-static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
+static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, size_t *size)
 /* dumps one value to the ptr dynamic string with 'l' indenting level */
 {
     int n;
@@ -54,59 +54,49 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t * ptr, size_t *size)
     if (v != NULL) {
         char tmp[256];
         size_t s;
+        int c = 0;
+        mpdm_t w, i;
+        wchar_t *str;
 
-/*        sprintf(tmp, "%d,%c%c%c%c:", v->ref,
-                v->flags & MPDM_FILE ? 'F' :
-                (v->flags & MPDM_STRING ? 'S' :
-                 (v->flags & MPDM_EXEC ? 'X' : '-')),
-                v->flags & MPDM_HASH ? 'H' :
-                (v->flags & MPDM_MULTIPLE ? 'M' : '-'),
-                v->flags & MPDM_REGEX ? 'r' :
-                (v->flags & MPDM_FREE ? 'A' : '-'),
-                v->flags & MPDM_IVAL ? 'I' :
-                (v->flags & MPDM_RVAL ? 'R' : '-')
-            );*/
-        sprintf(tmp, "%d, %x:", v->ref, v->flags);
+        /* stringify first */
+        str = mpdm_string(v);
 
+        /* add data type */
+        ptr = mpdm_pokews(ptr, size, mpdm_type_infos[mpdm_type(v)].name);
+
+        sprintf(tmp, "(%d,%d,%c%c%c%c):", v->ref - 1, (int) v->size,
+            v->flags & MPDM_EXTENDED ? 'X' : '-',
+            v->flags & MPDM_FREE     ? 'F' : '-',
+            MPDM_HAS_IVAL(v)         ? 'I' : '-',
+            MPDM_HAS_RVAL(v)         ? 'R' : '-'
+        );
+
+        /* add refcount, size and flags */
         wptr = mpdm_mbstowcs(tmp, &s, -1);
-        ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
+        ptr = mpdm_pokews(ptr, size, wptr);
         free(wptr);
 
-        /* if it's a multiple value, add also the number
-           of elements */
-        if (v->flags & MPDM_MULTIPLE) {
-            sprintf(tmp, "[%d] ", (int) mpdm_size(v));
-            wptr = mpdm_mbstowcs(tmp, &s, -1);
-            ptr = mpdm_poke(ptr, size, wptr, s, sizeof(wchar_t));
-            free(wptr);
+        /* add the visual representation of the value */
+        ptr = mpdm_pokews(ptr, size, str);
+        ptr = mpdm_pokews(ptr, size, L"\n");
+
+        if (mpdm_type(v) == MPDM_TYPE_ARRAY) {
+            while (mpdm_iterator(v, &c, &w, NULL)) {
+                ptr = dump_1(w, l + 1, ptr, size);
+            }
         }
-    }
-    else
-        ptr = mpdm_pokews(ptr, size, L"[NULL]");
-
-    /* add the visual representation of the value */
-    ptr = mpdm_pokev(ptr, size, v);
-    ptr = mpdm_pokewsn(ptr, size, L"\n", 1);
-
-    if (v != NULL) {
-        /* if it's a hash, iterate it */
-        if (v->flags & MPDM_HASH) {
-            int c = 0;
-            mpdm_t w, i;
-
+        else
+        if (mpdm_type(v) == MPDM_TYPE_OBJECT) {
             while (mpdm_iterator(v, &c, &w, &i)) {
                 ptr = dump_1(i, l + 1, ptr, size);
                 ptr = dump_1(w, l + 2, ptr, size);
             }
         }
-        else
-        if (v->flags & MPDM_MULTIPLE) {
-            for (n = 0; n < mpdm_size(v); n++)
-                ptr = dump_1(mpdm_aget(v, n), l + 1, ptr, size);
-        }
     }
+    else
+        ptr = mpdm_pokews(ptr, size, L"[NULL]\n");
 
-    mpdm_unref(v);
+    mpdm_unrefnd(v);
 
     return ptr;
 }
@@ -157,11 +147,7 @@ void mpdm_dump(const mpdm_t v)
     size_t size = 0;
     wchar_t *ptr;
 
-    mpdm_ref(v);
-
     ptr = do_dump(v, &size);
     mpdm_write_wcs(stdout, ptr);
     free(ptr);
-
-    mpdm_unrefnd(v);
 }
