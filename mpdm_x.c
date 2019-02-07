@@ -272,7 +272,7 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 
     switch (mpdm_type(set)) {
     case MPDM_TYPE_OBJECT:
-        ret = mpdm_oiterator(set, context, v, i);
+        ret = mpdm_iterator_o(set, context, v, i);
         break;
 
     case MPDM_TYPE_ARRAY:

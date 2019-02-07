@@ -338,7 +338,7 @@ mpdm_t mpdm_keys(const mpdm_t h)
 }
 
 
-int mpdm_oiterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
+int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 {
     int ret = 0;
 
