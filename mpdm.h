@@ -53,7 +53,7 @@ typedef enum {
 #define MPDM_MASK_FOR_TYPE (MPDM_MAX_TYPES - 1)
 
 enum {
-    _MPDM_FREE = MPDM_MASK_FOR_TYPE + 1,
+    _MPDM_FREE = 16,
     _MPDM_IVAL,
     _MPDM_RVAL,
     _MPDM_EXTENDED
