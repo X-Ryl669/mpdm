@@ -813,18 +813,8 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
     case MPDM_TYPE_SCALAR:
 
-        switch (mpdm_type(b)) {
-        case MPDM_TYPE_SCALAR:
-        case MPDM_TYPE_NULL:
-            /* string~string -> string */
-            r = mpdm_strcat(a, b);
-            break;
-
-        default:
-            r = NULL;
-            break;
-        }
-
+        /* string~string -> string */
+        r = mpdm_strcat(a, b);
         break;
 
     default:
