@@ -387,7 +387,7 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
 
             /* loop while it's executable or an object */
             for (;;) {
-                if (MPDM_IS_EXEC(w))
+                if (MPDM_CAN_EXEC(w))
                     w = mpdm_exec_1(w, m, NULL);
                 else
                 if (mpdm_type(w) == MPDM_TYPE_OBJECT)
