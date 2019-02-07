@@ -77,6 +77,32 @@ mpdm_t mpdm_bool(int b)
 }
 
 
+mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a)
+{
+    mpdm_t r = NULL;
+
+    switch (type) {
+    case MPDM_TYPE_FUNCTION:
+        r = mpdm_new(type | MPDM_EXEC, (const void *)f, 0);
+        break;
+
+    case MPDM_TYPE_PROGRAM:
+        r = mpdm_new(type | MPDM_EXEC | MPDM_FREE, NULL, 0);
+
+        mpdm_push(r, MPDM_X(f));
+        mpdm_push(r, a);
+
+        break;
+
+    default:
+        r = NULL;
+    }
+
+    return r;
+}
+
+
+
 mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 {
     mpdm_t r;

@@ -144,7 +144,8 @@ extern struct mpdm_control *mpdm;
 #define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(s, n)
 #define MPDM_2MBS(s)    mpdm_new_wcstombs(s)
 
-#define MPDM_X(f)       mpdm_new(MPDM_TYPE_FUNCTION | MPDM_EXEC, (const void *)f, 0)
+#define MPDM_X(f)       mpdm_new_x(MPDM_TYPE_FUNCTION, f, NULL)
+#define MPDM_X2(f,a)    mpdm_new_x(MPDM_TYPE_PROGRAM, f, a)
 
 #define MPDM_F(f)       mpdm_new_f(f)
 
@@ -292,6 +293,7 @@ void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);
+mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a);
 mpdm_t mpdm_get(mpdm_t set, mpdm_t i);
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i);
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt);
