@@ -130,6 +130,28 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 }
 
 
+mpdm_t mpdm_del(mpdm_t set, mpdm_t i)
+{
+    mpdm_t r;
+
+    switch (mpdm_type(set)) {
+    case MPDM_TYPE_ARRAY:
+        r = mpdm_adel(set, mpdm_ival(i));
+        break;
+
+    case MPDM_TYPE_OBJECT:
+        r = mpdm_hdel(set, i);
+        break;
+
+    default:
+        r = NULL;
+        break;
+    }
+
+    return r;
+}
+
+
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
 {
     mpdm_t r;
