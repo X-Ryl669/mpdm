@@ -408,7 +408,7 @@ int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
     int r;
 
     mpdm_ref(v1);
-    r = wcscoll(mpdm_string(v1), v2);
+    r = v2 == NULL ? 1 : wcscoll(mpdm_string(v1), v2);
     mpdm_unref(v1);
 
     return r;
@@ -437,30 +437,37 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
     /* same values? */
     if (v1 == v2)
         r = 0;
-    else
-        /* is any value NULL? */
-    if (v1 == NULL)
-        r = -1;
-    else
-    if (v2 == NULL)
-        r = 1;
-    else
-    if (MPDM_IS_ARRAY(v1) && MPDM_IS_ARRAY(v2)) {
-        /* compare first the sizes */
-        if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
-            int n;
+    else {
+        switch (mpdm_type(v1)) {
+        case MPDM_TYPE_NULL:
+            r = -1;
+            break;
 
-            /* they have the same size;
-               compare each pair of elements */
-            for (n = 0; n < mpdm_size(v1); n++) {
-                if ((r = mpdm_cmp(mpdm_aget(v1, n),
-                                  mpdm_aget(v2, n))) != 0)
-                    break;
+        case MPDM_TYPE_ARRAY:
+        case MPDM_TYPE_OBJECT:
+
+            if (mpdm_type(v2) == mpdm_type(v1)) {
+                /* if they are the same size, compare elements one by one */
+                if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
+                    int n = 0;
+                    mpdm_t v, i;
+
+                    while (mpdm_iterator(v1, &n, &v, &i)) {
+                        if ((r = mpdm_cmp(v, mpdm_get(v2, i))) != 0)
+                            break;
+                    }
+                }
+
+                break;
             }
+
+            /* fallthrough */
+
+        default:
+            r = mpdm_cmp_s(v1, v2 ? mpdm_string(v2) : NULL);
+            break;
         }
     }
-    else
-        r = mpdm_cmp_s(v1, mpdm_string(v2));
 
     mpdm_unref(v2);
     mpdm_unref(v1);
