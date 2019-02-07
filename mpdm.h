@@ -56,7 +56,6 @@ enum {
     _MPDM_FREE = MPDM_MASK_FOR_TYPE + 1,
     _MPDM_IVAL,
     _MPDM_RVAL,
-    _MPDM_CHANNEL,
     _MPDM_EXTENDED
 };
 
@@ -64,7 +63,6 @@ enum {
     MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
-    MPDM_CHANNEL    = (1<<_MPDM_CHANNEL),   /* data is a channel */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };
 
@@ -281,9 +279,6 @@ void mpdm_semaphore_wait(mpdm_t sem);
 void mpdm_semaphore_post(mpdm_t sem);
 void mpdm_thread__destroy(mpdm_t v);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
-void mpdm_new_channel(mpdm_t *parent, mpdm_t *child);
-mpdm_t mpdm_channel_read(mpdm_t channel);
-void mpdm_channel_write(mpdm_t channel, mpdm_t v);
 
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);

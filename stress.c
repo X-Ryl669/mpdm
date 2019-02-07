@@ -1773,37 +1773,6 @@ void test_sock(void)
 }
 
 
-void test_channel(void)
-{
-    mpdm_t p, c, v1, v2;
-
-    mpdm_new_channel(&p, &c);
-
-    mpdm_ref(p);
-    mpdm_ref(c);
-
-    v1 = mpdm_ref(MPDM_LS(L"Testing"));
-    mpdm_channel_write(p, v1);
-    v2 = mpdm_channel_read(c);
-
-    do_test("Channel (scalar)", mpdm_cmp(v1, v2) == 0);
-
-    mpdm_unref(v1);
-
-    v1 = mpdm_ref(MPDM_H(0));
-    mpdm_hset_s(v1, L"ein",     MPDM_I(1));
-    mpdm_hset_s(v1, L"zwei",    MPDM_I(2));
-    mpdm_channel_write(p, v1);
-    v2 = mpdm_channel_read(c);
-
-    do_test("Channel (hash)", mpdm_cmp(v1, v2) == 0);
-
-    mpdm_unref(v1);
-
-    mpdm_unref(c);
-    mpdm_unref(p);
-}
-
 mpdm_t json_parser(wchar_t **s);
 
 mpdm_t json_parser_t(wchar_t *s)
@@ -1907,7 +1876,6 @@ int main(int argc, char *argv[])
     test_thread();
     test_sem();
     test_sock();
-    test_channel();
     test_json_in();
 
     benchmark();
