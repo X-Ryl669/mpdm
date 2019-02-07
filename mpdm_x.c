@@ -342,7 +342,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 {
     mpdm_t v, i;
     mpdm_t out = NULL;
-    int n;
+    int n = 0;
 
     mpdm_ref(set);
     mpdm_ref(filter);
@@ -475,25 +475,34 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
         mpdm_t v, i;
         int n = 0;
 
-        out = MPDM_IS_HASH(set) ? MPDM_H(0) : MPDM_A(0);
+        out = mpdm_type(set) == MPDM_TYPE_OBJECT ? MPDM_H(0) : MPDM_A(0);
 
         while (mpdm_iterator(set, &n, &v, &i)) {
             mpdm_t w = NULL;
             mpdm_ref(i);
             mpdm_ref(v);
 
-            if (MPDM_IS_EXEC(filter))
+            switch (mpdm_type(filter)) {
+            case MPDM_TYPE_FUNCTION:
+            case MPDM_TYPE_PROGRAM:
                 w = mpdm_exec_2(filter, v, i, ctxt);
-            else
-            if (mpdm_type(filter) == MPDM_TYPE_SCALAR)
+                break;
+
+            case MPDM_TYPE_SCALAR:
                 w = mpdm_regex(v, filter, 0);
-            else
-            if (MPDM_IS_HASH(filter))
+                break;
+
+            case MPDM_TYPE_OBJECT:
                 w = mpdm_bool(mpdm_exists(filter, v));
+                break;
+
+            default:
+                break;
+            }
 
             if (mpdm_is_true(w)) {
-                if (MPDM_IS_HASH(out))
-                    mpdm_hset(out, i, v);
+                if (mpdm_type(out) == MPDM_TYPE_OBJECT)
+                    mpdm_set(out, v, i);
                 else
                     mpdm_push(out, v);
             }
