@@ -38,8 +38,11 @@
 /* control structure */
 struct mpdm_control *mpdm = NULL;
 
-/* data information */
-struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES] = {
+/* data type information */
+struct _mpdm_type_info {
+    wchar_t *name;
+    void (*destroy)(mpdm_t);
+} mpdm_type_info[MPDM_MAX_TYPES] = {
     { L"null",      NULL },
     { L"scalar",    NULL },
     { L"array",     mpdm_array__destroy },
@@ -63,7 +66,7 @@ struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES] = {
 static mpdm_t destroy_value(mpdm_t v)
 /* destroys a value */
 {
-    struct mpdm_type_info *ti = &mpdm_type_infos[mpdm_type(v)];
+    struct _mpdm_type_info *ti = &mpdm_type_info[mpdm_type(v)];
 
     /* if type has a destroy function, call it */
     if (ti->destroy)
@@ -144,7 +147,7 @@ mpdm_type_t mpdm_type(mpdm_t v)
 
 wchar_t *mpdm_type_s(mpdm_t v)
 {
-    return mpdm_type_infos[mpdm_type(v)].name;
+    return mpdm_type_info[mpdm_type(v)].name;
 }
 
 

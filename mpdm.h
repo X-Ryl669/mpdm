@@ -88,14 +88,6 @@ struct mpdm_val_ex {
     double rval;                /* cache real value */
 };
 
-/* type information */
-struct mpdm_type_info {
-    wchar_t *name;
-    void (*destroy)(mpdm_t);
-};
-
-extern struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES];
-
 /* the main control structure */
 struct mpdm_control {
     mpdm_t root;            /* the root hash */
