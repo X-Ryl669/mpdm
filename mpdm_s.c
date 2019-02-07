@@ -1018,6 +1018,10 @@ static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
     mpdm_t w, i;
     int n = 0, c = 0;
 
+    /* special test: upper level can only be array or object */
+    if (!l && mpdm_type(v) != MPDM_TYPE_ARRAY && mpdm_type(v) != MPDM_TYPE_OBJECT)
+        goto end;
+
     switch (mpdm_type(v)) {
     case MPDM_TYPE_NULL:
         o = mpdm_pokews(o, z, L"null");
@@ -1060,11 +1064,11 @@ static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
         break;
 
     case MPDM_TYPE_SCALAR:
-        if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
-            o = mpdm_pokev(o, z, w);
+        if (v->flags & MPDM_IVAL || v->flags & MPDM_RVAL)
+            o = mpdm_pokev(o, z, v);
         else {
             o = mpdm_pokews(o, z, L"\"");
-            o = json_s(o, z, w);
+            o = json_s(o, z, v);
             o = mpdm_pokews(o, z, L"\"");
         }
 
@@ -1074,6 +1078,7 @@ static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
         break;
     }
 
+end:
     return o;
 }
 
