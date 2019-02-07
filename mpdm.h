@@ -100,7 +100,6 @@ extern struct mpdm_type_info mpdm_type_infos[MPDM_MAX_TYPES];
 struct mpdm_control {
     mpdm_t root;            /* the root hash */
     int count;              /* total count of values */
-    int hash_buckets;       /* default hash buckets */
 };
 
 extern struct mpdm_control *mpdm;

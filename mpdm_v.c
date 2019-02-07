@@ -285,31 +285,17 @@ static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
     mpdm_t v;
 
     mpdm_ref(args);
+    mpdm_ref(ctxt);
 
-    v = mpdm_aget(args, 0);
-
-    if (v != NULL) {
-        mpdm_t w;
-
-        /* do changes */
-        if ((w = mpdm_hget_s(v, L"hash_buckets")) != NULL)
-            mpdm->hash_buckets = mpdm_ival(w);
-    }
-
-    /* now collect all information */
     v = MPDM_H(0);
-
-    mpdm_ref(v);
 
     mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
     mpdm_hset_s(v, L"count",            MPDM_I(mpdm->count));
-    mpdm_hset_s(v, L"hash_buckets",     MPDM_I(mpdm->hash_buckets));
     mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
     mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
 
+    mpdm_unref(ctxt);
     mpdm_unref(args);
-
-    mpdm_unrefnd(v);
 
     return v;
 }
@@ -355,9 +341,6 @@ int mpdm_startup(void)
     if (mpdm == NULL) {
         /* alloc space */
         mpdm = calloc(sizeof(struct mpdm_control), 1);
-
-        /* sets the defaults */
-        mpdm->hash_buckets = 31;
 
         /* sets the locale */
         if (setlocale(LC_ALL, "") == NULL)

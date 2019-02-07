@@ -34,6 +34,9 @@
 
 /** code **/
 
+/* default hash buckets (must be prime) */
+static int mpdm_hash_buckets = 31;
+
 /* prototype for the one-time wrapper hash function */
 static int switch_hash_func(const wchar_t *, int);
 
@@ -217,7 +220,7 @@ mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v)
 
     /* if hash is empty, create an optimal number of buckets */
     if (mpdm_size(h) == 0)
-        mpdm_expand(h, 0, mpdm->hash_buckets);
+        mpdm_expand(h, 0, mpdm_hash_buckets);
 
     n = HASH_BUCKET(h, k);
 
