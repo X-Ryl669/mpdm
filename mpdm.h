@@ -231,7 +231,7 @@ mpdm_t mpdm_new_h(size_t size);
 size_t mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
-int mpdm_exists(const mpdm_t h, const mpdm_t k);
+int mpdm_exists(const mpdm_t h, const mpdm_t i);
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
 mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);

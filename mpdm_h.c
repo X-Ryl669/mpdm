@@ -168,32 +168,29 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
 
 
 /**
- * mpdm_exists - Tests if a key exists.
+ * mpdm_exists - Tests if there is a value available by index.
  * @h: the hash
- * @k: the key
+ * @i: the index
  *
- * Returns 1 if @k is defined in @h, or 0 othersize.
+ * Returns 1 if exists a value indexable by @i in @h, or 0 othersize.
  * [Hashes]
  */
-int mpdm_exists(const mpdm_t h, const mpdm_t k)
+int mpdm_exists(const mpdm_t h, const mpdm_t i)
 {
     mpdm_t b;
     int ret = 0;
 
-    mpdm_ref(k);
+    mpdm_ref(i);
 
-    if (MPDM_IS_HASH(h)) {
-        if (mpdm_size(h)) {
-            /* if hash is not empty... */
-            if ((b = mpdm_aget(h, HASH_BUCKET(h, k))) != NULL) {
-                /* if bucket exists, binary-seek it */
-                if (mpdm_bseek(b, k, 2, NULL) >= 0)
-                    ret = 1;
-            }
+    if (mpdm_size(h)) {
+        if ((b = mpdm_aget(h, HASH_BUCKET(h, i))) != NULL) {
+            /* if bucket exists, binary-seek it */
+            if (mpdm_bseek(b, i, 2, NULL) >= 0)
+                ret = 1;
         }
     }
 
-    mpdm_unref(k);
+    mpdm_unref(i);
 
     return ret;
 }
