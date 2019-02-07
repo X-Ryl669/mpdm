@@ -82,6 +82,10 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
     mpdm_t r;
 
     switch (mpdm_type(set)) {
+    case MPDM_TYPE_FUNCTION:
+        r = mpdm_exec_1(set, i, NULL);
+        break;
+
     case MPDM_TYPE_ARRAY:
         r = mpdm_aget(set, mpdm_ival(i));
         break;
@@ -99,7 +103,6 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 }
 
 
-/* this is cool, but... is it really necessary? */
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
 {
     mpdm_t r = NULL;
