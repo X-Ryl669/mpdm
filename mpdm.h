@@ -116,6 +116,9 @@ extern struct mpdm_control *mpdm;
 #define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
 #define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
 
+#define MPDM_CAN_EXEC(v)    (mpdm_type(v) == MPDM_TYPE_FUNCTION || \
+                             mpdm_type(v) == MPDM_TYPE_PROGRAM)
+
 #define MPDM_CAN_GET(v)     (mpdm_type(v) == MPDM_TYPE_FUNCTION || \
                              mpdm_type(v) == MPDM_TYPE_PROGRAM || \
                              mpdm_type(v) == MPDM_TYPE_ARRAY || \
