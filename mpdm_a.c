@@ -57,7 +57,7 @@ mpdm_t mpdm_new_a(int flags, size_t size)
     mpdm_t v;
 
     /* creates and expands */
-    v = mpdm_new(flags | MPDM_TYPE_ARRAY | MPDM_MULTIPLE | MPDM_FREE, NULL, 0);
+    v = mpdm_new(flags | MPDM_TYPE_ARRAY | MPDM_FREE, NULL, 0);
 
     mpdm_expand(v, 0, size);
 

@@ -54,7 +54,6 @@ typedef enum {
 
 enum {
     _MPDM_FREE = MPDM_MASK_FOR_TYPE + 1,
-    _MPDM_MULTIPLE,
     _MPDM_IVAL,
     _MPDM_RVAL,
     _MPDM_EXEC,
@@ -64,7 +63,6 @@ enum {
 
 enum {
     MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
-    MPDM_MULTIPLE   = (1<<_MPDM_MULTIPLE),  /* data is multiple */
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_EXEC       = (1<<_MPDM_EXEC),      /* data is 'executable' */

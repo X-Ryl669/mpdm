@@ -89,7 +89,7 @@ mpdm_t mpdm_new_h(size_t size)
     mpdm_t v;
 
     /* creates and expands */
-    v = mpdm_new(MPDM_TYPE_OBJECT | MPDM_MULTIPLE | MPDM_FREE, NULL, 0);
+    v = mpdm_new(MPDM_TYPE_OBJECT | MPDM_FREE, NULL, 0);
 
     mpdm_expand(v, 0, size);
 
