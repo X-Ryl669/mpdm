@@ -365,10 +365,10 @@ mpdm_t mpdm_clone(const mpdm_t v)
         mpdm_ref(v);
 
         /* creates a similar value */
-        w = mpdm_new_a(v->flags, v->size);
+        w = mpdm_type(v) == MPDM_TYPE_OBJECT ? MPDM_H(0) : MPDM_A(0);
 
         /* fills each element with duplicates of the original */
-        for (n = 0; n < w->size; n++)
+        for (n = 0; n < v->size; n++)
             mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
         mpdm_unref(v);
