@@ -142,6 +142,12 @@ mpdm_type_t mpdm_type(mpdm_t v)
 }
 
 
+wchar_t *mpdm_type_s(mpdm_t v)
+{
+    return mpdm_type_infos[mpdm_type(v)].name;
+}
+
+
 /**
  * mpdm_ref - Increments the reference count of a value.
  * @v: the value

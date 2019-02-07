@@ -378,7 +378,7 @@ wchar_t *mpdm_string(const mpdm_t v)
 
             sprintf(tmp, "%p (", v);
             mbstowcs(wstr, tmp, sizeof(wstr));
-            wcscat(wstr, mpdm_type_infos[mpdm_type(v)].name);
+            wcscat(wstr, mpdm_type_s(v));
             wcscat(wstr, L")");
 
             if ((w = mpdm_hget_s(c, wstr)) == NULL) {
