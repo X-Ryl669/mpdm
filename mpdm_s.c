@@ -786,36 +786,28 @@ double mpdm_rval(mpdm_t v)
     double r = 0.0;
 
     if (v != NULL) {
+        mpdm_ex_t ev = (mpdm_ex_t) v;
+
         mpdm_ref(v);
 
         /* does it have a cached value? */
-        if ((v->flags & MPDM_RVAL)) {
-            mpdm_ex_t ev = (mpdm_ex_t) v;
-
+        if (MPDM_HAS_RVAL(v))
             r = ev->rval;
-        }
         else
         /* does it have an integer cached value? */
-        if ((v->flags & MPDM_IVAL)) {
-            r = (double) mpdm_ival(v);
-        }
-        else
-        /* it's a string: calculate */
-        if ((v->flags & MPDM_STRING)) {
-            char tmp[32];
-
-            wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-            tmp[sizeof(tmp) - 1] = '\0';
-
-            r = mpdm_rval_mbs(tmp);
+        if (MPDM_HAS_IVAL(v))
+            r = (double) ev->ival;
+        else {
+            /* otherwise, calculate it */
+            char *mbs = mpdm_wcstombs(mpdm_string(v), NULL);
+            r = mpdm_rval_mbs(mbs);
+            free(mbs);
         }
 
         /* cache it if possible */
         if ((v->flags & MPDM_EXTENDED)) {
-            mpdm_ex_t ev = (mpdm_ex_t) v;
-
-            ev->flags   |= MPDM_RVAL;
-            ev->rval    = r;
+            ev->flags |= MPDM_RVAL;
+            ev->rval  = r;
         }
 
         mpdm_unref(v);
