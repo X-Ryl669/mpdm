@@ -168,32 +168,33 @@ mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
     mpdm_t r = NULL;
+    mpdm_t(*func2) (mpdm_t, mpdm_t);
+    mpdm_t(*func3) (mpdm_t, mpdm_t, mpdm_t);
 
     mpdm_ref(c);
     mpdm_ref(args);
     mpdm_ref(ctxt);
 
-    if (MPDM_IS_EXEC(c)) {
-        if (mpdm_type(c) == MPDM_TYPE_FUNCTION) {
-            mpdm_t(*func) (mpdm_t, mpdm_t);
+    switch (mpdm_type(c)) {
+    case MPDM_TYPE_FUNCTION:
+        if ((func2 = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
+            r = func2(args, ctxt);
 
-            if ((func = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
-                r = func(args, ctxt);
-        }
-        else
-        if (c->flags & MPDM_MULTIPLE) {
-            mpdm_t x;
-            mpdm_t(*func) (mpdm_t, mpdm_t, mpdm_t);
+        break;
 
-            /* value is multiple; first element is the
-               3 argument version of the executable function,
-               next its optional additional information,
-               the arguments and the context */
-            x = mpdm_aget(c, 0);
+    case MPDM_TYPE_PROGRAM:
+        /* the executable is internally an array;
+           1st element is the 3 argument version of the function (i.e. the cpu),
+           2nd its optional additional information (i.e. the bytecode) */
+        r = mpdm_aget(c, 0);
 
-            if ((func = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (x->data)) != NULL)
-                r = func(mpdm_aget(c, 1), args, ctxt);
-        }
+        if ((func3 = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (r->data)) != NULL)
+            r = func3(mpdm_aget(c, 1), args, ctxt);
+
+        break;
+
+    default:
+        r = NULL;
     }
 
     mpdm_ref(r);
