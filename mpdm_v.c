@@ -562,28 +562,10 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
- * MPDM_IS_HASH - Tests if a value is a hash.
- * @v: the value
- *
- * Returns non-zero if @v is a hash.
- */
-/** int MPDM_IS_HASH(mpdm_t v); */
-/* ; */
-
-/**
  * MPDM_IS_EXEC - Tests if a value is executable.
  * @v: the value
  *
  * Returns non-zero if @v is executable.
  */
 /** int MPDM_IS_EXEC(mpdm_t v); */
-/* ; */
-
-/**
- * MPDM_IS_STRING - Tests if a value is a string.
- * @v: the value
- *
- * Returns non-zero if @v is a string.
- */
-/** int MPDM_IS_STRING(mpdm_t v); */
 /* ; */
