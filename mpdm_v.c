@@ -276,30 +276,6 @@ mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size)
 }
 
 
-extern char *mpdm_build_git_rev;
-extern char *mpdm_build_timestamp;
-
-static mpdm_t MPDM(const mpdm_t args, mpdm_t ctxt)
-/* accesor / mutator for MPDM internal data */
-{
-    mpdm_t v;
-
-    mpdm_ref(args);
-    mpdm_ref(ctxt);
-
-    v = MPDM_H(0);
-
-    mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
-    mpdm_hset_s(v, L"count",            MPDM_I(mpdm->count));
-    mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
-    mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
-
-    mpdm_unref(ctxt);
-    mpdm_unref(args);
-
-    return v;
-}
-
 extern char **environ;
 
 static mpdm_t build_env(void)
@@ -329,6 +305,9 @@ static mpdm_t build_env(void)
 }
 
 
+extern char *mpdm_build_git_rev;
+extern char *mpdm_build_timestamp;
+
 /**
  * mpdm_startup - Initializes MPDM.
  *
@@ -337,6 +316,8 @@ static mpdm_t build_env(void)
  */
 int mpdm_startup(void)
 {
+    mpdm_t v;
+
     /* do the startup only unless done beforehand */
     if (mpdm == NULL) {
         /* alloc space */
@@ -349,8 +330,11 @@ int mpdm_startup(void)
 
         mpdm_encoding(NULL);
 
-        /* store the MPDM() function */
-        mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_X(MPDM));
+        /* store the MPDM object */
+        v = mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_H(0));
+        mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
+        mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
+        mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
 
         /* store the ENV hash */
         mpdm_hset_s(mpdm_root(), L"ENV", build_env());
