@@ -353,13 +353,19 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
         break;
 
     case MPDM_TYPE_SCALAR:
-        if (mpdm_type(filter) == MPDM_TYPE_SCALAR) {
+        switch (mpdm_type(filter)) {
+        case MPDM_TYPE_SCALAR:
             out = MPDM_A(0);
 
             while ((v = mpdm_regex(set, filter, n))) {
                 mpdm_push(out, v);
                 n = mpdm_regex_offset + mpdm_regex_size;
             }
+
+            break;
+
+        default:
+            break;
         }
 
         break;
@@ -372,16 +378,25 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             mpdm_ref(v);
             mpdm_ref(i);
 
-            if (MPDM_IS_EXEC(filter))
+            switch (mpdm_type(filter)) {
+            case MPDM_TYPE_FUNCTION:
+            case MPDM_TYPE_PROGRAM:
                 w = mpdm_exec_2(filter, v, i, ctxt);
-            else
-            if (MPDM_IS_HASH(filter))
-                w = mpdm_hget(filter, v);
-            else
-            if (mpdm_type(filter) == MPDM_TYPE_SCALAR)
+                break;
+
+            case MPDM_TYPE_ARRAY:
+            case MPDM_TYPE_OBJECT:
+                w = mpdm_get(filter, v);
+                break;
+
+            case MPDM_TYPE_SCALAR:
                 w = mpdm_regex(v, filter, 0);
-            else
+                break;
+
+            default:
                 w = v;
+                break;
+            }
 
             mpdm_push(out, w);
 
