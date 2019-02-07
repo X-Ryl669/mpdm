@@ -167,7 +167,7 @@ mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
         break;
 
     case MPDM_TYPE_OBJECT:
-        r = mpdm_hset(set, v, i);
+        r = mpdm_hset(set, i, v);
         break;
 
     default:
