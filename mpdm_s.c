@@ -719,36 +719,28 @@ int mpdm_ival(mpdm_t v)
     int i = 0;
 
     if (v != NULL) {
+        mpdm_ex_t ev = (mpdm_ex_t) v;
+
         mpdm_ref(v);
 
         /* does it have a cached value? */
-        if ((v->flags & MPDM_IVAL)) {
-            mpdm_ex_t ev = (mpdm_ex_t) v;
-
+        if (MPDM_HAS_IVAL(v))
             i = ev->ival;
-        }
         else
         /* does it have a real cached value? */
-        if ((v->flags & MPDM_RVAL)) {
-            i = (int) mpdm_rval(v);
-        }
-        else
-        /* it's a string: calculate */
-        if ((v->flags & MPDM_STRING)) {
-            char tmp[32];
-
-            wcstombs(tmp, (wchar_t *) v->data, sizeof(tmp));
-            tmp[sizeof(tmp) - 1] = '\0';
-
-            i = mpdm_ival_mbs(tmp);
+        if (MPDM_HAS_RVAL(v))
+            i = (int) ev->rval;
+        else {
+            /* otherwise, calculate it */
+            char *mbs = mpdm_wcstombs(mpdm_string(v), NULL);
+            i = mpdm_ival_mbs(mbs);
+            free(mbs);
         }
 
         /* cache it if possible */
         if ((v->flags & MPDM_EXTENDED)) {
-            mpdm_ex_t ev = (mpdm_ex_t) v;
-
-            ev->flags   |= MPDM_IVAL;
-            ev->ival    = i;
+            ev->flags |= MPDM_IVAL;
+            ev->ival  = i;
         }
 
         mpdm_unref(v);
