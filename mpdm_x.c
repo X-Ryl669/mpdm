@@ -49,7 +49,7 @@ int mpdm_is_true(mpdm_t v)
     if (v) {
         mpdm_ref(v);
 
-        if (MPDM_IS_STRING(v)) {
+        if (mpdm_type(v) == MPDM_TYPE_SCALAR) {
             wchar_t *ptr = mpdm_string(v);
 
             /* ... and it's "" or "0", it's false */
@@ -335,7 +335,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             if (MPDM_IS_HASH(filter))
                 w = mpdm_hget(filter, v);
             else
-            if (MPDM_IS_STRING(filter))
+            if (mpdm_type(filter) == MPDM_TYPE_SCALAR)
                 w = mpdm_regex(v, filter, 0);
             else
                 w = v;
@@ -427,7 +427,7 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             if (MPDM_IS_EXEC(filter))
                 w = mpdm_exec_2(filter, v, i, ctxt);
             else
-            if (MPDM_IS_STRING(filter))
+            if (mpdm_type(filter) == MPDM_TYPE_SCALAR)
                 w = mpdm_regex(v, filter, 0);
             else
             if (MPDM_IS_HASH(filter))

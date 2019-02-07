@@ -51,9 +51,8 @@ typedef enum {
 #define MPDM_MASK_FOR_TYPE (MPDM_MAX_TYPES - 1)
 
 enum {
-    _MPDM_STRING = MPDM_MASK_FOR_TYPE + 1,
+    _MPDM_FREE = MPDM_MASK_FOR_TYPE + 1,
     _MPDM_MULTIPLE,
-    _MPDM_FREE,
     _MPDM_IVAL,
     _MPDM_RVAL,
     _MPDM_HASH,
@@ -63,9 +62,8 @@ enum {
 };
 
 enum {
-    MPDM_STRING     = (1<<_MPDM_STRING),    /* data can be string-compared */
-    MPDM_MULTIPLE   = (1<<_MPDM_MULTIPLE),  /* data is multiple */
     MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
+    MPDM_MULTIPLE   = (1<<_MPDM_MULTIPLE),  /* data is multiple */
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_HASH       = (1<<_MPDM_HASH),      /* data is a hash */
@@ -118,7 +116,6 @@ extern struct mpdm_control *mpdm;
 #define MPDM_IS_ARRAY(v)    ((v != NULL) && ((v)->flags) & MPDM_MULTIPLE)
 #define MPDM_IS_HASH(v)     ((v != NULL) && ((v)->flags) & MPDM_HASH)
 #define MPDM_IS_EXEC(v)     ((v != NULL) && ((v)->flags) & MPDM_EXEC)
-#define MPDM_IS_STRING(v)   ((v != NULL) && ((v)->flags) & MPDM_STRING)
 #define MPDM_IS_FILE(v)     (mpdm_type(v) == MPDM_TYPE_FILE)
 #define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
 #define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
