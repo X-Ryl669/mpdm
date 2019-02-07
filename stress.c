@@ -1108,24 +1108,23 @@ void test_exec(void)
     /* multiple executable value: vm and compiler support */
 
     /* calculator 'script' */
-    p = mpdm_ref(MPDM_A(0));
+    p = MPDM_A(0);
     mpdm_push(p, MPDM_LS(L"+"));
     mpdm_push(p, MPDM_LS(L"-"));
     mpdm_push(p, MPDM_LS(L"+"));
 
     /* the value */
-    x = mpdm_ref(MPDM_A(2));
-    x->flags |= MPDM_EXEC;
+//    x = mpdm_ref(MPDM_A(2));
+//    x->flags |= MPDM_EXEC;
+//    mpdm_aset(x, MPDM_X(calculator), 0);
+//    mpdm_aset(x, p, 1);
 
-    mpdm_aset(x, MPDM_X(calculator), 0);
-    mpdm_aset(x, p, 1);
+    x = mpdm_ref(MPDM_X2(calculator, p));
 
     do_test("exec 1", mpdm_ival(mpdm_exec(x, w, NULL)) == -12);
 
-    mpdm_unref(p);
-
     /* another 'script', different operations with the same values */
-    p = mpdm_ref(MPDM_A(0));
+    p = MPDM_A(0);
     mpdm_push(p, MPDM_LS(L"*"));
     mpdm_push(p, MPDM_LS(L"/"));
     mpdm_push(p, MPDM_LS(L"+"));
@@ -1134,7 +1133,6 @@ void test_exec(void)
 
     do_test("exec 2", mpdm_ival(mpdm_exec(x, w, NULL)) == 67);
     x = mpdm_unref(x);
-    p = mpdm_unref(p);
     w = mpdm_unref(w);
 }
 
