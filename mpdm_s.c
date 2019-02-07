@@ -1012,73 +1012,66 @@ static wchar_t *json_s(wchar_t *o, size_t *l, mpdm_t v)
 }
 
 
-static wchar_t *json_f(wchar_t *o, size_t *l, mpdm_t v)
+static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
 /* fills a %j JSON format */
 {
+    mpdm_t w, i;
     int n = 0, c = 0;
 
-    if (MPDM_IS_HASH(v)) {
-        mpdm_t w, i;
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
+        o = mpdm_pokews(o, z, L"null");
+        break;
 
-        o = mpdm_pokews(o, l, L"{");
+    case MPDM_TYPE_OBJECT:
+        o = mpdm_pokews(o, z, L"{");
 
         while (mpdm_iterator(v, &n, &w, &i)) {
             if (c)
-                o = mpdm_pokews(o, l, L",");
+                o = mpdm_pokews(o, z, L",");
 
-            o = mpdm_pokews(o, l, L"\"");
-            o = json_s(o, l, i);
-            o = mpdm_pokews(o, l, L"\":");
+            o = mpdm_pokews(o, z, L"\"");
+            o = json_s(o, z, i);
+            o = mpdm_pokews(o, z, L"\":");
 
-            if (w == NULL)
-                o = mpdm_pokews(o, l, L"null");
-            else
-            if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
-                o = json_f(o, l, w);
-            else {
-                if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
-                    o = mpdm_pokev(o, l, w);
-                else {
-                    o = mpdm_pokews(o, l, L"\"");
-                    o = json_s(o, l, w);
-                    o = mpdm_pokews(o, l, L"\"");
-                }
-            }
+            o = json_f(o, z, w, l + 1);
 
             c++;
         }
 
-        o = mpdm_pokews(o, l, L"}");
-    }
-    else
-    if (MPDM_IS_ARRAY(v)) {
-        mpdm_t w;
+        o = mpdm_pokews(o, z, L"}");
 
-        o = mpdm_pokews(o, l, L"[");
+        break;
+
+    case MPDM_TYPE_ARRAY:
+        o = mpdm_pokews(o, z, L"[");
 
         while (mpdm_iterator(v, &n, &w, NULL)) {
             if (c)
-                o = mpdm_pokews(o, l, L",");
+                o = mpdm_pokews(o, z, L",");
 
-            if (w == NULL)
-                o = mpdm_pokews(o, l, L"null");
-            else
-            if (MPDM_IS_ARRAY(w) || MPDM_IS_HASH(w))
-                o = json_f(o, l, w);
-            else {
-                if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
-                    o = mpdm_pokev(o, l, w);
-                else {
-                    o = mpdm_pokews(o, l, L"\"");
-                    o = json_s(o, l, w);
-                    o = mpdm_pokews(o, l, L"\"");
-                }
-            }
+            o = json_f(o, z, w, l + 1);
 
             c++;
         }
 
-        o = mpdm_pokews(o, l, L"]");
+        o = mpdm_pokews(o, z, L"]");
+
+        break;
+
+    case MPDM_TYPE_SCALAR:
+        if (w->flags & MPDM_IVAL || w->flags & MPDM_RVAL)
+            o = mpdm_pokev(o, z, w);
+        else {
+            o = mpdm_pokews(o, z, L"\"");
+            o = json_s(o, z, w);
+            o = mpdm_pokews(o, z, L"\"");
+        }
+
+        break;
+
+    default:
+        break;
     }
 
     return o;
@@ -1184,7 +1177,7 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
             break;
 
         case 'j':
-            o = json_f(o, &l, arg);
+            o = json_f(o, &l, arg, 0);
             break;
 
         case 't':
