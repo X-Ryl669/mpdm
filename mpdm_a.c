@@ -356,11 +356,12 @@ mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, size_t size)
  */
 mpdm_t mpdm_clone(const mpdm_t v)
 {
-    mpdm_t w = v;
+    int n;
+    mpdm_t w = NULL;
 
-    if (MPDM_IS_ARRAY(v) && !MPDM_IS_EXEC(v)) {
-        int n;
-
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_OBJECT:
         mpdm_ref(v);
 
         /* creates a similar value */
@@ -371,6 +372,11 @@ mpdm_t mpdm_clone(const mpdm_t v)
             mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
 
         mpdm_unref(v);
+        break;
+
+    default:
+        w = v;
+        break;
     }
 
     return w;
@@ -685,7 +691,7 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
 
     mpdm_ref(a);
 
-    if (MPDM_IS_ARRAY(a)) {
+    if (mpdm_type(a) == MPDM_TYPE_ARRAY) {
         ss = s ? wcslen(s) : 0;
 
         for (n = 0; n < mpdm_size(a); n++) {
@@ -725,17 +731,18 @@ mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
  */
 mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 {
-    mpdm_t r;
+    int n, c = 0;
+    mpdm_t r, v, i;
 
     mpdm_ref(a);
     mpdm_ref(b);
 
-    if (MPDM_IS_HASH(a)) {
-        int n = 0, c = 0;
-        mpdm_t v, i;
+    switch (mpdm_type(a)) {
+    case MPDM_TYPE_OBJECT:
 
-        if (MPDM_IS_HASH(b)) {
-            /* hash-hash */
+        switch (mpdm_type(b)) {
+        case MPDM_TYPE_OBJECT:
+            /* hash~hash -> hash */
             r = MPDM_H(0);
 
             n = 0;
@@ -744,47 +751,86 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
             n = 0;
             while (mpdm_iterator(b, &n, &v, &i))
                 mpdm_hset(r, i, v);
-        }
-        else
-        if (MPDM_IS_ARRAY(b)) {
-            /* hash-array */
-            r = mpdm_clone(a);
+
+            break;
+
+        case MPDM_TYPE_ARRAY:
+            /* hash~array -> hash */
+            r = MPDM_H(0);
 
             /* the array is a list of pairs */
             for (n = 0; n < mpdm_size(b); n += 2)
                 mpdm_hset(r, mpdm_aget(b, n), mpdm_aget(b, n + 1));
-        }
-        else {
-            /* hash-string */
+
+            break;
+
+        case MPDM_TYPE_SCALAR:
+            /* hash~string -> array */
             r = MPDM_A(mpdm_hsize(a));
 
+            n = 0;
             while (mpdm_iterator(a, &n, &v, &i))
                 mpdm_aset(r, mpdm_strcat(i, mpdm_strcat(b, v)), c++);
+
+            break;
+
+        default:
+            r = NULL;
+            break;
         }
-    }
-    else
-    if (MPDM_IS_ARRAY(a)) {
-        if (MPDM_IS_ARRAY(b)) {
-            int n, as, ss;
 
-            /* array-array */
-            as = mpdm_size(a);
-            ss = mpdm_size(b);
+        break;
 
-            r = MPDM_A(as + ss);
+    case MPDM_TYPE_ARRAY:
 
-            for (n = 0; n < as; n++)
-                mpdm_aset(r, mpdm_aget(a, n), n);
-            for (n = 0; n < ss; n++)
-                mpdm_aset(r, mpdm_aget(b, n), n + as);
-        }
-        else
-            /* array-string */
+        switch (mpdm_type(b)) {
+        case MPDM_TYPE_ARRAY:
+            /* array~array -> array */
+            r = MPDM_A(0);
+
+            n = 0;
+            while (mpdm_iterator(a, &n, &v, NULL))
+                mpdm_push(r, v);
+            n = 0;
+            while (mpdm_iterator(b, &n, &v, NULL))
+                mpdm_push(r, v);
+
+            break;
+
+        case MPDM_TYPE_SCALAR:
+        case MPDM_TYPE_NULL:
+            /* array~string -> string */
             r = mpdm_join_s(a, b ? mpdm_string(b) : NULL);
+
+            break;
+
+        default:
+            r = NULL;
+            break;
+        }
+
+        break;
+
+    case MPDM_TYPE_SCALAR:
+
+        switch (mpdm_type(b)) {
+        case MPDM_TYPE_SCALAR:
+        case MPDM_TYPE_NULL:
+            /* string~string -> string */
+            r = mpdm_strcat(a, b);
+            break;
+
+        default:
+            r = NULL;
+            break;
+        }
+
+        break;
+
+    default:
+        r = NULL;
+        break;
     }
-    else
-        /* string-string */
-        r = mpdm_strcat(a, b);
 
     mpdm_unref(b);
     mpdm_unref(a);
