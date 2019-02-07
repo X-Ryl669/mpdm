@@ -64,8 +64,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, size_t *size)
         /* add data type */
         ptr = mpdm_pokews(ptr, size, mpdm_type_infos[mpdm_type(v)].name);
 
-        sprintf(tmp, "(%d,%d,%c%c%c%c):", v->ref - 1, (int) v->size,
-            v->flags & MPDM_EXTENDED ? 'X' : '-',
+        sprintf(tmp, "(%d,%d,%c%c%c):", v->ref - 1, (int) v->size,
             v->flags & MPDM_FREE     ? 'F' : '-',
             MPDM_HAS_IVAL(v)         ? 'I' : '-',
             MPDM_HAS_RVAL(v)         ? 'R' : '-'
