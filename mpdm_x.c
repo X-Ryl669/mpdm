@@ -83,6 +83,7 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 
     switch (mpdm_type(set)) {
     case MPDM_TYPE_FUNCTION:
+    case MPDM_TYPE_PROGRAM:
         r = mpdm_exec_1(set, i, NULL);
         break;
 
