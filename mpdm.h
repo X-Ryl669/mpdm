@@ -44,7 +44,9 @@ typedef enum {
     MPDM_TYPE_REGEX,
     MPDM_TYPE_MUTEX,
 	MPDM_TYPE_SEMAPHORE,
-	MPDM_TYPE_THREAD
+	MPDM_TYPE_THREAD,
+	MPDM_TYPE_FUNCTION,
+	MPDM_TYPE_PROGRAM
 } mpdm_type_t;
 
 #define MPDM_MAX_TYPES 16
@@ -137,7 +139,7 @@ extern struct mpdm_control *mpdm;
 #define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(s, n)
 #define MPDM_2MBS(s)    mpdm_new_wcstombs(s)
 
-#define MPDM_X(f)       mpdm_new(MPDM_EXEC, (const void *)f, 0)
+#define MPDM_X(f)       mpdm_new(MPDM_TYPE_FUNCTION | MPDM_EXEC, (const void *)f, 0)
 
 #define MPDM_F(f)       mpdm_new_f(f)
 
