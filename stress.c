@@ -1835,24 +1835,24 @@ void test_json_in(void)
 
     v = json_parser_t(L"{\"k1\": 10, \"k2\":20}");
     mpdm_ref(v);
-    do_test("JSON 4", MPDM_IS_HASH(v));
+    do_test("JSON 4", mpdm_type(v) == MPDM_TYPE_OBJECT);
     do_test("JSON 4.1", mpdm_ival(mpdm_hget_s(v, L"k2")) == 20);
     do_test("JSON 4.2", mpdm_ival(mpdm_hget_s(v, L"k1")) == 10);
     mpdm_unref(v);
 
     v = json_parser_t(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}");
     mpdm_ref(v);
-    do_test("JSON 5", MPDM_IS_HASH(v));
+    do_test("JSON 5", mpdm_type(v) == MPDM_TYPE_OBJECT);
     mpdm_unref(v);
 
     v = json_parser_t(L"{\"k1\":true,\"k2\":false,\"k3\":null}");
     mpdm_ref(v);
-    do_test("JSON 6", MPDM_IS_HASH(v));
+    do_test("JSON 6", mpdm_type(v) == MPDM_TYPE_OBJECT);
     mpdm_unref(v);
 
     v = json_parser_t(L"{\"k1\":\"-\\u005f-\"}");
     mpdm_ref(v);
-    do_test("JSON 7", MPDM_IS_HASH(v));
+    do_test("JSON 7", mpdm_type(v) == MPDM_TYPE_OBJECT);
     mpdm_unref(v);
 }
 
