@@ -174,7 +174,6 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s);
 mpdm_t mpdm_split(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s);
-mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_reverse(const mpdm_t a);
 
 void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org, size_t osize, size_t esize);
@@ -286,6 +285,7 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
+mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
 
 #ifdef __cplusplus
 }

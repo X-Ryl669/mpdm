@@ -533,3 +533,119 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
 
     return out;
 }
+
+
+/**
+ * mpdm_join - Joins two values.
+ * @a: first value
+ * @b: second value
+ *
+ * Joins two values. If both are hashes, a new hash containing the
+ * pairs in @a overwritten with the keys in @b is returned; if both
+ * are arrays, a new array is returned with all elements in @a followed
+ * by all elements in b; if @a is an array and @b is a string,
+ * a new string is returned with all elements in @a joined using @b
+ * as a separator; and if @a is a hash and @b is a string, a new array
+ * is returned containing all pairs in @a joined using @b as a separator.
+ * [Arrays]
+ * [Hashes]
+ * [Strings]
+ */
+mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
+{
+    int n, c = 0;
+    mpdm_t r, v, i;
+
+    mpdm_ref(a);
+    mpdm_ref(b);
+
+    switch (mpdm_type(a)) {
+    case MPDM_TYPE_OBJECT:
+
+        switch (mpdm_type(b)) {
+        case MPDM_TYPE_OBJECT:
+            /* hash~hash -> hash */
+            r = MPDM_H(0);
+
+            n = 0;
+            while (mpdm_iterator(a, &n, &v, &i))
+                mpdm_hset(r, i, v);
+            n = 0;
+            while (mpdm_iterator(b, &n, &v, &i))
+                mpdm_hset(r, i, v);
+
+            break;
+
+        case MPDM_TYPE_ARRAY:
+            /* hash~array -> hash */
+            r = MPDM_H(0);
+
+            /* the array is a list of pairs */
+            for (n = 0; n < mpdm_size(b); n += 2)
+                mpdm_hset(r, mpdm_aget(b, n), mpdm_aget(b, n + 1));
+
+            break;
+
+        case MPDM_TYPE_SCALAR:
+            /* hash~string -> array */
+            r = MPDM_A(mpdm_hsize(a));
+
+            n = 0;
+            while (mpdm_iterator(a, &n, &v, &i))
+                mpdm_aset(r, mpdm_strcat(i, mpdm_strcat(b, v)), c++);
+
+            break;
+
+        default:
+            r = NULL;
+            break;
+        }
+
+        break;
+
+    case MPDM_TYPE_ARRAY:
+
+        switch (mpdm_type(b)) {
+        case MPDM_TYPE_ARRAY:
+            /* array~array -> array */
+            r = MPDM_A(0);
+
+            n = 0;
+            while (mpdm_iterator(a, &n, &v, NULL))
+                mpdm_push(r, v);
+            n = 0;
+            while (mpdm_iterator(b, &n, &v, NULL))
+                mpdm_push(r, v);
+
+            break;
+
+        case MPDM_TYPE_SCALAR:
+        case MPDM_TYPE_NULL:
+            /* array~string -> string */
+            r = mpdm_join_s(a, b ? mpdm_string(b) : NULL);
+
+            break;
+
+        default:
+            r = NULL;
+            break;
+        }
+
+        break;
+
+    case MPDM_TYPE_SCALAR:
+
+        /* string~string -> string */
+        r = mpdm_strcat(a, b);
+        break;
+
+    default:
+        r = NULL;
+        break;
+    }
+
+    mpdm_unref(b);
+    mpdm_unref(a);
+
+    return r;
+}
