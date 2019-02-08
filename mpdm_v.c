@@ -285,6 +285,28 @@ mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size)
 }
 
 
+int mpdm_wrap_pointers(mpdm_t v, int offset, int *del)
+{
+    /* wrap from the end */
+    if (offset < 0) {
+        offset = mpdm_size(v) + offset;
+
+        /* still negative? restart */
+        if (offset < 0)
+            offset = 0;
+    }
+
+    if (del) {
+        /* if negative, means 'what's left'; also,
+           trim if trying to delete too far */
+        if (*del < 0 || offset + *del > mpdm_size(v))
+            *del = mpdm_size(v) - offset;
+    }
+
+    return offset;
+}
+
+
 extern char **environ;
 
 static mpdm_t build_env(void)

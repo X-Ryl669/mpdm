@@ -145,6 +145,7 @@ mpdm_t mpdm_void(mpdm_t v);
 int mpdm_is_null(mpdm_t v);
 mpdm_t mpdm_store(mpdm_t *v, mpdm_t w);
 mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size);
+int mpdm_wrap_pointers(mpdm_t v, int offset, int *del);
 int mpdm_startup(void);
 void mpdm_shutdown(void);
 

@@ -65,13 +65,6 @@ mpdm_t mpdm_new_a(int flags, size_t size)
 }
 
 
-static int wrap_offset(const mpdm_t a, int offset)
-/* manages negative offsets */
-{
-    return offset < 0 ? mpdm_size(a) + offset : offset;
-}
-
-
 /* interface */
 
 /**
@@ -166,12 +159,12 @@ mpdm_t mpdm_collapse(mpdm_t a, int index, int num)
  */
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index)
 {
-    index = wrap_offset(a, index);
+    index = mpdm_wrap_pointers(a, index, NULL);
 
     if (index >= 0) {
         /* if the array is shorter than offset, expand to make room for it */
-        if (index >= a->size)
-            mpdm_expand(a, a->size, index - a->size + 1);
+        if (index >= mpdm_size(a))
+            mpdm_expand(a, mpdm_size(a), index - mpdm_size(a) + 1);
 
         mpdm_t *p = (mpdm_t *) a->data;
 
@@ -197,7 +190,7 @@ mpdm_t mpdm_aget(const mpdm_t a, int index)
 {
     mpdm_t r = NULL;
 
-    index = wrap_offset(a, index);
+    index = mpdm_wrap_pointers(a, index, NULL);
 
     /* boundary checks */
     if (index >= 0 && index < mpdm_size(a)) {
@@ -222,7 +215,7 @@ mpdm_t mpdm_aget(const mpdm_t a, int index)
  */
 mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int index)
 {
-    index = wrap_offset(a, index);
+    index = mpdm_wrap_pointers(a, index, NULL);
 
     /* open room and set value */
     mpdm_expand(a, index, 1);
@@ -248,7 +241,7 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int index)
  */
 mpdm_t mpdm_adel(mpdm_t a, int index)
 {
-    mpdm_collapse(a, wrap_offset(a, index), 1);
+    mpdm_collapse(a, mpdm_wrap_pointers(a, index, NULL), 1);
 
     return NULL;
 }
