@@ -649,3 +649,22 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
     return r;
 }
+
+
+mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
+{
+    mpdm_t r;
+
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
+    case MPDM_TYPE_SCALAR:
+        r = mpdm_splice_s(v, i, offset, del);
+        break;
+
+    default:
+        r = NULL;
+        break;
+    }
+
+    return r;
+}
