@@ -191,6 +191,7 @@ mpdm_t mpdm_new_r(double rval);
 wchar_t *mpdm_string(const mpdm_t v);
 int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2);
+mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size);
 mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2);
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);

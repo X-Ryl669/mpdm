@@ -477,7 +477,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 
 
 /**
- * mpdm_splice - Creates a new string value from another.
+ * mpdm_splice_s - Creates a new string value from another.
  * @v: the original value
  * @i: the value to be inserted
  * @offset: offset where the substring is to be inserted
@@ -499,7 +499,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  * Returns the new value (if created) or the deleted value (if created).
  * [Strings]
  */
-mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
+mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
 {
     mpdm_ref(v);
     mpdm_ref(i);
@@ -529,14 +529,14 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *
             /* never delete further the end */
             if (offset + del > os)
                 del = os - offset;
-
-            if (d) {
-                /* deleted string */
-                *d = MPDM_NS(mpdm_string(v) + offset, del);
-            }
         }
         else
             del = 0;
+
+        if (d) {
+            /* deleted string */
+            *d = MPDM_NS(mpdm_string(v) + offset, del);
+        }
 
         if (n) {
             wchar_t *ptr = NULL;
