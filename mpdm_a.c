@@ -161,18 +161,13 @@ mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index)
 {
     index = mpdm_wrap_pointers(a, index, NULL);
 
-    if (index >= 0) {
-        /* if the array is shorter than offset, expand to make room for it */
-        if (index >= mpdm_size(a))
-            mpdm_expand(a, mpdm_size(a), index - mpdm_size(a) + 1);
+    /* if the array is shorter than offset, expand to make room for it */
+    if (index >= mpdm_size(a))
+        mpdm_expand(a, mpdm_size(a), index - mpdm_size(a) + 1);
 
-        mpdm_t *p = (mpdm_t *) a->data;
+    mpdm_t *p = (mpdm_t *) a->data;
 
-        /* assigns and references */
-        mpdm_ref(e);
-        mpdm_unref(p[index]);
-        p[index] = e;
-    }
+    mpdm_store(&p[index], e);
 
     return e;
 }
