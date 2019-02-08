@@ -727,3 +727,41 @@ mpdm_t mpdm_reverse(const mpdm_t a)
 
     return r;
 }
+
+
+mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
+{
+    int c;
+
+    mpdm_ref(v);
+    mpdm_ref(i);
+
+    if (n) {
+        *n = MPDM_A(0);
+
+        /* copy the first part */
+        for (c = 0; c < offset && c < mpdm_size(v); c++)
+            mpdm_push(*n, mpdm_aget(v, c));
+
+        /* copy all elements in i */
+        for (c = 0; c < mpdm_size(i); c++)
+            mpdm_push(*n, mpdm_aget(i, c));
+
+        /* copy the remainder */
+        for (c = offset + del; c < mpdm_size(v); c++)
+            mpdm_push(*n, mpdm_aget(v, c));
+    }
+
+    if (d) {
+        *d = MPDM_A(0);
+
+        for (c = offset; c < offset + del && c < mpdm_size(v); c++)
+            mpdm_push(*d, mpdm_aget(v, c));
+    }
+
+    mpdm_unref(i);
+    mpdm_unref(v);
+
+    /* returns the new value or the deleted value */
+    return n ? *n : (d ? *d : NULL);
+}

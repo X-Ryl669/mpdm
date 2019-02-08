@@ -650,6 +650,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
     return r;
 }
 
+
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
 {
     mpdm_t r;
@@ -658,6 +659,10 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *
     case MPDM_TYPE_NULL:
     case MPDM_TYPE_SCALAR:
         r = mpdm_splice_s(v, i, offset, del, n, d);
+        break;
+
+    case MPDM_TYPE_ARRAY:
+        r = mpdm_splice_a(v, i, offset, del, n, d);
         break;
 
     default:

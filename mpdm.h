@@ -175,6 +175,7 @@ mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s);
 mpdm_t mpdm_split(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s);
 mpdm_t mpdm_reverse(const mpdm_t a);
+mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 
 void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org, size_t osize, size_t esize);
 void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t esize);
