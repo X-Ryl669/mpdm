@@ -724,6 +724,9 @@ mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
     mpdm_ref(v);
     mpdm_ref(i);
 
+    if (n) *n = NULL;
+    if (d) *d = NULL;
+
     offset = mpdm_wrap_pointers(v, offset, &del);
 
     if (offset > mpdm_size(v))

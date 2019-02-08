@@ -297,9 +297,12 @@ int mpdm_wrap_pointers(mpdm_t v, int offset, int *del)
     }
 
     if (del) {
-        /* if negative, means 'what's left'; also,
-           trim if trying to delete too far */
-        if (*del < 0 || offset + *del > mpdm_size(v))
+        /* negative values mean 'count from the end' */
+        if (*del < 0)
+            *del = mpdm_size(v) + 1 - offset + *del;
+
+        /* trim if trying to delete too far */
+        if (offset + *del > mpdm_size(v))
             *del = mpdm_size(v) - offset;
     }
 

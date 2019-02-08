@@ -508,34 +508,16 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
     if (d) *d = NULL;
 
     if (v != NULL) {
-        int os;
+        wchar_t *str = mpdm_string(v);
 
-        os = mpdm_size(v);
+        offset = mpdm_wrap_pointers(v, offset, &del);
 
-        /* negative offsets start from the end */
-        if (offset < 0)
-            offset = os + 1 - offset;
-
-        /* never add further the end */
-        if (offset > os)
-            offset = os;
-
-        /* negative del counts as 'characters left' */
-        if (del < 0)
-            del = os + 1 - offset + del;
-
-        /* something to delete? */
-        if (del > 0) {
-            /* never delete further the end */
-            if (offset + del > os)
-                del = os - offset;
-        }
-        else
-            del = 0;
+        if (offset > mpdm_size(v))
+            offset = mpdm_size(v);
 
         if (d) {
             /* deleted string */
-            *d = MPDM_NS(mpdm_string(v) + offset, del);
+            *d = MPDM_NS(str + offset, del);
         }
 
         if (n) {
@@ -543,13 +525,13 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
             size_t s = 0;
 
             /* copy the start of the string */
-            ptr = mpdm_pokewsn(ptr, &s, mpdm_string(v), offset);
+            ptr = mpdm_pokewsn(ptr, &s, str, offset);
 
             /* copy the inserted string */
             ptr = mpdm_pokev(ptr, &s, i);
 
             /* copy the reminder */
-            ptr = mpdm_pokews(ptr, &s, mpdm_string(v) + offset + del);
+            ptr = mpdm_pokews(ptr, &s, str + offset + del);
 
             /* and null-terminate */
             ptr = mpdm_pokewsn(ptr, &s, L"", 1);
