@@ -724,11 +724,16 @@ mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
     mpdm_ref(v);
     mpdm_ref(i);
 
+    offset = mpdm_wrap_pointers(v, offset, &del);
+
+    if (offset > mpdm_size(v))
+        offset = mpdm_size(v);
+
     if (n) {
         *n = MPDM_A(0);
 
         /* copy the first part */
-        for (c = 0; c < offset && c < mpdm_size(v); c++)
+        for (c = 0; c < offset; c++)
             mpdm_push(*n, mpdm_aget(v, c));
 
         /* copy all elements in i */
@@ -743,7 +748,7 @@ mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
     if (d) {
         *d = MPDM_A(0);
 
-        for (c = offset; c < offset + del && c < mpdm_size(v); c++)
+        for (c = offset; c < offset + del; c++)
             mpdm_push(*d, mpdm_aget(v, c));
     }
 
