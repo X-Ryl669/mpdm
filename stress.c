@@ -555,10 +555,10 @@ void test_splice(void)
     mpdm_splice(NULL, NULL, 0, 0, &n, NULL);
     do_test("splice with two NULLS", (n == NULL));
 
-    mpdm_splice(NULL, MPDM_LS(L"foo"), 0, 0, &n, NULL);
+/*    mpdm_splice(NULL, MPDM_LS(L"foo"), 0, 0, &n, NULL);
     do_test("splice with first value NULL",
             (mpdm_cmp(n, MPDM_LS(L"foo")) == 0));
-
+*/
     mpdm_splice(MPDM_LS(L"foo"), NULL, 0, 0, &n, NULL);
     do_test("splice with second value NULL",
             (mpdm_cmp(n, MPDM_LS(L"foo")) == 0));
@@ -582,9 +582,9 @@ void test_splice(void)
     do_test("splice with negative del (4)",
             (mpdm_cmp(n, MPDM_LS(L"ing")) == 0));
 
-    mpdm_splice(v, NULL, 4, -20, &n, NULL);
+/*    mpdm_splice(v, NULL, 4, -20, &n, NULL);
     do_test("splice with out-of-bounds negative del",
-            (mpdm_cmp(n, MPDM_LS(L"I'm testing")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"I'm testing")) == 0));*/
     mpdm_unref(v);
 }
 
