@@ -650,7 +650,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
     return r;
 }
 
-
+#if 0
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 {
     mpdm_t r;
@@ -668,3 +668,4 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
 
     return r;
 }
+#endif

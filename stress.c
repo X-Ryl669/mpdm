@@ -524,76 +524,67 @@ void test_hash(void)
 
 void test_splice(void)
 {
-    mpdm_t w;
-    mpdm_t v;
+    mpdm_t v, n, d;
 
-    w = mpdm_splice(MPDM_LS(L"I'm agent Johnson"), MPDM_LS(L"special "), 4,
-                    0);
+    mpdm_splice(MPDM_LS(L"I'm agent Johnson"), MPDM_LS(L"special "), 4, 0, &n, NULL);
+
+    if (verbose)
+        mpdm_dump(n);
+
     do_test("splice insertion",
-            mpdm_cmp(mpdm_aget(w, 0),
-                     MPDM_LS(L"I'm special agent Johnson")) == 0);
-    if (verbose)
-        mpdm_dump(w);
+        mpdm_cmp(n, MPDM_LS(L"I'm special agent Johnson")) == 0);
 
-    w = mpdm_splice(MPDM_LS(L"Life is a shit"), MPDM_LS(L"cheat"), 10, 4);
+    mpdm_splice(MPDM_LS(L"Life is a shit"), MPDM_LS(L"cheat"), 10, 4, &n, &d);
+
     do_test("splice insertion and deletion (1)",
-            mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"Life is a cheat")) == 0);
+            mpdm_cmp(n, MPDM_LS(L"Life is a cheat")) == 0);
     do_test("splice insertion and deletion (2)",
-            mpdm_cmp(mpdm_aget(w, 1), MPDM_LS(L"shit")) == 0);
-    if (verbose)
-        mpdm_dump(w);
+            mpdm_cmp(d, MPDM_LS(L"shit")) == 0);
 
-    w = mpdm_splice(MPDM_LS(L"I'm with dumb"), NULL, 4, 4);
+    mpdm_splice(MPDM_LS(L"I'm with dumb"), NULL, 4, 4, &n, &d);
     do_test("splice deletion (1)",
-            mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm  dumb")) == 0);
+            mpdm_cmp(n, MPDM_LS(L"I'm  dumb")) == 0);
     do_test("splice deletion (2)",
-            mpdm_cmp(mpdm_aget(w, 1), MPDM_LS(L"with")) == 0);
-    if (verbose)
-        mpdm_dump(w);
+            mpdm_cmp(d, MPDM_LS(L"with")) == 0);
 
     v = MPDM_LS(L"It doesn't matter");
-    w = mpdm_splice(v, MPDM_LS(L" two"), v->size, 0);
+    mpdm_splice(v, MPDM_LS(L" two"), v->size, 0, &n, NULL);
     do_test("splice insertion at the end",
-            mpdm_cmp(mpdm_aget(w, 0),
-                     MPDM_LS(L"It doesn't matter two")) == 0);
-    if (verbose)
-        mpdm_dump(w);
+            mpdm_cmp(n, MPDM_LS(L"It doesn't matter two")) == 0);
 
-    w = mpdm_splice(NULL, NULL, 0, 0);
-    do_test("splice with two NULLS", (mpdm_aget(w, 0) == NULL));
+    mpdm_splice(NULL, NULL, 0, 0, &n, NULL);
+    do_test("splice with two NULLS", (n == NULL));
 
-    w = mpdm_splice(NULL, MPDM_LS(L"foo"), 0, 0);
+    mpdm_splice(NULL, MPDM_LS(L"foo"), 0, 0, &n, NULL);
     do_test("splice with first value NULL",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"foo")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"foo")) == 0));
 
-    w = mpdm_splice(MPDM_LS(L"foo"), NULL, 0, 0);
+    mpdm_splice(MPDM_LS(L"foo"), NULL, 0, 0, &n, NULL);
     do_test("splice with second value NULL",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"foo")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"foo")) == 0));
 
     v = MPDM_LS(L"I'm testing");
     mpdm_ref(v);
 
-    w = mpdm_splice(v, NULL, 0, -1);
+    mpdm_splice(v, NULL, 0, -1, &n, NULL);
     do_test("splice with negative del (1)",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"")) == 0));
 
-    w = mpdm_splice(v, NULL, 4, -1);
+    mpdm_splice(v, NULL, 4, -1, &n, NULL);
     do_test("splice with negative del (2)",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm ")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"I'm ")) == 0));
 
-    w = mpdm_splice(v, NULL, 4, -2);
+    mpdm_splice(v, NULL, 4, -2, &n, NULL);
     do_test("splice with negative del (3)",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm g")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"I'm g")) == 0));
 
-    w = mpdm_splice(v, NULL, 0, -4);
+    mpdm_splice(v, NULL, 0, -4, &n, NULL);
     do_test("splice with negative del (4)",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"ing")) == 0));
-    if (verbose)
-        mpdm_dump(mpdm_aget(w, 0));
+            (mpdm_cmp(n, MPDM_LS(L"ing")) == 0));
 
-    w = mpdm_splice(v, NULL, 4, -20);
+    mpdm_splice(v, NULL, 4, -20, &n, NULL);
     do_test("splice with out-of-bounds negative del",
-            (mpdm_cmp(mpdm_aget(w, 0), MPDM_LS(L"I'm testing")) == 0));
+            (mpdm_cmp(n, MPDM_LS(L"I'm testing")) == 0));
     mpdm_unref(v);
 }
 

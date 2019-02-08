@@ -403,14 +403,11 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
             add = mpdm_size(w);
 
             /* splice */
-            w = mpdm_splice(o, w, offset, del);
+            mpdm_splice(o, w, offset, del, &o, NULL);
+            mpdm_ref(o);
 
             /* next iteration shall be after the insertion */
             offset += add;
-
-            /* take first argument and drop the rest */
-            mpdm_store(&o, mpdm_aget(w, 0));
-            mpdm_void(w);
 
             /* one more substitution */
             mpdm_sregex_count++;

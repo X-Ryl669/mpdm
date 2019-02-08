@@ -482,6 +482,8 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  * @i: the value to be inserted
  * @offset: offset where the substring is to be inserted
  * @del: number of characters to delete
+ * @n: an optional pointer to the new string
+ * @d: an optional pointer to the deleted string
  *
  * Creates a new string value from @v, deleting @del chars at @offset
  * and substituting them by @i. If @del is 0, no deletion is done.
@@ -491,24 +493,22 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
  * not NULL and @i is, no insertion process is done (only deletion, if
  * applicable).
  *
- * Returns a two element array, with the new string in the first
- * element and the deleted string in the second (with a NULL value
- * if @del is 0).
+ * Fills @n (in not NULL) with the new string, and @d (if not NULL)
+ * with the deleted portion.
+ *
+ * Returns the new value (if created) or the deleted value (if created).
  * [Strings]
  */
-mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del)
+mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
 {
-    mpdm_t w;
-    mpdm_t n = NULL;
-    mpdm_t d = NULL;
-
     mpdm_ref(v);
     mpdm_ref(i);
 
+    if (n) *n = NULL;
+    if (d) *d = NULL;
+
     if (v != NULL) {
         int os;
-        wchar_t *ptr = NULL;
-        size_t s = 0;
 
         os = mpdm_size(v);
 
@@ -530,39 +530,39 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del)
             if (offset + del > os)
                 del = os - offset;
 
-            /* deleted string */
-            d = MPDM_NS(mpdm_string(v) + offset, del);
+            if (d) {
+                /* deleted string */
+                *d = MPDM_NS(mpdm_string(v) + offset, del);
+            }
         }
         else
             del = 0;
 
-        /* copy the start of the string */
-        ptr = mpdm_pokewsn(ptr, &s, mpdm_string(v), offset);
+        if (n) {
+            wchar_t *ptr = NULL;
+            size_t s = 0;
 
-        /* copy the inserted string */
-        ptr = mpdm_pokev(ptr, &s, i);
+            /* copy the start of the string */
+            ptr = mpdm_pokewsn(ptr, &s, mpdm_string(v), offset);
 
-        /* copy the reminder */
-        ptr = mpdm_pokews(ptr, &s, mpdm_string(v) + offset + del);
+            /* copy the inserted string */
+            ptr = mpdm_pokev(ptr, &s, i);
 
-        /* and null-terminate */
-        ptr = mpdm_pokewsn(ptr, &s, L"", 1);
+            /* copy the reminder */
+            ptr = mpdm_pokews(ptr, &s, mpdm_string(v) + offset + del);
 
-        n = MPDM_NS(ptr, s - 1);
+            /* and null-terminate */
+            ptr = mpdm_pokewsn(ptr, &s, L"", 1);
+
+            *n = MPDM_NS(ptr, s - 1);
+        }
     }
-    else
-        n = i;
-
-    /* creates the output array */
-    w = MPDM_A(2);
-
-    mpdm_aset(w, n, 0);
-    mpdm_aset(w, d, 1);
 
     mpdm_unref(i);
     mpdm_unref(v);
 
-    return w;
+    /* returns the new value or the deleted value */
+    return n ? *n : (d ? *d : NULL);
 }
 
 
@@ -581,13 +581,9 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del)
  */
 mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
 {
-    mpdm_t w, r;
+    mpdm_t r;
 
-    w = mpdm_ref(mpdm_splice(s, NULL, offset, num));
-    r = mpdm_pop(w);
-    mpdm_unref(w);
-
-    return r;
+    return mpdm_splice(s, NULL, offset, num, NULL, &r);
 }
 
 
