@@ -581,29 +581,11 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del)
  */
 mpdm_t mpdm_slice(const mpdm_t s, int offset, int num)
 {
-    mpdm_t r = NULL;
+    mpdm_t w, r;
 
-    mpdm_ref(s);
-
-    if (s != NULL) {
-        int os = mpdm_size(s);
-        wchar_t *ptr = mpdm_string(s);
-
-        if (num <= 0)
-            num = os + num;
-
-        if (offset < 0) {
-            if ((offset = os + offset) < 0)
-                offset = 0;
-        }
-
-        if (offset + num > os)
-            num = os - offset;
-
-        r = MPDM_NS(ptr + offset, num);
-    }
-
-    mpdm_unref(s);
+    w = mpdm_ref(mpdm_splice(s, NULL, offset, num));
+    r = mpdm_pop(w);
+    mpdm_unref(w);
 
     return r;
 }
