@@ -774,6 +774,89 @@ static size_t write_utf32be_bom(struct mpdm_file *f, const wchar_t *str)
 }
 
 
+static wchar_t *msdos_437 = L"\x2302"
+    "\x00C7\x00FC\x00E9\x00E2\x00E4\x00E0\x00E5\x00E7"
+    "\x00EA\x00EB\x00E8\x00EF\x00EE\x00EC\x00C4\x00C5"
+    "\x00C9\x00E6\x00C6\x00F4\x00F6\x00F2\x00FB\x00F9"
+    "\x00FF\x00D6\x00DC\x00A2\x00A3\x00A5\x20A7\x0192"
+    "\x00E1\x00ED\x00F3\x00FA\x00F1\x00D1\x00AA\x00BA"
+    "\x00BF\x2310\x00AC\x00BD\x00BC\x00A1\x00AB\x00BB"
+    "\x2591\x2592\x2593\x2502\x2524\x2561\x2562\x2556"
+    "\x2555\x2563\x2551\x2557\x255D\x255C\x255B\x2510"
+    "\x2514\x2534\x252C\x251C\x2500\x253C\x255E\x255F"
+    "\x255A\x2554\x2569\x2566\x2560\x2550\x256C\x2567"
+    "\x2568\x2564\x2565\x2559\x2558\x2552\x2553\x256B"
+    "\x256A\x2518\x250C\x2588\x2584\x258C\x2590\x2580"
+    "\x03B1\x03B2\x0393\x03C0\x03A3\x03C3\x00B5\x03C4"
+    "\x03A6\x0398\x03A9\x03B4\x221E\x2205\x2208\x2229"
+    "\x2261\x00B1\x2265\x2264\x2320\x2321\x00F7\x2248"
+    "\x00B0\x2219\x00B7\x221A\x207F\x00B2\x25A0\x00A0";
+
+
+static wchar_t *read_msdos(struct mpdm_file *f, size_t *s, int *eol, wchar_t *cp)
+/* generic MSDOS reader */
+{
+    wchar_t *ptr = NULL;
+    wchar_t wc;
+    int c;
+
+    while ((c = get_byte(f)) != EOF) {
+
+        if (c > 127)
+            wc = cp[c - 127];
+        else
+            wc = c;
+
+        if (store_in_line(&ptr, s, eol, wc))
+            break;
+    }
+
+    return ptr;
+}
+
+
+static size_t write_msdos(struct mpdm_file *f, const wchar_t *str, wchar_t *cp)
+/* generic MSDOS writer */
+{
+    size_t cnt = 0;
+    wchar_t wc;
+
+    /* convert char by char */
+    for (; (wc = *str) != L'\0'; str++) {
+        int c = wc;
+
+        if (c > 0xff)
+            c = '?';
+        else
+        if (c >= 127) {
+            int n;
+
+            c = '?';
+            for (n = 0; c == '?' && cp[n]; n++) {
+                if (wc == cp[n])
+                    c = 127 + n;
+            }
+        }
+
+        put_char(c, f);
+    }
+
+    return cnt;
+}
+
+
+static wchar_t *read_msdos_437(struct mpdm_file *f, size_t *s, int *eol)
+{
+    return read_msdos(f, s, eol, msdos_437);
+}
+
+
+static size_t write_msdos_437(struct mpdm_file *f, const wchar_t *str)
+{
+    return write_msdos(f, str, msdos_437);
+}
+
+
 static wchar_t *read_auto(struct mpdm_file *f, size_t *s, int *eol)
 /* autodetects different encodings based on the BOM */
 {
@@ -1167,6 +1250,10 @@ static mpdm_t embedded_encodings(void)
         L"ucs4",       NULL,
         L"utf-8bom",   L"utf-8bom",
         L"utf8bom",    NULL,
+        L"437",        L"437",
+        L"msdos-437",  NULL,
+        L"cp-437",     NULL,
+        L"cp437",      NULL,
         NULL,          NULL
     };
 
@@ -2311,6 +2398,11 @@ mpdm_t mpdm_new_f(FILE *f)
         if (wcscmp(enc, L"utf-32") == 0) {
             fs->f_read = read_utf32;
             fs->f_write = write_utf32le_bom;
+        }
+        else
+        if (wcscmp(enc, L"437") == 0) {
+            fs->f_read = read_msdos_437;
+            fs->f_write = write_msdos_437;
         }
         else {
 #ifdef CONFOPT_ICONV
