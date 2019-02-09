@@ -988,7 +988,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 {
     mpdm_t v = NULL;
 
-    if (MPDM_IS_FILE(fd)) {
+    if (mpdm_type(fd) == MPDM_TYPE_FILE) {
         wchar_t *ptr;
         size_t s = 0;
         int eol = -1;
@@ -1014,7 +1014,7 @@ wchar_t *mpdm_file_eol(mpdm_t fd)
 {
     wchar_t *r = NULL;
 
-    if (MPDM_IS_FILE(fd)) {
+    if (mpdm_type(fd) == MPDM_TYPE_FILE) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
         r = fs->eol;
@@ -1028,7 +1028,7 @@ mpdm_t mpdm_getchar(const mpdm_t fd)
 {
     mpdm_t r = NULL;
 
-    if (MPDM_IS_FILE(fd)) {
+    if (mpdm_type(fd) == MPDM_TYPE_FILE) {
         int c;
         wchar_t tmp[2];
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
@@ -1052,7 +1052,7 @@ int mpdm_putchar(const mpdm_t fd, const mpdm_t c)
 
     mpdm_ref(c);
 
-    if (MPDM_IS_FILE(fd)) {
+    if (mpdm_type(fd) == MPDM_TYPE_FILE) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
         const wchar_t *ptr = mpdm_string(c);
 
@@ -1081,7 +1081,7 @@ size_t mpdm_write(const mpdm_t fd, const mpdm_t v)
 
     mpdm_ref(v);
 
-    if (MPDM_IS_FILE(fd)) {
+    if (mpdm_type(fd) == MPDM_TYPE_FILE) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
 
         ret = fs->f_write(fs, mpdm_string(v));
@@ -1113,7 +1113,7 @@ FILE *mpdm_get_filehandle(const mpdm_t fd)
 {
     FILE *f = NULL;
 
-    if (MPDM_IS_FILE(fd)) {
+    if (mpdm_type(fd) == MPDM_TYPE_FILE) {
         struct mpdm_file *fs = (struct mpdm_file *) fd->data;
         f = fs->in;
     }

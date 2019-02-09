@@ -90,7 +90,6 @@ struct mpdm_val_ex {
 
 /* value type testing macros */
 
-#define MPDM_IS_FILE(v)     (mpdm_type(v) == MPDM_TYPE_FILE)
 #define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
 #define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
 
