@@ -1250,8 +1250,8 @@ static mpdm_t embedded_encodings(void)
         L"ucs4",       NULL,
         L"utf-8bom",   L"utf-8bom",
         L"utf8bom",    NULL,
-        L"437",        L"437",
-        L"msdos-437",  NULL,
+        L"msdos-437",  L"msdos-437",
+        L"437",        NULL,
         L"cp-437",     NULL,
         L"cp437",      NULL,
         NULL,          NULL
@@ -2400,7 +2400,7 @@ mpdm_t mpdm_new_f(FILE *f)
             fs->f_write = write_utf32le_bom;
         }
         else
-        if (wcscmp(enc, L"437") == 0) {
+        if (wcscmp(enc, L"msdos-437") == 0) {
             fs->f_read = read_msdos_437;
             fs->f_write = write_msdos_437;
         }
