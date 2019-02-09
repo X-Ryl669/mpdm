@@ -88,14 +88,6 @@ struct mpdm_val_ex {
     double rval;                /* cache real value */
 };
 
-/* the main control structure */
-struct mpdm_control {
-    mpdm_t root;            /* the root hash */
-    int count;              /* total count of values */
-};
-
-extern struct mpdm_control *mpdm;
-
 /* value type testing macros */
 
 #define MPDM_IS_FILE(v)     (mpdm_type(v) == MPDM_TYPE_FILE)

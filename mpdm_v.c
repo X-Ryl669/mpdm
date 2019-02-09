@@ -35,8 +35,7 @@
 
 /** data **/
 
-/* control structure */
-struct mpdm_control *mpdm = NULL;
+mpdm_t mpdm_global_root = NULL;
 
 /* data type information */
 struct _mpdm_type_info {
@@ -76,8 +75,6 @@ static mpdm_t destroy_value(mpdm_t v)
     if (v->flags & MPDM_FREE)
         free((void *)v->data);
 
-    mpdm->count--;
-
     /* garble the memory block */
     memset(v, 0xaa, V_SIZE(v->flags));
 
@@ -107,8 +104,6 @@ mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, size_t size)
     v->ref      = 0;
     v->data     = data;
     v->size     = size;
-
-    mpdm->count++;
 
     return v;
 }
@@ -224,7 +219,7 @@ size_t mpdm_size(const mpdm_t v)
  */
 mpdm_t mpdm_root(void)
 {
-    return mpdm->root = mpdm->root ? mpdm->root : mpdm_ref(MPDM_H(0));
+    return mpdm_global_root = mpdm_global_root ? mpdm_global_root : mpdm_ref(MPDM_H(0));
 }
 
 
@@ -352,31 +347,27 @@ int mpdm_startup(void)
 {
     mpdm_t v;
 
-    /* do the startup only unless done beforehand */
-    if (mpdm == NULL) {
-        /* alloc space */
-        mpdm = calloc(sizeof(struct mpdm_control), 1);
+    mpdm_root();
 
-        /* sets the locale */
-        if (setlocale(LC_ALL, "") == NULL)
-            if (setlocale(LC_ALL, "C.UTF-8") == NULL)
-                setlocale(LC_ALL, "C");
+    /* sets the locale */
+    if (setlocale(LC_ALL, "") == NULL)
+        if (setlocale(LC_ALL, "C.UTF-8") == NULL)
+            setlocale(LC_ALL, "C");
 
-        mpdm_encoding(NULL);
+    mpdm_encoding(NULL);
 
-        /* store the MPDM object */
-        v = mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_H(0));
-        mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
-        mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
-        mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
+    /* store the MPDM object */
+    v = mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_H(0));
+    mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
+    mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
+    mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
 
-        /* store the ENV hash */
-        mpdm_hset_s(mpdm_root(), L"ENV", build_env());
+    /* store the ENV hash */
+    mpdm_hset_s(mpdm_root(), L"ENV", build_env());
 
-        /* store the special values TRUE and FALSE */
-        mpdm_hset_s(mpdm_root(), L"TRUE",  MPDM_I(1));
-        mpdm_hset_s(mpdm_root(), L"FALSE", MPDM_I(0));
-    }
+    /* store the special values TRUE and FALSE */
+    mpdm_hset_s(mpdm_root(), L"TRUE",  MPDM_I(1));
+    mpdm_hset_s(mpdm_root(), L"FALSE", MPDM_I(0));
 
     /* everything went OK */
     return 0;
