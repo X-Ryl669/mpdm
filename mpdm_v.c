@@ -87,31 +87,6 @@ static mpdm_t destroy_value(mpdm_t v)
 
 
 /**
- * mpdm_init - Initializes a value.
- * @v: the value to initialize
- * @flags: flags
- * @data: pointer to real data
- * @size: size of data
- *
- * Initializes a value.
- *
- * This function is normally not directly used; use any of the type
- * creation macros instead.
- * [Value Creation]
- */
-mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, size_t size)
-{
-    /* if v is NULL crash JUST NOW */
-    v->flags    = flags;
-    v->ref      = 0;
-    v->data     = data;
-    v->size     = size;
-
-    return v;
-}
-
-
-/**
  * mpdm_new - Creates a new value.
  * @flags: flags
  * @data: pointer to real data
@@ -132,7 +107,12 @@ mpdm_t mpdm_new(int flags, const void *data, size_t size)
 
     v = (mpdm_t) calloc(V_SIZE(flags), 1);
 
-    return mpdm_init(v, flags, data, size);
+    v->flags    = flags;
+    v->ref      = 0;
+    v->data     = data;
+    v->size     = size;
+
+    return v;
 }
 
 
