@@ -362,8 +362,8 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 
         break;
 
-    case MPDM_TYPE_SCALAR:
-        /* assume it's a number */
+    case MPDM_TYPE_INTEGER:
+    case MPDM_TYPE_REAL:
         if (*context < mpdm_ival(set)) {
             if (v) *v = MPDM_I(*context);
             if (i) *i = MPDM_I(*context);
@@ -373,6 +373,9 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
         }
 
         break;
+
+    case MPDM_TYPE_SCALAR:
+        /* FIXME */
 
     default:
         ret = 0;
