@@ -55,14 +55,10 @@ typedef enum {
 #define MPDM_MASK_FOR_TYPE (MPDM_MAX_TYPES - 1)
 
 enum {
-    _MPDM_IVAL = 16,
-    _MPDM_RVAL,
-    _MPDM_EXTENDED
+    _MPDM_EXTENDED = 16
 };
 
 enum {
-    MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
-    MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
 };
 
@@ -89,9 +85,6 @@ struct mpdm_val_ex {
 };
 
 /* value type testing macros */
-
-#define MPDM_HAS_IVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_IVAL)
-#define MPDM_HAS_RVAL(v)    ((v != NULL) && ((v)->flags) & MPDM_RVAL)
 
 #define MPDM_CAN_EXEC(v)    (mpdm_type(v) == MPDM_TYPE_FUNCTION || \
                              mpdm_type(v) == MPDM_TYPE_PROGRAM)

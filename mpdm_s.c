@@ -316,38 +316,6 @@ wchar_t *mpdm_string(const mpdm_t v)
         break;
 
     case MPDM_TYPE_SCALAR:
-        if (v->data == NULL) {
-            /* string but no data? most probably a 'lazy' number */
-            if (v->flags & MPDM_RVAL) {
-                char *prev_locale = setlocale(LC_NUMERIC, "C");
-
-                /* creates the visual representation */
-                sprintf(tmp, "%lf", mpdm_rval(v));
-            
-                setlocale(LC_NUMERIC, prev_locale);
-
-                /* manually strip useless zeroes */
-                if (strchr(tmp, '.') != NULL) {
-                    char *ptr;
-            
-                    for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
-            
-                    /* if it's over the ., strip it also */
-                    if (*ptr != '.')
-                        ptr++;
-            
-                    *ptr = '\0';
-                }
-            }
-            else
-            if (v->flags & MPDM_IVAL) {
-                /* creates the visual representation */
-                sprintf(tmp, "%d", mpdm_ival(v));
-            }
-
-            v->data = (void *)mpdm_mbstowcs(tmp, &v->size, -1);
-        }
-
         ret = (wchar_t *) v->data;
         break;
 
@@ -679,11 +647,7 @@ int mpdm_ival_mbs(char *str)
  * mpdm_ival - Returns a value's data as an integer.
  * @v: the value
  *
- * Returns a value's data as an integer. If the value is a string,
- * it's converted via sscanf and returned; non-string values have all
- * an ival of 0. The converted integer is cached, so costly string
- * conversions are only done once. Values created with the MPDM_IVAL
- * flag set have its ival cached from the beginning.
+ * Returns a value's data as an integer.
  * [Strings]
  * [Value Management]
  */
@@ -744,11 +708,7 @@ double mpdm_rval_mbs(char *str)
  * mpdm_rval - Returns a value's data as a real number (double).
  * @v: the value
  *
- * Returns a value's data as a real number (double float). If the value
- * is a string, it's converted via sscanf and returned; non-string values
- * have all an rval of 0. The converted double is cached, so costly string
- * conversions are only done once. Values created with the MPDM_RVAL
- * flag set have its rval cached from the beginning.
+ * Returns a value's data as a real number (double float).
  * [Strings]
  * [Value Management]
  */
@@ -1033,14 +993,15 @@ static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
 
         break;
 
+    case MPDM_TYPE_INTEGER:
+    case MPDM_TYPE_REAL:
+        o = mpdm_pokev(o, z, v);
+        break;
+
     case MPDM_TYPE_SCALAR:
-        if (v->flags & MPDM_IVAL || v->flags & MPDM_RVAL)
-            o = mpdm_pokev(o, z, v);
-        else {
-            o = mpdm_pokews(o, z, L"\"");
-            o = json_s(o, z, v);
-            o = mpdm_pokews(o, z, L"\"");
-        }
+        o = mpdm_pokews(o, z, L"\"");
+        o = json_s(o, z, v);
+        o = mpdm_pokews(o, z, L"\"");
 
         break;
 
