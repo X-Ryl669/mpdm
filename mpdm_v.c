@@ -53,7 +53,9 @@ struct {
     { L"semaphore", mpdm_semaphore__destroy },
     { L"thread",    mpdm_thread__destroy },
     { L"function",  mpdm_function__destroy },
-    { L"program",   mpdm_program__destroy }
+    { L"program",   mpdm_program__destroy },
+    { L"integer",   mpdm_dummy__destroy },
+    { L"real",      mpdm_dummy__destroy }
 };
 
 

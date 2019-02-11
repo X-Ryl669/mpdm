@@ -277,26 +277,14 @@ mpdm_t mpdm_new_wcstombs(const wchar_t *str)
 mpdm_t mpdm_new_i(int ival)
 /* creates a new string value from an integer */
 {
-    mpdm_ex_t ev;
-
-    /* create a string value, but without the 'string' */
-    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
-    ev->ival = ival;
-
-    return (mpdm_t) ev;
+    return MPDM_C(MPDM_TYPE_INTEGER, &ival, sizeof(ival));
 }
 
 
 mpdm_t mpdm_new_r(double rval)
 /* creates a new string value from a real number */
 {
-    mpdm_ex_t ev;
-
-    /* create a string value, but without the 'string' */
-    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
-    ev->rval = rval;
-
-    return (mpdm_t) ev;
+    return MPDM_C(MPDM_TYPE_REAL, &rval, sizeof(rval));
 }
 
 
@@ -320,6 +308,8 @@ wchar_t *mpdm_string(const mpdm_t v)
     wchar_t wstr[64] = L"";
     wchar_t *ret = NULL;
 
+    mpdm_ref(v);
+
     switch (mpdm_type(v)) {
     case MPDM_TYPE_NULL:
         ret = L"[NULL]";
@@ -327,9 +317,6 @@ wchar_t *mpdm_string(const mpdm_t v)
 
     case MPDM_TYPE_SCALAR:
         if (v->data == NULL) {
-            /* for mpdm_ival() and mpdm_rval() */
-            mpdm_ref(v);
-
             /* string but no data? most probably a 'lazy' number */
             if (v->flags & MPDM_RVAL) {
                 char *prev_locale = setlocale(LC_NUMERIC, "C");
@@ -359,11 +346,40 @@ wchar_t *mpdm_string(const mpdm_t v)
             }
 
             v->data = (void *)mpdm_mbstowcs(tmp, &v->size, -1);
-
-            mpdm_unrefnd(v);
         }
 
         ret = (wchar_t *) v->data;
+        break;
+
+    case MPDM_TYPE_INTEGER:
+        sprintf(tmp, "%d", mpdm_ival(v));
+        mbstowcs(wstr, tmp, sizeof(wstr));
+        break;
+
+    case MPDM_TYPE_REAL:
+        {
+            char *prev_locale = setlocale(LC_NUMERIC, "C");
+
+            sprintf(tmp, "%lf", mpdm_rval(v));
+
+            setlocale(LC_NUMERIC, prev_locale);
+
+            /* manually strip useless zeroes */
+            if (strchr(tmp, '.') != NULL) {
+                char *ptr;
+            
+                for (ptr = tmp + strlen(tmp) - 1; *ptr == '0'; ptr--);
+            
+                /* if it's over the ., strip it also */
+                if (*ptr != '.')
+                    ptr++;
+            
+                *ptr = '\0';
+            }
+
+            mbstowcs(wstr, tmp, sizeof(wstr));
+        }
+
         break;
 
     default:
@@ -384,7 +400,7 @@ wchar_t *mpdm_string(const mpdm_t v)
 
             if ((w = mpdm_hget_s(c, wstr)) == NULL) {
                 w = MPDM_S(wstr);
-                mpdm_hset_s(c, wstr, w);
+                mpdm_hset(c, w, w);
             }
 
             ret = (wchar_t *) w->data;
@@ -392,6 +408,8 @@ wchar_t *mpdm_string(const mpdm_t v)
         else
             ret = L"[UNKNOWN]";
     }
+
+    mpdm_unrefnd(v);
 
     return ret;
 }
@@ -442,6 +460,14 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
         switch (mpdm_type(v1)) {
         case MPDM_TYPE_NULL:
             r = -1;
+            break;
+
+        case MPDM_TYPE_INTEGER:
+            r = mpdm_ival(v1) < mpdm_ival(v2) ? -1 : 1;
+            break;
+
+        case MPDM_TYPE_REAL:
+            r = mpdm_rval(v1) < mpdm_rval(v2) ? -1 : 1;
             break;
 
         case MPDM_TYPE_ARRAY:
@@ -665,33 +691,31 @@ int mpdm_ival(mpdm_t v)
 {
     int i = 0;
 
-    if (v != NULL) {
-        mpdm_ex_t ev = (mpdm_ex_t) v;
+    mpdm_ref(v);
 
-        mpdm_ref(v);
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
+        break;
 
-        /* does it have a cached value? */
-        if (MPDM_HAS_IVAL(v))
-            i = ev->ival;
-        else
-        /* does it have a real cached value? */
-        if (MPDM_HAS_RVAL(v))
-            i = (int) ev->rval;
-        else {
-            /* otherwise, calculate it */
+    case MPDM_TYPE_INTEGER:
+        i = *((int *)v->data);
+        break;
+
+    case MPDM_TYPE_REAL:
+        i = (int) mpdm_rval(v);
+        break;
+
+    default:
+        {
             char *mbs = mpdm_wcstombs(mpdm_string(v), NULL);
             i = mpdm_ival_mbs(mbs);
             free(mbs);
         }
 
-        /* cache it if possible */
-        if ((v->flags & MPDM_EXTENDED)) {
-            ev->flags |= MPDM_IVAL;
-            ev->ival  = i;
-        }
-
-        mpdm_unref(v);
+        break;
     }
+
+    mpdm_unref(v);
 
     return i;
 }
@@ -732,33 +756,32 @@ double mpdm_rval(mpdm_t v)
 {
     double r = 0.0;
 
-    if (v != NULL) {
-        mpdm_ex_t ev = (mpdm_ex_t) v;
+    mpdm_ref(v);
 
-        mpdm_ref(v);
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
+        break;
 
-        /* does it have a cached value? */
-        if (MPDM_HAS_RVAL(v))
-            r = ev->rval;
-        else
-        /* does it have an integer cached value? */
-        if (MPDM_HAS_IVAL(v))
-            r = (double) ev->ival;
-        else {
+    case MPDM_TYPE_REAL:
+        r = *((double *)v->data);
+        break;
+
+    case MPDM_TYPE_INTEGER:
+        r = (double) mpdm_ival(v);
+        break;
+
+    default:
+        {
             /* otherwise, calculate it */
             char *mbs = mpdm_wcstombs(mpdm_string(v), NULL);
             r = mpdm_rval_mbs(mbs);
             free(mbs);
         }
 
-        /* cache it if possible */
-        if ((v->flags & MPDM_EXTENDED)) {
-            ev->flags |= MPDM_RVAL;
-            ev->rval  = r;
-        }
-
-        mpdm_unref(v);
+        break;
     }
+
+    mpdm_unrefnd(v);
 
     return r;
 }

@@ -155,37 +155,37 @@ void test_basic(void)
     v = MPDM_R(777777.0 / 2.0);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 1", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
+    do_test("mpdm_rnew 1", mpdm_cmp(MPDM_LS(L"388888.5"), v) == 0);
 
     v = MPDM_R(388888.500);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 2", mpdm_cmp(v, MPDM_LS(L"388888.5")) == 0);
+    do_test("mpdm_rnew 2", mpdm_cmp(MPDM_LS(L"388888.5"), v) == 0);
 
     v = MPDM_R(388888.412);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 3", mpdm_cmp(v, MPDM_LS(L"388888.412")) == 0);
+    do_test("mpdm_rnew 3", mpdm_cmp(MPDM_LS(L"388888.412"), v) == 0);
 
     v = MPDM_R(388888.6543);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 4", mpdm_cmp(v, MPDM_LS(L"388888.6543")) == 0);
+    do_test("mpdm_rnew 4", mpdm_cmp(MPDM_LS(L"388888.6543"), v) == 0);
 
     v = MPDM_R(388888.0);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 5", mpdm_cmp(v, MPDM_LS(L"388888")) == 0);
+    do_test("mpdm_rnew 5", mpdm_cmp(MPDM_LS(L"388888"), v) == 0);
 
     v = MPDM_R(0.050000);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 6", mpdm_cmp(v, MPDM_LS(L"0.05")) == 0);
+    do_test("mpdm_rnew 6", mpdm_cmp(MPDM_LS(L"0.05"), v) == 0);
 
     v = MPDM_R(0.000);
     if (verbose)
         mpdm_dump(v);
-    do_test("mpdm_rnew 7", mpdm_cmp(v, MPDM_LS(L"0")) == 0);
+    do_test("mpdm_rnew 7", mpdm_cmp(MPDM_LS(L"0"), v) == 0);
 
     v = MPDM_LS(L"0177");
     do_test("mpdm_ival() for octal numbers", mpdm_ival(v) == 0x7f);
