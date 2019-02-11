@@ -52,8 +52,8 @@ struct _mpdm_type_info {
     { L"mutex",     mpdm_mutex__destroy },
     { L"semaphore", mpdm_semaphore__destroy },
     { L"thread",    mpdm_thread__destroy },
-    { L"function",  NULL },
-    { L"program",   mpdm_array__destroy }
+    { L"function",  mpdm_function__destroy },
+    { L"program",   mpdm_program__destroy }
 };
 
 
