@@ -101,7 +101,7 @@ struct mpdm_val_ex {
 
 /* value creation utility macros */
 
-#define MPDM_A(n)       mpdm_new_a(0, n)
+#define MPDM_A(n)       mpdm_new_a(n)
 #define MPDM_H(n)       mpdm_new_h(n)
 #define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 1)
 #define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
@@ -142,7 +142,7 @@ mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
 
 void mpdm_array__destroy(mpdm_t a);
-mpdm_t mpdm_new_a(int flags, size_t size);
+mpdm_t mpdm_new_a(size_t size);
 mpdm_t mpdm_expand(mpdm_t a, int index, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index);
