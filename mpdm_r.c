@@ -69,6 +69,7 @@ static wchar_t *regex_flags(const mpdm_t r)
 void mpdm_regex__destroy(mpdm_t v)
 {
     regfree((regex_t *) v->data);
+    v->data = NULL;
 }
 
 

@@ -263,6 +263,8 @@ void mpdm_semaphore_post(mpdm_t sem);
 void mpdm_thread__destroy(mpdm_t v);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
+void mpdm_function__destroy(mpdm_t v);
+void mpdm_program__destroy(mpdm_t v);
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);
 mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a);

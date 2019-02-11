@@ -33,6 +33,18 @@
 
 #include "mpdm.h"
 
+void mpdm_function__destroy(mpdm_t v)
+{
+    v->data = NULL;
+}
+
+
+void mpdm_program__destroy(mpdm_t v)
+{
+    mpdm_array__destroy(v);
+}
+
+
 /**
  * mpdm_is_true - Returns 1 if a value is true.
  * @v: the value

@@ -89,6 +89,8 @@ void mpdm_mutex__destroy(mpdm_t v)
 
     pthread_mutex_destroy(m);
 #endif
+
+    v->data = NULL;
 }
 
 
@@ -191,6 +193,8 @@ void mpdm_semaphore__destroy(mpdm_t v)
 
     sem_destroy(s);
 #endif
+
+    v->data = NULL;
 }
 
 
@@ -281,6 +285,7 @@ void mpdm_semaphore_post(mpdm_t sem)
 
 void mpdm_thread__destroy(mpdm_t v)
 {
+    v->data = NULL;
 }
 
 
