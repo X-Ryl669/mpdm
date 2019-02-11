@@ -105,7 +105,7 @@ struct mpdm_val_ex {
 
 #define MPDM_A(n)       mpdm_new_a(0, n)
 #define MPDM_H(n)       mpdm_new_h(n)
-#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 0)
+#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 1)
 #define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
 #define MPDM_ENS(s,n)   mpdm_new_wcs(MPDM_FREE, s, n, 0)

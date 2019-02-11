@@ -71,9 +71,8 @@ static mpdm_t destroy_value(mpdm_t v)
     if (ti->destroy)
         ti->destroy(v);
 
-    /* free data if needed */
-    if (v->flags & MPDM_FREE)
-        free((void *)v->data);
+    /* free data */
+    free((void *)v->data);
 
     /* garble the memory block */
     memset(v, 0xaa, V_SIZE(v->flags));
