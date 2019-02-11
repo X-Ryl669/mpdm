@@ -94,4 +94,4 @@ installdoc:
 	done
 
 Makefile: VERSION makefile.in
-	./config.sh $(CFG_ARGS)
+	./config.sh $(CONF_ARGS)
