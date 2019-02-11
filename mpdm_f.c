@@ -2024,7 +2024,7 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
         struct mpdm_file *ifs;
         struct mpdm_file *ofs;
 
-        o = MPDM_C(i->flags, (void *)i->data, i->size);
+        o = MPDM_C(i->type, (void *)i->data, i->size);
 
         ifs = (struct mpdm_file *)i->data;
         ofs = (struct mpdm_file *)o->data;

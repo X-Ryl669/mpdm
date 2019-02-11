@@ -51,37 +51,15 @@ typedef enum {
 	MPDM_TYPE_REAL
 } mpdm_type_t;
 
-#define MPDM_MAX_TYPES 16
-#define MPDM_MASK_FOR_TYPE (MPDM_MAX_TYPES - 1)
-
-enum {
-    _MPDM_EXTENDED = 16
-};
-
-enum {
-    MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
-};
-
 /* mpdm values */
 typedef struct mpdm_val *mpdm_t;
-typedef struct mpdm_val_ex *mpdm_ex_t;
 
 /* a value */
 struct mpdm_val {
-    int flags;          /* value flags */
+    mpdm_type_t type;   /* value type */
     int ref;            /* reference count */
     size_t size;        /* data size */
     const void *data;   /* the real data */
-};
-
-/* extended value */
-struct mpdm_val_ex {
-    int flags;                  /* value flags */
-    int ref;                    /* reference count */
-    size_t size;                /* data size */
-    const void *data;           /* the real data */
-    int ival;                   /* cached integer value */
-    double rval;                /* cache real value */
 };
 
 /* value type testing macros */
@@ -98,10 +76,10 @@ struct mpdm_val_ex {
 
 #define MPDM_A(n)       mpdm_new_a(n)
 #define MPDM_H(n)       mpdm_new_h(n)
-#define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 1)
-#define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
-#define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
-#define MPDM_ENS(s,n)   mpdm_new_wcs(0, s, n, 0)
+#define MPDM_LS(s)      mpdm_new_wcs(s, -1, 1)
+#define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
+#define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
+#define MPDM_ENS(s,n)   mpdm_new_wcs(s, n, 0)
 #define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
 
 #define MPDM_I(i)       mpdm_new_i((i))
@@ -116,7 +94,7 @@ struct mpdm_val_ex {
 #define MPDM_F(f)       mpdm_new_f(f)
 
 void mpdm_dummy__destroy(mpdm_t v);
-mpdm_t mpdm_new(int flags, const void *data, size_t size);
+mpdm_t mpdm_new(mpdm_type_t type, const void *data, size_t size);
 mpdm_type_t mpdm_type(mpdm_t v);
 wchar_t *mpdm_type_s(mpdm_t v);
 mpdm_t mpdm_ref(mpdm_t v);
@@ -127,7 +105,7 @@ mpdm_t mpdm_root(void);
 mpdm_t mpdm_void(mpdm_t v);
 int mpdm_is_null(mpdm_t v);
 mpdm_t mpdm_store(mpdm_t *v, mpdm_t w);
-mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size);
+mpdm_t mpdm_new_copy(mpdm_type_t type, void *ptr, size_t size);
 int mpdm_wrap_pointers(mpdm_t v, int offset, int *del);
 int mpdm_startup(void);
 void mpdm_shutdown(void);
@@ -168,7 +146,7 @@ wchar_t *mpdm_pokews(wchar_t *dst, size_t *dsize, const wchar_t *str);
 wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v);
 wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l);
 char *mpdm_wcstombs(const wchar_t * str, size_t *s);
-mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy);
+mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy);
 mpdm_t mpdm_new_mbstowcs(const char *str, size_t l);
 mpdm_t mpdm_new_wcstombs(const wchar_t *str);
 mpdm_t mpdm_new_i(int ival);

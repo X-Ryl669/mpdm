@@ -41,7 +41,7 @@ mpdm_t mpdm_global_root = NULL;
 struct {
     wchar_t *name;
     void (*destroy)(mpdm_t);
-} mpdm_type_info[MPDM_MAX_TYPES] = {
+} mpdm_type_info[] = {
     { L"null",      mpdm_dummy__destroy },
     { L"scalar",    mpdm_dummy__destroy },
     { L"array",     mpdm_array__destroy },
@@ -61,9 +61,6 @@ struct {
 
 /** code **/
 
-#define V_SIZE(f) f & MPDM_EXTENDED ? sizeof(struct mpdm_val_ex) : sizeof(struct mpdm_val)
-
-
 void mpdm_dummy__destroy(mpdm_t v)
 {
     (void)v;
@@ -80,7 +77,7 @@ static mpdm_t destroy_value(mpdm_t v)
     free((void *)v->data);
 
     /* garble the memory block */
-    memset(v, 0xaa, V_SIZE(v->flags));
+    memset(v, 0xaa, sizeof(*v));
 
     free(v);
 
@@ -90,11 +87,11 @@ static mpdm_t destroy_value(mpdm_t v)
 
 /**
  * mpdm_new - Creates a new value.
- * @flags: flags
+ * @type: data type
  * @data: pointer to real data
  * @size: size of data
  *
- * Creates a new value. @flags is an or-ed set of flags, @data is a
+ * Creates a new value. @type is the data type, @data is a
  * pointer to the data the value will store and @size the size of these
  * data (if value is to be a multiple one, @size is a number of elements,
  * or a number of bytes otherwise).
@@ -103,13 +100,13 @@ static mpdm_t destroy_value(mpdm_t v)
  * creation macros instead.
  * [Value Creation]
  */
-mpdm_t mpdm_new(int flags, const void *data, size_t size)
+mpdm_t mpdm_new(mpdm_type_t type, const void *data, size_t size)
 {
     mpdm_t v;
 
-    v = (mpdm_t) calloc(V_SIZE(flags), 1);
+    v = (mpdm_t) calloc(sizeof(*v), 1);
 
-    v->flags    = flags;
+    v->type     = type;
     v->ref      = 0;
     v->data     = data;
     v->size     = size;
@@ -120,7 +117,7 @@ mpdm_t mpdm_new(int flags, const void *data, size_t size)
 
 mpdm_type_t mpdm_type(mpdm_t v)
 {
-    return (mpdm_type_t) (v ? (v->flags & MPDM_MASK_FOR_TYPE) : MPDM_TYPE_NULL);
+    return v ? v->type : MPDM_TYPE_NULL;
 }
 
 
@@ -249,7 +246,7 @@ mpdm_t mpdm_store(mpdm_t *v, mpdm_t w)
 }
 
 
-mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size)
+mpdm_t mpdm_new_copy(mpdm_type_t type, void *ptr, size_t size)
 {
     mpdm_t r = NULL;
 
@@ -257,7 +254,7 @@ mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size)
         char *ptr2 = malloc(size);
         memcpy(ptr2, ptr, size);
 
-        r = mpdm_new(flags, ptr2, size);
+        r = mpdm_new(type, ptr2, size);
     }
 
     return r;
