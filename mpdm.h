@@ -120,6 +120,7 @@ struct mpdm_val_ex {
 
 #define MPDM_F(f)       mpdm_new_f(f)
 
+void mpdm_dummy__destroy(mpdm_t v);
 mpdm_t mpdm_init(mpdm_t v, int flags, const void *data, size_t size);
 mpdm_t mpdm_new(int flags, const void *data, size_t size);
 mpdm_type_t mpdm_type(mpdm_t v);

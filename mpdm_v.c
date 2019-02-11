@@ -38,16 +38,16 @@
 mpdm_t mpdm_global_root = NULL;
 
 /* data type information */
-struct _mpdm_type_info {
+struct {
     wchar_t *name;
     void (*destroy)(mpdm_t);
 } mpdm_type_info[MPDM_MAX_TYPES] = {
-    { L"null",      NULL },
-    { L"scalar",    NULL },
+    { L"null",      mpdm_dummy__destroy },
+    { L"scalar",    mpdm_dummy__destroy },
     { L"array",     mpdm_array__destroy },
     { L"object",    mpdm_object__destroy },
     { L"file",      mpdm_file__destroy },
-    { L"mbs",       NULL },
+    { L"mbs",       mpdm_dummy__destroy },
     { L"regex",     mpdm_regex__destroy },
     { L"mutex",     mpdm_mutex__destroy },
     { L"semaphore", mpdm_semaphore__destroy },
@@ -62,14 +62,17 @@ struct _mpdm_type_info {
 #define V_SIZE(f) f & MPDM_EXTENDED ? sizeof(struct mpdm_val_ex) : sizeof(struct mpdm_val)
 
 
+void mpdm_dummy__destroy(mpdm_t v)
+{
+    (void)v;
+}
+
+
 static mpdm_t destroy_value(mpdm_t v)
 /* destroys a value */
 {
-    struct _mpdm_type_info *ti = &mpdm_type_info[mpdm_type(v)];
-
-    /* if type has a destroy function, call it */
-    if (ti->destroy)
-        ti->destroy(v);
+    /* destroy type */
+    mpdm_type_info[mpdm_type(v)].destroy(v);
 
     /* free data */
     free((void *)v->data);
