@@ -3,7 +3,7 @@
 TARGET=libmpdm.a
 LIB=$(TARGET)
 
-all: $(TARGET) stress docs
+all: Makefile $(TARGET) stress docs
 
 PROJ=mpdm
 
@@ -92,3 +92,6 @@ installdoc:
 	for f in README AUTHORS COPYING TODO RELEASE_NOTES ; do \
 		[ -f $$f ] && install -m 644 $$f $(DOCDIR)/$$f.$(PROJ) ; \
 	done
+
+Makefile: VERSION makefile.in
+	./config.sh $(CFG_ARGS)

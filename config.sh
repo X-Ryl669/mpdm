@@ -11,6 +11,9 @@ PREFIX=/usr/local
 # installation directory for documents
 DOCDIR=""
 
+# store this script arguments for later
+CFG_ARGS="$*"
+
 # parse arguments
 while [ $# -gt 0 ] ; do
 
@@ -598,6 +601,7 @@ echo "DOCS=$DOCS" >> makefile.opts
 echo "VERSION=$VERSION" >> makefile.opts
 echo "PREFIX=\$(DESTDIR)$PREFIX" >> makefile.opts
 echo "DOCDIR=\$(DESTDIR)$DOCDIR" >> makefile.opts
+echo "CFG_ARGS=$CFG_ARGS" >> makefile.opts
 echo >> makefile.opts
 
 cat makefile.opts makefile.in makefile.depend > Makefile
