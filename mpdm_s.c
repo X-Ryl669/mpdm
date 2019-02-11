@@ -431,11 +431,14 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
             break;
 
         case MPDM_TYPE_INTEGER:
-            r = mpdm_ival(v1) < mpdm_ival(v2) ? -1 : 1;
+            r = mpdm_ival(v1) - mpdm_ival(v2);
             break;
 
         case MPDM_TYPE_REAL:
-            r = mpdm_rval(v1) < mpdm_rval(v2) ? -1 : 1;
+            {
+                double d = mpdm_rval(v1) - mpdm_rval(v2);
+                r = d < 0.0 ? -1 : d > 0.0 ? 1 : 0;
+            }
             break;
 
         case MPDM_TYPE_ARRAY:
