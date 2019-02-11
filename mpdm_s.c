@@ -316,8 +316,9 @@ mpdm_t mpdm_new_r(double rval)
  */
 wchar_t *mpdm_string(const mpdm_t v)
 {
-    char tmp[32] = "";
-    wchar_t *ret = L"[UNKNOWN]";
+    char tmp[64];
+    wchar_t wstr[64] = L"";
+    wchar_t *ret = NULL;
 
     switch (mpdm_type(v)) {
     case MPDM_TYPE_NULL:
@@ -366,27 +367,30 @@ wchar_t *mpdm_string(const mpdm_t v)
         break;
 
     default:
-        {
+        /* create a visual representation for the value */
+        sprintf(tmp, "%p (", v);
+        mbstowcs(wstr, tmp, sizeof(wstr) - 2);
+        wcscat(wstr, mpdm_type_s(v));
+        wcscat(wstr, L")");
+        break;
+    }
+
+    if (ret == NULL) {
+        if (wstr[0]) {
             mpdm_t c, w;
-            wchar_t wstr[128];
 
             if ((c = mpdm_hget_s(mpdm_root(), L"__STRINGIFY__")) == NULL)
                 c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
 
-            sprintf(tmp, "%p (", v);
-            mbstowcs(wstr, tmp, sizeof(wstr));
-            wcscat(wstr, mpdm_type_s(v));
-            wcscat(wstr, L")");
-
             if ((w = mpdm_hget_s(c, wstr)) == NULL) {
                 w = MPDM_S(wstr);
-                mpdm_hset(c, w, w);
+                mpdm_hset_s(c, wstr, w);
             }
 
             ret = (wchar_t *) w->data;
         }
-
-        break;
+        else
+            ret = L"[UNKNOWN]";
     }
 
     return ret;
