@@ -61,14 +61,26 @@ int mpdm_is_true(mpdm_t v)
     if (v) {
         mpdm_ref(v);
 
-        if (mpdm_type(v) == MPDM_TYPE_SCALAR) {
-            wchar_t *ptr = mpdm_string(v);
+        switch (mpdm_type(v)) {
+        case MPDM_TYPE_INTEGER:
+        case MPDM_TYPE_REAL:
+            r = mpdm_ival(v);
+            break;
 
-            /* ... and it's "" or "0", it's false */
-            r = !(*ptr == L'\0' || wcscmp(ptr, L"0") == 0);
-        }
-        else
+        case MPDM_TYPE_SCALAR:
+            {
+                wchar_t *ptr = mpdm_string(v);
+
+                /* ... and it's "" or "0", it's false */
+                r = !(*ptr == L'\0' || wcscmp(ptr, L"0") == 0);
+            }
+
+            break;
+
+        default:
             r = 1;
+            break;
+        }
 
         mpdm_unref(v);
     }
