@@ -239,9 +239,6 @@ mpdm_t mpdm_new_wcs(int flags, const wchar_t *str, size_t size, int cpy)
 
     /* create a copy? */
     if (size >= 0 && cpy) {
-        /* free() on destruction */
-        flags |= MPDM_FREE;
-
         ptr = calloc(size + 1, sizeof(wchar_t));
 
         /* if there is a source, copy it */
@@ -261,7 +258,7 @@ mpdm_t mpdm_new_mbstowcs(const char *str, size_t l)
 
     ptr = mpdm_mbstowcs(str, &size, l);
 
-    return mpdm_new(MPDM_TYPE_SCALAR | MPDM_FREE, ptr, size);
+    return mpdm_new(MPDM_TYPE_SCALAR, ptr, size);
 }
 
 
@@ -273,7 +270,7 @@ mpdm_t mpdm_new_wcstombs(const wchar_t *str)
 
     ptr = mpdm_wcstombs(str, &size);
 
-    return mpdm_new(MPDM_TYPE_MBS | MPDM_FREE, ptr, size);
+    return mpdm_new(MPDM_TYPE_MBS, ptr, size);
 }
 
 
@@ -283,7 +280,7 @@ mpdm_t mpdm_new_i(int ival)
     mpdm_ex_t ev;
 
     /* create a string value, but without the 'string' */
-    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_FREE | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
+    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_IVAL | MPDM_EXTENDED, NULL, 0);
     ev->ival = ival;
 
     return (mpdm_t) ev;
@@ -296,7 +293,7 @@ mpdm_t mpdm_new_r(double rval)
     mpdm_ex_t ev;
 
     /* create a string value, but without the 'string' */
-    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_FREE | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
+    ev = (mpdm_ex_t) mpdm_new(MPDM_TYPE_SCALAR | MPDM_RVAL | MPDM_EXTENDED, NULL, 0);
     ev->rval = rval;
 
     return (mpdm_t) ev;

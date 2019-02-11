@@ -2378,7 +2378,7 @@ mpdm_t mpdm_new_f(FILE *f)
     fs->ic_enc = fs->ic_dec = (iconv_t) - 1;
 #endif
 
-    v = mpdm_new(MPDM_TYPE_FILE | MPDM_FREE, fs, sizeof(struct mpdm_file));
+    v = mpdm_new(MPDM_TYPE_FILE, fs, sizeof(struct mpdm_file));
 
     e = mpdm_hget_s(mpdm_root(), L"ENCODING");
 

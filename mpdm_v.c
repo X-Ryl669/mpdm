@@ -272,7 +272,7 @@ mpdm_t mpdm_new_copy(int flags, void *ptr, size_t size)
         char *ptr2 = malloc(size);
         memcpy(ptr2, ptr, size);
 
-        r = mpdm_new(MPDM_FREE | flags, ptr2, size);
+        r = mpdm_new(flags, ptr2, size);
     }
 
     return r;

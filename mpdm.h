@@ -53,14 +53,12 @@ typedef enum {
 #define MPDM_MASK_FOR_TYPE (MPDM_MAX_TYPES - 1)
 
 enum {
-    _MPDM_FREE = 16,
-    _MPDM_IVAL,
+    _MPDM_IVAL = 16,
     _MPDM_RVAL,
     _MPDM_EXTENDED
 };
 
 enum {
-    MPDM_FREE       = (1<<_MPDM_FREE),      /* free data at destroy */
     MPDM_IVAL       = (1<<_MPDM_IVAL),      /* integer value cached in .ival */
     MPDM_RVAL       = (1<<_MPDM_RVAL),      /* real value cached in .rval */
     MPDM_EXTENDED   = (1<<_MPDM_EXTENDED)   /* value is an mpdm_ex_t */
@@ -108,7 +106,7 @@ struct mpdm_val_ex {
 #define MPDM_LS(s)      mpdm_new_wcs(0, s, -1, 1)
 #define MPDM_S(s)       mpdm_new_wcs(0, s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(0, s, n, 1)
-#define MPDM_ENS(s,n)   mpdm_new_wcs(MPDM_FREE, s, n, 0)
+#define MPDM_ENS(s,n)   mpdm_new_wcs(0, s, n, 0)
 #define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
 
 #define MPDM_I(i)       mpdm_new_i((i))
