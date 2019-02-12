@@ -45,6 +45,30 @@ void mpdm_program__destroy(mpdm_t v)
 }
 
 
+int mpdm_count(mpdm_t v)
+{
+    int r;
+
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
+    case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_PROGRAM:
+        r = mpdm_size(v);
+        break;
+
+    case MPDM_TYPE_OBJECT:
+        r = mpdm_hsize(v);
+        break;
+
+    default:
+        r = wcslen(mpdm_string(v));
+        break;
+    }
+
+    return r;
+}
+
+
 /**
  * mpdm_is_true - Returns 1 if a value is true.
  * @v: the value
