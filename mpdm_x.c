@@ -430,6 +430,16 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     case MPDM_TYPE_NULL:
         break;
 
+    case MPDM_TYPE_SCALAR:
+        out = MPDM_A(0);
+
+        while ((v = mpdm_regex(set, filter, n))) {
+            mpdm_push(out, v);
+            n = mpdm_regex_offset + mpdm_regex_size;
+        }
+
+        break;
+
     default:
         out = MPDM_A(0);
 
