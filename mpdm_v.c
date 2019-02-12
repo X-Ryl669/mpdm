@@ -326,9 +326,9 @@ extern char *mpdm_build_timestamp;
  */
 int mpdm_startup(void)
 {
-    mpdm_t v;
+    mpdm_t r, v;
 
-    mpdm_root();
+    r = mpdm_root();
 
     /* sets the locale */
     if (setlocale(LC_ALL, "") == NULL)
@@ -338,17 +338,17 @@ int mpdm_startup(void)
     mpdm_encoding(NULL);
 
     /* store the MPDM object */
-    v = mpdm_hset_s(mpdm_root(), L"MPDM", MPDM_H(0));
+    v = mpdm_hset_s(r, L"MPDM", MPDM_H(0));
     mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
     mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
     mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
 
     /* store the ENV hash */
-    mpdm_hset_s(mpdm_root(), L"ENV", build_env());
+    mpdm_hset_s(r, L"ENV", build_env());
 
     /* store the special values TRUE and FALSE */
-    mpdm_hset_s(mpdm_root(), L"TRUE",  MPDM_I(1));
-    mpdm_hset_s(mpdm_root(), L"FALSE", MPDM_I(0));
+    mpdm_hset_s(r, L"TRUE",  MPDM_I(1));
+    mpdm_hset_s(r, L"FALSE", MPDM_I(0));
 
     /* everything went OK */
     return 0;
