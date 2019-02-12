@@ -49,41 +49,46 @@ void mpdm_program__destroy(mpdm_t v)
  * mpdm_is_true - Returns 1 if a value is true.
  * @v: the value
  *
- * Returns 1 if @v is true. False values are: NULL, those with
- * cached integer values of 0, those with cached real values
- * of 0.0, empty strings and the special string "0".
+ * Returns 1 if @v is true. False values are: NULL, integers
+ * with value 0, reals with value 0.0, empty strings and the
+ * special string "0".
  * The reference count is touched.
  */
 int mpdm_is_true(mpdm_t v)
 {
-    int r = 0;
+    int r;
 
-    if (v) {
-        mpdm_ref(v);
+    mpdm_ref(v);
 
-        switch (mpdm_type(v)) {
-        case MPDM_TYPE_INTEGER:
-        case MPDM_TYPE_REAL:
-            r = mpdm_ival(v);
-            break;
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_NULL:
+        r = 0;
+        break;
 
-        case MPDM_TYPE_SCALAR:
-            {
-                wchar_t *ptr = mpdm_string(v);
+    case MPDM_TYPE_INTEGER:
+        r = mpdm_ival(v);
+        break;
 
-                /* ... and it's "" or "0", it's false */
-                r = !(*ptr == L'\0' || wcscmp(ptr, L"0") == 0);
-            }
+    case MPDM_TYPE_REAL:
+        r = (mpdm_rval(v) != 0.0);
+        break;
 
-            break;
+    case MPDM_TYPE_SCALAR:
+        {
+            wchar_t *ptr = mpdm_string(v);
 
-        default:
-            r = 1;
-            break;
+            /* ... and it's "" or "0", it's false */
+            r = !(*ptr == L'\0' || wcscmp(ptr, L"0") == 0);
         }
 
-        mpdm_unref(v);
+        break;
+
+    default:
+        r = 1;
+        break;
     }
+
+    mpdm_unref(v);
 
     return r;
 }
