@@ -430,7 +430,6 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     case MPDM_TYPE_NULL:
         break;
 
-    case MPDM_TYPE_REGEX:
     case MPDM_TYPE_STRING:
         out = MPDM_A(0);
 
