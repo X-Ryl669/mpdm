@@ -140,32 +140,17 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
     if ((cr = mpdm_regcomp(r)) != NULL) {
         regmatch_t rm;
         char *ptr;
-        wchar_t *last;
         int o = 0;
-        int f = 0;
-
-        /* takes pointer to 'last' flag */
-        if ((last = regex_flags(r)) != NULL)
-            last = wcschr(last, 'l');
 
         /* convert to mbs */
         ptr = mpdm_wcstombs((wchar_t *) mpdm_string(v) + offset, NULL);
 
         /* match? */
-        while (regexec((regex_t *) cr->data, ptr + o, 1,
+        if (regexec((regex_t *) cr->data, ptr + o, 1,
                        &rm, offset > 0 ? REG_NOTBOL : 0) == 0) {
-            f++;
-
-            /* if 'last' is not set, it's done */
-            if (last == NULL)
-                break;
-
             rm.rm_so += o;
             rm.rm_eo += o;
-            o = rm.rm_eo;
-        }
 
-        if (f) {
             /* converts to mbs the string from the beginning
                to the start of the match, just to know
                the size (and immediately frees it) */
@@ -198,11 +183,10 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
  * @offset: offset from the start of v->data
  *
  * Matches a regular expression against a value. Valid flags are 'i',
- * for case-insensitive matching, 'm', to treat the string as a
+ * for case-insensitive matching, or 'm', to treat the string as a
  * multiline string (i.e., one containing newline characters), so
  * that ^ and $ match the boundaries of each line instead of the
- * whole string, or 'l', to return the last matching instead of the
- * first one.
+ * whole string.
  *
  * If @r is a string, an ordinary regular expression matching is tried
  * over the @v string. If the matching is possible, the match result
