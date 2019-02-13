@@ -218,6 +218,7 @@ extern size_t mpdm_regex_size;
 extern int mpdm_sregex_count;
 
 void mpdm_regex__destroy(mpdm_t v);
+mpdm_t mpdm_regcomp(mpdm_t r);
 mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset);
 mpdm_t mpdm_sregex(const mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
 

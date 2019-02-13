@@ -73,7 +73,7 @@ void mpdm_regex__destroy(mpdm_t v)
 }
 
 
-static mpdm_t mpdm_regcomp(mpdm_t r)
+mpdm_t mpdm_regcomp(mpdm_t r)
 {
     mpdm_t c = NULL;
     mpdm_t regex_cache = NULL;
