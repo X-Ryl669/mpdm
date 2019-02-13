@@ -430,6 +430,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     case MPDM_TYPE_NULL:
         break;
 
+    case MPDM_TYPE_REGEX:
     case MPDM_TYPE_STRING:
         out = MPDM_A(0);
 
@@ -459,6 +460,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 w = mpdm_get(filter, v);
                 break;
 
+            case MPDM_TYPE_REGEX:
             case MPDM_TYPE_STRING:
                 w = mpdm_regex(v, filter, 0);
                 break;
@@ -569,6 +571,7 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 w = mpdm_exec_2(filter, v, i, ctxt);
                 break;
 
+            case MPDM_TYPE_REGEX:
             case MPDM_TYPE_STRING:
                 w = mpdm_regex(v, filter, 0);
                 break;
