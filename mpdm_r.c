@@ -124,53 +124,43 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 }
 
 
-static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
+static mpdm_t regex1(mpdm_t cr, const mpdm_t v, int offset)
 /* test for one regex */
 {
     mpdm_t w = NULL;
-    mpdm_t cr;
+    regmatch_t rm;
+    char *ptr;
 
-    mpdm_ref(r);
+    mpdm_ref(cr);
     mpdm_ref(v);
 
     /* no matching yet */
     mpdm_regex_offset = -1;
 
-    /* compile the regex */
-    if ((cr = mpdm_regcomp(r)) != NULL) {
-        regmatch_t rm;
-        char *ptr;
-        int o = 0;
+    /* convert to mbs */
+    ptr = mpdm_wcstombs((wchar_t *) mpdm_string(v) + offset, NULL);
 
-        /* convert to mbs */
-        ptr = mpdm_wcstombs((wchar_t *) mpdm_string(v) + offset, NULL);
+    /* match? */
+    if (regexec((regex_t *) cr->data, ptr, 1, &rm, offset > 0 ? REG_NOTBOL : 0) == 0) {
+        /* converts to mbs the string from the beginning
+           to the start of the match, just to know
+           the size (and immediately frees it) */
+        free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
 
-        /* match? */
-        if (regexec((regex_t *) cr->data, ptr + o, 1,
-                       &rm, offset > 0 ? REG_NOTBOL : 0) == 0) {
-            rm.rm_so += o;
-            rm.rm_eo += o;
+        /* add the offset */
+        mpdm_regex_offset += offset;
 
-            /* converts to mbs the string from the beginning
-               to the start of the match, just to know
-               the size (and immediately frees it) */
-            free(mpdm_mbstowcs(ptr, &mpdm_regex_offset, rm.rm_so));
+        /* create now the matching string */
+        w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
 
-            /* add the offset */
-            mpdm_regex_offset += offset;
-
-            /* create now the matching string */
-            w = MPDM_NMBS(ptr + rm.rm_so, rm.rm_eo - rm.rm_so);
-
-            /* and store the size */
-            mpdm_regex_size = mpdm_size(w);
-        }
+        /* and store the size */
+        mpdm_regex_size = mpdm_size(w);
 
         free(ptr);
     }
 
     mpdm_unref(v);
-    mpdm_unref(r);
+    mpdm_unref(cr);
 
     return w;
 }
@@ -208,13 +198,14 @@ static mpdm_t regex1(mpdm_t r, const mpdm_t v, int offset)
  */
 mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
 {
-    mpdm_t w = NULL;
+    mpdm_t t, w = NULL;
+    int n;
 
     mpdm_ref(r);
     mpdm_ref(v);
 
-    /* special case: if r is NULL, return previous match */
-    if (r == NULL) {
+    /* special case: if v or r is NULL, return previous match */
+    if (v == NULL || r == NULL) {
         /* if previous regex was successful... */
         if (mpdm_regex_offset != -1) {
             w = MPDM_A(2);
@@ -223,30 +214,37 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
             mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
         }
     }
-    else
-    if (v != NULL) {
-        if (mpdm_type(r) == MPDM_TYPE_ARRAY) {
-            int n;
-            mpdm_t t;
-
+    else {
+        switch (mpdm_type(r)) {
+        case MPDM_TYPE_ARRAY:
             /* multiple value; try sequentially all regexes,
                moving the offset forward */
 
             w = MPDM_A(0);
 
             for (n = 0; n < mpdm_size(r); n++) {
-                t = mpdm_regex(v, mpdm_aget(r, n), offset);
-
-                if (t == NULL)
+                if ((t = mpdm_regex(v, mpdm_aget(r, n), offset)) == NULL)
                     break;
 
                 /* found; store and move forward */
                 mpdm_push(w, t);
                 offset = mpdm_regex_offset + mpdm_regex_size;
             }
-        }
-        else
+
+            break;
+
+        case MPDM_TYPE_STRING:
+            w = mpdm_regex(v, mpdm_regcomp(r), offset);
+            break;
+
+        case MPDM_TYPE_REGEX:
             w = regex1(r, v, offset);
+            break;
+
+        default:
+            w = NULL;
+            break;
+        }
     }
 
     mpdm_unref(v);
