@@ -36,7 +36,7 @@ extern "C" {
 
 typedef enum {
     MPDM_TYPE_NULL,
-    MPDM_TYPE_SCALAR,
+    MPDM_TYPE_STRING,
     MPDM_TYPE_ARRAY,
     MPDM_TYPE_OBJECT,
     MPDM_TYPE_FILE,

@@ -246,7 +246,7 @@ mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy)
             wcsncpy(ptr, str, size);
     }
 
-    return mpdm_new(MPDM_TYPE_SCALAR, ptr ? ptr : str, size);
+    return mpdm_new(MPDM_TYPE_STRING, ptr ? ptr : str, size);
 }
 
 
@@ -258,7 +258,7 @@ mpdm_t mpdm_new_mbstowcs(const char *str, size_t l)
 
     ptr = mpdm_mbstowcs(str, &size, l);
 
-    return mpdm_new(MPDM_TYPE_SCALAR, ptr, size);
+    return mpdm_new(MPDM_TYPE_STRING, ptr, size);
 }
 
 
@@ -315,7 +315,7 @@ wchar_t *mpdm_string(const mpdm_t v)
         ret = L"[NULL]";
         break;
 
-    case MPDM_TYPE_SCALAR:
+    case MPDM_TYPE_STRING:
         ret = (wchar_t *) v->data;
         break;
 
@@ -1001,7 +1001,7 @@ static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
         o = mpdm_pokev(o, z, v);
         break;
 
-    case MPDM_TYPE_SCALAR:
+    case MPDM_TYPE_STRING:
         o = mpdm_pokews(o, z, L"\"");
         o = json_s(o, z, v);
         o = mpdm_pokews(o, z, L"\"");

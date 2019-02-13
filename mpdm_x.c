@@ -73,7 +73,7 @@ int mpdm_is_true(mpdm_t v)
         r = (mpdm_rval(v) != 0.0);
         break;
 
-    case MPDM_TYPE_SCALAR:
+    case MPDM_TYPE_STRING:
         {
             wchar_t *ptr = mpdm_string(v);
 
@@ -403,7 +403,7 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 
         break;
 
-    case MPDM_TYPE_SCALAR:
+    case MPDM_TYPE_STRING:
         /* FIXME */
 
     default:
@@ -430,7 +430,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
     case MPDM_TYPE_NULL:
         break;
 
-    case MPDM_TYPE_SCALAR:
+    case MPDM_TYPE_STRING:
         out = MPDM_A(0);
 
         while ((v = mpdm_regex(set, filter, n))) {
@@ -459,7 +459,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 w = mpdm_get(filter, v);
                 break;
 
-            case MPDM_TYPE_SCALAR:
+            case MPDM_TYPE_STRING:
                 w = mpdm_regex(v, filter, 0);
                 break;
 
@@ -569,7 +569,7 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 w = mpdm_exec_2(filter, v, i, ctxt);
                 break;
 
-            case MPDM_TYPE_SCALAR:
+            case MPDM_TYPE_STRING:
                 w = mpdm_regex(v, filter, 0);
                 break;
 
@@ -652,7 +652,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
             break;
 
-        case MPDM_TYPE_SCALAR:
+        case MPDM_TYPE_STRING:
             /* hash~string -> array */
             r = MPDM_A(mpdm_hsize(a));
 
@@ -685,7 +685,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
             break;
 
-        case MPDM_TYPE_SCALAR:
+        case MPDM_TYPE_STRING:
         case MPDM_TYPE_NULL:
             /* array~string -> string */
             r = mpdm_join_s(a, b ? mpdm_string(b) : NULL);
@@ -699,8 +699,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
         break;
 
-    case MPDM_TYPE_SCALAR:
-
+    case MPDM_TYPE_STRING:
         /* string~string -> string */
         r = mpdm_strcat(a, b);
         break;
@@ -723,7 +722,7 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *
 
     switch (mpdm_type(v)) {
     case MPDM_TYPE_NULL:
-    case MPDM_TYPE_SCALAR:
+    case MPDM_TYPE_STRING:
         r = mpdm_splice_s(v, i, offset, del, n, d);
         break;
 

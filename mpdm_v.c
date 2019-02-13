@@ -43,7 +43,7 @@ struct {
     void (*destroy)(mpdm_t);
 } mpdm_type_info[] = {
     { L"null",      mpdm_dummy__destroy },
-    { L"scalar",    mpdm_dummy__destroy },
+    { L"string",    mpdm_dummy__destroy },
     { L"array",     mpdm_array__destroy },
     { L"object",    mpdm_object__destroy },
     { L"file",      mpdm_file__destroy },
