@@ -429,7 +429,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
         r = -1;
     else
     if (v2 == NULL)
-        r = -2;
+        r = 1;
     else {
         switch (mpdm_type(v1)) {
         case MPDM_TYPE_NULL:
