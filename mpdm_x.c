@@ -460,8 +460,11 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 break;
 
             case MPDM_TYPE_REGEX:
-            case MPDM_TYPE_STRING:
                 w = mpdm_regex(v, filter, 0);
+                break;
+
+            case MPDM_TYPE_STRING:
+                w = filter;
                 break;
 
             default:
