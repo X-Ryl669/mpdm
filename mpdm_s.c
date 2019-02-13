@@ -424,6 +424,12 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
     /* same values? */
     if (v1 == v2)
         r = 0;
+    else
+    if (v1 == NULL)
+        r = -1;
+    else
+    if (v2 == NULL)
+        r = -2;
     else {
         switch (mpdm_type(v1)) {
         case MPDM_TYPE_NULL:
