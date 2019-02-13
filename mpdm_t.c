@@ -3,7 +3,7 @@
     MPDM - Minimum Profit Data Manager
     Copyright (C) 2003/2019 Angel Ortega <angel@triptico.com>
 
-    mpdm_t.c - Threading primitives
+    mpdm_t.c - Threads, mutexes, semaphores and other stuff
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -71,6 +71,36 @@ void mpdm_sleep(int msecs)
 
     nanosleep(&ts, NULL);
 #endif
+}
+
+
+mpdm_t mpdm_random(mpdm_t v)
+{
+    static unsigned int seed = 0;
+    mpdm_t r = NULL;
+
+    if (mpdm_type(v) == MPDM_TYPE_ARRAY)
+        r = mpdm_get(v, mpdm_random(MPDM_I(mpdm_size(v))));
+    else {
+        int range = mpdm_ival(v);
+        int v = 0;
+
+        /* crappy random seed */
+        if (seed == 0) {
+            time_t t = time(NULL);
+            seed = t ^ (t << 16);
+        }
+
+        seed = (seed * 58321) + 11113;
+        v = (seed >> 16);
+
+        if (range)
+            r = MPDM_I(v % range);
+        else
+            r = MPDM_R((v & 0xffff) / 65536.0);
+    }
+
+    return r;
 }
 
 
