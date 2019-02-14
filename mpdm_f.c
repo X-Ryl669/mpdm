@@ -89,7 +89,7 @@
 #include <iconv.h>
 #endif
 
-#define MAX_EOL 4
+#define MAX_EOL 2
 
 /* file structure */
 struct mpdm_file {
@@ -99,7 +99,7 @@ struct mpdm_file {
     int sock;
     int is_pipe;
 
-    wchar_t eol[MAX_EOL];
+    wchar_t eol[MAX_EOL + 1];
 
     wchar_t *(*f_read) (struct mpdm_file *, size_t *, int *);
     size_t (*f_write)  (struct mpdm_file *, const wchar_t *);
