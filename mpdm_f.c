@@ -428,11 +428,20 @@ static size_t write_utf8(struct mpdm_file *f, const wchar_t *str)
             put_char((int) (0x80 | (wc & 0x3f)), f);
             cnt++;
         }
-        else {
+        else
+        if (wc < 0x10000) {
             put_char((int) (0xe0 | (wc >> 12)), f);
             put_char((int) (0x80 | ((wc >> 6) & 0x3f)), f);
             put_char((int) (0x80 | (wc & 0x3f)), f);
             cnt += 2;
+        }
+        else
+        if (wc < 0x200000) {
+            put_char((int) (0xf0 | (wc >> 18)), f);
+            put_char((int) (0x80 | ((wc >> 12) & 0x3f)), f);
+            put_char((int) (0x80 | ((wc >> 6) & 0x3f)), f);
+            put_char((int) (0x80 | (wc & 0x3f)), f);
+            cnt += 3;
         }
 
         cnt++;
