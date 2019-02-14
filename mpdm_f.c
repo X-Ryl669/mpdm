@@ -100,6 +100,7 @@ struct mpdm_file {
     int is_pipe;
 
     wchar_t eol[MAX_EOL + 1];
+    int auto_chomp;
 
     wchar_t *(*f_read) (struct mpdm_file *, size_t *, int *);
     size_t (*f_write)  (struct mpdm_file *, const wchar_t *);
@@ -1113,8 +1114,16 @@ mpdm_t mpdm_read(const mpdm_t fd)
 
         if (ptr != NULL) {
             /* something read; does it have an eol? */
-            if (eol != -1)
+            if (eol != -1) {
+                /* store */
                 wcsncpy(fs->eol, &ptr[eol], MAX_EOL);
+
+                /* if auto_chomp is set, delete the eol */
+                if (fs->auto_chomp) {
+                    s -= wcslen(fs->eol);
+                    ptr[s] = L'\0';
+                }
+            }
             else
                 fs->eol[0] = L'\0';
 
