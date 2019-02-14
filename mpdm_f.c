@@ -89,6 +89,8 @@
 #include <iconv.h>
 #endif
 
+#define MAX_EOL 4
+
 /* file structure */
 struct mpdm_file {
     FILE *in;
@@ -97,7 +99,7 @@ struct mpdm_file {
     int sock;
     int is_pipe;
 
-    wchar_t eol[8];
+    wchar_t eol[MAX_EOL];
 
     wchar_t *(*f_read) (struct mpdm_file *, size_t *, int *);
     size_t (*f_write)  (struct mpdm_file *, const wchar_t *);
@@ -1110,12 +1112,22 @@ mpdm_t mpdm_read(const mpdm_t fd)
         ptr = fs->f_read(fs, &s, &eol);
 
         if (ptr != NULL) {
+            /* something read; does it have an eol? */
             if (eol != -1)
-                wcsncpy(fs->eol, &ptr[eol], (sizeof(fs->eol) / sizeof(wchar_t)) - 1);
+                wcsncpy(fs->eol, &ptr[eol], MAX_EOL);
             else
                 fs->eol[0] = L'\0';
 
+            /* return the line */
             v = MPDM_ENS(ptr, s);
+        }
+        else {
+            /* nothing read; if last read had an eol,
+               return an empty string as the last read */
+            if (fs->eol[0]) {
+                v = MPDM_S(L"");
+                fs->eol[0] = L'\0';
+            }
         }
     }
 
