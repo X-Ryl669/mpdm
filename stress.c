@@ -696,7 +696,7 @@ void test_file(void)
     do_test("test written file 0",
             mpdm_cmp(mpdm_read(f), MPDM_LS(L"0\n")) == 0);
 
-    do_test("file eol 1", wcscmp(mpdm_file_eol(f), L"\n") == 0);
+    do_test("file eol 1", wcscmp(mpdm_eol(f), L"\n") == 0);
 
     do_test("test written file 1",
             mpdm_cmp(mpdm_read(f), MPDM_LS(L"1\n")) == 0);
@@ -705,7 +705,7 @@ void test_file(void)
             mpdm_cmp(mpdm_read(f), MPDM_LS(L"2")) == 0);
     do_test("test written file 3", mpdm_read(f) == NULL);
 
-    do_test("file eol 3", wcscmp(mpdm_file_eol(f), L"") == 0);
+    do_test("file eol 3", wcscmp(mpdm_eol(f), L"") == 0);
 
     mpdm_close(f);
 

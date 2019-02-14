@@ -1135,7 +1135,7 @@ mpdm_t mpdm_read(const mpdm_t fd)
 }
 
 
-wchar_t *mpdm_file_eol(mpdm_t fd)
+wchar_t *mpdm_eol(mpdm_t fd)
 {
     wchar_t *r = NULL;
 
