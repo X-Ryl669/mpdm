@@ -675,7 +675,6 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
         break;
 
     case MPDM_TYPE_ARRAY:
-
         switch (mpdm_type(b)) {
         case MPDM_TYPE_ARRAY:
             /* array~array -> array */
@@ -707,6 +706,16 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
     case MPDM_TYPE_STRING:
         /* string~string -> string */
         r = mpdm_strcat(a, b);
+        break;
+
+    case MPDM_TYPE_INTEGER:
+        /* integer~integer -> sum! */
+        r = MPDM_I(mpdm_ival(a) + mpdm_ival(b));
+        break;
+
+    case MPDM_TYPE_REAL:
+        /* real~real -> sum! */
+        r = MPDM_R(mpdm_rval(a) + mpdm_rval(b));
         break;
 
     default:
