@@ -388,18 +388,29 @@ static wchar_t *read_utf8(struct mpdm_file *f, size_t *s, int *eol)
 
         BYTE_OR_BREAK(c, f);
 
-        if ((c & 0x80) == 0)
+        if ((c & 0x80) == 0x00)
             wc = c;
         else
-        if ((c & 0xe0) == 0xe0) {
-            wc = (c & 0x1f) << 12;
+        if ((c & 0xe0) == 0xc0) {
+            wc = (c & 0x1f) << 6;
+            BYTE_OR_BREAK(c, f);
+            wc |= (c & 0x3f);
+        }
+        else
+        if ((c & 0xf0) == 0xe0) {
+            wc = (c & 0x0f) << 12;
             BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f) << 6;
             BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
-        else {
-            wc = (c & 0x3f) << 6;
+        else
+        if ((c & 0xf8) == 0xf0) {
+            wc = (c & 0x07) << 18;
+            BYTE_OR_BREAK(c, f);
+            wc |= (c & 0x3f) << 12;
+            BYTE_OR_BREAK(c, f);
+            wc |= (c & 0x3f) << 6;
             BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
