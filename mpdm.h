@@ -134,7 +134,7 @@ mpdm_t mpdm_sort(mpdm_t a, int step);
 mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t asort_cb);
 mpdm_t mpdm_split_wcs(const mpdm_t v, const wchar_t *s);
 mpdm_t mpdm_split(const mpdm_t a, const mpdm_t s);
-mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s);
+mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s);
 mpdm_t mpdm_reverse(const mpdm_t a);
 mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 

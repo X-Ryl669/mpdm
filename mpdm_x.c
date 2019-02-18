@@ -692,7 +692,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
         case MPDM_TYPE_STRING:
         case MPDM_TYPE_NULL:
             /* array~string -> string */
-            r = mpdm_join_s(a, b ? mpdm_string(b) : NULL);
+            r = mpdm_join_wcs(a, b ? mpdm_string(b) : NULL);
 
             break;
 

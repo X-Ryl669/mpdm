@@ -661,7 +661,7 @@ mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
 
 
 /**
- * mpdm_join_s - Joins all elements of an array into a string (string version).
+ * mpdm_join_wcs - Joins all elements of an array into a string (string version).
  * @a: array to be joined
  * @s: joiner string
  *
@@ -669,7 +669,7 @@ mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_join_s(const mpdm_t a, const wchar_t *s)
+mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s)
 {
     int n;
     wchar_t *ptr = NULL;
