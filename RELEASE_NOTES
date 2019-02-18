@@ -12,6 +12,8 @@ MPDM Release Notes
       as line separators, so if a read reaches EOF but previous
       line had an EOL, a final, empty line is returned.
     - Extended values no longer exist, nor cached ival and rval.
+    - Renamed most functions that used wide strings and ended
+      with _s to _wcs (e.g. mpdm_cmp_s() to mpdm_cmp_wcs()).
  - New features:
     - Files can work in auto-chomp mode (automatic clipping of
       the EOL sequence). This sequence can be retrieved using
