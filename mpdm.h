@@ -58,7 +58,7 @@ typedef struct mpdm_val *mpdm_t;
 struct mpdm_val {
     mpdm_type_t type;   /* value type */
     int ref;            /* reference count */
-    size_t size;        /* data size */
+    int size;           /* data size */
     const void *data;   /* the real data */
 };
 
@@ -93,28 +93,28 @@ struct mpdm_val {
 #define MPDM_F(f)       mpdm_new_f(f)
 
 void mpdm_dummy__destroy(mpdm_t v);
-mpdm_t mpdm_new(mpdm_type_t type, const void *data, size_t size);
+mpdm_t mpdm_new(mpdm_type_t type, const void *data, int size);
 mpdm_type_t mpdm_type(mpdm_t v);
 wchar_t *mpdm_type_wcs(mpdm_t v);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 mpdm_t mpdm_unrefnd(mpdm_t v);
-size_t mpdm_size(const mpdm_t v);
+int mpdm_size(const mpdm_t v);
 mpdm_t mpdm_root(void);
 mpdm_t mpdm_void(mpdm_t v);
 int mpdm_is_null(mpdm_t v);
 mpdm_t mpdm_store(mpdm_t *v, mpdm_t w);
-mpdm_t mpdm_new_copy(mpdm_type_t type, void *ptr, size_t size);
+mpdm_t mpdm_new_copy(mpdm_type_t type, void *ptr, int size);
 int mpdm_wrap_pointers(mpdm_t v, int offset, int *del);
 int mpdm_startup(void);
 void mpdm_shutdown(void);
 
-extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, size_t *size);
+extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size);
 mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
 
 void mpdm_array__destroy(mpdm_t a);
-mpdm_t mpdm_new_a(size_t size);
+mpdm_t mpdm_new_a(int size);
 mpdm_t mpdm_expand(mpdm_t a, int index, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index);
@@ -124,7 +124,7 @@ mpdm_t mpdm_adel(mpdm_t a, int index);
 mpdm_t mpdm_shift(mpdm_t a);
 mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
 mpdm_t mpdm_pop(mpdm_t a);
-mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, size_t size);
+mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size);
 mpdm_t mpdm_clone(const mpdm_t v);
 int mpdm_seek_wcs(const mpdm_t a, const wchar_t *v, int step);
 int mpdm_seek(const mpdm_t a, const mpdm_t v, int step);
@@ -138,22 +138,22 @@ mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s);
 mpdm_t mpdm_reverse(const mpdm_t a);
 mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 
-void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org, size_t osize, size_t esize);
-void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t esize);
-wchar_t *mpdm_pokewsn(wchar_t *dst, size_t *dsize, const wchar_t *str, size_t slen);
-wchar_t *mpdm_pokews(wchar_t *dst, size_t *dsize, const wchar_t *str);
-wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v);
-wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l);
-char *mpdm_wcstombs(const wchar_t * str, size_t *s);
-mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy);
-mpdm_t mpdm_new_mbstowcs(const char *str, size_t l);
+void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);
+void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize);
+wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen);
+wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str);
+wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v);
+wchar_t *mpdm_mbstowcs(const char *str, int *s, int l);
+char *mpdm_wcstombs(const wchar_t * str, int *s);
+mpdm_t mpdm_new_wcs(const wchar_t *str, int size, int cpy);
+mpdm_t mpdm_new_mbstowcs(const char *str, int l);
 mpdm_t mpdm_new_wcstombs(const wchar_t *str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 wchar_t *mpdm_string(const mpdm_t v);
 int mpdm_cmp_wcs(const mpdm_t v1, const wchar_t *v2);
 mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
-mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, size_t size);
+mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, int size);
 mpdm_t mpdm_strcat_wcs(const mpdm_t s1, const wchar_t *s2);
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);
 int mpdm_ival_mbs(char *str);
@@ -170,8 +170,8 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 
 void mpdm_object__destroy(mpdm_t a);
-mpdm_t mpdm_new_h(size_t size);
-size_t mpdm_hsize(const mpdm_t h);
+mpdm_t mpdm_new_h(int size);
+int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
 int mpdm_exists(const mpdm_t h, const mpdm_t i);
@@ -181,14 +181,14 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
 int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 
-wchar_t *mpdm_read_mbs(FILE *f, size_t *s);
-size_t mpdm_write_wcs(FILE * f, const wchar_t * str);
+wchar_t *mpdm_read_mbs(FILE *f, int *s);
+int mpdm_write_wcs(FILE * f, const wchar_t * str);
 mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode);
 mpdm_t mpdm_read(const mpdm_t fd);
 wchar_t *mpdm_eol(mpdm_t fd);
 mpdm_t mpdm_getchar(const mpdm_t fd);
 int mpdm_putchar(const mpdm_t fd, const mpdm_t c);
-size_t mpdm_write(const mpdm_t fd, const mpdm_t v);
+int mpdm_write(const mpdm_t fd, const mpdm_t v);
 int mpdm_fseek(const mpdm_t fd, long offset, int whence);
 long mpdm_ftell(const mpdm_t fd);
 FILE * mpdm_get_filehandle(const mpdm_t fd);
@@ -211,8 +211,8 @@ void mpdm_file__destroy(mpdm_t v);
 mpdm_t mpdm_new_f(FILE * f);
 int mpdm_close(mpdm_t fd);
 
-extern size_t mpdm_regex_offset;
-extern size_t mpdm_regex_size;
+extern int mpdm_regex_offset;
+extern int mpdm_regex_size;
 extern int mpdm_sregex_count;
 
 void mpdm_regex__destroy(mpdm_t v);

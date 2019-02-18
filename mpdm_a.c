@@ -51,7 +51,7 @@ void mpdm_array__destroy(mpdm_t a)
 }
 
 
-mpdm_t mpdm_new_a(size_t size)
+mpdm_t mpdm_new_a(int size)
 /* creates a new array value */
 {
     mpdm_t v;
@@ -313,7 +313,7 @@ mpdm_t mpdm_pop(mpdm_t a)
  * @size elements yet.
  * [Arrays]
  */
-mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, size_t size)
+mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, int size)
 {
     mpdm_t v = NULL;
 
@@ -673,7 +673,7 @@ mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s)
 {
     int n;
     wchar_t *ptr = NULL;
-    size_t l = 0;
+    int l = 0;
     int ss;
     mpdm_t r = NULL;
 

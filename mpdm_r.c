@@ -49,8 +49,8 @@
 
 /* matching of the last regex */
 
-size_t mpdm_regex_offset = -1;
-size_t mpdm_regex_size = 0;
+int mpdm_regex_offset = -1;
+int mpdm_regex_size = 0;
 
 /* number of substitutions in last sregex */
 
@@ -260,7 +260,7 @@ static mpdm_t expand_ampersands(const mpdm_t s, const mpdm_t t)
     const wchar_t *sptr = mpdm_string(s);
     wchar_t *wptr;
     wchar_t *optr = NULL;
-    size_t osize = 0;
+    int osize = 0;
     mpdm_t r = NULL;
 
     mpdm_ref(s);

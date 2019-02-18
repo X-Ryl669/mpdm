@@ -86,7 +86,7 @@ void mpdm_object__destroy(mpdm_t o)
 }
 
 
-mpdm_t mpdm_new_h(size_t size)
+mpdm_t mpdm_new_h(int size)
 /* creates a new hash value */
 {
     mpdm_t v;
@@ -107,7 +107,7 @@ mpdm_t mpdm_new_h(size_t size)
  * Returns the number of key-value pairs of a hash.
  * [Hashes]
  */
-size_t mpdm_hsize(const mpdm_t h)
+int mpdm_hsize(const mpdm_t h)
 {
     int n;
     int ret = 0;

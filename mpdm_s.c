@@ -46,8 +46,8 @@
 
 /** code **/
 
-void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org,
-                  size_t osize, size_t esize)
+void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org,
+                  int osize, int esize)
 {
     if (org != NULL && osize) {
         /* enough room? */
@@ -66,7 +66,7 @@ void *mpdm_poke_o(void *dst, size_t *dsize, int *offset, const void *org,
 }
 
 
-void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t esize)
+void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 /* pokes (adds) org into dst, which is a dynamic string, making it grow */
 {
     int offset = *dsize;
@@ -75,21 +75,21 @@ void *mpdm_poke(void *dst, size_t *dsize, const void *org, size_t osize, size_t 
 }
 
 
-wchar_t *mpdm_pokewsn(wchar_t *dst, size_t *dsize, const wchar_t *str, size_t slen)
+wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
 /* adds a wide string to dst using mpdm_poke() with size */
 {
     return mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
 }
 
 
-wchar_t *mpdm_pokews(wchar_t *dst, size_t *dsize, const wchar_t *str)
+wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
 /* adds a wide string to dst using mpdm_poke() */
 {
     return mpdm_pokewsn(dst, dsize, str, wcslen(str));
 }
 
 
-wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v)
+wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v)
 /* adds the string in v to dst using mpdm_poke() */
 {
     if (v != NULL) {
@@ -102,7 +102,7 @@ wchar_t *mpdm_pokev(wchar_t *dst, size_t *dsize, const mpdm_t v)
 }
 
 
-wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l)
+wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
 /* converts an mbs to a wcs, but filling invalid chars
    with question marks instead of just failing */
 {
@@ -110,7 +110,7 @@ wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l)
     char tmp[64];               /* really MB_CUR_MAX + 1 */
     wchar_t wc;
     int n, i, c;
-    size_t t = 0;
+    int t = 0;
     char *cstr;
 
     /* allow NULL values for s */
@@ -144,7 +144,7 @@ wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l)
             tmp[i] = '\0';
 
             /* try to convert */
-            if (mbstowcs(&wc, tmp, 1) == (size_t) - 1) {
+            if (mbstowcs(&wc, tmp, 1) == (int) - 1) {
                 /* can still be an incomplete multibyte char? */
                 if (c != '\0' && i <= (int) MB_CUR_MAX)
                     continue;
@@ -180,14 +180,14 @@ wchar_t *mpdm_mbstowcs(const char *str, size_t *s, size_t l)
 }
 
 
-char *mpdm_wcstombs(const wchar_t *str, size_t *s)
+char *mpdm_wcstombs(const wchar_t *str, int *s)
 /* converts a wcs to an mbs, but filling invalid chars
    with question marks instead of just failing */
 {
     char *ptr = NULL;
     char tmp[64];               /* really MB_CUR_MAX + 1 */
     int l;
-    size_t t = 0;
+    int t = 0;
 
     /* allow NULL values for s */
     if (s == NULL)
@@ -228,7 +228,7 @@ char *mpdm_wcstombs(const wchar_t *str, size_t *s)
 }
 
 
-mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy)
+mpdm_t mpdm_new_wcs(const wchar_t *str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
     wchar_t *ptr = NULL;
@@ -250,11 +250,11 @@ mpdm_t mpdm_new_wcs(const wchar_t *str, size_t size, int cpy)
 }
 
 
-mpdm_t mpdm_new_mbstowcs(const char *str, size_t l)
+mpdm_t mpdm_new_mbstowcs(const char *str, int l)
 /* creates a new string value from an mbs */
 {
     wchar_t *ptr;
-    size_t size;
+    int size;
 
     ptr = mpdm_mbstowcs(str, &size, l);
 
@@ -266,7 +266,7 @@ mpdm_t mpdm_new_wcstombs(const wchar_t *str)
 /* creates a new mbs value from a wbs */
 {
     char *ptr;
-    size_t size;
+    int size;
 
     ptr = mpdm_wcstombs(str, &size);
 
@@ -448,7 +448,7 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
 
         if (n) {
             wchar_t *ptr = NULL;
-            size_t s = 0;
+            int s = 0;
 
             /* copy the start of the string */
             ptr = mpdm_pokewsn(ptr, &s, str, offset);
@@ -483,13 +483,13 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, size_t size)
+mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, int size)
 {
     mpdm_t r = NULL;
 
     if (s1 != NULL || s2 != NULL) {
         wchar_t *ptr = NULL;
-        size_t s = 0;
+        int s = 0;
 
         ptr = mpdm_pokev(ptr, &s, s1);
         ptr = mpdm_pokewsn(ptr, &s, s2, size);
@@ -845,7 +845,7 @@ static wchar_t *s_mbstowcs(char *mbs, wchar_t *wcs)
 }
 
 
-static wchar_t *json_s(wchar_t *o, size_t *l, mpdm_t v)
+static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
 {
     wchar_t *p = mpdm_string(v);
 
@@ -873,7 +873,7 @@ static wchar_t *json_s(wchar_t *o, size_t *l, mpdm_t v)
 }
 
 
-static wchar_t *json_f(wchar_t *o, size_t *z, mpdm_t v, int l)
+static wchar_t *json_f(wchar_t *o, int *z, mpdm_t v, int l)
 /* fills a %j JSON format */
 {
     mpdm_t w, i;
@@ -949,7 +949,7 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
 {
     const wchar_t *i = fmt->data;
     wchar_t c, *o = NULL;
-    size_t l = 0;
+    int l = 0;
     int n = 0;
 
     mpdm_ref(fmt);
@@ -968,7 +968,7 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
         char tmp[1024];
         char *ptr = NULL;
         wchar_t *wptr = NULL;
-        size_t m = 0;
+        int m = 0;
 
         /* transfer the % */
         t_fmt[m++] = '%';
@@ -1186,7 +1186,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
 {
     wchar_t c;
     wchar_t *ptr = NULL;
-    size_t size = 0;
+    int size = 0;
     mpdm_t v = NULL;
     wchar_t *s = *sp;
 
@@ -1526,9 +1526,9 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
     while (*f) {
         if (*f == L'%') {
             wchar_t *ptr = NULL;
-            size_t size = 0;
+            int size = 0;
             wchar_t cmd;
-            size_t vsize = 0;
+            int vsize = 0;
             int ignore = 0;
             int msize = 0;
 

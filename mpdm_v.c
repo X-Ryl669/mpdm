@@ -100,7 +100,7 @@ static mpdm_t destroy_value(mpdm_t v)
  * creation macros instead.
  * [Value Creation]
  */
-mpdm_t mpdm_new(mpdm_type_t type, const void *data, size_t size)
+mpdm_t mpdm_new(mpdm_type_t type, const void *data, int size)
 {
     mpdm_t v;
 
@@ -185,7 +185,7 @@ mpdm_t mpdm_unrefnd(mpdm_t v)
  * reference count of the value.
  * [Value Management]
  */
-size_t mpdm_size(const mpdm_t v)
+int mpdm_size(const mpdm_t v)
 {
     return v ? v->size : 0;
 }
@@ -246,7 +246,7 @@ mpdm_t mpdm_store(mpdm_t *v, mpdm_t w)
 }
 
 
-mpdm_t mpdm_new_copy(mpdm_type_t type, void *ptr, size_t size)
+mpdm_t mpdm_new_copy(mpdm_type_t type, void *ptr, int size)
 {
     mpdm_t r = NULL;
 

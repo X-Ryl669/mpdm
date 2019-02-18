@@ -1269,7 +1269,7 @@ void test_conversion(void)
 {
     wchar_t *wptr = NULL;
     char *ptr = NULL;
-    size_t size = 0;
+    int size = 0;
 
     ptr = mpdm_wcstombs(L"", &size);
     do_test("mpdm_wcstombs converts an empty string", ptr != NULL);
