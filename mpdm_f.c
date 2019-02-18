@@ -1699,14 +1699,13 @@ int mpdm_chown(const mpdm_t filename, mpdm_t uid, mpdm_t gid)
  */
 mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 {
-    mpdm_t d, f, v;
+    mpdm_t d, f;
     char *ptr;
 
 #ifdef CONFOPT_WIN32
     WIN32_FIND_DATA fd;
     HANDLE h;
     const wchar_t *def_spec = L"*.*";
-    mpdm_t p;
 #endif
 
 #if CONFOPT_GLOB_H
@@ -1734,12 +1733,12 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
     ptr = mpdm_wcstombs(mpdm_string(spec), NULL);
     mpdm_unref(spec);
 
-    v = MPDM_A(0);
-    d = mpdm_ref(MPDM_A(0));
-    f = mpdm_ref(MPDM_A(0));
+    d = MPDM_A(0);
+    f = MPDM_A(0);
 
 #ifdef CONFOPT_WIN32
     if ((h = FindFirstFile(ptr, &fd)) != INVALID_HANDLE_VALUE) {
+        mpdm_t p;
         char *b;
 
         /* if spec includes a directory, store in s */
@@ -1799,27 +1798,10 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 
     free(ptr);
 
-    if (v != NULL) {
-        int n;
+    mpdm_sort(d, 1);
+    mpdm_sort(f, 1);
 
-        mpdm_sort(d, 1);
-        mpdm_sort(f, 1);
-
-        mpdm_ref(v);
-
-        /* transfer all data in d and f */
-        for (n = 0; n < mpdm_size(d); n++)
-            mpdm_push(v, mpdm_aget(d, n));
-        for (n = 0; n < mpdm_size(f); n++)
-            mpdm_push(v, mpdm_aget(f, n));
-
-        mpdm_unref(f);
-        mpdm_unref(d);
-
-        mpdm_unrefnd(v);
-    }
-
-    return v;
+    return mpdm_join(d, f);
 }
 
 
