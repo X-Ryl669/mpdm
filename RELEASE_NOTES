@@ -1,6 +1,51 @@
 MPDM Release Notes
 ==================
 
+2.45
+----
+
+ - Architectural changes:
+    - Values now have a type and no flags.
+    - There is a clear differentiation between integers, reals
+      and strings. Also, they can be iterated specially.
+    - A semantic change to mpdm_read(): EOLs are purely treated
+      as line separators, so if a read reaches EOF but previous
+      line had an EOL, a final, empty line is returned.
+    - Extended values no longer exist.
+ - New features:
+    - Files can work in auto-chomp mode (automatic clipping of
+      the EOL sequence). This sequence can be retrieved using
+      the file function mpdm_eol(). Auto-chomping is enabled
+      by setting the global AUTO_CHOMP variable to true, checked
+      on each call to mpdm_open().
+    - mpdm_join() can join integers and reals by summing them.
+    - utf-8 reading and writing is done upto 4 bytes.
+    - New function mpdm_random() (moved from MPSL).
+    - mpdm_regcomp() is now non-static and can be used to
+      use compiled regexes as real values.
+    - mpdm_map() can map strings to regexes (providing the
+      same functionality as dropped 'g' flag in regexes).
+    - New function mpdm_count(), to return a type-specific
+      number of elements (values in arrays and objects and size
+      of stringify value otherwise).
+    - Read and write functions for MSDOS codepages 437 and 850.
+    - mpdm_splice() also works with arrays. Also, its syntax
+      has changed and no longer returns a two-value array but
+      accepts pointers to values.
+    - New function mpdm_del(), complementary to mpdm_get() and
+      mpdm_set() (multitype).
+    - New function mpdm_type() to get a value's type.
+    - New function mpdm_type_s() to get a value's type as a string.
+ - Dropped features:
+    - Flags 'l' (last) and 'g' (global) in regexes are no longer
+      supported.
+    - mpdm_slice() no longer exists (use mpdm_splice()).
+    - As flags have disappeared, all macros for testing them
+      are also gone.
+    - MPDM_LS() no longer exists; replace it with MPDM_S() and
+      move on.
+    - Channels no longer exist.
+
 2.30
 ----
 
