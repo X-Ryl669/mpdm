@@ -429,7 +429,7 @@ int mpdm_seek(const mpdm_t a, const mpdm_t v, int step)
 
 
 /**
- * mpdm_bseek_s - Seeks a value in an array (binary, string version).
+ * mpdm_bseek_wcs - Seeks a value in an array (binary, string version).
  * @a: the ordered array
  * @v: the value
  * @step: number of elements to step
@@ -445,7 +445,7 @@ int mpdm_seek(const mpdm_t a, const mpdm_t v, int step)
  * to NULL if you don't mind.
  * [Arrays]
  */
-int mpdm_bseek_s(const mpdm_t a, const wchar_t *v, int step, int *pos)
+int mpdm_bseek_wcs(const mpdm_t a, const wchar_t *v, int step, int *pos)
 {
     int b, t, n, c, o;
 
@@ -505,7 +505,7 @@ int mpdm_bseek(const mpdm_t a, const mpdm_t v, int step, int *pos)
     int r;
 
     mpdm_ref(v);
-    r = mpdm_bseek_s(a, mpdm_string(v), step, pos);
+    r = mpdm_bseek_wcs(a, mpdm_string(v), step, pos);
     mpdm_unref(v);
 
     return r;
@@ -580,7 +580,7 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
 
 
 /**
- * mpdm_split_s - Separates a string into an array of pieces (string version).
+ * mpdm_split_wcs - Separates a string into an array of pieces (string version).
  * @v: the value to be separated
  * @s: the separator
  *
@@ -594,7 +594,7 @@ mpdm_t mpdm_sort_cb(mpdm_t a, int step, mpdm_t cb)
  * [Arrays]
  * [Strings]
  */
-mpdm_t mpdm_split_s(const mpdm_t v, const wchar_t *s)
+mpdm_t mpdm_split_wcs(const mpdm_t v, const wchar_t *s)
 {
     mpdm_t w = NULL;
 
@@ -653,7 +653,7 @@ mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
     mpdm_t r;
 
     mpdm_ref(s);
-    r = mpdm_split_s(v, s ? mpdm_string(s) : NULL);
+    r = mpdm_split_wcs(v, s ? mpdm_string(s) : NULL);
     mpdm_unref(s);
 
     return r;

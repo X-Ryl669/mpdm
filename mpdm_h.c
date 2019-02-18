@@ -139,7 +139,7 @@ mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k)
     if (mpdm_size(h)) {
         /* if hash is not empty... */
         if ((b = mpdm_aget(h, HASH_BUCKET_S(h, k))) != NULL)
-            n = mpdm_bseek_s(b, k, 2, NULL);
+            n = mpdm_bseek_wcs(b, k, 2, NULL);
 
         if (n >= 0)
             v = mpdm_aget(b, n + 1);
