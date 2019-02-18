@@ -79,7 +79,7 @@ struct mpdm_val {
 #define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
 #define MPDM_ENS(s,n)   mpdm_new_wcs(s, n, 0)
-#define MPDM_C(f,p,s)   mpdm_new_copy(f,p,s)
+#define MPDM_C(t,p,s)   mpdm_new_copy(t, p, s)
 
 #define MPDM_I(i)       mpdm_new_i((i))
 #define MPDM_R(r)       mpdm_new_r((r))

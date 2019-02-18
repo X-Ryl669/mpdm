@@ -503,13 +503,13 @@ void mpdm_shutdown(void)
 
 /**
  * MPDM_C - Creates a new value with a copy of a buffer.
- * @flags: additional flags
+ * @type: data type
  * @ptr: pointer to data
  * @size: data size
  *
  * Create a new value with a copy of a buffer. The value will store a copy
- * of @ptr and have the additional @flags.
+ * of @ptr and have the specified @type.
  * [Value Creation]
  */
-/** mpdm_t MPDM_C(int flags, void *ptr, int size); */
+/** mpdm_t MPDM_C(mpdm_type_t type, void *ptr, int size); */
 /* ; */
