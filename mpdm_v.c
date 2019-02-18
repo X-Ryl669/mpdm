@@ -388,17 +388,6 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
- * MPDM_LS - Creates a string value from a literal string.
- * @wcs: the wide character string
- *
- * Creates a new string value from a literal, wide character string.
- * A pointer to the string will be stored in the value (not a copy).
- * [Value Creation]
- */
-/** mpdm_t MPDM_LS(wchar_t * wcs); */
-/* ; */
-
-/**
  * MPDM_S - Creates a string value from a string.
  * @wcs: the wide character string
  *

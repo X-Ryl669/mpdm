@@ -76,7 +76,6 @@ struct mpdm_val {
 
 #define MPDM_A(n)       mpdm_new_a(n)
 #define MPDM_H(n)       mpdm_new_h(n)
-#define MPDM_LS(s)      mpdm_new_wcs(s, -1, 1)
 #define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
 #define MPDM_ENS(s,n)   mpdm_new_wcs(s, n, 0)

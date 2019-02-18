@@ -477,7 +477,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, size_t *s, int *eol)
         fseek(f->in, 0, SEEK_SET);
     }
 
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
+    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
 
     /* we're utf-8 from now on */
     f->f_read = read_utf8;
@@ -628,7 +628,7 @@ static wchar_t *read_utf16(struct mpdm_file *f, size_t *s, int *eol)
         fseek(f->in, 0, SEEK_SET);
     }
 
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
+    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
 
     return f->f_read(f, s, eol);
 }
@@ -761,7 +761,7 @@ static wchar_t *read_utf32(struct mpdm_file *f, size_t *s, int *eol)
         fseek(f->in, 0, SEEK_SET);
     }
 
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
+    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
 
     return f->f_read(f, s, eol);
 }
@@ -1016,7 +1016,7 @@ static wchar_t *read_auto(struct mpdm_file *f, size_t *s, int *eol)
     }
 
 got_encoding:
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_LS(enc));
+    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
 
     return f->f_read(f, s, eol);
 }
@@ -1718,7 +1718,7 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
         base = mpdm_strcat_s(base, L"/");
 
         /* escape expandable chars */
-        base = mpdm_sregex(base, MPDM_LS(L"@[]\\[]@g"), MPDM_LS(L"\\\\&"), 0);
+        base = mpdm_sregex(base, MPDM_S(L"@[]\\[]@g"), MPDM_S(L"\\\\&"), 0);
     }
 
     if (spec == NULL)
@@ -1727,7 +1727,7 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
         spec = mpdm_strcat(base, spec);
 
     /* delete repeated directory delimiters */
-    spec = mpdm_sregex(spec, MPDM_LS(L"@[\\/]{2,}@g"), MPDM_LS(L"/"), 0);
+    spec = mpdm_sregex(spec, MPDM_S(L"@[\\/]{2,}@g"), MPDM_S(L"/"), 0);
 
     mpdm_ref(spec);
     ptr = mpdm_wcstombs(mpdm_string(spec), NULL);
@@ -2043,7 +2043,7 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
     mpdm_t i, o;
     mpdm_t p = NULL;
 
-    if ((i = mpdm_popen(prg, MPDM_LS(L"r+"))) != NULL) {
+    if ((i = mpdm_popen(prg, MPDM_S(L"r+"))) != NULL) {
         struct mpdm_file *ifs;
         struct mpdm_file *ofs;
 
