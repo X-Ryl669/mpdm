@@ -126,7 +126,7 @@ mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
 mpdm_t mpdm_pop(mpdm_t a);
 mpdm_t mpdm_queue(mpdm_t a, mpdm_t e, size_t size);
 mpdm_t mpdm_clone(const mpdm_t v);
-int mpdm_seek_s(const mpdm_t a, const wchar_t *v, int step);
+int mpdm_seek_wcs(const mpdm_t a, const wchar_t *v, int step);
 int mpdm_seek(const mpdm_t a, const mpdm_t v, int step);
 int mpdm_bseek_s(const mpdm_t a, const wchar_t *v, int step, int *pos);
 int mpdm_bseek(const mpdm_t a, const mpdm_t v, int step, int *pos);

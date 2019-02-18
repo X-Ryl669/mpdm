@@ -372,7 +372,7 @@ mpdm_t mpdm_clone(const mpdm_t v)
 
 
 /**
- * mpdm_seek_s - Seeks a value in an array (sequential, string version).
+ * mpdm_seek_wcs - Seeks a value in an array (sequential, string version).
  * @a: the array
  * @v: the value
  * @step: number of elements to step
@@ -382,7 +382,7 @@ mpdm_t mpdm_clone(const mpdm_t v)
  * Returns the offset of the element if found, or -1 otherwise.
  * [Arrays]
  */
-int mpdm_seek_s(const mpdm_t a, const wchar_t *v, int step)
+int mpdm_seek_wcs(const mpdm_t a, const wchar_t *v, int step)
 {
     int n, o;
 
@@ -421,7 +421,7 @@ int mpdm_seek(const mpdm_t a, const mpdm_t v, int step)
     int r;
 
     mpdm_ref(v);
-    r = mpdm_seek_s(a, mpdm_string(v), step);
+    r = mpdm_seek_wcs(a, mpdm_string(v), step);
     mpdm_unref(v);
 
     return r;
