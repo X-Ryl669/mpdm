@@ -1763,7 +1763,7 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 
             /* if it's a directory, add a / */
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                mpdm_push(d, mpdm_strcat_s(t, L"/"));
+                mpdm_push(d, mpdm_strcat_wcs(t, L"/"));
             else
                 mpdm_push(f, t);
         }
