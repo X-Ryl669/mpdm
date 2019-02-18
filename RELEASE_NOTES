@@ -39,7 +39,8 @@ MPDM Release Notes
     - New function mpdm_del(), complementary to mpdm_get() and
       mpdm_set() (multitype).
     - New function mpdm_type() to get a value's type.
-    - New function mpdm_type_s() to get a value's type as a string.
+    - New function mpdm_type_wcs() to get a value's type as a
+      string.
  - Dropped features:
     - Flags 'l' (last) and 'g' (global) in regexes are no longer
       supported.

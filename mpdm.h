@@ -95,7 +95,7 @@ struct mpdm_val {
 void mpdm_dummy__destroy(mpdm_t v);
 mpdm_t mpdm_new(mpdm_type_t type, const void *data, size_t size);
 mpdm_type_t mpdm_type(mpdm_t v);
-wchar_t *mpdm_type_s(mpdm_t v);
+wchar_t *mpdm_type_wcs(mpdm_t v);
 mpdm_t mpdm_ref(mpdm_t v);
 mpdm_t mpdm_unref(mpdm_t v);
 mpdm_t mpdm_unrefnd(mpdm_t v);

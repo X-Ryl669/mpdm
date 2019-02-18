@@ -354,7 +354,7 @@ wchar_t *mpdm_string(const mpdm_t v)
         /* create a visual representation for the value */
         sprintf(tmp, "%p (", v);
         mbstowcs(wstr, tmp, sizeof(wstr) - 2);
-        wcscat(wstr, mpdm_type_s(v));
+        wcscat(wstr, mpdm_type_wcs(v));
         wcscat(wstr, L")");
         break;
     }

@@ -62,7 +62,7 @@ static wchar_t *dump_1(const mpdm_t v, int l, wchar_t *ptr, size_t *size)
         str = mpdm_string(v);
 
         /* add data type */
-        ptr = mpdm_pokews(ptr, size, mpdm_type_s(v));
+        ptr = mpdm_pokews(ptr, size, mpdm_type_wcs(v));
 
         sprintf(tmp, "(%d,%d):", v->ref - 1, (int) v->size);
 

@@ -121,7 +121,7 @@ mpdm_type_t mpdm_type(mpdm_t v)
 }
 
 
-wchar_t *mpdm_type_s(mpdm_t v)
+wchar_t *mpdm_type_wcs(mpdm_t v)
 {
     return mpdm_type_info[mpdm_type(v)].name;
 }
