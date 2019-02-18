@@ -1,9 +1,10 @@
 MPDM Release Notes
 ==================
 
-2.45
+2.42
 ----
 
+ - License change: released into the public domain.
  - Architectural changes:
     - Values now have a type and no flags.
     - There is a clear differentiation between integers, reals

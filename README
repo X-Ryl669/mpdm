@@ -10,4 +10,6 @@ system abstraction and portability, regular expressions, string manipulation,
 character set conversions, localization, file I/O access, pipes and
 multithreading (threads, semaphores and mutexes).
 
+This software is released into the public domain. See LICENSE file for details.
+
 Angel Ortega <angel@triptico.com>
