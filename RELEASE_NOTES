@@ -11,7 +11,7 @@ MPDM Release Notes
     - A semantic change to mpdm_read(): EOLs are purely treated
       as line separators, so if a read reaches EOF but previous
       line had an EOL, a final, empty line is returned.
-    - Extended values no longer exist.
+    - Extended values no longer exist, nor cached ival and rval.
  - New features:
     - Files can work in auto-chomp mode (automatic clipping of
       the EOL sequence). This sequence can be retrieved using
@@ -25,13 +25,17 @@ MPDM Release Notes
       use compiled regexes as real values.
     - mpdm_map() can map strings to regexes (providing the
       same functionality as dropped 'g' flag in regexes).
+    - mpdm_map() can map iterable values to strings, returning
+      an array with the same string many times.
+    - mpdm_map() can also map iterable values to arrays, using
+      them as translation tables.
     - New function mpdm_count(), to return a type-specific
       number of elements (values in arrays and objects and size
       of stringify value otherwise).
-    - Read and write functions for MSDOS codepages 437 and 850.
+    - Read and write encoders for MSDOS codepages 437 and 850.
     - mpdm_splice() also works with arrays. Also, its syntax
       has changed and no longer returns a two-value array but
-      accepts pointers to values.
+      accepts optional pointers to values.
     - New function mpdm_del(), complementary to mpdm_get() and
       mpdm_set() (multitype).
     - New function mpdm_type() to get a value's type.
@@ -41,7 +45,7 @@ MPDM Release Notes
       supported.
     - mpdm_slice() no longer exists (use mpdm_splice()).
     - As flags have disappeared, all macros for testing them
-      are also gone.
+      are also gone. Do the checking using types.
     - MPDM_LS() no longer exists; replace it with MPDM_S() and
       move on.
     - Channels no longer exist.
