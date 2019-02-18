@@ -151,7 +151,6 @@ mpdm_t mpdm_new_wcstombs(const wchar_t *str);
 mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 wchar_t *mpdm_string(const mpdm_t v);
-int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 int mpdm_cmp_wcs(const mpdm_t v1, const wchar_t *v2);
 mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, size_t size);
@@ -236,10 +235,10 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 
 void mpdm_function__destroy(mpdm_t v);
 void mpdm_program__destroy(mpdm_t v);
-int mpdm_count(mpdm_t v);
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);
 mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a);
+int mpdm_count(mpdm_t v);
 mpdm_t mpdm_get(mpdm_t set, mpdm_t i);
 mpdm_t mpdm_del(mpdm_t set, mpdm_t i);
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i);
@@ -253,6 +252,7 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
+int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 
 #ifdef __cplusplus
 }

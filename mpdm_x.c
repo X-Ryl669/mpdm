@@ -751,3 +751,81 @@ mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *
 
     return r;
 }
+
+
+/**
+ * mpdm_cmp - Compares two values.
+ * @v1: the first value
+ * @v2: the second value
+ *
+ * Compares two values. If both has the MPDM_STRING flag set,
+ * a comparison using wcscoll() is returned; if both are arrays,
+ * the size is compared first and, if they have the same number
+ * elements, each one is compared; otherwise, a simple visual
+ * representation comparison is done.
+ * [Strings]
+ */
+int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
+{
+    int r;
+
+    mpdm_ref(v1);
+    mpdm_ref(v2);
+
+    /* same values? */
+    if (v1 == v2)
+        r = 0;
+    else
+    if (v1 == NULL)
+        r = -1;
+    else
+    if (v2 == NULL)
+        r = 1;
+    else {
+        switch (mpdm_type(v1)) {
+        case MPDM_TYPE_NULL:
+            r = -1;
+            break;
+
+        case MPDM_TYPE_INTEGER:
+            r = mpdm_ival(v1) - mpdm_ival(v2);
+            break;
+
+        case MPDM_TYPE_REAL:
+            {
+                double d = mpdm_rval(v1) - mpdm_rval(v2);
+                r = d < 0.0 ? -1 : d > 0.0 ? 1 : 0;
+            }
+            break;
+
+        case MPDM_TYPE_ARRAY:
+        case MPDM_TYPE_OBJECT:
+
+            if (mpdm_type(v2) == mpdm_type(v1)) {
+                /* if they are the same size, compare elements one by one */
+                if ((r = mpdm_size(v1) - mpdm_size(v2)) == 0) {
+                    int n = 0;
+                    mpdm_t v, i;
+
+                    while (mpdm_iterator(v1, &n, &v, &i)) {
+                        if ((r = mpdm_cmp(v, mpdm_get(v2, i))) != 0)
+                            break;
+                    }
+                }
+
+                break;
+            }
+
+            /* fallthrough */
+
+        default:
+            r = mpdm_cmp_wcs(v1, v2 ? mpdm_string(v2) : NULL);
+            break;
+        }
+    }
+
+    mpdm_unref(v2);
+    mpdm_unref(v1);
+
+    return r;
+}
