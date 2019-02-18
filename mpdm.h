@@ -138,7 +138,7 @@ mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s);
 mpdm_t mpdm_reverse(const mpdm_t a);
 mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 
-void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);
+void *mpdm_poke_2(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);
 void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize);
 wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen);
 wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str);

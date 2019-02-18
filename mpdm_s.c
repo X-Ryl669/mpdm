@@ -46,7 +46,7 @@
 
 /** code **/
 
-void *mpdm_poke_o(void *dst, int *dsize, int *offset, const void *org,
+void *mpdm_poke_2(void *dst, int *dsize, int *offset, const void *org,
                   int osize, int esize)
 {
     if (org != NULL && osize) {
@@ -71,7 +71,7 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 {
     int offset = *dsize;
 
-    return mpdm_poke_o(dst, dsize, &offset, org, osize, esize);
+    return mpdm_poke_2(dst, dsize, &offset, org, osize, esize);
 }
 
 
