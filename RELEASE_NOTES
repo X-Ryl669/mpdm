@@ -22,9 +22,9 @@ MPDM Release Notes
     - utf-8 reading and writing is done upto 4 bytes.
     - New function mpdm_random() (moved from MPSL).
     - mpdm_regcomp() is now non-static and can be used to
-      use compiled regexes as real values.
+      use compiled regexes as pure values.
     - mpdm_map() can map strings to regexes (providing the
-      same functionality as dropped 'g' flag in regexes).
+      same functionality as the dropped 'g' flag in regexes).
     - mpdm_map() can map iterable values to strings, returning
       an array with the same string many times.
     - mpdm_map() can also map iterable values to arrays, using
