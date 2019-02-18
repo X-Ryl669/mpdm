@@ -553,7 +553,7 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
 
 
 /**
- * mpdm_strcat_sn - Concatenates two strings (string with size version).
+ * mpdm_strcat_wcsn - Concatenates two strings (string with size version).
  * @s1: the first string
  * @s2: the second string
  * @size: the size of the second string
@@ -561,7 +561,7 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size)
+mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, size_t size)
 {
     mpdm_t r = NULL;
 
@@ -581,16 +581,16 @@ mpdm_t mpdm_strcat_sn(const mpdm_t s1, const wchar_t *s2, size_t size)
 
 
 /**
- * mpdm_strcat_s - Concatenates two strings (string version).
+ * mpdm_strcat_wcs - Concatenates two strings (string version).
  * @s1: the first string
  * @s2: the second string
  *
  * Returns a new string formed by the concatenation of @s1 and @s2.
  * [Strings]
  */
-mpdm_t mpdm_strcat_s(const mpdm_t s1, const wchar_t *s2)
+mpdm_t mpdm_strcat_wcs(const mpdm_t s1, const wchar_t *s2)
 {
-    return mpdm_strcat_sn(s1, s2, s2 ? wcslen(s2) : 0);
+    return mpdm_strcat_wcsn(s1, s2, s2 ? wcslen(s2) : 0);
 }
 
 
@@ -607,7 +607,7 @@ mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2)
     mpdm_t r;
 
     mpdm_ref(s2);
-    r = mpdm_strcat_s(s1, s2 ? mpdm_string(s2) : NULL);
+    r = mpdm_strcat_wcs(s1, s2 ? mpdm_string(s2) : NULL);
     mpdm_unref(s2);
 
     return r;

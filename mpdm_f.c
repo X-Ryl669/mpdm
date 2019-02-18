@@ -1715,14 +1715,14 @@ mpdm_t mpdm_glob(mpdm_t spec, mpdm_t base)
 
     /* build full path */
     if (base != NULL) {
-        base = mpdm_strcat_s(base, L"/");
+        base = mpdm_strcat_wcs(base, L"/");
 
         /* escape expandable chars */
         base = mpdm_sregex(base, MPDM_S(L"@[]\\[]@g"), MPDM_S(L"\\\\&"), 0);
     }
 
     if (spec == NULL)
-        spec = mpdm_strcat_s(base, def_spec);
+        spec = mpdm_strcat_wcs(base, def_spec);
     else
         spec = mpdm_strcat(base, spec);
 
