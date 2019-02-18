@@ -395,7 +395,7 @@ int mpdm_seek_wcs(const mpdm_t a, const wchar_t *v, int step)
     for (n = 0; o == -1 && n < mpdm_size(a); n += step) {
         int r;
 
-        r = mpdm_cmp_s(mpdm_aget(a, n), v);
+        r = mpdm_cmp_wcs(mpdm_aget(a, n), v);
 
         if (r == 0)
             o = n;
@@ -465,7 +465,7 @@ int mpdm_bseek_wcs(const mpdm_t a, const wchar_t *v, int step, int *pos)
         if ((w = mpdm_aget(a, n * step)) == NULL)
             break;
 
-        c = mpdm_cmp_s(w, v);
+        c = mpdm_cmp_wcs(w, v);
 
         if (c == 0)
             o = n * step;

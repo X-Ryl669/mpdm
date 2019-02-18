@@ -186,9 +186,9 @@ void test_basic(void)
 
     v = MPDM_S(L"hahaha");
     mpdm_ref(v);
-    do_test("mpdm_cmp_s 1", mpdm_cmp_s(v, L"hahaha") == 0);
-    do_test("mpdm_cmp_s 2", mpdm_cmp_s(v, L"aahaha") > 0);
-    do_test("mpdm_cmp_s 3", mpdm_cmp_s(v, L"zahaha") < 0);
+    do_test("mpdm_cmp_s 1", mpdm_cmp_wcs(v, L"hahaha") == 0);
+    do_test("mpdm_cmp_s 2", mpdm_cmp_wcs(v, L"aahaha") > 0);
+    do_test("mpdm_cmp_s 3", mpdm_cmp_wcs(v, L"zahaha") < 0);
     mpdm_unref(v);
 }
 

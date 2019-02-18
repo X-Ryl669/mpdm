@@ -384,13 +384,13 @@ wchar_t *mpdm_string(const mpdm_t v)
 
 
 /**
- * mpdm_cmp_s - Compares two values (string version).
+ * mpdm_cmp_wcs - Compares two values (string version).
  * @v1: the first value
  * @v2: the second value
  *
  * Compares the @v2 string against the stringified view of @v1.
  */
-int mpdm_cmp_s(const mpdm_t v1, const wchar_t *v2)
+int mpdm_cmp_wcs(const mpdm_t v1, const wchar_t *v2)
 {
     int r;
 
@@ -468,7 +468,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
             /* fallthrough */
 
         default:
-            r = mpdm_cmp_s(v1, v2 ? mpdm_string(v2) : NULL);
+            r = mpdm_cmp_wcs(v1, v2 ? mpdm_string(v2) : NULL);
             break;
         }
     }
