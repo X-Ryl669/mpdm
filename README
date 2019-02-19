@@ -12,4 +12,14 @@ multithreading (threads, semaphores and mutexes).
 
 This software is released into the public domain. See LICENSE file for details.
 
+Additionally, the following files not authored by Angel Ortega are included
+in this repository:
+
+ * wcwidth.c: author Markus Kuhn, public domain (or so it seems),
+ * gnu_regex.h and gnu_regex.c: author FSF, license GPL.
+
+I think the GNU regex can be included here, but IANAL. It's used only on those
+platforms without native regex support in its libc (i.e. windows), so it
+should count as a library linkage exception or something like that.
+
 Angel Ortega <angel@triptico.com>
