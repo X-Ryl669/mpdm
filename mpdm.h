@@ -12,12 +12,6 @@
 #ifndef MPDM_H_
 #define MPDM_H_
 
-#ifdef CONFOPT_MALLOC_MALLOC_H
-#include <malloc/malloc.h>
-#else
-#include <malloc.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
