@@ -681,45 +681,48 @@ double mpdm_rval(mpdm_t v)
  */
 mpdm_t mpdm_gettext(const mpdm_t str)
 {
-    mpdm_t v;
-    mpdm_t i18n = NULL;
+    mpdm_t v = NULL;
 
-    /* gets the cache */
-    if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
-        i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+    if (str) {
+        mpdm_t i18n = NULL;
 
-    mpdm_ref(str);
+        /* gets the cache */
+        if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
+            i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
-    /* try first the cache */
-    if ((v = mpdm_hget(i18n, str)) == NULL) {
+        mpdm_ref(str);
+
+        /* try first the cache */
+        if ((v = mpdm_hget(i18n, str)) == NULL) {
 #ifdef CONFOPT_GETTEXT
-        char *s;
-        mpdm_t t;
+            char *s;
+            mpdm_t t;
 
-        /* convert to mbs */
-        t = mpdm_ref(MPDM_2MBS(str->data));
+            /* convert to mbs */
+            t = mpdm_ref(MPDM_2MBS(str->data));
 
-        /* ask gettext for it */
-        s = gettext((char *) t->data);
+            /* ask gettext for it */
+            s = gettext((char *) t->data);
 
-        if (s != t->data)
-            v = MPDM_MBS(s);
-        else
-            v = str;
+            if (s != t->data)
+                v = MPDM_MBS(s);
+            else
+                v = str;
 
-        mpdm_unref(t);
+            mpdm_unref(t);
 
 #else                           /* CONFOPT_GETTEXT */
 
-        v = str;
+            v = str;
 
 #endif                          /* CONFOPT_GETTEXT */
 
-        /* store in the cache */
-        mpdm_hset(i18n, str, v);
-    }
+            /* store in the cache */
+            mpdm_hset(i18n, str, v);
+        }
 
-    mpdm_unref(str);
+        mpdm_unref(str);
+    }
 
     return v;
 }
