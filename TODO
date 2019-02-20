@@ -10,7 +10,6 @@ Open Bugs
 ---------
 
  * 1056: Update the overview document.
- * 1103: mpdm_home_dir() calls strcat() insecurely.
  * 1104: mpdm_app_dir() calls strcat() insecurely.
  * 1124: Fix win32 glob().
  * 1125: Fix win32 chmod().
@@ -272,5 +271,7 @@ Closed
    Wed, 20 Feb 2019 11:25:35 +0100).
  * 1129: Implement tar (in memory) reading (moved to MPSL;
    Wed, 20 Feb 2019 11:25:47 +0100).
+ * 1103: mpdm_home_dir() calls strcat() insecurely
+   (Wed, 20 Feb 2019 11:42:45 +0100).
 
 Email bugs to angel@triptico.com

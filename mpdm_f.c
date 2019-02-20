@@ -2080,10 +2080,11 @@ int mpdm_pclose(mpdm_t fd)
 mpdm_t mpdm_home_dir(void)
 {
     mpdm_t r = NULL;
-    char *ptr;
-    char tmp[512];
+    char *ptr = "";
+    wchar_t *wptr = L"";
+    char tmp[512] = "";
 
-    tmp[0] = '\0';
+    memset(tmp, '\0', sizeof(tmp));
 
 #ifdef CONFOPT_WIN32
 
@@ -2092,7 +2093,7 @@ mpdm_t mpdm_home_dir(void)
     /* get the 'My Documents' folder */
     SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl);
     SHGetPathFromIDList(pidl, tmp);
-    strcat(tmp, "\\");
+    wptr = L"\\";
 
 #endif
 
@@ -2102,20 +2103,20 @@ mpdm_t mpdm_home_dir(void)
 
     /* get home dir from /etc/passwd entry */
     if (tmp[0] == '\0' && (p = getpwuid(getpid())) != NULL) {
-        strcpy(tmp, p->pw_dir);
-        strcat(tmp, "/");
+        strncpy(tmp, p->pw_dir, sizeof(tmp) - 1);
+        wptr = L"/";
     }
 
 #endif
 
     /* still none? try the ENV variable $HOME */
     if (tmp[0] == '\0' && (ptr = getenv("HOME")) != NULL) {
-        strcpy(tmp, ptr);
-        strcat(tmp, "/");
+        strncpy(tmp, ptr, sizeof(tmp) - 1);
+        wptr = L"/";
     }
 
     if (tmp[0] != '\0')
-        r = MPDM_MBS(tmp);
+        r = mpdm_strcat_wcs(MPDM_MBS(tmp), wptr);
 
     return r;
 }
