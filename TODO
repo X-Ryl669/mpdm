@@ -4,25 +4,22 @@ Minimum Profit Data Manager (MPDM) TODO / Bug List
 Release Critical Bugs
 ---------------------
 
- * 1124: Fix win32 glob().
- * 1125: Fix win32 chmod().
+None!
 
 Open Bugs
 ---------
 
- * 1056: Finish the overview document.
+ * 1056: Update the overview document.
  * 1103: mpdm_home_dir() calls strcat() insecurely.
  * 1104: mpdm_app_dir() calls strcat() insecurely.
+ * 1124: Fix win32 glob().
+ * 1125: Fix win32 chmod().
 
 Pending Enhancements
 --------------------
 
  * 1008: bread().
  * 1009: bwrite().
- * 1126: Channels may possibly be implemented with only one set
-   of array + mutex + semaphore (instead of two).
- * 1128: Implement tar (file) reading.
- * 1129: Implement tar (in memory) reading.
  * 1130: Move all file operations (chmod, etc.) to MPSL.
 
 Closed
@@ -268,5 +265,12 @@ Closed
    Fri, 21 Dec 2018 08:08:16 +0100).
  * 1127: Do not ref/unref arrays and hashes
    (Mon, 24 Dec 2018 15:32:54 +0100).
+ * 1126: Channels may possibly be implemented with only one set
+   of array + mutex + semaphore (instead of two) (Channels completely
+   discarded; Wed, 20 Feb 2019 11:25:00 +0100).
+ * 1128: Implement tar (file) reading (moved to MPSL;
+   Wed, 20 Feb 2019 11:25:35 +0100).
+ * 1129: Implement tar (in memory) reading (moved to MPSL;
+   Wed, 20 Feb 2019 11:25:47 +0100).
 
 Email bugs to angel@triptico.com
