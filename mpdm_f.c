@@ -2187,8 +2187,7 @@ mpdm_t mpdm_app_dir(void)
     }
 
     if (tmp[0] != '\0') {
-        strcat(tmp, "\\");
-        r = MPDM_MBS(tmp);
+        r = mpdm_strcat_wcs(MPDM_MBS(tmp), L"\\");
     }
 #endif
 
