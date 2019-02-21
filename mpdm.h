@@ -69,7 +69,7 @@ struct mpdm_val {
 #define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(s, n)
 #define MPDM_2MBS(s)    mpdm_new_wcstombs(s)
 
-#define MPDM_X(f)       mpdm_new_x(MPDM_TYPE_FUNCTION, f, NULL)
+#define MPDM_X(f)       mpdm_new_x(MPDM_TYPE_FUNCTION, (void *)f, NULL)
 #define MPDM_X2(f,a)    mpdm_new_x(MPDM_TYPE_PROGRAM, f, a)
 
 #define MPDM_F(f)       mpdm_new_f(f)
