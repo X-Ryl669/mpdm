@@ -1243,8 +1243,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
         if (c != L'\0')
             s++;
 
-        ptr = mpdm_pokewsn(ptr, &size, L"", 1);
-        v = MPDM_ENS(ptr, size - 1);
+        v = MPDM_ENS(ptr, size);
     }
     else
     if (c == L'-' || (c >= L'0' && c <= L'9') || c == L'.') {
@@ -1260,8 +1259,7 @@ static mpdm_t json_lexer(wchar_t **sp, int *t)
             s++;
         }
 
-        ptr = mpdm_pokewsn(ptr, &size, L"", 1);
-        v = MPDM_ENS(ptr, size - 1);
+        v = MPDM_ENS(ptr, size);
 
         if (*t == JS_REAL)
             v = MPDM_R(mpdm_rval(v));
