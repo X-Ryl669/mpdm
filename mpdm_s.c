@@ -1723,9 +1723,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
             }
 
             if (!ignore && size) {
-                /* null terminate and push */
-                ptr = mpdm_pokewsn(ptr, &size, L"", 1);
-                mpdm_push(r, MPDM_ENS(ptr, size - 1));
+                mpdm_push(r, MPDM_ENS(ptr, size));
             }
         }
         else
