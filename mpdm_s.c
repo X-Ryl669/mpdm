@@ -1092,13 +1092,10 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
 
     o = mpdm_pokewsn(o, &l, i, n);
 
-    /* null-terminate */
-    o = mpdm_pokewsn(o, &l, L"", 1);
-
     mpdm_unref(arg);
     mpdm_unref(fmt);
 
-    return MPDM_ENS(o, l - 1);
+    return MPDM_ENS(o, l);
 }
 
 
