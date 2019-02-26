@@ -191,7 +191,6 @@ static int put_char(int c, struct mpdm_file *f)
 static int store_in_line(wchar_t **ptr, int *s, int *eol, wchar_t wc)
 /* store the c in the line, keeping track for EOLs */
 {
-    wchar_t ws[2];
     int done = 0;
 
     /* track EOL sequence position */
@@ -201,10 +200,7 @@ static int store_in_line(wchar_t **ptr, int *s, int *eol, wchar_t wc)
     }
 
     /* store */
-    ws[0] = wc;
-    ws[1] = L'\0';
-    *ptr = mpdm_pokewsn(*ptr, s, ws, 2);
-    (*s)--;
+    *ptr = mpdm_pokewsn(*ptr, s, &wc, 1);
 
     /* end of line? finish */
     if (wc == L'\n')
