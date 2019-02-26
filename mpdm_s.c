@@ -165,12 +165,6 @@ wchar_t *mpdm_mbstowcs(const char *str, int *s, int l)
             if ((ptr = mpdm_pokewsn(ptr, s, &wc, 1)) == NULL)
                 break;
         }
-
-        /* null terminate and count one less */
-        if (ptr != NULL) {
-            ptr = mpdm_pokewsn(ptr, s, L"", 1);
-            (*s)--;
-        }
     }
 
     /* free the duplicate */
