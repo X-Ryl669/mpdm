@@ -678,8 +678,7 @@ mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s)
             ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
         }
 
-        ptr = mpdm_poke(ptr, &l, L"", 1, sizeof(wchar_t));
-        r = MPDM_ENS(ptr, l - 1);
+        r = MPDM_ENS(ptr, l);
     }
 
     mpdm_unref(a);

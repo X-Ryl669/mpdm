@@ -62,22 +62,36 @@ void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize)
 }
 
 
-wchar_t *mpdm_pokewsn(wchar_t *dst, int *dsize, const wchar_t *str, int slen)
-/* adds a wide string to dst using mpdm_poke() with size */
+wchar_t *mpdm_pokewsn(wchar_t *dst, int *size, const wchar_t *str, int slen)
+/* adds a wide string to dst */
 {
-    return mpdm_poke(dst, dsize, str, slen, sizeof(wchar_t));
+    if (str && slen) {
+        /* open space */
+        dst = realloc(dst, (*size + slen + 1) * sizeof(wchar_t));
+
+        /* copy */
+        memcpy(&dst[*size], str, slen * sizeof(wchar_t));
+
+        /* increment counter */
+        *size += slen;
+
+        /* NULL-terminate */
+        dst[*size] = L'\0';
+    }
+
+    return dst;
 }
 
 
 wchar_t *mpdm_pokews(wchar_t *dst, int *dsize, const wchar_t *str)
-/* adds a wide string to dst using mpdm_poke() */
+/* adds a wide string to dst */
 {
     return mpdm_pokewsn(dst, dsize, str, wcslen(str));
 }
 
 
 wchar_t *mpdm_pokev(wchar_t *dst, int *dsize, const mpdm_t v)
-/* adds the string in v to dst using mpdm_poke() */
+/* adds the string in v to dst */
 {
     if (v != NULL) {
         mpdm_ref(v);

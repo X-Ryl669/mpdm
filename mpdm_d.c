@@ -94,7 +94,6 @@ static wchar_t *do_dump(mpdm_t v, int *size)
 
     *size = 0;
     ptr = mpdm_dump_1(v, 0, NULL, size);
-    ptr = mpdm_pokewsn(ptr, size, L"", 1);
 
     return ptr;
 }
@@ -113,7 +112,7 @@ mpdm_t mpdm_dumper(const mpdm_t v)
 
     ptr = do_dump(v, &size);
 
-    return MPDM_ENS(ptr, size - 1);
+    return MPDM_ENS(ptr, size);
 }
 
 
