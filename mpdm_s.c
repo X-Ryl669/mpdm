@@ -454,10 +454,7 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t
             /* copy the reminder */
             ptr = mpdm_pokews(ptr, &s, str + offset + del);
 
-            /* and null-terminate */
-            ptr = mpdm_pokewsn(ptr, &s, L"", 1);
-
-            *n = MPDM_NS(ptr, s - 1);
+            *n = MPDM_NS(ptr, s);
         }
     }
 
