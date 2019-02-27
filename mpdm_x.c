@@ -787,6 +787,7 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 
         case MPDM_TYPE_ARRAY:
         case MPDM_TYPE_OBJECT:
+        case MPDM_TYPE_PROGRAM:
 
             if (mpdm_type(v2) == mpdm_type(v1)) {
                 /* if they are the same size, compare elements one by one */
