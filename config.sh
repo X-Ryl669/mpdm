@@ -516,6 +516,19 @@ else
     echo "No (assuming malloc.h in standard place)"
 fi
 
+echo -n "Testing for gettimeofday()... "
+echo "#include <sys/time.h>" > .tmp.c
+echo "int main(void) { struct timeval tv; gettimeofday(&tv, 0); return 0; }" >> .tmp.c
+
+$CC .tmp.c -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+    echo "#define CONFOPT_GETTIMEOFDAY 1" >> config.h
+    echo "OK"
+else
+    echo "No"
+fi
+
 if [ "$WITH_WIN32" != 1 ] ; then
     echo -n "Testing for POSIX threads... "
     echo "#include <pthread.h>" > .tmp.c

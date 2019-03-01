@@ -30,6 +30,10 @@
 #include <semaphore.h>
 #endif
 
+#ifdef CONFOPT_GETTIMEOFDAY
+#include <sys/time.h>
+#endif
+
 #include "mpdm.h"
 
 
@@ -65,7 +69,19 @@ double mpdm_time(void)
 {
     double r = 0.0;
 
+#ifdef CONFOPT_GETTIMEOFDAY
+
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+
+    r = ((double)tv.tv_sec) + (((double)tv.tv_usec) / 1000000.0);
+
+#else /* CONFOPT_GETTIMEOFDAY */
+
     r = (double) time(NULL);
+
+#endif /* CONFOPT_GETTIMEOFDAY */
 
     return r;
 }
