@@ -203,6 +203,7 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset);
 mpdm_t mpdm_sregex(const mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
 
 void mpdm_sleep(int msecs);
+double mpdm_time(void);
 mpdm_t mpdm_random(mpdm_t v);
 void mpdm_mutex__destroy(mpdm_t v);
 mpdm_t mpdm_new_mutex(void);

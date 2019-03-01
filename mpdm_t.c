@@ -61,6 +61,16 @@ void mpdm_sleep(int msecs)
 }
 
 
+double mpdm_time(void)
+{
+    double r = 0.0;
+
+    r = (double) time(NULL);
+
+    return r;
+}
+
+
 mpdm_t mpdm_random(mpdm_t v)
 {
     static unsigned int seed = 0;
