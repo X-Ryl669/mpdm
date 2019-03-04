@@ -487,7 +487,8 @@ mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, int size)
         ptr = mpdm_pokewsn(ptr, &s, s2, size);
 
         /* ensure that at least an empty string is created */
-        ptr = mpdm_pokewsn(ptr, &s, L"", 1);
+        if (ptr == NULL)
+            ptr = mpdm_pokewsn(ptr, &s, L"", 1);
 
         r = MPDM_ENS(ptr, s);
     }
