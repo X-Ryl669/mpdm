@@ -7,3 +7,6 @@ doc/*.html
 makefile.opts
 *.[oa]
 stress
+.build-info.c
+test.txt
+thread.txt
