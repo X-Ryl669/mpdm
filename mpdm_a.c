@@ -678,7 +678,7 @@ mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s)
             ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
         }
 
-        r = MPDM_ENS(ptr, l);
+        r = ptr == NULL ? MPDM_S(L"") : MPDM_ENS(ptr, l);
     }
 
     mpdm_unref(a);
