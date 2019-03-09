@@ -351,6 +351,7 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
         break;
 
     case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_PROGRAM:
         if (*context < mpdm_size(set)) {
             if (v) *v = mpdm_aget(set, (*context));
             if (i) *i = MPDM_I(*context);
