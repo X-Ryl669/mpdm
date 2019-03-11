@@ -1041,7 +1041,7 @@ int mpdm_write_wcs(FILE *f, const wchar_t *str)
  *
  * Opens a file. If @filename can be open in the specified @mode, an
  * mpdm_t value will be returned containing the file descriptor, or NULL
- * otherwise.
+ * otherwise. If @mode is NULL, "r" is assumed.
  *
  * If the file is open for reading, some charset detection methods are
  * used. If any of them is successful, its name is stored in the
@@ -1053,11 +1053,15 @@ int mpdm_write_wcs(FILE *f, const wchar_t *str)
  * TEMP_ENCODING one. The latter will always be deleted afterwards.
  * [File Management]
  */
-mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode)
+mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode)
 {
     FILE *f = NULL;
     mpdm_t fn;
     mpdm_t fm;
+
+    /* extreme lazyness */
+    if (mode == NULL)
+        mode = MPDM_S(L"r");
 
     mpdm_ref(filename);
     mpdm_ref(mode);

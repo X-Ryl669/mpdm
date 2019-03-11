@@ -165,7 +165,7 @@ int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 
 wchar_t *mpdm_read_mbs(FILE *f, int *s);
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
-mpdm_t mpdm_open(const mpdm_t filename, const mpdm_t mode);
+mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode);
 mpdm_t mpdm_read(const mpdm_t fd);
 wchar_t *mpdm_eol(mpdm_t fd);
 mpdm_t mpdm_getchar(const mpdm_t fd);
