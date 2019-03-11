@@ -57,6 +57,7 @@ struct mpdm_val {
 /* value creation utility macros */
 
 #define MPDM_A(n)       mpdm_new_a(n)
+#define MPDM_O()        mpdm_new_o()
 #define MPDM_H(n)       mpdm_new_h(n)
 #define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
@@ -152,16 +153,25 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 
 void mpdm_object__destroy(mpdm_t a);
+mpdm_t mpdm_new_o(void);
+int mpdm_count_o(const mpdm_t o);
+mpdm_t mpdm_get_wcs(const mpdm_t o, const wchar_t *i);
+mpdm_t mpdm_get_o(const mpdm_t o, const mpdm_t i);
+int mpdm_exists(const mpdm_t h, const mpdm_t i);
+mpdm_t mpdm_set_o(mpdm_t o, mpdm_t v, mpdm_t i);
+mpdm_t mpdm_set_wcs(mpdm_t o, mpdm_t v, const wchar_t *i);
+mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i);
+mpdm_t mpdm_indexes(const mpdm_t o);
+int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
+
 mpdm_t mpdm_new_h(int size);
 int mpdm_hsize(const mpdm_t h);
 mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
 mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
-int mpdm_exists(const mpdm_t h, const mpdm_t i);
 mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
 mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
-int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 
 wchar_t *mpdm_read_mbs(FILE *f, int *s);
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
