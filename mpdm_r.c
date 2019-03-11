@@ -98,7 +98,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
             if (!regcomp(&re, regex, f)) {
                 c = MPDM_C(MPDM_TYPE_REGEX, &re, sizeof(regex_t));
 
-                mpdm_hset(regex_cache, r, c);
+                mpdm_set(regex_cache, c, r);
             }
         }
 

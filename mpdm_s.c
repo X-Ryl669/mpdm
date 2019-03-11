@@ -363,7 +363,7 @@ wchar_t *mpdm_string(const mpdm_t v)
 
             if ((w = mpdm_get_wcs(c, wstr)) == NULL) {
                 w = MPDM_S(wstr);
-                mpdm_hset(c, w, w);
+                mpdm_set(c, w, w);
             }
 
             ret = (wchar_t *) w->data;
@@ -722,7 +722,7 @@ mpdm_t mpdm_gettext(const mpdm_t str)
 #endif                          /* CONFOPT_GETTEXT */
 
             /* store in the cache */
-            mpdm_hset(i18n, str, v);
+            mpdm_set(i18n, v, str);
         }
 
         mpdm_unref(str);
@@ -1358,7 +1358,7 @@ static mpdm_t json_parse_object(wchar_t **s, int *t)
         w = json_pair(s, &tt, k);
 
         if (tt == JS_VALUE) {
-            mpdm_hset(h, k, w);
+            mpdm_set(h, w, k);
 
             while (*t == JS_INCOMPLETE) {
                 k = json_lexer(s, &tt);
@@ -1371,7 +1371,7 @@ static mpdm_t json_parse_object(wchar_t **s, int *t)
                     w = json_pair(s, &tt, k);
 
                     if (tt == JS_VALUE)
-                        mpdm_hset(h, k, w);
+                        mpdm_set(h, w, k);
                     else
                         *t = JS_ERROR;
                 }

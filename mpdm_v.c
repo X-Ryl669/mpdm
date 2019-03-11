@@ -292,7 +292,7 @@ static mpdm_t build_env(void)
             k = MPDM_NMBS((*ptr), eq - (*ptr));
             v = MPDM_MBS(eq + 1);
 
-            mpdm_hset(e, k, v);
+            mpdm_set(e, v, k);
         }
     }
 

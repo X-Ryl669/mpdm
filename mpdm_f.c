@@ -1331,8 +1331,8 @@ static mpdm_t embedded_encodings(void)
             if (e2e[n + 1] != NULL)
                 p = MPDM_S(e2e[n + 1]);
 
-            mpdm_hset(e, v, p);
-            mpdm_hset(e, mpdm_ulc(v, 1), p);
+            mpdm_set(e, p, v);
+            mpdm_set(e, p, mpdm_ulc(v, 1));
         }
 
     }

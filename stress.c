@@ -352,7 +352,7 @@ void test_hash(void)
 
     do_test("hsize 1", mpdm_count(h) == 0);
 
-    mpdm_hset(h, MPDM_S(L"mp"), MPDM_I(6));
+    mpdm_set(h, MPDM_I(6), MPDM_S(L"mp"));
     v = mpdm_get(h, MPDM_S(L"mp"));
 
     do_test("hsize 2", mpdm_count(h) == 1);
@@ -361,7 +361,7 @@ void test_hash(void)
     i = mpdm_ival(v);
     do_test("hash: v == 6", (i == 6));
 
-    mpdm_hset(h, MPDM_S(L"mp2"), MPDM_I(66));
+    mpdm_set(h, MPDM_I(66), MPDM_S(L"mp2"));
     v = mpdm_get(h, MPDM_S(L"mp2"));
 
     do_test("hsize 3", mpdm_count(h) == 2);
@@ -372,9 +372,9 @@ void test_hash(void)
 
     /* fills 100 values */
     for (n = 0; n < 50; n++)
-        mpdm_hset(h, MPDM_I(n), MPDM_I(n * 10));
+        mpdm_set(h, MPDM_I(n * 10), MPDM_I(n));
     for (n = 100; n >= 50; n--)
-        mpdm_hset(h, MPDM_I(n), MPDM_I(n * 10));
+        mpdm_set(h, MPDM_I(n * 10), MPDM_I(n));
 
     do_test("hsize 4", mpdm_count(h) == 103);
 
@@ -410,14 +410,14 @@ void test_hash(void)
     mpdm_ref(h);
 
     v = MPDM_A(0);
-    mpdm_hset(h, v, MPDM_I(1234));
+    mpdm_set(h, MPDM_I(1234), v);
     v = MPDM_H(0);
-    mpdm_hset(h, v, MPDM_I(12345));
+    mpdm_set(h, MPDM_I(12345), v);
     v = MPDM_H(0);
-    mpdm_hset(h, v, MPDM_I(9876));
+    mpdm_set(h, MPDM_I(9876), v);
     v = MPDM_A(0);
     mpdm_ref(v);
-    mpdm_hset(h, v, MPDM_I(6543));
+    mpdm_set(h, MPDM_I(6543), v);
     i = mpdm_ival(mpdm_get(h, v));
     mpdm_unref(v);
 
@@ -425,7 +425,7 @@ void test_hash(void)
         mpdm_dump(h);
     do_test("hash: using non-strings as hash keys", (i == 6543));
 
-    mpdm_hset(h, MPDM_S(L"ok"), MPDM_I(666));
+    mpdm_set(h, MPDM_I(666), MPDM_S(L"ok"));
 
     do_test("exists 1", mpdm_exists(h, MPDM_S(L"ok")));
     do_test("exists 2", !mpdm_exists(h, MPDM_S(L"notok")));
@@ -1176,7 +1176,7 @@ void test_gettext(void)
 
     h = MPDM_H(0);
     mpdm_ref(h);
-    mpdm_hset(h, MPDM_S(L"test string"), MPDM_S(L"cadena de prueba"));
+    mpdm_set(h, MPDM_S(L"cadena de prueba"), MPDM_S(L"test string"));
 
     mpdm_gettext_domain(MPDM_S(L"stress"), h);
     v = mpdm_gettext(MPDM_S(L"test string"));
@@ -1216,7 +1216,7 @@ void bench_hash(int i, mpdm_t l, int buckets)
     timer(0);
     for (n = 0; n < i; n++) {
         v = mpdm_aget(l, n);
-        mpdm_hset(h, v, v);
+        mpdm_set(h, v, v);
     }
     timer(-1);
 

@@ -207,7 +207,7 @@ mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
         break;
 
     case MPDM_TYPE_OBJECT:
-        r = mpdm_hset(set, i, v);
+        r = mpdm_set_o(set, v, i);
         break;
 
     default:
@@ -520,7 +520,7 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             mpdm_ref(w);
 
             if (mpdm_type(w) == MPDM_TYPE_ARRAY)
-                mpdm_hset(out, mpdm_aget(w, 0), mpdm_aget(w, 1));
+                mpdm_set(out, mpdm_aget(w, 1), mpdm_aget(w, 0));
 
             mpdm_unref(w);
             mpdm_unref(v);
@@ -628,10 +628,10 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
             n = 0;
             while (mpdm_iterator(a, &n, &v, &i))
-                mpdm_hset(r, i, v);
+                mpdm_set(r, v, i);
             n = 0;
             while (mpdm_iterator(b, &n, &v, &i))
-                mpdm_hset(r, i, v);
+                mpdm_set(r, v, i);
 
             break;
 
@@ -641,7 +641,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
             /* the array is a list of pairs */
             for (n = 0; n < mpdm_size(b); n += 2)
-                mpdm_hset(r, mpdm_aget(b, n), mpdm_aget(b, n + 1));
+                mpdm_set(r, mpdm_aget(b, n + 1), mpdm_aget(b, n));
 
             break;
 
