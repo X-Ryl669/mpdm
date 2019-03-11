@@ -58,7 +58,6 @@ struct mpdm_val {
 
 #define MPDM_A(n)       mpdm_new_a(n)
 #define MPDM_O()        mpdm_new_o()
-#define MPDM_H(n)       mpdm_new_h(n)
 #define MPDM_S(s)       mpdm_new_wcs(s, -1, 1)
 #define MPDM_NS(s,n)    mpdm_new_wcs(s, n, 1)
 #define MPDM_ENS(s,n)   mpdm_new_wcs(s, n, 0)
@@ -164,15 +163,6 @@ mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i);
 mpdm_t mpdm_indexes(const mpdm_t o);
 int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 
-mpdm_t mpdm_new_h(int size);
-int mpdm_hsize(const mpdm_t h);
-mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
-mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
-mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
-mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
-mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
-mpdm_t mpdm_keys(const mpdm_t h);
-
 wchar_t *mpdm_read_mbs(FILE *f, int *s);
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
 mpdm_t mpdm_open(mpdm_t filename, mpdm_t mode);
@@ -246,6 +236,20 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
+
+
+/* old hash compatibility layer */
+
+#define MPDM_H(n)       MPDM_O()
+
+int mpdm_hsize(const mpdm_t h);
+mpdm_t mpdm_hget_s(const mpdm_t h, const wchar_t *k);
+mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k);
+mpdm_t mpdm_hset(mpdm_t h, mpdm_t k, mpdm_t v);
+mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
+mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
+mpdm_t mpdm_keys(const mpdm_t h);
+
 
 #ifdef __cplusplus
 }
