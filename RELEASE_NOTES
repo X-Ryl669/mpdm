@@ -1,6 +1,13 @@
 MPDM Release Notes
 ==================
 
+2.50
+----
+
+ - New features:
+    - The object interface now replaces the old hash interface,
+      that it's still available as a compatibility layer.
+
 2.42
 ----
 
