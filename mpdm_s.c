@@ -697,7 +697,7 @@ mpdm_t mpdm_gettext(const mpdm_t str)
         mpdm_ref(str);
 
         /* try first the cache */
-        if ((v = mpdm_hget(i18n, str)) == NULL) {
+        if ((v = mpdm_get(i18n, str)) == NULL) {
 #ifdef CONFOPT_GETTEXT
             char *s;
             mpdm_t t;

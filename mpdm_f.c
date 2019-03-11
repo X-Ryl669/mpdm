@@ -1401,7 +1401,7 @@ int mpdm_encoding(mpdm_t charset)
     }
 #endif                          /* CONFOPT_ICONV */
 
-    if (ret != 0 && (v = mpdm_hget(e, charset)) != NULL)
+    if (ret != 0 && (v = mpdm_get(e, charset)) != NULL)
         ret = 0;
 
     if (ret == 0)

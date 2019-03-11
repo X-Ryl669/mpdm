@@ -353,7 +353,7 @@ void test_hash(void)
     do_test("hsize 1", mpdm_count(h) == 0);
 
     mpdm_hset(h, MPDM_S(L"mp"), MPDM_I(6));
-    v = mpdm_hget(h, MPDM_S(L"mp"));
+    v = mpdm_get(h, MPDM_S(L"mp"));
 
     do_test("hsize 2", mpdm_count(h) == 1);
 
@@ -362,7 +362,7 @@ void test_hash(void)
     do_test("hash: v == 6", (i == 6));
 
     mpdm_hset(h, MPDM_S(L"mp2"), MPDM_I(66));
-    v = mpdm_hget(h, MPDM_S(L"mp2"));
+    v = mpdm_get(h, MPDM_S(L"mp2"));
 
     do_test("hsize 3", mpdm_count(h) == 2);
 
@@ -380,7 +380,7 @@ void test_hash(void)
 
     /* tests 100 values */
     for (n = 0; n < 100; n++) {
-        v = mpdm_hget(h, MPDM_I(n));
+        v = mpdm_get(h, MPDM_I(n));
 
         if (v != NULL) {
             i = mpdm_ival(v);
@@ -418,7 +418,7 @@ void test_hash(void)
     v = MPDM_A(0);
     mpdm_ref(v);
     mpdm_hset(h, v, MPDM_I(6543));
-    i = mpdm_ival(mpdm_hget(h, v));
+    i = mpdm_ival(mpdm_get(h, v));
     mpdm_unref(v);
 
     if (verbose)
@@ -457,7 +457,7 @@ void test_hash(void)
     if (i != 1000)
         mpdm_get_wcs(h, L"ok");
 
-    do_test("hget 1.2.1", mpdm_hget(h, MPDM_S(L"ok")) != NULL);
+    do_test("hget 1.2.1", mpdm_get(h, MPDM_S(L"ok")) != NULL);
 
     mpdm_hset_s(h, L"ok", MPDM_I(777));
 

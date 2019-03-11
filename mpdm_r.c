@@ -72,7 +72,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
         regex_cache = mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", MPDM_H(0));
 
     /* search the regex in the cache */
-    if ((c = mpdm_hget(regex_cache, r)) == NULL) {
+    if ((c = mpdm_get(regex_cache, r)) == NULL) {
         mpdm_t rmb;
         regex_t re;
         char *regex;
@@ -361,7 +361,7 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
                     w = mpdm_exec_1(w, m, NULL);
                 else
                 if (mpdm_type(w) == MPDM_TYPE_OBJECT)
-                    w = mpdm_hget(w, m);
+                    w = mpdm_get(w, m);
                 else {
                     w = expand_ampersands(w, m);
                     break;
