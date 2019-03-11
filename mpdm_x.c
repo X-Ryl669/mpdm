@@ -492,7 +492,7 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
         break;
 
     default:
-        out = MPDM_H(0);
+        out = MPDM_O();
 
         while (mpdm_iterator(set, &n, &v, &i)) {
             mpdm_t w = NULL;
@@ -548,7 +548,7 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
         mpdm_t v, i;
         int n = 0;
 
-        out = mpdm_type(set) == MPDM_TYPE_OBJECT ? MPDM_H(0) : MPDM_A(0);
+        out = mpdm_type(set) == MPDM_TYPE_OBJECT ? MPDM_O() : MPDM_A(0);
 
         while (mpdm_iterator(set, &n, &v, &i)) {
             mpdm_t w = NULL;
@@ -624,7 +624,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
         switch (mpdm_type(b)) {
         case MPDM_TYPE_OBJECT:
             /* hash~hash -> hash */
-            r = MPDM_H(0);
+            r = MPDM_O();
 
             n = 0;
             while (mpdm_iterator(a, &n, &v, &i))
@@ -637,7 +637,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
         case MPDM_TYPE_ARRAY:
             /* hash~array -> hash */
-            r = MPDM_H(0);
+            r = MPDM_O();
 
             /* the array is a list of pairs */
             for (n = 0; n < mpdm_size(b); n += 2)

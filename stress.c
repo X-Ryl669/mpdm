@@ -79,8 +79,8 @@ void test_basic(void)
     mpdm_unref(v);
 
     if (verbose) {
-        printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
-        printf("mpdm_string: %ls\n", mpdm_string(MPDM_H(0)));
+        printf("mpdm_string: %ls\n", mpdm_string(MPDM_O()));
+        printf("mpdm_string: %ls\n", mpdm_string(MPDM_O()));
     }
 
     /* partial copies of strings */
@@ -347,7 +347,7 @@ void test_hash(void)
     mpdm_t v;
     int i, n;
 
-    h = MPDM_H(0);
+    h = MPDM_O();
     mpdm_ref(h);
 
     do_test("hsize 1", mpdm_count(h) == 0);
@@ -406,14 +406,14 @@ void test_hash(void)
     mpdm_dump(v);
 */
     /* use of non-strings as hashes */
-    h = MPDM_H(0);
+    h = MPDM_O();
     mpdm_ref(h);
 
     v = MPDM_A(0);
     mpdm_set(h, MPDM_I(1234), v);
-    v = MPDM_H(0);
+    v = MPDM_O();
     mpdm_set(h, MPDM_I(12345), v);
-    v = MPDM_H(0);
+    v = MPDM_O();
     mpdm_set(h, MPDM_I(9876), v);
     v = MPDM_A(0);
     mpdm_ref(v);
@@ -1174,7 +1174,7 @@ void test_gettext(void)
     if (verbose)
         mpdm_dump(v);
 
-    h = MPDM_H(0);
+    h = MPDM_O();
     mpdm_ref(h);
     mpdm_set(h, MPDM_S(L"cadena de prueba"), MPDM_S(L"test string"));
 

@@ -1342,7 +1342,7 @@ static mpdm_t json_pair(wchar_t **s, int *t, mpdm_t k)
 
 static mpdm_t json_parse_object(wchar_t **s, int *t)
 {
-    mpdm_t h = MPDM_H(0);
+    mpdm_t h = MPDM_O();
     mpdm_t k = NULL;
     int tt;
 

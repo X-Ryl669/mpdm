@@ -187,7 +187,7 @@ int mpdm_size(const mpdm_t v)
  */
 mpdm_t mpdm_root(void)
 {
-    return mpdm_global_root = mpdm_global_root ? mpdm_global_root : mpdm_ref(MPDM_H(0));
+    return mpdm_global_root = mpdm_global_root ? mpdm_global_root : mpdm_ref(MPDM_O());
 }
 
 
@@ -279,7 +279,7 @@ static mpdm_t build_env(void)
 /* builds a hash with the environment */
 {
     char **ptr;
-    mpdm_t e = MPDM_H(0);
+    mpdm_t e = MPDM_O();
 
     mpdm_ref(e);
 
@@ -363,15 +363,12 @@ void mpdm_shutdown(void)
 /* ; */
 
 /**
- * MPDM_H - Creates a hash value.
- * @n: Number of buckets in the hash (0: use default)
+ * MPDM_O - Creates an object value.
  *
- * Creates a new hash value with @n buckets. The number
- * of buckets must be a prime number. If @n is 0, an
- * optimal number of buckets will be used.
+ * Creates a new object value.
  * [Value Creation]
  */
-/** mpdm_t MPDM_H(int n); */
+/** mpdm_t MPDM_O(void); */
 /* ; */
 
 /**

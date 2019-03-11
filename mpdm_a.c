@@ -340,7 +340,7 @@ mpdm_t mpdm_clone(const mpdm_t v)
         mpdm_ref(v);
 
         /* creates a similar value */
-        w = mpdm_type(v) == MPDM_TYPE_OBJECT ? MPDM_H(0) : MPDM_A(0);
+        w = mpdm_type(v) == MPDM_TYPE_OBJECT ? MPDM_O() : MPDM_A(0);
 
         /* fills each element with duplicates of the original */
         for (n = 0; n < v->size; n++)

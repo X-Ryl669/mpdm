@@ -1323,7 +1323,7 @@ static mpdm_t embedded_encodings(void)
         int n;
         mpdm_t p = NULL;
 
-        e = mpdm_set_wcs(mpdm_root(), MPDM_H(0), L"EMBEDDED_ENCODINGS");
+        e = mpdm_set_wcs(mpdm_root(), MPDM_O(), L"EMBEDDED_ENCODINGS");
 
         for (n = 0; e2e[n] != NULL; n += 2) {
             mpdm_t v = MPDM_S(e2e[n]);
