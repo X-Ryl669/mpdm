@@ -114,7 +114,7 @@ extern int errno;
 static void store_syserr(void)
 /* stores the system error inside the global ERRNO */
 {
-    mpdm_hset_s(mpdm_root(), L"ERRNO", MPDM_MBS(strerror(errno)));
+    mpdm_set_wcs(mpdm_root(), MPDM_MBS(strerror(errno)), L"ERRNO");
 }
 
 
@@ -460,7 +460,7 @@ static wchar_t *read_utf8_bom(struct mpdm_file *f, int *s, int *eol)
         fseek(f->in, 0, SEEK_SET);
     }
 
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
+    mpdm_set_wcs(mpdm_root(), MPDM_S(enc), L"DETECTED_ENCODING");
 
     /* we're utf-8 from now on */
     f->f_read = read_utf8;
@@ -611,7 +611,7 @@ static wchar_t *read_utf16(struct mpdm_file *f, int *s, int *eol)
         fseek(f->in, 0, SEEK_SET);
     }
 
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
+    mpdm_set_wcs(mpdm_root(), MPDM_S(enc), L"DETECTED_ENCODING");
 
     return f->f_read(f, s, eol);
 }
@@ -744,7 +744,7 @@ static wchar_t *read_utf32(struct mpdm_file *f, int *s, int *eol)
         fseek(f->in, 0, SEEK_SET);
     }
 
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
+    mpdm_set_wcs(mpdm_root(), MPDM_S(enc), L"DETECTED_ENCODING");
 
     return f->f_read(f, s, eol);
 }
@@ -999,7 +999,7 @@ static wchar_t *read_auto(struct mpdm_file *f, int *s, int *eol)
     }
 
 got_encoding:
-    mpdm_hset_s(mpdm_root(), L"DETECTED_ENCODING", MPDM_S(enc));
+    mpdm_set_wcs(mpdm_root(), MPDM_S(enc), L"DETECTED_ENCODING");
 
     return f->f_read(f, s, eol);
 }
@@ -1323,7 +1323,7 @@ static mpdm_t embedded_encodings(void)
         int n;
         mpdm_t p = NULL;
 
-        e = mpdm_hset_s(mpdm_root(), L"EMBEDDED_ENCODINGS", MPDM_H(0));
+        e = mpdm_set_wcs(mpdm_root(), MPDM_H(0), L"EMBEDDED_ENCODINGS");
 
         for (n = 0; e2e[n] != NULL; n += 2) {
             mpdm_t v = MPDM_S(e2e[n]);
@@ -1370,7 +1370,7 @@ int mpdm_encoding(mpdm_t charset)
 
     /* NULL encoding? done */
     if (mpdm_size(charset) == 0) {
-        mpdm_hset_s(mpdm_root(), L"ENCODING", NULL);
+        mpdm_set_wcs(mpdm_root(), NULL, L"ENCODING");
         ret = 0;
     }
 
@@ -1405,7 +1405,7 @@ int mpdm_encoding(mpdm_t charset)
         ret = 0;
 
     if (ret == 0)
-        mpdm_hset_s(mpdm_root(), L"ENCODING", v);
+        mpdm_set_wcs(mpdm_root(), v, L"ENCODING");
 
     mpdm_unref(charset);
 
@@ -2471,7 +2471,7 @@ mpdm_t mpdm_new_f(FILE *f)
 #endif                          /* CONFOPT_ICONV */
         }
 
-        mpdm_hset_s(mpdm_root(), L"TEMP_ENCODING", NULL);
+        mpdm_set_wcs(mpdm_root(), NULL, L"TEMP_ENCODING");
     }
 
     return v;

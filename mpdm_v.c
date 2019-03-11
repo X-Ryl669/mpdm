@@ -325,17 +325,17 @@ int mpdm_startup(void)
     mpdm_encoding(NULL);
 
     /* store the MPDM object */
-    v = mpdm_hset_s(r, L"MPDM", MPDM_H(0));
-    mpdm_hset_s(v, L"version",          MPDM_MBS(VERSION));
-    mpdm_hset_s(v, L"build_git_rev",    MPDM_MBS(mpdm_build_git_rev));
-    mpdm_hset_s(v, L"build_timestamp",  MPDM_MBS(mpdm_build_timestamp));
+    v = mpdm_set_wcs(r, MPDM_O(), L"MPDM");
+    mpdm_set_wcs(v, MPDM_MBS(VERSION),              L"version");
+    mpdm_set_wcs(v, MPDM_MBS(mpdm_build_git_rev),   L"build_git_rev");
+    mpdm_set_wcs(v, MPDM_MBS(mpdm_build_timestamp), L"build_timestamp");
 
     /* store the ENV hash */
-    mpdm_hset_s(r, L"ENV", build_env());
+    mpdm_set_wcs(r, build_env(), L"ENV");
 
     /* store the special values TRUE and FALSE */
-    mpdm_hset_s(r, L"TRUE",  MPDM_I(1));
-    mpdm_hset_s(r, L"FALSE", MPDM_I(0));
+    mpdm_set_wcs(r, MPDM_I(1), L"TRUE");
+    mpdm_set_wcs(r, MPDM_I(0), L"FALSE");
 
     /* everything went OK */
     return 0;

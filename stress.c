@@ -459,7 +459,7 @@ void test_hash(void)
 
     do_test("hget 1.2.1", mpdm_get(h, MPDM_S(L"ok")) != NULL);
 
-    mpdm_hset_s(h, L"ok", MPDM_I(777));
+    mpdm_set_wcs(h, MPDM_I(777), L"ok");
 
     v = mpdm_get_wcs(h, L"ok");
     do_test("hget_s + hset_s", mpdm_ival(v) == 777);

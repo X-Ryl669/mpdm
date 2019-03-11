@@ -69,7 +69,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
 
     /* if cache does not exist, create it */
     if ((regex_cache = mpdm_get_wcs(mpdm_root(), L"__REGEX_CACHE__")) == NULL)
-        regex_cache = mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", MPDM_H(0));
+        regex_cache = mpdm_set_wcs(mpdm_root(), MPDM_O(), L"__REGEX_CACHE__");
 
     /* search the regex in the cache */
     if ((c = mpdm_get(regex_cache, r)) == NULL) {

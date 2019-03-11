@@ -359,7 +359,7 @@ wchar_t *mpdm_string(const mpdm_t v)
             mpdm_t c, w;
 
             if ((c = mpdm_get_wcs(mpdm_root(), L"__STRINGIFY__")) == NULL)
-                c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
+                c = mpdm_set_wcs(mpdm_root(), MPDM_O(), L"__STRINGIFY__");
 
             if ((w = mpdm_get_wcs(c, wstr)) == NULL) {
                 w = MPDM_S(wstr);
@@ -692,7 +692,7 @@ mpdm_t mpdm_gettext(const mpdm_t str)
 
         /* gets the cache */
         if ((i18n = mpdm_get_wcs(mpdm_root(), L"__I18N__")) == NULL)
-            i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+            i18n = mpdm_set_wcs(mpdm_root(), MPDM_O(), L"__I18N__");
 
         mpdm_ref(str);
 
@@ -765,7 +765,7 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
     bindtextdomain((char *) dm->data, (char *) dt->data);
     textdomain((char *) dm->data);
 
-    mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
+    mpdm_set_wcs(mpdm_root(), MPDM_O(), L"__I18N__");
 
     mpdm_unref(dt);
     mpdm_unref(dm);
@@ -796,7 +796,7 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
         if (c < sizeof(win_langs) / sizeof(char *))
             ptr = win_langs[c];
 
-        mpdm_hset_s(v, L"LANG", MPDM_MBS(ptr));
+        mpdm_set_wcs(v, MPDM_MBS(ptr), L"LANG");
     }
 
 #endif                          /* CONFOPT_WIN32 */
