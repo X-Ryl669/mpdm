@@ -131,7 +131,7 @@ int mpdm_count(mpdm_t v)
         break;
 
     case MPDM_TYPE_OBJECT:
-        r = mpdm_hsize(v);
+        r = mpdm_count_o(v);
         break;
 
     default:
@@ -647,7 +647,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
         case MPDM_TYPE_STRING:
             /* hash~string -> array */
-            r = MPDM_A(mpdm_hsize(a));
+            r = MPDM_A(mpdm_count(a));
 
             n = 0;
             while (mpdm_iterator(a, &n, &v, &i))
