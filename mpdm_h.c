@@ -67,12 +67,6 @@ static int switch_hash_func(const wchar_t *string, int mod)
 /* interface */
 
 
-void mpdm_object__destroy(mpdm_t o)
-{
-    mpdm_array__destroy(o);
-}
-
-
 mpdm_t mpdm_new_h(int size)
 /* creates a new hash value */
 {
@@ -154,35 +148,6 @@ mpdm_t mpdm_hget(const mpdm_t h, const mpdm_t k)
     mpdm_unref(k);
 
     return r;
-}
-
-
-/**
- * mpdm_exists - Tests if there is a value available by index.
- * @h: the hash
- * @i: the index
- *
- * Returns 1 if exists a value indexable by @i in @h, or 0 othersize.
- * [Hashes]
- */
-int mpdm_exists(const mpdm_t h, const mpdm_t i)
-{
-    mpdm_t b;
-    int ret = 0;
-
-    mpdm_ref(i);
-
-    if (mpdm_size(h)) {
-        if ((b = mpdm_aget(h, HASH_BUCKET(h, i))) != NULL) {
-            /* if bucket exists, binary-seek it */
-            if (mpdm_bseek(b, i, 2, NULL) >= 0)
-                ret = 1;
-        }
-    }
-
-    mpdm_unref(i);
-
-    return ret;
 }
 
 
@@ -322,46 +287,4 @@ mpdm_t mpdm_keys(const mpdm_t h)
     mpdm_unref(h);
 
     return a;
-}
-
-
-int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
-{
-    int ret = 0;
-
-    mpdm_ref(set);
-
-    if (mpdm_size(set)) {
-        int bi, ei;
-
-        /* get bucket and element index */
-        bi = (*context) % mpdm_size(set);
-        ei = (*context) / mpdm_size(set);
-
-        while (ret == 0 && bi < mpdm_size(set)) {
-            mpdm_t b;
-
-            /* if bucket is empty or there are no more
-               elements in it, pick the next one */
-            if (!(b = mpdm_aget(set, bi)) || ei >= mpdm_size(b)) {
-                ei = 0;
-                bi++;
-            }
-            else {
-                /* get pair */
-                if (v) *v = mpdm_aget(b, ei + 1);
-                if (i) *i = mpdm_aget(b, ei);
-
-                ei += 2;
-
-                /* update context */
-                *context = (ei * mpdm_size(set)) + bi;
-                ret = 1;
-            }
-        }
-    }
-
-    mpdm_unrefnd(set);
-
-    return ret;
 }

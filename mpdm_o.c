@@ -1,0 +1,363 @@
+/*
+
+    MPDM - Minimum Profit Data Manager
+    mpdm_o.c - Object management
+
+    Angel Ortega <angel@triptico.com> et al.
+
+    This software is released into the public domain.
+    NO WARRANTY. See file LICENSE for details.
+
+*/
+
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
+
+#include "mpdm.h"
+
+/** code **/
+
+/* default hash buckets (must be prime) */
+static int mpdm_hash_buckets = 31;
+
+/* prototype for the one-time wrapper hash function */
+static int switch_hash_func(const wchar_t *, int);
+
+/* pointer to the hashing function */
+static int (*mpdm_hash_func) (const wchar_t *, int) = switch_hash_func;
+
+static int standard_hash_func(const wchar_t *string, int mod)
+/* computes a hashing function on string */
+{
+    int c;
+
+    for (c = 0; *string != L'\0'; string++)
+        c ^= (int) *string;
+
+    return c % mod;
+}
+
+
+static int null_hash_func(const wchar_t *string, int mod)
+{
+    return *string % mod;
+}
+
+static int switch_hash_func(const wchar_t *string, int mod)
+/* one-time wrapper for hash method autodetection */
+{
+    /* commute the real hashing function on
+       having the MPDM_NULL_HASH environment variable set */
+    if (getenv("MPDM_NULL_HASH") != NULL)
+        mpdm_hash_func = null_hash_func;
+    else
+        mpdm_hash_func = standard_hash_func;
+
+    /* and fall back to it */
+    return mpdm_hash_func(string, mod);
+}
+
+#define HASH_BUCKET_S(h, k) mpdm_hash_func(k, mpdm_size(h))
+#define HASH_BUCKET(h, k)   mpdm_hash_func(mpdm_string(k), mpdm_size(h))
+
+/* interface */
+
+
+void mpdm_object__destroy(mpdm_t o)
+{
+    mpdm_array__destroy(o);
+}
+
+
+mpdm_t mpdm_new_o(void)
+/* creates a new object */
+{
+    mpdm_t v;
+
+    /* creates and expands */
+    v = mpdm_new(MPDM_TYPE_OBJECT, NULL, 0);
+
+    return v;
+}
+
+
+/**
+ * mpdm_count_o - Returns the number of elements in an object.
+ * @o: the object
+ *
+ * Returns the number of elements inside an object.
+ * [Objects]
+ */
+int mpdm_count_o(const mpdm_t o)
+{
+    int n;
+    int ret = 0;
+
+    for (n = 0; n < mpdm_size(o); n++) {
+        mpdm_t b = mpdm_aget(o, n);
+        ret += mpdm_size(b);
+    }
+
+    return ret / 2;
+}
+
+
+/**
+ * mpdm_get_wcs - Gets the value from an object by string index (string version).
+ * @o: the object
+ * @i: the index
+ *
+ * Returns the value from @o by index @i, or NULL if there is no
+ * value addressable by that index.
+ * [Objects]
+ */
+mpdm_t mpdm_get_wcs(const mpdm_t o, const wchar_t *i)
+{
+    mpdm_t b;
+    mpdm_t v = NULL;
+    int n = 0;
+
+    if (mpdm_size(o)) {
+        /* if hash is not empty... */
+        if ((b = mpdm_aget(o, HASH_BUCKET_S(o, i))) != NULL)
+            n = mpdm_bseek_wcs(b, i, 2, NULL);
+
+        if (n >= 0)
+            v = mpdm_aget(b, n + 1);
+    }
+
+    return v;
+}
+
+
+/**
+ * mpdm_get_o - Gets a value from an object.
+ * @o: the object
+ * @i: the index
+ *
+ * Returns the value from @o by index @i, or NULL if there is no
+ * value addressable by that index.
+ * [Objects]
+ */
+mpdm_t mpdm_get_o(const mpdm_t o, const mpdm_t i)
+{
+    mpdm_t r;
+
+    mpdm_ref(i);
+    r = mpdm_get_wcs(o, mpdm_string(i));
+    mpdm_unref(i);
+
+    return r;
+}
+
+
+/**
+ * mpdm_exists - Tests if there is a value available by index.
+ * @o: the object
+ * @i: the index
+ *
+ * Returns 1 if exists a value indexable by @i in @h, or 0 othersize.
+ * [Hashes]
+ */
+int mpdm_exists(const mpdm_t o, const mpdm_t i)
+{
+    mpdm_t b;
+    int ret = 0;
+
+    mpdm_ref(i);
+
+    if (mpdm_size(o)) {
+        if ((b = mpdm_aget(o, HASH_BUCKET(o, i))) != NULL) {
+            /* if bucket exists, binary-seek it */
+            if (mpdm_bseek(b, i, 2, NULL) >= 0)
+                ret = 1;
+        }
+    }
+
+    mpdm_unref(i);
+
+    return ret;
+}
+
+
+/**
+ * mpdm_set_o - Sets a value in an object.
+ * @o: the object
+ * @v: the value
+ * @i: the index
+ *
+ * Sets the value @v inside the object @o, accesible by index @i.
+ * Returns @v.
+ * [Objects]
+ */
+mpdm_t mpdm_set_o(mpdm_t o, mpdm_t v, mpdm_t i)
+{
+    mpdm_t b, r;
+    int n;
+
+    mpdm_ref(i);
+    mpdm_ref(v);
+
+    /* if hash is empty, create an optimal number of buckets */
+    if (mpdm_size(o) == 0)
+        mpdm_expand(o, 0, mpdm_hash_buckets);
+
+    n = HASH_BUCKET(o, i);
+
+    if ((b = mpdm_aget(o, n)) != NULL) {
+        int pos;
+
+        /* bucket exists; try to find the key there */
+        n = mpdm_bseek(b, i, 2, &pos);
+
+        if (n < 0) {
+            /* the pair does not exist: create it */
+            n = pos;
+            mpdm_expand(b, n, 2);
+
+            mpdm_aset(b, i, n);
+        }
+    }
+    else {
+        /* the bucket does not exist; create it */
+        b = MPDM_A(2);
+
+        /* put the bucket into the hash */
+        mpdm_aset(o, b, n);
+
+        /* offset 0 */
+        n = 0;
+
+        /* insert the key */
+        mpdm_aset(b, i, n);
+    }
+
+    r = mpdm_aset(b, v, n + 1);
+
+    mpdm_unref(v);
+    mpdm_unref(i);
+
+    return r;
+}
+
+
+/**
+ * mpdm_set_wcs - Sets a value in an object (string version).
+ * @o: the object
+ * @v: the value
+ * @i: the index
+ *
+ * Sets the value @v inside the object @o, accesible by index @i.
+ * Returns @v.
+ * [Objects]
+ */
+mpdm_t mpdm_set_wcs(mpdm_t o, mpdm_t v, const wchar_t *i)
+{
+    return mpdm_set_o(o, v, MPDM_S(i));
+}
+
+
+/**
+ * mpdm_del_o - Deletes a value from an object.
+ * @o: the value
+ * @i: the index
+ *
+ * Deletes the element accesible by index @i from @o. Returns NULL
+ * (versions prior to 1.0.10 returned the deleted value).
+ * [Objects]
+ */
+mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i)
+{
+    mpdm_t b;
+    int n;
+
+    mpdm_ref(i);
+
+    if (mpdm_size(o)) {
+        if ((b = mpdm_aget(o, HASH_BUCKET(o, i))) != NULL) {
+            /* bucket exists */
+            if ((n = mpdm_bseek(b, i, 2, NULL)) >= 0) {
+                /* collapse the bucket */
+                mpdm_collapse(b, n, 2);
+            }
+        }
+    }
+
+    mpdm_unref(i);
+
+    return NULL;
+}
+
+
+/**
+ * mpdm_indexes - Returns the indexes of an object.
+ * @o: the object
+ *
+ * Returns an array containing all the indexes of the @o object.
+ * [Objects]
+ * [Arrays]
+ */
+mpdm_t mpdm_indexes(const mpdm_t o)
+{
+    int c;
+    mpdm_t a, i;
+
+    mpdm_ref(o);
+
+    /* create an array with the same number of elements */
+    a = MPDM_A(0);
+
+    c = 0;
+    while (mpdm_iterator(o, &c, NULL, &i))
+        mpdm_push(a, i);
+
+    mpdm_unref(o);
+
+    return a;
+}
+
+
+int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
+{
+    int ret = 0;
+
+    mpdm_ref(set);
+
+    if (mpdm_size(set)) {
+        int bi, ei;
+
+        /* get bucket and element index */
+        bi = (*context) % mpdm_size(set);
+        ei = (*context) / mpdm_size(set);
+
+        while (ret == 0 && bi < mpdm_size(set)) {
+            mpdm_t b;
+
+            /* if bucket is empty or there are no more
+               elements in it, pick the next one */
+            if (!(b = mpdm_aget(set, bi)) || ei >= mpdm_size(b)) {
+                ei = 0;
+                bi++;
+            }
+            else {
+                /* get pair */
+                if (v) *v = mpdm_aget(b, ei + 1);
+                if (i) *i = mpdm_aget(b, ei);
+
+                ei += 2;
+
+                /* update context */
+                *context = (ei * mpdm_size(set)) + bi;
+                ret = 1;
+            }
+        }
+    }
+
+    mpdm_unrefnd(set);
+
+    return ret;
+}
