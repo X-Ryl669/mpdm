@@ -180,7 +180,7 @@ mpdm_t mpdm_del(mpdm_t set, mpdm_t i)
         break;
 
     case MPDM_TYPE_OBJECT:
-        r = mpdm_hdel(set, i);
+        r = mpdm_del_o(set, i);
         break;
 
     default:
