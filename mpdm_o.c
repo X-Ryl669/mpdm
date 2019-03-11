@@ -293,34 +293,6 @@ mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i)
 }
 
 
-/**
- * mpdm_indexes - Returns the indexes of an object.
- * @o: the object
- *
- * Returns an array containing all the indexes of the @o object.
- * [Objects]
- * [Arrays]
- */
-mpdm_t mpdm_indexes(const mpdm_t o)
-{
-    int c;
-    mpdm_t a, i;
-
-    mpdm_ref(o);
-
-    /* create an array with the same number of elements */
-    a = MPDM_A(0);
-
-    c = 0;
-    while (mpdm_iterator(o, &c, NULL, &i))
-        mpdm_push(a, i);
-
-    mpdm_unref(o);
-
-    return a;
-}
-
-
 int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
 {
     int ret = 0;
@@ -467,5 +439,21 @@ mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k)
  */
 mpdm_t mpdm_keys(const mpdm_t h)
 {
-    return mpdm_indexes(h);
+    int c;
+    mpdm_t a, i;
+
+    printf("Warning: deprecated function mpdm_keys()\n");
+
+    mpdm_ref(h);
+
+    /* create an array with the same number of elements */
+    a = MPDM_A(0);
+
+    c = 0;
+    while (mpdm_iterator(h, &c, NULL, &i))
+        mpdm_push(a, i);
+
+    mpdm_unref(h);
+
+    return a;
 }

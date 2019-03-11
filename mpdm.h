@@ -160,7 +160,6 @@ int mpdm_exists(const mpdm_t h, const mpdm_t i);
 mpdm_t mpdm_set_o(mpdm_t o, mpdm_t v, mpdm_t i);
 mpdm_t mpdm_set_wcs(mpdm_t o, mpdm_t v, const wchar_t *i);
 mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i);
-mpdm_t mpdm_indexes(const mpdm_t o);
 int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 
 wchar_t *mpdm_read_mbs(FILE *f, int *s);
