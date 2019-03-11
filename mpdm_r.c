@@ -68,7 +68,7 @@ mpdm_t mpdm_regcomp(mpdm_t r)
     mpdm_ref(r);
 
     /* if cache does not exist, create it */
-    if ((regex_cache = mpdm_hget_s(mpdm_root(), L"__REGEX_CACHE__")) == NULL)
+    if ((regex_cache = mpdm_get_wcs(mpdm_root(), L"__REGEX_CACHE__")) == NULL)
         regex_cache = mpdm_hset_s(mpdm_root(), L"__REGEX_CACHE__", MPDM_H(0));
 
     /* search the regex in the cache */

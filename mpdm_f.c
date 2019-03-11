@@ -1319,7 +1319,7 @@ static mpdm_t embedded_encodings(void)
         NULL,          NULL
     };
 
-    if ((e = mpdm_hget_s(mpdm_root(), L"EMBEDDED_ENCODINGS")) == NULL) {
+    if ((e = mpdm_get_wcs(mpdm_root(), L"EMBEDDED_ENCODINGS")) == NULL) {
         int n;
         mpdm_t p = NULL;
 
@@ -2136,7 +2136,7 @@ mpdm_t mpdm_home_dir(void)
 mpdm_t mpdm_app_dir(void)
 {
     mpdm_t r = NULL;
-    mpdm_t appid = mpdm_hget_s(mpdm_root(), L"APPID");
+    mpdm_t appid = mpdm_get_wcs(mpdm_root(), L"APPID");
     int aok = 0;
 
 #ifdef CONFOPT_WIN32
@@ -2389,14 +2389,14 @@ mpdm_t mpdm_new_f(FILE *f)
 #endif
 
     /* autochomp? */
-    fs->auto_chomp = mpdm_is_true(mpdm_hget_s(mpdm_root(), L"AUTO_CHOMP"));
+    fs->auto_chomp = mpdm_is_true(mpdm_get_wcs(mpdm_root(), L"AUTO_CHOMP"));
 
     v = mpdm_new(MPDM_TYPE_FILE, fs, sizeof(struct mpdm_file));
 
-    e = mpdm_hget_s(mpdm_root(), L"ENCODING");
+    e = mpdm_get_wcs(mpdm_root(), L"ENCODING");
 
     if (mpdm_size(e) == 0)
-        e = mpdm_hget_s(mpdm_root(), L"TEMP_ENCODING");
+        e = mpdm_get_wcs(mpdm_root(), L"TEMP_ENCODING");
 
     if (mpdm_size(e)) {
         wchar_t *enc = mpdm_string(e);

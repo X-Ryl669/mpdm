@@ -76,12 +76,7 @@ void mpdm_object__destroy(mpdm_t o)
 mpdm_t mpdm_new_o(void)
 /* creates a new object */
 {
-    mpdm_t v;
-
-    /* creates and expands */
-    v = mpdm_new(MPDM_TYPE_OBJECT, NULL, 0);
-
-    return v;
+    return mpdm_new(MPDM_TYPE_OBJECT, NULL, 0);
 }
 
 

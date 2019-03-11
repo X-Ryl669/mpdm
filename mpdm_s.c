@@ -358,10 +358,10 @@ wchar_t *mpdm_string(const mpdm_t v)
         if (wstr[0]) {
             mpdm_t c, w;
 
-            if ((c = mpdm_hget_s(mpdm_root(), L"__STRINGIFY__")) == NULL)
+            if ((c = mpdm_get_wcs(mpdm_root(), L"__STRINGIFY__")) == NULL)
                 c = mpdm_hset_s(mpdm_root(), L"__STRINGIFY__", MPDM_H(0));
 
-            if ((w = mpdm_hget_s(c, wstr)) == NULL) {
+            if ((w = mpdm_get_wcs(c, wstr)) == NULL) {
                 w = MPDM_S(wstr);
                 mpdm_hset(c, w, w);
             }
@@ -691,7 +691,7 @@ mpdm_t mpdm_gettext(const mpdm_t str)
         mpdm_t i18n = NULL;
 
         /* gets the cache */
-        if ((i18n = mpdm_hget_s(mpdm_root(), L"__I18N__")) == NULL)
+        if ((i18n = mpdm_get_wcs(mpdm_root(), L"__I18N__")) == NULL)
             i18n = mpdm_hset_s(mpdm_root(), L"__I18N__", MPDM_H(0));
 
         mpdm_ref(str);
@@ -778,8 +778,8 @@ int mpdm_gettext_domain(const mpdm_t dom, const mpdm_t data)
 
     mpdm_t v;
 
-    if ((v = mpdm_hget_s(mpdm_root(), L"ENV")) != NULL &&
-             mpdm_hget_s(v, L"LANG") == NULL) {
+    if ((v = mpdm_get_wcs(mpdm_root(), L"ENV")) != NULL &&
+             mpdm_get_wcs(v, L"LANG") == NULL) {
         const char *ptr = "en";
         int c;
         const char *win_langs[] = {

@@ -432,7 +432,7 @@ void test_hash(void)
 
     if (verbose)
         mpdm_dump(h);
-    v = mpdm_hget_s(h, L"ok");
+    v = mpdm_get_wcs(h, L"ok");
 
     if (verbose)
         printf("v %s\n", v == NULL ? "is NULL" : "is NOT NULL");
@@ -445,7 +445,7 @@ void test_hash(void)
 
     i = 0;
     for (n = 0; n < 1000; n++) {
-        if (mpdm_hget_s(h, L"ok") != NULL)
+        if (mpdm_get_wcs(h, L"ok") != NULL)
             i++;
     }
 
@@ -455,13 +455,13 @@ void test_hash(void)
     do_test("hget_s 1.2", i == 1000);
 
     if (i != 1000)
-        mpdm_hget_s(h, L"ok");
+        mpdm_get_wcs(h, L"ok");
 
     do_test("hget 1.2.1", mpdm_hget(h, MPDM_S(L"ok")) != NULL);
 
     mpdm_hset_s(h, L"ok", MPDM_I(777));
 
-    v = mpdm_hget_s(h, L"ok");
+    v = mpdm_get_wcs(h, L"ok");
     do_test("hget_s + hset_s", mpdm_ival(v) == 777);
 
     mpdm_unref(h);
@@ -1743,8 +1743,8 @@ void test_json_in(void)
     v = json_parser_t(L"{\"k1\": 10, \"k2\":20}");
     mpdm_ref(v);
     do_test("JSON 4", mpdm_type(v) == MPDM_TYPE_OBJECT);
-    do_test("JSON 4.1", mpdm_ival(mpdm_hget_s(v, L"k2")) == 20);
-    do_test("JSON 4.2", mpdm_ival(mpdm_hget_s(v, L"k1")) == 10);
+    do_test("JSON 4.1", mpdm_ival(mpdm_get_wcs(v, L"k2")) == 20);
+    do_test("JSON 4.2", mpdm_ival(mpdm_get_wcs(v, L"k1")) == 10);
     mpdm_unref(v);
 
     v = json_parser_t(L"{\"k1\":[1,2,3,4],\"k2\":{\"skey\":\"svalue\"}}");
