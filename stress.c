@@ -326,7 +326,7 @@ void test_array(void)
     v = mpdm_ref(mpdm_clone(a));
     do_test("mpdm_cmp: array clones are equal", mpdm_cmp(a, v) == 0);
 
-    mpdm_adel(v, -1);
+    mpdm_del_i(v, -1);
     do_test("mpdm_cmp: shorter arrays are lesser", mpdm_cmp(a, v) > 0);
 
     mpdm_push(v, MPDM_I(80));

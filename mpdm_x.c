@@ -182,7 +182,7 @@ mpdm_t mpdm_del(mpdm_t set, mpdm_t i)
 
     switch (mpdm_type(set)) {
     case MPDM_TYPE_ARRAY:
-        r = mpdm_adel(set, mpdm_ival(i));
+        r = mpdm_del_i(set, mpdm_ival(i));
         break;
 
     case MPDM_TYPE_OBJECT:
