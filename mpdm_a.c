@@ -703,7 +703,9 @@ mpdm_t mpdm_reverse(const mpdm_t a)
 }
 
 
-mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
+mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i,
+                     int offset, int del, mpdm_t *n, mpdm_t *d)
+/* do not use this; use mpdm_splice() */
 {
     int c;
 

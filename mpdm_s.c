@@ -420,7 +420,9 @@ int mpdm_cmp_wcs(const mpdm_t v1, const wchar_t *v2)
  * Returns the new value (if created) or the deleted value (if created).
  * [Strings]
  */
-mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
+mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i,
+                     int offset, int del, mpdm_t *n, mpdm_t *d)
+/* do not use this; use mpdm_splice() */
 {
     mpdm_ref(v);
     mpdm_ref(i);

@@ -315,6 +315,8 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 }
 
 
+int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
+
 /**
  * mpdm_iterator - Iterates through the content of a set.
  * @set: the set (hash, array, file or scalar)
@@ -718,7 +720,13 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 }
 
 
-mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d)
+mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i,
+                     int offset, int del, mpdm_t *n, mpdm_t *d);
+mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i,
+                     int offset, int del, mpdm_t *n, mpdm_t *d);
+
+mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i,
+                   int offset, int del, mpdm_t *n, mpdm_t *d)
 {
     mpdm_t r;
 

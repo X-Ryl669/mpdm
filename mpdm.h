@@ -118,7 +118,6 @@ mpdm_t mpdm_split_wcs(const mpdm_t v, const wchar_t *s);
 mpdm_t mpdm_split(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s);
 mpdm_t mpdm_reverse(const mpdm_t a);
-mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 
 void *mpdm_poke_2(void *dst, int *dsize, int *offset, const void *org, int osize, int esize);
 void *mpdm_poke(void *dst, int *dsize, const void *org, int osize, int esize);
@@ -134,7 +133,6 @@ mpdm_t mpdm_new_i(int ival);
 mpdm_t mpdm_new_r(double rval);
 wchar_t *mpdm_string(const mpdm_t v);
 int mpdm_cmp_wcs(const mpdm_t v1, const wchar_t *v2);
-mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 mpdm_t mpdm_strcat_wcsn(const mpdm_t s1, const wchar_t *s2, int size);
 mpdm_t mpdm_strcat_wcs(const mpdm_t s1, const wchar_t *s2);
 mpdm_t mpdm_strcat(const mpdm_t s1, const mpdm_t s2);
@@ -160,7 +158,6 @@ int mpdm_exists(const mpdm_t h, const mpdm_t i);
 mpdm_t mpdm_set_o(mpdm_t o, mpdm_t v, mpdm_t i);
 mpdm_t mpdm_set_wcs(mpdm_t o, mpdm_t v, const wchar_t *i);
 mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i);
-int mpdm_iterator_o(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i);
 
 wchar_t *mpdm_read_mbs(FILE *f, int *s);
 int mpdm_write_wcs(FILE * f, const wchar_t * str);
