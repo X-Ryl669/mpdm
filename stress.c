@@ -96,15 +96,15 @@ void test_basic(void)
     mpdm_unref(w);
 
     v = mpdm_ref(MPDM_A(2));
-    mpdm_aset(v, MPDM_S(L"evil"), 0);
-    mpdm_aset(v, MPDM_S(L"dead"), 1);
+    mpdm_set_i(v, MPDM_S(L"evil"), 0);
+    mpdm_set_i(v, MPDM_S(L"dead"), 1);
     w = mpdm_ref(mpdm_clone(v));
 
     do_test("Testing mpdm_clone semantics 2.1", w != v);
 
-    t = mpdm_aget(v, 0);
+    t = mpdm_get_i(v, 0);
     do_test("Testing mpdm_clone semantics 2.2", t->ref > 1);
-    do_test("Testing mpdm_clone semantics 2.3", mpdm_aget(w, 0) == t);
+    do_test("Testing mpdm_clone semantics 2.3", mpdm_get_i(w, 0) == t);
 
     mpdm_unref(w);
     mpdm_unref(v);
@@ -197,7 +197,7 @@ mpdm_t sort_cb(mpdm_t args)
     int d;
 
     /* sorts reversely */
-    d = mpdm_cmp(mpdm_aget(args, 1), mpdm_aget(args, 0));
+    d = mpdm_cmp(mpdm_get_i(args, 1), mpdm_get_i(args, 0));
     return (MPDM_I(d));
 }
 
@@ -224,36 +224,36 @@ void test_array(void)
         mpdm_dump(a);
     do_test("a->size == 7", (a->size == 7));
 
-    v = mpdm_aget(a, 3);
+    v = mpdm_get_i(a, 3);
     mpdm_ref(v);
-    mpdm_aset(a, NULL, 3);
+    mpdm_set_i(a, NULL, 3);
     if (verbose)
         mpdm_dump(a);
 
     mpdm_sort(a, 1);
-    do_test("NULLs are sorted on top", (mpdm_aget(a, 0) == NULL));
+    do_test("NULLs are sorted on top", (mpdm_get_i(a, 0) == NULL));
 
-    mpdm_aset(a, v, 0);
+    mpdm_set_i(a, v, 0);
     mpdm_unref(v);
 
-    v = mpdm_aget(a, 3);
+    v = mpdm_get_i(a, 3);
     do_test("v is referenced again", (v != NULL && v->ref > 0));
 
     mpdm_sort(a, 1);
     do_test("mpdm_asort() works (1)",
-            mpdm_cmp(mpdm_aget(a, 0), MPDM_S(L"friday")) == 0);
+            mpdm_cmp(mpdm_get_i(a, 0), MPDM_S(L"friday")) == 0);
     do_test("mpdm_asort() works (2)",
-            mpdm_cmp(mpdm_aget(a, 6), MPDM_S(L"wednesday")) == 0);
+            mpdm_cmp(mpdm_get_i(a, 6), MPDM_S(L"wednesday")) == 0);
 
     /* asort_cb sorts reversely */
     mpdm_sort_cb(a, 1, MPDM_X(sort_cb));
 
     do_test("mpdm_asort_cb() works (1)",
-            mpdm_cmp(mpdm_aget(a, 6), MPDM_S(L"friday")) == 0);
+            mpdm_cmp(mpdm_get_i(a, 6), MPDM_S(L"friday")) == 0);
     do_test("mpdm_asort_cb() works (2)",
-            mpdm_cmp(mpdm_aget(a, 0), MPDM_S(L"wednesday")) == 0);
+            mpdm_cmp(mpdm_get_i(a, 0), MPDM_S(L"wednesday")) == 0);
 
-    v = mpdm_aget(a, 3);
+    v = mpdm_get_i(a, 3);
     mpdm_ref(v);
     n = v->ref;
     mpdm_collapse(a, 3, 1);
@@ -293,20 +293,20 @@ void test_array(void)
 
     a = MPDM_A(4);
     mpdm_ref(a);
-    mpdm_aset(a, MPDM_I(666), 6000);
+    mpdm_set_i(a, MPDM_I(666), 6000);
 
     do_test("array should have been automatically expanded",
             mpdm_size(a) == 6001);
 
-    v = mpdm_aget(a, -1);
+    v = mpdm_get_i(a, -1);
     do_test("negative offsets in arrays 1", mpdm_ival(v) == 666);
 
-    mpdm_aset(a, MPDM_I(777), -2);
-    v = mpdm_aget(a, 5999);
+    mpdm_set_i(a, MPDM_I(777), -2);
+    v = mpdm_get_i(a, 5999);
     do_test("negative offsets in arrays 2", mpdm_ival(v) == 777);
 
     mpdm_push(a, MPDM_I(888));
-    v = mpdm_aget(a, -1);
+    v = mpdm_get_i(a, -1);
     do_test("negative offsets in arrays 3", mpdm_ival(v) == 888);
 
     v = MPDM_A(0);
@@ -320,8 +320,8 @@ void test_array(void)
     /* array comparisons with mpdm_cmp() */
     a = MPDM_A(2);
     mpdm_ref(a);
-    mpdm_aset(a, MPDM_I(10), 0);
-    mpdm_aset(a, MPDM_I(60), 1);
+    mpdm_set_i(a, MPDM_I(10), 0);
+    mpdm_set_i(a, MPDM_I(60), 1);
 
     v = mpdm_ref(mpdm_clone(a));
     do_test("mpdm_cmp: array clones are equal", mpdm_cmp(a, v) == 0);
@@ -605,7 +605,7 @@ void test_split(void)
     w = mpdm_split(MPDM_S(L"I am the man"), NULL);
     do_test("NULL split 1: ", mpdm_size(w) == 12);
     do_test("NULL split 2: ",
-            mpdm_cmp(mpdm_aget(w, 0), MPDM_S(L"I")) == 0);
+            mpdm_cmp(mpdm_get_i(w, 0), MPDM_S(L"I")) == 0);
 }
 
 
@@ -620,7 +620,7 @@ void test_join(void)
 
     w = MPDM_A(1);
     mpdm_ref(w);
-    mpdm_aset(w, MPDM_S(L"ce"), 0);
+    mpdm_set_i(w, MPDM_S(L"ce"), 0);
 
     v = mpdm_join(w, NULL);
     do_test("1 elem, no separator", (mpdm_cmp(v, MPDM_S(L"ce")) == 0));
@@ -874,25 +874,25 @@ void test_regex(void)
     v = mpdm_regex(MPDM_S(L"key=value"), w, 0);
     mpdm_ref(v);
     do_test("multi-regex 1.1",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"key")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"key")) == 0);
     do_test("multi-regex 1.2",
-            mpdm_cmp(mpdm_aget(v, 3), MPDM_S(L"value")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 3), MPDM_S(L"value")) == 0);
     mpdm_unref(v);
 
     v = mpdm_regex(MPDM_S(L" key = value"), w, 0);
     mpdm_ref(v);
     do_test("multi-regex 2.1",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"key")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"key")) == 0);
     do_test("multi-regex 2.2",
-            mpdm_cmp(mpdm_aget(v, 3), MPDM_S(L"value")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 3), MPDM_S(L"value")) == 0);
     mpdm_unref(v);
 
     v = mpdm_regex(MPDM_S(L"\t\tkey\t=\tvalue  "), w, 0);
     mpdm_ref(v);
     do_test("multi-regex 3.1",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"key")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"key")) == 0);
     do_test("multi-regex 3.2",
-            mpdm_cmp(mpdm_aget(v, 3), MPDM_S(L"value")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 3), MPDM_S(L"value")) == 0);
     mpdm_unref(v);
 
     mpdm_unref(w);
@@ -961,7 +961,7 @@ static mpdm_t sum(mpdm_t args, mpdm_t ctxt)
 
     if (args != NULL) {
         for (n = t = 0; n < args->size; n++)
-            t += mpdm_ival(mpdm_aget(args, n));
+            t += mpdm_ival(mpdm_get_i(args, n));
     }
 
     return (MPDM_I(t));
@@ -988,7 +988,7 @@ static mpdm_t calculator(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     for (n = 0; n < mpdm_size(c); n++) {
         /* gets operator */
-        o = mpdm_aget(c, n);
+        o = mpdm_get_i(c, n);
 
         /* gets next value */
         v = mpdm_shift(a);
@@ -1034,9 +1034,9 @@ void test_exec(void)
 
     x = mpdm_ref(MPDM_X(sum));
     w = mpdm_ref(MPDM_A(3));
-    mpdm_aset(w, MPDM_I(100), 0);
-    mpdm_aset(w, MPDM_I(220), 1);
-    mpdm_aset(w, MPDM_I(333), 2);
+    mpdm_set_i(w, MPDM_I(100), 0);
+    mpdm_set_i(w, MPDM_I(220), 1);
+    mpdm_set_i(w, MPDM_I(333), 2);
 
     do_test("exec 0", mpdm_ival(mpdm_exec(x, w, NULL)) == 653);
     x = mpdm_unref(x);
@@ -1054,8 +1054,8 @@ void test_exec(void)
     /* the value */
 //    x = mpdm_ref(MPDM_A(2));
 //    x->flags |= MPDM_EXEC;
-//    mpdm_aset(x, MPDM_X(calculator), 0);
-//    mpdm_aset(x, p, 1);
+//    mpdm_set_i(x, MPDM_X(calculator), 0);
+//    mpdm_set_i(x, p, 1);
 
     x = mpdm_ref(MPDM_X2(calculator, p));
 
@@ -1067,7 +1067,7 @@ void test_exec(void)
     mpdm_push(p, MPDM_S(L"/"));
     mpdm_push(p, MPDM_S(L"+"));
 
-    mpdm_aset(x, p, 1);
+    mpdm_set_i(x, p, 1);
 
     do_test("exec 2", mpdm_ival(mpdm_exec(x, w, NULL)) == 67);
     x = mpdm_unref(x);
@@ -1215,7 +1215,7 @@ void bench_hash(int i, mpdm_t l, int buckets)
 
     timer(0);
     for (n = 0; n < i; n++) {
-        v = mpdm_aget(l, n);
+        v = mpdm_get_i(l, n);
         mpdm_set(h, v, v);
     }
     timer(-1);
@@ -1225,7 +1225,7 @@ void bench_hash(int i, mpdm_t l, int buckets)
 /*
     printf("Bucket usage:\n");
     for(n=0;n < mpdm_size(h);n++)
-        printf("\t%d: %d\n", n, mpdm_size(mpdm_aget(h, n)));
+        printf("\t%d: %d\n", n, mpdm_size(mpdm_get_i(h, n)));
 */
 }
 
@@ -1250,8 +1250,8 @@ void benchmark(void)
     l = mpdm_ref(MPDM_A(i));
     for (n = 0; n < i; n++) {
         sprintf(tmp, "%08x", n);
-/*      mpdm_aset(l, MPDM_MBS(tmp), n);*/
-        mpdm_aset(l, MPDM_I(n), n);
+/*      mpdm_set_i(l, MPDM_MBS(tmp), n);*/
+        mpdm_set_i(l, MPDM_I(n), n);
     }
 
     printf("OK\n");
@@ -1422,123 +1422,123 @@ void test_scanf(void)
 
     v = mpdm_sscanf(MPDM_S(L"1234 5678"), MPDM_S(L"%d %d"), 0);
     do_test("mpdm_sscanf_1.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"1234")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"1234")) == 0);
     do_test("mpdm_sscanf_1.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"5678")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"5678")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"this 12.34 5678"), MPDM_S(L"%s %f %d"), 0);
     do_test("mpdm_sscanf_2.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"this")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"this")) == 0);
     do_test("mpdm_sscanf_2.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"12.34")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"12.34")) == 0);
     do_test("mpdm_sscanf_2.3",
-            mpdm_cmp(mpdm_aget(v, 2), MPDM_S(L"5678")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 2), MPDM_S(L"5678")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"this 12.34 5678"), MPDM_S(L"%s %*f %d"), 0);
     do_test("mpdm_sscanf_3.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"this")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"this")) == 0);
     do_test("mpdm_sscanf_3.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"5678")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"5678")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"12341234121234567890"), 
                     MPDM_S(L"%4d%4d%2d%10d"),
                     0);
     do_test("mpdm_sscanf_4.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"1234")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"1234")) == 0);
     do_test("mpdm_sscanf_4.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"1234")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"1234")) == 0);
     do_test("mpdm_sscanf_4.3",
-            mpdm_cmp(mpdm_aget(v, 2), MPDM_S(L"12")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 2), MPDM_S(L"12")) == 0);
     do_test("mpdm_sscanf_4.4",
-            mpdm_cmp(mpdm_aget(v, 3), MPDM_S(L"1234567890")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 3), MPDM_S(L"1234567890")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"ccbaabcxaaae and more"), 
                     MPDM_S(L"%[abc]%s"),
                     0);
     do_test("mpdm_sscanf_5.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"ccbaabc")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"ccbaabc")) == 0);
     do_test("mpdm_sscanf_5.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"xaaae")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"xaaae")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"ccbaabcxaaae and more"),
                     MPDM_S(L"%[a-d]%s"),
                     0);
     do_test("mpdm_sscanf_6.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"ccbaabc")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"ccbaabc")) == 0);
     do_test("mpdm_sscanf_6.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"xaaae")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"xaaae")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"ccbaabcxaaae and more"),
                     MPDM_S(L"%[^x]%s"),
                     0);
     do_test("mpdm_sscanf_7.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"ccbaabc")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"ccbaabc")) == 0);
     do_test("mpdm_sscanf_7.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"xaaae")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"xaaae")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"key: value"),
                     MPDM_S(L"%[^:]: %s"),
                     0);
     do_test("mpdm_sscanf_8.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"key")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"key")) == 0);
     do_test("mpdm_sscanf_8.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"value")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"value")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"this is code /* comment */ more code"), 
                     MPDM_S(L"%*[^/]/* %s */"),
                     0);
     do_test("mpdm_sscanf_9.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"comment")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"comment")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"1234%5678"), MPDM_S(L"%d%%%d"), 0);
     do_test("mpdm_sscanf_10.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"1234")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"1234")) == 0);
     do_test("mpdm_sscanf_10.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"5678")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"5678")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"ccbaabcxaaae and more"), 
                     MPDM_S(L"%*[abc]%n%*[^ ]%n"),
                     0);
-    do_test("mpdm_sscanf_11.1", mpdm_ival(mpdm_aget(v, 0)) == 7);
-    do_test("mpdm_sscanf_11.2", mpdm_ival(mpdm_aget(v, 1)) == 12);
+    do_test("mpdm_sscanf_11.1", mpdm_ival(mpdm_get_i(v, 0)) == 7);
+    do_test("mpdm_sscanf_11.2", mpdm_ival(mpdm_get_i(v, 1)) == 12);
 
     v = mpdm_sscanf(MPDM_S(L"/* inside the comment */"),
                     MPDM_S(L"/* %S */"),
                     0);
     do_test("mpdm_sscanf_12.1",
-            mpdm_cmp(mpdm_aget(v, 0),
+            mpdm_cmp(mpdm_get_i(v, 0),
                      MPDM_S(L"inside the comment")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"/* inside the comment */outside"),
                     MPDM_S(L"/* %S */%s"),
                     0);
     do_test("mpdm_sscanf_13.1",
-            mpdm_cmp(mpdm_aget(v, 0),
+            mpdm_cmp(mpdm_get_i(v, 0),
                      MPDM_S(L"inside the comment")) == 0);
     do_test("mpdm_sscanf_13.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"outside")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"outside")) == 0);
 
     v = mpdm_sscanf(MPDM_S(L""), MPDM_S(L"%n"), 0);
     do_test("mpdm_sscanf_14.1", mpdm_size(v) == 1
-            && mpdm_ival(mpdm_aget(v, 0)) == 0);
+            && mpdm_ival(mpdm_get_i(v, 0)) == 0);
 
     v = mpdm_sscanf(MPDM_S(L"this 12.34 5678#12@34"),
                     MPDM_S(L"%[^%f]%f %[#%d@]"),
                     0);
     do_test("mpdm_sscanf_15.1",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"this ")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"this ")) == 0);
     do_test("mpdm_sscanf_15.2",
-            mpdm_cmp(mpdm_aget(v, 1), MPDM_S(L"12.34")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 1), MPDM_S(L"12.34")) == 0);
     do_test("mpdm_sscanf_15.3",
-            mpdm_cmp(mpdm_aget(v, 2), MPDM_S(L"5678#12@34")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 2), MPDM_S(L"5678#12@34")) == 0);
 
     v = mpdm_sscanf( MPDM_S(L"a \"bbb\" c;"),
                     MPDM_S(L"%*S\"%[^\n\"]\""),
                     0);
     do_test("mpdm_sscanf_16",
-            mpdm_cmp(mpdm_aget(v, 0), MPDM_S(L"bbb")) == 0);
+            mpdm_cmp(mpdm_get_i(v, 0), MPDM_S(L"bbb")) == 0);
 
-    do_test("mpdm_sscanf_17", mpdm_aget(v, 0)->size == 3);
+    do_test("mpdm_sscanf_17", mpdm_get_i(v, 0)->size == 3);
 }
 
 
@@ -1729,15 +1729,15 @@ void test_json_in(void)
     v = json_parser_t(L" [1,2]");
     mpdm_ref(v);
     do_test("JSON 2", mpdm_type(v) == MPDM_TYPE_ARRAY);
-    do_test("JSON 2.1", mpdm_ival(mpdm_aget(v, 0)) == 1);
-    do_test("JSON 2.2", mpdm_ival(mpdm_aget(v, 1)) == 2);
+    do_test("JSON 2.1", mpdm_ival(mpdm_get_i(v, 0)) == 1);
+    do_test("JSON 2.2", mpdm_ival(mpdm_get_i(v, 1)) == 2);
     mpdm_unref(v);
 
     v = json_parser_t(L"[3, [4, 5]]");
     mpdm_ref(v);
     do_test("JSON 3", mpdm_type(v) == MPDM_TYPE_ARRAY);
-    do_test("JSON 3.1", mpdm_ival(mpdm_aget(v, 0)) == 3);
-    do_test("JSON 3.2", mpdm_ival(mpdm_aget(mpdm_aget(v, 1), 1)) == 5);
+    do_test("JSON 3.1", mpdm_ival(mpdm_get_i(v, 0)) == 3);
+    do_test("JSON 3.2", mpdm_ival(mpdm_get_i(mpdm_get_i(v, 1), 1)) == 5);
     mpdm_unref(v);
 
     v = json_parser_t(L"{\"k1\": 10, \"k2\":20}");

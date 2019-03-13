@@ -34,7 +34,7 @@ void mpdm_array__destroy(mpdm_t a)
 
     /* unref all contained values */
     for (n = 0; n < mpdm_size(a); n++)
-        mpdm_unref(mpdm_aget(a, n));
+        mpdm_unref(mpdm_get_i(a, n));
 }
 
 
@@ -201,7 +201,7 @@ mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int index)
 
     /* open room and set value */
     mpdm_expand(a, index, 1);
-    mpdm_aset(a, e, index);
+    mpdm_set_i(a, e, index);
 
     return e;
 }
@@ -243,8 +243,8 @@ mpdm_t mpdm_shift(mpdm_t a)
 {
     mpdm_t r;
 
-    r = mpdm_ref(mpdm_aget(a, 0));
-    mpdm_adel(a, 0);
+    r = mpdm_ref(mpdm_get_i(a, 0));
+    mpdm_del_i(a, 0);
     mpdm_unrefnd(r);
 
     return r;
@@ -278,8 +278,8 @@ mpdm_t mpdm_pop(mpdm_t a)
 {
     mpdm_t r;
 
-    r = mpdm_ref(mpdm_aget(a, -1));
-    mpdm_adel(a, -1);
+    r = mpdm_ref(mpdm_get_i(a, -1));
+    mpdm_del_i(a, -1);
     r = mpdm_unrefnd(r);
 
     return r;
@@ -344,7 +344,7 @@ mpdm_t mpdm_clone(const mpdm_t v)
 
         /* fills each element with duplicates of the original */
         for (n = 0; n < v->size; n++)
-            mpdm_aset(w, mpdm_clone(mpdm_aget(v, n)), n);
+            mpdm_set_i(w, mpdm_clone(mpdm_get_i(v, n)), n);
 
         mpdm_unref(v);
         break;
@@ -382,7 +382,7 @@ int mpdm_seek_wcs(const mpdm_t a, const wchar_t *v, int step)
     for (n = 0; o == -1 && n < mpdm_size(a); n += step) {
         int r;
 
-        r = mpdm_cmp_wcs(mpdm_aget(a, n), v);
+        r = mpdm_cmp_wcs(mpdm_get_i(a, n), v);
 
         if (r == 0)
             o = n;
@@ -449,7 +449,7 @@ int mpdm_bseek_wcs(const mpdm_t a, const wchar_t *v, int step, int *pos)
         mpdm_t w;
 
         n = (b + t) / 2;
-        if ((w = mpdm_aget(a, n * step)) == NULL)
+        if ((w = mpdm_get_i(a, n * step)) == NULL)
             break;
 
         c = mpdm_cmp_wcs(w, v);
@@ -675,7 +675,7 @@ mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s)
                 ptr = mpdm_pokewsn(ptr, &l, s, ss);
 
             /* add element */
-            ptr = mpdm_pokev(ptr, &l, mpdm_aget(a, n));
+            ptr = mpdm_pokev(ptr, &l, mpdm_get_i(a, n));
         }
 
         r = ptr == NULL ? MPDM_S(L"") : MPDM_ENS(ptr, l);
@@ -695,7 +695,7 @@ mpdm_t mpdm_reverse(const mpdm_t a)
     mpdm_ref(a);
 
     for (n = 0; n < m; n++)
-        mpdm_aset(r, mpdm_aget(a, m - n - 1), n);
+        mpdm_set_i(r, mpdm_get_i(a, m - n - 1), n);
 
     mpdm_unref(a);
 
@@ -725,22 +725,22 @@ mpdm_t mpdm_splice_a(const mpdm_t v, const mpdm_t i,
 
         /* copy the first part */
         for (c = 0; c < offset; c++)
-            mpdm_push(*n, mpdm_aget(v, c));
+            mpdm_push(*n, mpdm_get_i(v, c));
 
         /* copy all elements in i */
         for (c = 0; c < mpdm_size(i); c++)
-            mpdm_push(*n, mpdm_aget(i, c));
+            mpdm_push(*n, mpdm_get_i(i, c));
 
         /* copy the remainder */
         for (c = offset + del; c < mpdm_size(v); c++)
-            mpdm_push(*n, mpdm_aget(v, c));
+            mpdm_push(*n, mpdm_get_i(v, c));
     }
 
     if (d) {
         *d = MPDM_A(0);
 
         for (c = offset; c < offset + del; c++)
-            mpdm_push(*d, mpdm_aget(v, c));
+            mpdm_push(*d, mpdm_get_i(v, c));
     }
 
     mpdm_unref(i);

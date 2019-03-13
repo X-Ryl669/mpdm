@@ -335,7 +335,7 @@ void mpdm_thread__destroy(mpdm_t v)
 static void thread_caller(mpdm_t a)
 {
     /* ignore return value */
-    mpdm_void(mpdm_exec(mpdm_aget(a, 0), mpdm_aget(a, 1), mpdm_aget(a, 2)));
+    mpdm_void(mpdm_exec(mpdm_get_i(a, 0), mpdm_get_i(a, 1), mpdm_get_i(a, 2)));
 
     /* was referenced in mpdm_exec_thread() */
     mpdm_unref(a);
@@ -385,9 +385,9 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
     /* to be unreferenced at thread stop */
     a = mpdm_ref(MPDM_A(3));
 
-    mpdm_aset(a, c, 0);
-    mpdm_aset(a, args, 1);
-    mpdm_aset(a, ctxt, 2);
+    mpdm_set_i(a, c, 0);
+    mpdm_set_i(a, args, 1);
+    mpdm_set_i(a, ctxt, 2);
 
 #ifdef CONFOPT_WIN32
     HANDLE t;

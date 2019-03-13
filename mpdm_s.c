@@ -1115,7 +1115,7 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args)
 
     v = fmt;
     for (n = 0; n < mpdm_size(args); n++)
-        v = mpdm_fmt(v, mpdm_aget(args, n));
+        v = mpdm_fmt(v, mpdm_get_i(args, n));
 
     mpdm_unref(args);
 

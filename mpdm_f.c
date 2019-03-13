@@ -1505,19 +1505,19 @@ mpdm_t mpdm_stat(const mpdm_t filename)
 
         mpdm_ref(r);
 
-        mpdm_aset(r, MPDM_I(s.st_dev), 0);
-        mpdm_aset(r, MPDM_I(s.st_ino), 1);
-        mpdm_aset(r, MPDM_I(s.st_mode), 2);
-        mpdm_aset(r, MPDM_I(s.st_nlink), 3);
-        mpdm_aset(r, MPDM_I(s.st_uid), 4);
-        mpdm_aset(r, MPDM_I(s.st_gid), 5);
-        mpdm_aset(r, MPDM_I(s.st_rdev), 6);
-        mpdm_aset(r, MPDM_I(s.st_size), 7);
-        mpdm_aset(r, MPDM_I(s.st_atime), 8);
-        mpdm_aset(r, MPDM_I(s.st_mtime), 9);
-        mpdm_aset(r, MPDM_I(s.st_ctime), 10);
-        mpdm_aset(r, MPDM_I(0), 11);    /* s.st_blksize */
-        mpdm_aset(r, MPDM_I(0), 12);    /* s.st_blocks */
+        mpdm_set_i(r, MPDM_I(s.st_dev), 0);
+        mpdm_set_i(r, MPDM_I(s.st_ino), 1);
+        mpdm_set_i(r, MPDM_I(s.st_mode), 2);
+        mpdm_set_i(r, MPDM_I(s.st_nlink), 3);
+        mpdm_set_i(r, MPDM_I(s.st_uid), 4);
+        mpdm_set_i(r, MPDM_I(s.st_gid), 5);
+        mpdm_set_i(r, MPDM_I(s.st_rdev), 6);
+        mpdm_set_i(r, MPDM_I(s.st_size), 7);
+        mpdm_set_i(r, MPDM_I(s.st_atime), 8);
+        mpdm_set_i(r, MPDM_I(s.st_mtime), 9);
+        mpdm_set_i(r, MPDM_I(s.st_ctime), 10);
+        mpdm_set_i(r, MPDM_I(0), 11);    /* s.st_blksize */
+        mpdm_set_i(r, MPDM_I(0), 12);    /* s.st_blocks */
 
 #ifdef CONFOPT_CANONICALIZE_FILE_NAME
 
@@ -1525,7 +1525,7 @@ mpdm_t mpdm_stat(const mpdm_t filename)
             char *ptr;
 
             if ((ptr = canonicalize_file_name((char *) fn->data)) != NULL) {
-                mpdm_aset(r, MPDM_MBS(ptr), 13);
+                mpdm_set_i(r, MPDM_MBS(ptr), 13);
                 free(ptr);
             }
         }
@@ -1536,7 +1536,7 @@ mpdm_t mpdm_stat(const mpdm_t filename)
             char tmp[2048];
 
             if (realpath((char *) fn->data, tmp) != NULL)
-                mpdm_aset(r, MPDM_MBS(tmp), 13);
+                mpdm_set_i(r, MPDM_MBS(tmp), 13);
         }
 #endif
 
@@ -1545,7 +1545,7 @@ mpdm_t mpdm_stat(const mpdm_t filename)
             char tmp[_MAX_PATH + 1];
 
             if (_fullpath(tmp, (char *) fn->data, _MAX_PATH) != NULL)
-                mpdm_aset(r, MPDM_MBS(tmp), 13);
+                mpdm_set_i(r, MPDM_MBS(tmp), 13);
         }
 #endif
 
@@ -2048,8 +2048,8 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
 #endif
 
         p = mpdm_ref(MPDM_A(2));
-        mpdm_aset(p, i, 0);
-        mpdm_aset(p, o, 1);
+        mpdm_set_i(p, i, 0);
+        mpdm_set_i(p, o, 1);
         mpdm_unrefnd(p);
     }
 

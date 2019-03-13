@@ -158,7 +158,7 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
         break;
 
     case MPDM_TYPE_ARRAY:
-        r = mpdm_aget(set, mpdm_ival(i));
+        r = mpdm_get_i(set, mpdm_ival(i));
         break;
 
     case MPDM_TYPE_OBJECT:
@@ -211,7 +211,7 @@ mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
         break;
 
     case MPDM_TYPE_ARRAY:
-        r = mpdm_aset(set, v, mpdm_ival(i));
+        r = mpdm_set_i(set, v, mpdm_ival(i));
         break;
 
     case MPDM_TYPE_OBJECT:
@@ -269,10 +269,10 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
         /* the executable is internally an array;
            1st element is the 3 argument version of the function (i.e. the cpu),
            2nd its optional additional information (i.e. the bytecode) */
-        r = mpdm_aget(c, 0);
+        r = mpdm_get_i(c, 0);
 
         if ((func3 = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (r->data)) != NULL)
-            r = func3(mpdm_aget(c, 1), args, ctxt);
+            r = func3(mpdm_get_i(c, 1), args, ctxt);
 
         break;
 
@@ -294,7 +294,7 @@ mpdm_t mpdm_exec_1(mpdm_t c, mpdm_t a1, mpdm_t ctxt)
 {
     mpdm_t a = MPDM_A(1);
 
-    mpdm_aset(a, a1, 0);
+    mpdm_set_i(a, a1, 0);
 
     return mpdm_exec(c, a, ctxt);
 }
@@ -304,8 +304,8 @@ mpdm_t mpdm_exec_2(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t ctxt)
 {
     mpdm_t a = MPDM_A(2);
 
-    mpdm_aset(a, a1, 0);
-    mpdm_aset(a, a2, 1);
+    mpdm_set_i(a, a1, 0);
+    mpdm_set_i(a, a2, 1);
 
     return mpdm_exec(c, a, ctxt);
 }
@@ -315,9 +315,9 @@ mpdm_t mpdm_exec_3(mpdm_t c, mpdm_t a1, mpdm_t a2, mpdm_t a3, mpdm_t ctxt)
 {
     mpdm_t a = MPDM_A(3);
 
-    mpdm_aset(a, a1, 0);
-    mpdm_aset(a, a2, 1);
-    mpdm_aset(a, a3, 2);
+    mpdm_set_i(a, a1, 0);
+    mpdm_set_i(a, a2, 1);
+    mpdm_set_i(a, a3, 2);
 
     return mpdm_exec(c, a, ctxt);
 }
@@ -363,7 +363,7 @@ int mpdm_iterator(mpdm_t set, int *context, mpdm_t *v, mpdm_t *i)
     case MPDM_TYPE_ARRAY:
     case MPDM_TYPE_PROGRAM:
         if (*context < mpdm_size(set)) {
-            if (v) *v = mpdm_aget(set, (*context));
+            if (v) *v = mpdm_get_i(set, (*context));
             if (i) *i = MPDM_I(*context);
 
             (*context)++;
@@ -513,8 +513,8 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             case MPDM_TYPE_NULL:
                 /* invert hash */
                 w = MPDM_A(2);
-                mpdm_aset(w, v, 0);
-                mpdm_aset(w, i, 1);
+                mpdm_set_i(w, v, 0);
+                mpdm_set_i(w, i, 1);
 
                 break;
 
@@ -530,7 +530,7 @@ mpdm_t mpdm_hmap(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
             mpdm_ref(w);
 
             if (mpdm_type(w) == MPDM_TYPE_ARRAY)
-                mpdm_set(out, mpdm_aget(w, 1), mpdm_aget(w, 0));
+                mpdm_set(out, mpdm_get_i(w, 1), mpdm_get_i(w, 0));
 
             mpdm_unref(w);
             mpdm_unref(v);
@@ -651,7 +651,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
             /* the array is a list of pairs */
             for (n = 0; n < mpdm_size(b); n += 2)
-                mpdm_set(r, mpdm_aget(b, n + 1), mpdm_aget(b, n));
+                mpdm_set(r, mpdm_get_i(b, n + 1), mpdm_get_i(b, n));
 
             break;
 
@@ -661,7 +661,7 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
 
             n = 0;
             while (mpdm_iterator(a, &n, &v, &i))
-                mpdm_aset(r, mpdm_strcat(i, mpdm_strcat(b, v)), c++);
+                mpdm_set_i(r, mpdm_strcat(i, mpdm_strcat(b, v)), c++);
 
             break;
 

@@ -197,8 +197,8 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
         if (mpdm_regex_offset != -1) {
             w = MPDM_A(2);
 
-            mpdm_aset(w, MPDM_I(mpdm_regex_offset), 0);
-            mpdm_aset(w, MPDM_I(mpdm_regex_size), 1);
+            mpdm_set_i(w, MPDM_I(mpdm_regex_offset), 0);
+            mpdm_set_i(w, MPDM_I(mpdm_regex_size), 1);
         }
     }
     else {
@@ -210,7 +210,7 @@ mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset)
             w = MPDM_A(0);
 
             for (n = 0; n < mpdm_size(r); n++) {
-                if ((t = mpdm_regex(v, mpdm_aget(r, n), offset)) == NULL)
+                if ((t = mpdm_regex(v, mpdm_get_i(r, n), offset)) == NULL)
                     break;
 
                 /* found; store and move forward */
