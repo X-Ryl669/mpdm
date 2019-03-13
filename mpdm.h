@@ -99,10 +99,10 @@ void mpdm_array__destroy(mpdm_t a);
 mpdm_t mpdm_new_a(int size);
 mpdm_t mpdm_expand(mpdm_t a, int index, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
-mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index);
-mpdm_t mpdm_aget(const mpdm_t a, int index);
+mpdm_t mpdm_get_i(const mpdm_t a, int index);
+mpdm_t mpdm_set_i(mpdm_t a, mpdm_t e, int index);
 mpdm_t mpdm_ins(mpdm_t a, mpdm_t e, int index);
-mpdm_t mpdm_adel(mpdm_t a, int index);
+mpdm_t mpdm_del_i(mpdm_t a, int index);
 mpdm_t mpdm_shift(mpdm_t a);
 mpdm_t mpdm_push(mpdm_t a, mpdm_t e);
 mpdm_t mpdm_pop(mpdm_t a);
@@ -231,6 +231,10 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 
 
 /* old hash compatibility layer */
+
+mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index);
+mpdm_t mpdm_aget(const mpdm_t a, int index);
+mpdm_t mpdm_adel(mpdm_t a, int index);
 
 #define MPDM_H(n)       MPDM_O()
 
