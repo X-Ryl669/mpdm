@@ -151,13 +151,9 @@ mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 
 void mpdm_object__destroy(mpdm_t a);
 mpdm_t mpdm_new_o(void);
-int mpdm_count_o(const mpdm_t o);
 mpdm_t mpdm_get_wcs(const mpdm_t o, const wchar_t *i);
-mpdm_t mpdm_get_o(const mpdm_t o, const mpdm_t i);
 int mpdm_exists(const mpdm_t h, const mpdm_t i);
-mpdm_t mpdm_set_o(mpdm_t o, mpdm_t v, mpdm_t i);
 mpdm_t mpdm_set_wcs(mpdm_t o, mpdm_t v, const wchar_t *i);
-mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i);
 
 wchar_t *mpdm_read_mbs(FILE *f, int *s);
 int mpdm_write_wcs(FILE * f, const wchar_t * str);

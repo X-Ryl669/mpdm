@@ -394,7 +394,7 @@ void test_hash(void)
     if (verbose)
         printf("h's size: %d\n", (int) mpdm_count(h));
 
-    mpdm_del_o(h, MPDM_S(L"mp"));
+    mpdm_del(h, MPDM_S(L"mp"));
     do_test("hsize 5", mpdm_count(h) == 102);
 
     mpdm_unref(h);

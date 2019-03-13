@@ -119,6 +119,8 @@ mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a)
 
 
 
+int mpdm_count_o(const mpdm_t o);
+
 int mpdm_count(mpdm_t v)
 {
     int r;
@@ -142,6 +144,8 @@ int mpdm_count(mpdm_t v)
     return r;
 }
 
+
+mpdm_t mpdm_get_o(const mpdm_t o, const mpdm_t i);
 
 mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 {
@@ -170,6 +174,8 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
 }
 
 
+mpdm_t mpdm_del_o(mpdm_t o, const mpdm_t i);
+
 mpdm_t mpdm_del(mpdm_t set, mpdm_t i)
 {
     mpdm_t r;
@@ -191,6 +197,8 @@ mpdm_t mpdm_del(mpdm_t set, mpdm_t i)
     return r;
 }
 
+
+mpdm_t mpdm_set_o(mpdm_t o, mpdm_t v, mpdm_t i);
 
 mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
 {
