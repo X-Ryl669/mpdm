@@ -1094,7 +1094,7 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
     mpdm_unref(arg);
     mpdm_unref(fmt);
 
-    return MPDM_ENS(o, l);
+    return o ? MPDM_ENS(o, l) : MPDM_S(L"");
 }
 
 
