@@ -165,6 +165,20 @@ mpdm_t mpdm_get(mpdm_t set, mpdm_t i)
         r = mpdm_get_o(set, i);
         break;
 
+    case MPDM_TYPE_STRING:
+        switch (mpdm_type(i)) {
+        case MPDM_TYPE_INTEGER:
+        case MPDM_TYPE_REAL:
+            mpdm_splice(set, NULL, mpdm_ival(i), 1, NULL, &r);
+            break;
+
+        default:
+            r = NULL;
+            break;
+        }
+
+        break;
+
     default:
         r = NULL;
         break;
