@@ -1797,3 +1797,64 @@ mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2)
 
     return r;
 }
+
+
+mpdm_t mpdm_escape(mpdm_t v, wchar_t low, wchar_t high, mpdm_t f)
+/**
+ * mpdm_escape - Escapes sets of characters in a string.
+ * @v: the string
+ * @low: lower character limit
+ * @high: higher character limit
+ * @f: format to apply
+ *
+ * Escapes characters from the @v string that are lower than
+ * @low or higher than @high, applying the @f format, that can
+ * be a string for a fmt() / sprintf() format or an executable
+ * value.
+ */
+{
+    wchar_t *iptr, *optr;
+    int z = 0;
+    int n = 0;
+
+    mpdm_ref(v);
+    mpdm_ref(f);
+
+    iptr = mpdm_string(v);
+    optr = NULL;
+
+    while (iptr[n]) {
+        int m;
+
+        /* skip characters inside range */
+        for (m = n; iptr[m] && iptr[m] >= low && iptr[m] <= high; m++);
+
+        /* copy them */
+        optr = mpdm_pokewsn(optr, &z, &iptr[n], m - n);
+
+        /* now apply format to all characters outside the range */
+        while (iptr[m] && (iptr[m] < low || iptr[m] > high)) {
+            mpdm_t w;
+            wchar_t wc = iptr[m];
+
+            switch (mpdm_type(f)) {
+            case MPDM_TYPE_STRING:
+                w = mpdm_fmt(f, MPDM_I((int) wc));
+                optr = mpdm_pokev(optr, &z, w);
+                break;
+
+            default:
+                break;
+            }
+
+            m++;
+        }
+
+        n = m;
+    }
+
+    mpdm_unref(f);
+    mpdm_unref(v);
+
+    return optr ? MPDM_NS(optr, z) : MPDM_S(L"");
+}

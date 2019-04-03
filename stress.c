@@ -1764,6 +1764,24 @@ void test_json_in(void)
 }
 
 
+void test_escape(void)
+{
+    mpdm_t v, w;
+
+    v = MPDM_S(L"Has \n and \xf1 chars");
+    mpdm_ref(v);
+
+    w = mpdm_escape(v, L' ', 127, MPDM_S(L"@"));
+    do_test("escape 1", mpdm_cmp(w, MPDM_S(L"Has @ and @ chars")) == 0);
+    w = mpdm_escape(v, L' ', 127, MPDM_S(L"%x"));
+    do_test("escape 2", mpdm_cmp(w, MPDM_S(L"Has a and f1 chars")) == 0);
+    w = mpdm_escape(v, L' ', 127, MPDM_S(L"\\u%d?"));
+    do_test("escape 3", mpdm_cmp(w, MPDM_S(L"Has \\u10? and \\u241? chars")) == 0);
+
+    mpdm_unref(v);
+}
+
+
 void (*func) (void) = NULL;
 
 int main(int argc, char *argv[])
@@ -1815,6 +1833,7 @@ int main(int argc, char *argv[])
     test_sem();
     test_sock();
     test_json_in();
+    test_escape();
 
     benchmark();
 

@@ -148,6 +148,7 @@ mpdm_t mpdm_sprintf(const mpdm_t fmt, const mpdm_t args);
 mpdm_t mpdm_ulc(const mpdm_t s, int u);
 mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
+mpdm_t mpdm_escape(mpdm_t v, wchar_t low, wchar_t high, mpdm_t f);
 
 void mpdm_object__destroy(mpdm_t a);
 mpdm_t mpdm_new_o(void);

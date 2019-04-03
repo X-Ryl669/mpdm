@@ -7,6 +7,8 @@ MPDM Release Notes
  - New features:
     - The object interface now replaces the old hash interface,
       that it's still available as a compatibility layer.
+    - New function mpdm_escape(), to escape a range of characters
+      in a string.
 
 2.42
 ----
