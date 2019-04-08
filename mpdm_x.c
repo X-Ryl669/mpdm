@@ -476,7 +476,7 @@ mpdm_t mpdm_map(mpdm_t set, mpdm_t filter, mpdm_t ctxt)
                 break;
 
             case MPDM_TYPE_STRING:
-                w = filter;
+                w = mpdm_fmt(filter, v);
                 break;
 
             default:
