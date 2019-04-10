@@ -1018,12 +1018,20 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
             ptr = tmp;
             unsigned int mask;
             int p = 0;
+            int bits = 0;
 
             /* zero pad? */
-            if (t_fmt[1] == '0')
+            if (t_fmt[1] == '0') {
                 p = 1;
+                sscanf(&t_fmt[2], "%d", &bits);
+            }
+            else
+                sscanf(&t_fmt[1], "%d", &bits);
 
-            mask = 1 << ((sizeof(int) * 8) - 1);
+            if (bits == 0)
+                bits = sizeof(int) * 8;
+
+            mask = 1 << (bits - 1);
             while (mask) {
                 if (mask & (unsigned int) mpdm_ival(arg)) {
                     *ptr++ = '1';
