@@ -1014,10 +1014,14 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
             break;
 
         case 'b':
-
+            /* binary dump */
             ptr = tmp;
             unsigned int mask;
             int p = 0;
+
+            /* zero pad? */
+            if (t_fmt[1] == '0')
+                p = 1;
 
             mask = 1 << ((sizeof(int) * 8) - 1);
             while (mask) {
