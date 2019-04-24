@@ -863,6 +863,23 @@ mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i)
         r = MPDM_R(mpdm_rval(v) * mpdm_rval(i));
         break;
 
+    case MPDM_TYPE_STRING:
+        /* replicate string */
+        {
+            int n = mpdm_ival(i);
+            wchar_t *ptr = NULL;
+            int z = 0;
+
+            while (n) {
+                ptr = mpdm_pokev(ptr, &z, v);
+                n--;
+            }
+
+            r = MPDM_NS(ptr, z);
+        }
+
+        break;
+
     default:
         break;
     }
