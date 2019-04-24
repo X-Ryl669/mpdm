@@ -880,6 +880,24 @@ mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i)
 
         break;
 
+    case MPDM_TYPE_ARRAY:
+        /* replicate an array */
+        {
+            int m, n, c;
+
+            c = mpdm_ival(i);
+            r = MPDM_A(c * mpdm_size(v));
+
+            for (n = 0; n < mpdm_size(v); n++) {
+                mpdm_t w = mpdm_get_i(v, n);
+
+                for (m = 0; m < c; m++)
+                    mpdm_set_i(r, w, m * mpdm_size(v) + n);
+            }
+        }
+
+        break;
+
     default:
         break;
     }
