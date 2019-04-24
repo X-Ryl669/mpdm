@@ -1,6 +1,13 @@
 MPDM Release Notes
 ==================
 
+2.51
+----
+
+ - New features:
+    - New function mpdm_multiply(), supporting number * number,
+      string * number and array * number.
+
 2.50
 ----
 
