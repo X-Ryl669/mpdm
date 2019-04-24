@@ -229,6 +229,7 @@ mpdm_t mpdm_grep(mpdm_t set, mpdm_t filter, mpdm_t ctxt);
 mpdm_t mpdm_join(const mpdm_t a, const mpdm_t s);
 mpdm_t mpdm_splice(const mpdm_t v, const mpdm_t i, int offset, int del, mpdm_t *n, mpdm_t *d);
 int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
+mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i);
 
 
 /* old hash compatibility layer */

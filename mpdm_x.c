@@ -848,3 +848,24 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2)
 
     return r;
 }
+
+
+mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i)
+{
+    mpdm_t r = NULL;
+
+    switch (mpdm_type(v)) {
+    case MPDM_TYPE_INTEGER:
+        r = MPDM_I(mpdm_ival(v) * mpdm_ival(i));
+        break;
+
+    case MPDM_TYPE_REAL:
+        r = MPDM_R(mpdm_rval(v) * mpdm_rval(i));
+        break;
+
+    default:
+        break;
+    }
+
+    return r;
+}
