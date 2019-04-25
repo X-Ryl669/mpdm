@@ -897,3 +897,21 @@ mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i)
 
     return r;
 }
+
+
+mpdm_t mpdm_substract(mpdm_t m, mpdm_t s)
+{
+    mpdm_t r = NULL;
+
+    switch (mpdm_type(m)) {
+    case MPDM_TYPE_INTEGER:
+    case MPDM_TYPE_REAL:
+        r = MPDM_R(mpdm_rval(m) - mpdm_rval(s));
+        break;
+
+    default:
+        break;
+    }
+
+    return r;
+}
