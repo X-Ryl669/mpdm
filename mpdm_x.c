@@ -901,12 +901,76 @@ mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i)
 
 mpdm_t mpdm_substract(mpdm_t m, mpdm_t s)
 {
+    int n;
+    mpdm_t v, i;
     mpdm_t r = NULL;
 
     switch (mpdm_type(m)) {
     case MPDM_TYPE_INTEGER:
     case MPDM_TYPE_REAL:
         r = MPDM_R(mpdm_rval(m) - mpdm_rval(s));
+        break;
+
+    case MPDM_TYPE_ARRAY:
+        switch (mpdm_type(s)) {
+        case MPDM_TYPE_ARRAY:
+            r = MPDM_A(0);
+
+            for (n = 0; n < mpdm_size(m); n++) {
+                mpdm_t w = mpdm_get_i(m, n);
+
+                if (mpdm_seek(s, w, 1) == -1)
+                    mpdm_push(r, w);
+            }
+
+            break;
+
+        case MPDM_TYPE_OBJECT:
+            r = MPDM_A(0);
+
+            for (n = 0; n < mpdm_size(m); n++) {
+                mpdm_t w = mpdm_get_i(m, n);
+
+                if (!mpdm_exists(s, w))
+                    mpdm_push(r, w);
+            }
+
+            break;
+
+        default:
+            break;
+        }
+
+        break;
+
+    case MPDM_TYPE_OBJECT:
+        switch (mpdm_type(s)) {
+        case MPDM_TYPE_ARRAY:
+            r = MPDM_O();
+
+            n = 0;
+            while (mpdm_iterator(m, &n, &v, &i)) {
+                if (mpdm_seek(s, i, 1) == -1)
+                    mpdm_set(r, v, i);
+            }
+
+            break;
+
+        case MPDM_TYPE_OBJECT:
+            r = MPDM_O();
+
+            n = 0;
+            while (mpdm_iterator(m, &n, &v, &i)) {
+                if (!mpdm_exists(s, i))
+                    mpdm_set(r, v, i);
+            }
+
+            break;
+
+        default:
+            break;
+        }
+
         break;
 
     default:

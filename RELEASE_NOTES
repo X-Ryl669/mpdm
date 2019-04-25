@@ -7,6 +7,14 @@ MPDM Release Notes
  - New features:
     - New function mpdm_multiply(), supporting number * number,
       string * number and array * number.
+    - New function mpdm_substract(), supporting number - number,
+      array1 - array2 (returning a new array with the elements
+      in array1 that are *not* in array2), array - object
+      (returning an array with the keys *not* in object),
+      object1 - object2 (returning a new object with the elements
+      in object1 *not* in object2) and object - array (returning
+      a new object with the elements in object that are *not*
+      indexed by any element of array).
 
 2.50
 ----
