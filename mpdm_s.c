@@ -593,13 +593,21 @@ int mpdm_ival(mpdm_t v)
         i = (int) mpdm_rval(v);
         break;
 
-    default:
+    case MPDM_TYPE_STRING:
         {
             char *mbs = mpdm_wcstombs(mpdm_string(v), NULL);
             i = mpdm_ival_mbs(mbs);
             free(mbs);
         }
 
+        break;
+
+    case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_OBJECT:
+        i = mpdm_count(v);
+        break;
+
+    default:
         break;
     }
 
@@ -654,7 +662,7 @@ double mpdm_rval(mpdm_t v)
         r = (double) mpdm_ival(v);
         break;
 
-    default:
+    case MPDM_TYPE_STRING:
         {
             /* otherwise, calculate it */
             char *mbs = mpdm_wcstombs(mpdm_string(v), NULL);
@@ -662,6 +670,14 @@ double mpdm_rval(mpdm_t v)
             free(mbs);
         }
 
+        break;
+
+    case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_OBJECT:
+        r = (double) mpdm_count(v);
+        break;
+
+    default:
         break;
     }
 
