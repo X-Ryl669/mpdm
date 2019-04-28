@@ -908,6 +908,7 @@ mpdm_t mpdm_substract(mpdm_t m, mpdm_t s)
     switch (mpdm_type(m)) {
     case MPDM_TYPE_INTEGER:
     case MPDM_TYPE_REAL:
+    case MPDM_TYPE_STRING:
         r = MPDM_R(mpdm_rval(m) - mpdm_rval(s));
         break;
 
