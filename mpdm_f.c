@@ -1902,9 +1902,12 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
         pipe(pw);
 
     if (fork() == 0) {
+        /* child process */
+        mpdm_t v;
+        int n;
+
         setsid();
 
-        /* child process */
         if (rw & 0x01) {
             close(1);
             dup(pr[1]);
@@ -1919,6 +1922,17 @@ static int sysdep_popen(mpdm_t v, char *prg, int rw)
         /* redirect stderr to stdout */
         close(2);
         dup(1);
+
+        /* build the environment for the subprocess */
+        v = mpdm_join(mpdm_get_wcs(mpdm_root(), L"ENV"), MPDM_S(L"="));
+        environ = (char **) calloc(sizeof(char *), mpdm_size(v) + 1);
+
+        mpdm_ref(v);
+        for (n = 0; n < mpdm_size(v); n++) {
+            mpdm_t w = MPDM_2MBS(mpdm_string(mpdm_get_i(v, n)));
+            environ[n] = (char *)w->data;
+        }
+        mpdm_unref(v);
 
         /* run the program */
         execlp("/bin/sh", "/bin/sh", "-c", prg, NULL);
