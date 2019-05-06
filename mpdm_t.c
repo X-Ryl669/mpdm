@@ -413,3 +413,16 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     return MPDM_C(MPDM_TYPE_THREAD, ptr, size);
 }
+
+
+int mpdm_putenv(mpdm_t v)
+{
+    mpdm_t w = NULL;
+    int r = 0;
+
+    w = mpdm_ref(MPDM_2MBS(mpdm_string(v)));
+    r = putenv((char *)w->data);
+    mpdm_unref(w);
+
+    return r;
+}

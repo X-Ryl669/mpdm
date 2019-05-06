@@ -15,6 +15,7 @@ MPDM Release Notes
       in object1 *not* in object2) and object - array (returning
       a new object with the elements in object that are *not*
       indexed by any element of array).
+    - New function mpdm_putenv().
 
 2.50
 ----
