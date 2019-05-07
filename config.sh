@@ -29,6 +29,9 @@ while [ $# -gt 0 ] ; do
     --without-wcwidth)      WITHOUT_WCWIDTH=1 ;;
     --help)                 CONFIG_HELP=1 ;;
 
+    --mingw32-prefix=*)     MINGW32_PREFIX=`echo $1 | sed -e 's/--mingw32-prefix=//'`
+                            ;;
+
     --mingw32)              CC=${MINGW32_PREFIX}-gcc
                             WINDRES=${MINGW32_PREFIX}-windres
                             AR=${MINGW32_PREFIX}-ar
@@ -51,16 +54,17 @@ done
 if [ "$CONFIG_HELP" = "1" ] ; then
 
     echo "Available options:"
-    echo "--prefix=PREFIX       Installation prefix ($PREFIX)."
-    echo "--docdir=DOCDIR       Instalation directory for documentation."
-    echo "--without-win32       Disable win32 interface detection."
-    echo "--without-unix-glob   Disable glob.h usage (use workaround)."
-    echo "--with-included-regex Use included regex code (gnu_regex.c)."
-    echo "--with-pcre           Enable PCRE library detection."
-    echo "--without-gettext     Disable gettext usage."
-    echo "--without-iconv       Disable iconv usage."
-    echo "--without-wcwidth     Disable system wcwidth() (use Marcus Kuhn's)."
-    echo "--mingw32             Build using the mingw32 compiler."
+    echo "--prefix=PREFIX         Installation prefix ($PREFIX)."
+    echo "--docdir=DOCDIR         Instalation directory for documentation."
+    echo "--without-win32         Disable win32 interface detection."
+    echo "--without-unix-glob     Disable glob.h usage (use workaround)."
+    echo "--with-included-regex   Use included regex code (gnu_regex.c)."
+    echo "--with-pcre             Enable PCRE library detection."
+    echo "--without-gettext       Disable gettext usage."
+    echo "--without-iconv         Disable iconv usage."
+    echo "--without-wcwidth       Disable system wcwidth() (use Marcus Kuhn's)."
+    echo "--mingw32-prefix=PREFIX Prefix name for mingw32 ($MINGW32_PREFIX)."
+    echo "--mingw32               Build using the mingw32 compiler."
 
     echo
     echo "Environment variables:"
