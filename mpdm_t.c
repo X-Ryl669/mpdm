@@ -421,7 +421,7 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 /* zlib functions */
 
-unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, int cz, int *dz)
+unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, size_t cz, size_t *dz)
 {
     unsigned char *dbuf = NULL;
 
@@ -461,5 +461,3 @@ unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, int cz, int *dz)
 
     return dbuf;
 }
-
-

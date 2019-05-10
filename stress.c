@@ -1789,7 +1789,7 @@ void test_gzip(void)
     unsigned char buf1[100000];
     unsigned char buf2[100000];
     FILE *f;
-    int cz, dz;
+    size_t cz, dz;
     unsigned char *dbuf;
 
     for (n = 0; n < sizeof(buf1); n++)
