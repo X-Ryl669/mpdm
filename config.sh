@@ -538,6 +538,22 @@ else
     echo "No"
 fi
 
+echo -n "Testing for zlib... "
+echo "#include <zlib.h>" > .tmp.c
+echo "int main(void) { z_stream zs; return 0; }" >> .tmp.c
+
+TMP_LDFLAGS="-lz"
+
+$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+if [ $? = 0 ] ; then
+    echo "#define CONFOPT_ZLIB 1" >> config.h
+    echo "$TMP_LDFLAGS" >> config.ldflags
+    echo "OK"
+else
+    echo "No"
+fi
+
 if [ "$WITH_WIN32" != 1 ] ; then
     echo -n "Testing for POSIX threads... "
     echo "#include <pthread.h>" > .tmp.c
