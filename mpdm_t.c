@@ -461,3 +461,44 @@ unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, size_t cz, size_t *dz)
 
     return dbuf;
 }
+
+
+/* tar archives */
+
+unsigned char *mpdm_read_tar_mem(const char *fn, const char *tar,
+                                 const char *tar_e, size_t *z)
+{
+    unsigned char *data = NULL;
+
+    while (!data && tar < tar_e && *tar) {
+        sscanf(&tar[124], "%lo", z);
+
+        if (strcmp(fn, tar))
+            tar += (1 + ((*z + 511) / 512)) * 512;
+        else
+            data = memcpy(calloc(*z + 1, 1), tar + 512, *z);
+    }
+
+    return data;
+}
+
+
+unsigned char *mpdm_read_tar_file(const char *fn, FILE *f, size_t *z)
+{
+    unsigned char *data = NULL;
+    char tar[512];
+
+    while (!data && fread(tar, sizeof(tar), 1, f) && *tar) {
+        sscanf(&tar[124], "%lo", z);
+
+        if (strcmp(fn, tar))
+            fseek(f, ((*z + 511) / 512) * 512, 1);
+        else {
+            data = calloc(*z + 1, 1);
+            if (!fread(data, *z, 1, f))
+                data = realloc(data, 0);
+        }
+    }
+
+    return data;
+}

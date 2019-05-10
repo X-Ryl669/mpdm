@@ -209,6 +209,9 @@ void mpdm_semaphore_post(mpdm_t sem);
 void mpdm_thread__destroy(mpdm_t v);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, size_t cz, size_t *dz);
+unsigned char *mpdm_read_tar_mem(const char *fn, const char *tar,
+                                 const char *tar_e, size_t *z);
+unsigned char *mpdm_read_tar_file(const char *fn, FILE *f, size_t *z);
 
 void mpdm_function__destroy(mpdm_t v);
 void mpdm_program__destroy(mpdm_t v);

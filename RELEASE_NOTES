@@ -17,6 +17,7 @@ MPDM Release Notes
       indexed by any element of array).
     - Pipes now inherit the environment from the ENV object.
     - New function mpdm_gzip_inflate().
+    - New functions mpdm_read_tar_mem() and mpdm_read_tar_file().
 
 2.50
 ----
