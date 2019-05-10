@@ -16,6 +16,7 @@ MPDM Release Notes
       a new object with the elements in object that are *not*
       indexed by any element of array).
     - Pipes now inherit the environment from the ENV object.
+    - New function mpdm_gzip_inflate().
 
 2.50
 ----

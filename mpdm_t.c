@@ -34,6 +34,10 @@
 #include <sys/time.h>
 #endif
 
+#ifdef CONFOPT_ZLIB
+#include <zlib.h>
+#endif
+
 #include "mpdm.h"
 
 
@@ -413,3 +417,38 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     return MPDM_C(MPDM_TYPE_THREAD, ptr, size);
 }
+
+
+/* zlib functions */
+
+int mpdm_gzip_inflate(unsigned char *cbuf, int cz, unsigned char *dbuf, int dz)
+{
+    int ret = 0;
+
+#ifdef CONFOPT_ZLIB
+    z_stream d_stream;
+    int err;
+
+    memset(&d_stream, '\0', sizeof(d_stream));
+
+    d_stream.next_in   = cbuf;
+    d_stream.avail_in  = cz;
+    d_stream.next_out  = dbuf;
+    d_stream.avail_out = dz;
+
+    if ((err = inflateInit2(&d_stream, 16 + MAX_WBITS)) == Z_OK) {
+        while (err != Z_STREAM_END && err >= 0)
+            err = inflate(&d_stream, Z_FINISH);
+
+        err = inflateEnd(&d_stream);
+    }
+
+    if (err == Z_OK)
+        ret = d_stream.total_out;
+
+#endif /* CONFOPT_ZLIB */
+
+    return ret;
+}
+
+
