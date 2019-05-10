@@ -421,34 +421,45 @@ mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
 /* zlib functions */
 
-int mpdm_gzip_inflate(unsigned char *cbuf, int cz, unsigned char *dbuf, int dz)
+unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, int cz, int *dz)
 {
-    int ret = 0;
+    unsigned char *dbuf = NULL;
 
 #ifdef CONFOPT_ZLIB
-    z_stream d_stream;
-    int err;
 
-    memset(&d_stream, '\0', sizeof(d_stream));
+    if (cbuf[0] == 0x1f && cbuf[1] == 0x8b) {
+        z_stream d_stream;
+        int err;
 
-    d_stream.next_in   = cbuf;
-    d_stream.avail_in  = cz;
-    d_stream.next_out  = dbuf;
-    d_stream.avail_out = dz;
+        /* size % 2^32 is at the end */
+        *dz = cbuf[cz - 1];
+        *dz = (*dz * 256) + cbuf[cz - 2];
+        *dz = (*dz * 256) + cbuf[cz - 3];
+        *dz = (*dz * 256) + cbuf[cz - 4];
 
-    if ((err = inflateInit2(&d_stream, 16 + MAX_WBITS)) == Z_OK) {
-        while (err != Z_STREAM_END && err >= 0)
-            err = inflate(&d_stream, Z_FINISH);
+        dbuf = calloc(*dz, 1);
 
-        err = inflateEnd(&d_stream);
+        memset(&d_stream, '\0', sizeof(d_stream));
+
+        d_stream.next_in   = cbuf;
+        d_stream.avail_in  = cz;
+        d_stream.next_out  = dbuf;
+        d_stream.avail_out = *dz;
+
+        if ((err = inflateInit2(&d_stream, 16 + MAX_WBITS)) == Z_OK) {
+            while (err != Z_STREAM_END && err >= 0)
+                err = inflate(&d_stream, Z_FINISH);
+
+            err = inflateEnd(&d_stream);
+        }
+
+        if (err != Z_OK || *dz != d_stream.total_out)
+            dbuf = realloc(dbuf, 0);
     }
-
-    if (err == Z_OK)
-        ret = d_stream.total_out;
 
 #endif /* CONFOPT_ZLIB */
 
-    return ret;
+    return dbuf;
 }
 
 

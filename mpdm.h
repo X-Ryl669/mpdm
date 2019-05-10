@@ -208,7 +208,7 @@ void mpdm_semaphore_wait(mpdm_t sem);
 void mpdm_semaphore_post(mpdm_t sem);
 void mpdm_thread__destroy(mpdm_t v);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
-int mpdm_gzip_inflate(unsigned char *cbuf, int cz, unsigned char *dbuf, int dz);
+unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, int cz, int *dz);
 
 void mpdm_function__destroy(mpdm_t v);
 void mpdm_program__destroy(mpdm_t v);

@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <wchar.h>
 
 #include <time.h>
@@ -1782,6 +1783,38 @@ void test_escape(void)
 }
 
 
+void test_gzip(void)
+{
+    int n;
+    unsigned char buf1[100000];
+    unsigned char buf2[100000];
+    FILE *f;
+    int cz, dz;
+    unsigned char *dbuf;
+
+    for (n = 0; n < sizeof(buf1); n++)
+        buf1[n] = (n % ('Z' - 'A')) + 'A';
+    buf1[sizeof(buf1) - 1] = '\0';
+
+    f = fopen("test.txt", "wb");
+    fwrite(buf1, 1, strlen((char *)buf1), f);
+    fclose(f);
+
+    system("gzip -f test.txt");
+
+    if ((f = fopen("test.txt.gz", "rb"))) {
+        cz = fread(buf2, 1, sizeof(buf2), f);
+        fclose(f);
+
+        dbuf = mpdm_gzip_inflate(buf2, cz, &dz);
+
+        do_test("mpdm_gzip_inflate 1", dbuf != NULL);
+        do_test("mpdm_gzip_inflate 2", dz == sizeof(buf1) - 1);
+        do_test("mpdm_gzip_inflate 3", strcmp((char *)buf1, (char *)dbuf) == 0);
+    }
+}
+
+
 void (*func) (void) = NULL;
 
 int main(int argc, char *argv[])
@@ -1834,6 +1867,7 @@ int main(int argc, char *argv[])
     test_sock();
     test_json_in();
     test_escape();
+    test_gzip();
 
     benchmark();
 
