@@ -437,7 +437,7 @@ unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, size_t cz, size_t *dz)
         *dz = (*dz * 256) + cbuf[cz - 3];
         *dz = (*dz * 256) + cbuf[cz - 4];
 
-        dbuf = calloc(*dz, 1);
+        dbuf = calloc(*dz + 1, 1);
 
         memset(&d_stream, '\0', sizeof(d_stream));
 
