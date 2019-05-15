@@ -816,6 +816,23 @@ static wchar_t *msdos_850 = L"\x2302"
     "\x00AD\x00B1\x2017\x00BE\x00B6\x00A7\x00F7\x00B8"
     "\x00B0\x00A8\x00B7\x00B9\x00B3\x00B2\x25A0\x00A0";
 
+static wchar_t *windows_1252 = L"\x2302"
+    "\x20AC\x0081\x201A\x0192\x201E\x2026\x2020\x2021"
+    "\x02C6\x2030\x0160\x2039\x0152\x008D\x017D\x008F"
+    "\x0090\x2018\x2019\x201C\x201D\x2022\x2013\x2014"
+    "\x02DC\x2122\x0161\x203A\x0153\x009D\x017E\x0178"
+    "\x00A0\x00A1\x00A2\x00A3\x00A4\x00A5\x00A6\x00A7"
+    "\x00A8\x00A9\x00AA\x00AB\x00AC\x00AD\x00AE\x00AF"
+    "\x00B0\x00B1\x00B2\x00B3\x00B4\x00B5\x00B6\x00B7"
+    "\x00B8\x00B9\x00BA\x00BB\x00BC\x00BD\x00BE\x00BF"
+    "\x00C0\x00C1\x00C2\x00C3\x00C4\x00C5\x00C6\x00C7"
+    "\x00C8\x00C9\x00CA\x00CB\x00CC\x00CD\x00CE\x00CF"
+    "\x00D0\x00D1\x00D2\x00D3\x00D4\x00D5\x00D6\x00D7"
+    "\x00D8\x00D9\x00DA\x00DB\x00DC\x00DD\x00DE\x00DF"
+    "\x00E0\x00E1\x00E2\x00E3\x00E4\x00E5\x00E6\x00E7"
+    "\x00E8\x00E9\x00EA\x00EB\x00EC\x00ED\x00EE\x00EF"
+    "\x00F0\x00F1\x00F2\x00F3\x00F4\x00F5\x00F6\x00F7"
+    "\x00F8\x00F9\x00FA\x00FB\x00FC\x00FD\x00FE\x00FF";
 
 static wchar_t *read_msdos(struct mpdm_file *f, int *s, int *eol, wchar_t *cp)
 /* generic MSDOS reader */
@@ -890,6 +907,18 @@ static wchar_t *read_msdos_850(struct mpdm_file *f, int *s, int *eol)
 static int write_msdos_850(struct mpdm_file *f, const wchar_t *str)
 {
     return write_msdos(f, str, msdos_850);
+}
+
+
+static wchar_t *read_windows_1252(struct mpdm_file *f, int *s, int *eol)
+{
+    return read_msdos(f, s, eol, windows_1252);
+}
+
+
+static int write_windows_1252(struct mpdm_file *f, const wchar_t *str)
+{
+    return write_msdos(f, str, windows_1252);
 }
 
 
@@ -1316,6 +1345,7 @@ static mpdm_t embedded_encodings(void)
         L"850",        NULL,
         L"cp-850",     NULL,
         L"cp850",      NULL,
+        L"windows-1252", L"windows-1252",
         NULL,          NULL
     };
 
@@ -2469,6 +2499,11 @@ mpdm_t mpdm_new_f(FILE *f)
         if (wcscmp(enc, L"msdos-850") == 0) {
             fs->f_read = read_msdos_850;
             fs->f_write = write_msdos_850;
+        }
+        else
+        if (wcscmp(enc, L"windows-1252") == 0) {
+            fs->f_read = read_windows_1252;
+            fs->f_write = write_windows_1252;
         }
         else {
 #ifdef CONFOPT_ICONV

@@ -19,6 +19,7 @@ MPDM Release Notes
     - New function mpdm_gzip_inflate().
     - New functions mpdm_read_tar_mem() and mpdm_read_tar_file().
     - mpdm_join() and mpdm_join_wcs() now can accept files.
+    - Read and write encoders for Windows-1252 code page.
 
 2.50
 ----
