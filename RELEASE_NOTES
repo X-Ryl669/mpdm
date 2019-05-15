@@ -18,6 +18,7 @@ MPDM Release Notes
     - Pipes now inherit the environment from the ENV object.
     - New function mpdm_gzip_inflate().
     - New functions mpdm_read_tar_mem() and mpdm_read_tar_file().
+    - mpdm_join() and mpdm_join_wcs() now can accept files.
 
 2.50
 ----

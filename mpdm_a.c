@@ -658,27 +658,37 @@ mpdm_t mpdm_split(const mpdm_t v, const mpdm_t s)
  */
 mpdm_t mpdm_join_wcs(const mpdm_t a, const wchar_t *s)
 {
-    int n;
+    int n, c;
     wchar_t *ptr = NULL;
     int l = 0;
     int ss;
-    mpdm_t r = NULL;
+    mpdm_t v, r = NULL;
 
     mpdm_ref(a);
 
-    if (mpdm_type(a) == MPDM_TYPE_ARRAY) {
+    switch (mpdm_type(a)) {
+    case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_FILE:
+
+        n = c = 0;
         ss = s ? wcslen(s) : 0;
 
-        for (n = 0; n < mpdm_size(a); n++) {
+        while (mpdm_iterator(a, &n, &v, NULL)) {
             /* add separator */
-            if (n && ss)
+            if (c && ss)
                 ptr = mpdm_pokewsn(ptr, &l, s, ss);
 
             /* add element */
-            ptr = mpdm_pokev(ptr, &l, mpdm_get_i(a, n));
+            ptr = mpdm_pokev(ptr, &l, v);
+            c++;
         }
 
         r = ptr == NULL ? MPDM_S(L"") : MPDM_ENS(ptr, l);
+
+        break;
+
+    default:
+        break;
     }
 
     mpdm_unref(a);

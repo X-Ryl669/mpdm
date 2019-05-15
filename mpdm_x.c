@@ -687,8 +687,10 @@ mpdm_t mpdm_join(const mpdm_t a, const mpdm_t b)
         break;
 
     case MPDM_TYPE_ARRAY:
+    case MPDM_TYPE_FILE:
         switch (mpdm_type(b)) {
         case MPDM_TYPE_ARRAY:
+        case MPDM_TYPE_FILE:
             /* array~array -> array */
             r = MPDM_A(0);
 
