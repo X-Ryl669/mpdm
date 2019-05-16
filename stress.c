@@ -13,6 +13,8 @@
 
 #include <time.h>
 
+#include "config.h"
+
 #include "mpdm.h"
 
 /* total number of tests and oks */
@@ -1785,6 +1787,7 @@ void test_escape(void)
 
 void test_gzip(void)
 {
+#ifdef CONFOPT_ZLIB
     int n;
     unsigned char buf1[100000];
     unsigned char buf2[100000];
@@ -1812,6 +1815,10 @@ void test_gzip(void)
         do_test("mpdm_gzip_inflate 2", dz == sizeof(buf1) - 1);
         do_test("mpdm_gzip_inflate 3", strcmp((char *)buf1, (char *)dbuf) == 0);
     }
+#else
+    if (verbose)
+        printf("No zlib support available -- skipping tests\n");
+#endif
 }
 
 
