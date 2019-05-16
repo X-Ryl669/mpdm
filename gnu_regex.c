@@ -1,5 +1,7 @@
 #include "config.h"
 
+#define STDC_HEADERS 1
+
 char *gnu_regex_rcs = "$Id$";
 #ifdef REGEX
 
