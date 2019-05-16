@@ -23,13 +23,13 @@
 
 #ifdef CONFOPT_WIN32
 
+#include <winsock2.h>
 #include <windows.h>
 #include <commctrl.h>
 #include <shlobj.h>
 
 #undef UNICODE
 
-#include <winsock2.h>
 #include <ws2tcpip.h>
 
 #else /* CONFOPT_WIN32 */
@@ -105,7 +105,6 @@ struct mpdm_file {
 };
 
 #include <errno.h>
-extern int errno;
 
 
 /** code **/
