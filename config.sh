@@ -27,6 +27,7 @@ while [ $# -gt 0 ] ; do
     --without-gettext)      WITHOUT_GETTEXT=1 ;;
     --without-iconv)        WITHOUT_ICONV=1 ;;
     --without-wcwidth)      WITHOUT_WCWIDTH=1 ;;
+    --without-zlib)         WITHOUT_ZLIB=1 ;;
     --help)                 CONFIG_HELP=1 ;;
 
     --mingw32-prefix=*)     MINGW32_PREFIX=`echo $1 | sed -e 's/--mingw32-prefix=//'`
@@ -65,7 +66,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
     echo "--without-wcwidth       Disable system wcwidth() (use Marcus Kuhn's)."
     echo "--mingw32-prefix=PREFIX Prefix name for mingw32 ($MINGW32_PREFIX)."
     echo "--mingw32               Build using the mingw32 compiler."
-
+    echo "--without-zlib          Disable Zlib support."
     echo
     echo "Environment variables:"
     echo "CC                    C Compiler."
@@ -539,19 +540,24 @@ else
 fi
 
 echo -n "Testing for zlib... "
-echo "#include <zlib.h>" > .tmp.c
-echo "int main(void) { z_stream zs; return 0; }" >> .tmp.c
 
-TMP_LDFLAGS="-lz"
-
-$CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
-
-if [ $? = 0 ] ; then
-    echo "#define CONFOPT_ZLIB 1" >> config.h
-    echo "$TMP_LDFLAGS" >> config.ldflags
-    echo "OK"
+if [ "$WITHOUT_ZLIB" = "1" ] ; then
+    echo "Disabled by user"
 else
-    echo "No"
+    echo "#include <zlib.h>" > .tmp.c
+    echo "int main(void) { z_stream zs; return 0; }" >> .tmp.c
+
+    TMP_LDFLAGS="-lz"
+
+    $CC .tmp.c $TMP_LDFLAGS -o .tmp.o 2>> .config.log
+
+    if [ $? = 0 ] ; then
+        echo "#define CONFOPT_ZLIB 1" >> config.h
+        echo "$TMP_LDFLAGS" >> config.ldflags
+        echo "OK"
+    else
+        echo "No"
+    fi
 fi
 
 if [ "$WITH_WIN32" != 1 ] ; then
