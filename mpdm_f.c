@@ -386,10 +386,11 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s, int *eol)
             BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
-#ifndef CONFOPT_WIN32
         else
         if ((c & 0xf8) == 0xf0) {
+#ifndef CONFOPT_WIN32
             wc = (c & 0x07) << 18;
+#endif
             BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f) << 12;
             BYTE_OR_BREAK(c, f);
@@ -397,7 +398,6 @@ static wchar_t *read_utf8(struct mpdm_file *f, int *s, int *eol)
             BYTE_OR_BREAK(c, f);
             wc |= (c & 0x3f);
         }
-#endif
 
         if (store_in_line(&ptr, s, eol, wc))
             break;
