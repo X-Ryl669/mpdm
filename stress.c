@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#define MPDM_OLD_COMPAT
+
 #include "mpdm.h"
 
 /* total number of tests and oks */

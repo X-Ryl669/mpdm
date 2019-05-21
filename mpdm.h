@@ -236,8 +236,9 @@ int mpdm_cmp(const mpdm_t v1, const mpdm_t v2);
 mpdm_t mpdm_multiply(mpdm_t v, mpdm_t i);
 mpdm_t mpdm_substract(mpdm_t m, mpdm_t s);
 
+#ifdef MPDM_OLD_COMPAT
 
-/* old hash compatibility layer */
+/* old compatibility layer */
 
 mpdm_t mpdm_aset(mpdm_t a, mpdm_t e, int index);
 mpdm_t mpdm_aget(const mpdm_t a, int index);
@@ -253,6 +254,7 @@ mpdm_t mpdm_hset_s(mpdm_t h, const wchar_t *k, mpdm_t v);
 mpdm_t mpdm_hdel(mpdm_t h, const mpdm_t k);
 mpdm_t mpdm_keys(const mpdm_t h);
 
+#endif
 
 #ifdef __cplusplus
 }

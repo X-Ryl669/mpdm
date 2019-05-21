@@ -1,6 +1,14 @@
 MPDM Release Notes
 ==================
 
+2.52
+----
+
+ - Changes:
+    - The old API (hash functions and array functions named
+      mpdm_a...) is now disabled by default; if you still
+      have old code, defined MPDM_OLD_COMPAT before mpdm.h.
+
 2.51
 ----
 
