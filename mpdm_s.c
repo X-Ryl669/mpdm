@@ -1071,6 +1071,11 @@ mpdm_t mpdm_fmt(const mpdm_t fmt, const mpdm_t arg)
             o = json_f(o, &l, arg, 0);
             break;
 
+        case 'J':
+            /* 'lax' JSON: can be literal */
+            o = json_f(o, &l, arg, 1);
+            break;
+
         case 't':
             /* time: brace-enclosed strftime mask */
             if (*i == L'{') {
