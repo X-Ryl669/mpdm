@@ -7,6 +7,8 @@ MPDM Release Notes
  - New features:
     - mpdm_fmt() now accepts the %J markup for 'lax' JSON, i.e.,
       the root value can also be a literal.
+    - Ortogonally, the mpdm_sscanf() function also accepts
+      the %J markup to parse 'lax' JSON.
  - Changes:
     - The old API (hash functions and array functions named
       mpdm_a...) is now disabled by default; if you still

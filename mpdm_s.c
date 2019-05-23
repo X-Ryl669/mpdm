@@ -1495,6 +1495,26 @@ mpdm_t json_parser(wchar_t **s)
 }
 
 
+mpdm_t json_parser_lax(wchar_t **s)
+{
+    mpdm_t v = NULL;
+    int t;
+
+    v = json_lexer(s, &t);
+
+    if (t == JS_OCURLY)
+        v = json_parse_object(s, &t);
+    else
+    if (t == JS_OBRACK)
+        v = json_parse_array(s, &t);
+
+    if (t <= JS_VALUE)
+        v = mpdm_void(v);
+
+    return v;
+}
+
+
 /* scanf working buffers */
 #define SCANF_BUF_SIZE 1024
 static wchar_t scanf_yset[SCANF_BUF_SIZE];
@@ -1725,6 +1745,10 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset)
                 /* JSON parsing */
             if (cmd == L'j') {
                 mpdm_push(r, json_parser(&i));
+            }
+                /* 'lax' JSON parsing */
+            if (cmd == L'J') {
+                mpdm_push(r, json_parser_lax(&i));
             }
             else
                 /* a standard set? */
