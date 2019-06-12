@@ -949,6 +949,9 @@ static wchar_t *json_f(wchar_t *o, int *z, mpdm_t v, int l)
         break;
 
     default:
+        o = mpdm_pokews(o, z, L"\"");
+        o = mpdm_pokev(o, z, v);
+        o = mpdm_pokews(o, z, L"\"");
         break;
     }
 
