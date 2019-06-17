@@ -28,13 +28,15 @@ static mpdm_t sort_cb = NULL;
 
 /** code **/
 
-void mpdm_array__destroy(mpdm_t a)
+mpdm_t mpdm_array__destroy(mpdm_t a)
 {
     int n;
 
     /* unref all contained values */
     for (n = 0; n < mpdm_size(a); n++)
         mpdm_unref(mpdm_get_i(a, n));
+
+    return a;
 }
 
 

@@ -2403,10 +2403,12 @@ static int file_close(mpdm_t v)
 }
 
 
-void mpdm_file__destroy(mpdm_t v)
+mpdm_t mpdm_file__destroy(mpdm_t v)
 /* destroys and file value */
 {
     file_close(v);
+
+    return v;
 }
 
 

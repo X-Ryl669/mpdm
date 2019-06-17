@@ -27,7 +27,7 @@ mpdm_t mpdm_global_root = NULL;
 /* data type information */
 struct {
     wchar_t *name;
-    void (*destroy)(mpdm_t);
+    mpdm_func1_t *destroy;
 } mpdm_type_info[] = {
     { L"null",      mpdm_dummy__destroy },
     { L"string",    mpdm_dummy__destroy },
@@ -46,14 +46,14 @@ struct {
 };
 
 /* pointer to the destroy function */
-mpdm_t (*mpdm_destroy)(mpdm_t) = NULL;
+mpdm_func1_t *mpdm_destroy = NULL;
 
 
 /** code **/
 
-void mpdm_dummy__destroy(mpdm_t v)
+mpdm_t mpdm_dummy__destroy(mpdm_t v)
 {
-    (void)v;
+    return v;
 }
 
 
@@ -61,7 +61,7 @@ mpdm_t mpdm_real_destroy(mpdm_t v)
 /* destroys a value */
 {
     /* destroy type */
-    mpdm_type_info[mpdm_type(v)].destroy(v);
+    v = mpdm_type_info[mpdm_type(v)].destroy(v);
 
     /* free data */
     free((void *)v->data);

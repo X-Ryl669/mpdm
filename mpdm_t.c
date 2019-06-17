@@ -123,7 +123,7 @@ mpdm_t mpdm_random(mpdm_t v)
 
 /** mutexes **/
 
-void mpdm_mutex__destroy(mpdm_t v)
+mpdm_t mpdm_mutex__destroy(mpdm_t v)
 {
 #ifdef CONFOPT_WIN32
     HANDLE *h = (HANDLE *) v->data;
@@ -138,6 +138,8 @@ void mpdm_mutex__destroy(mpdm_t v)
 #endif
 
     v->data = NULL;
+
+    return v;
 }
 
 
@@ -227,7 +229,7 @@ void mpdm_mutex_unlock(mpdm_t mutex)
 
 /** semaphores **/
 
-void mpdm_semaphore__destroy(mpdm_t v)
+mpdm_t mpdm_semaphore__destroy(mpdm_t v)
 {
 #ifdef CONFOPT_WIN32
     HANDLE *h = (HANDLE *) v->data;
@@ -242,6 +244,8 @@ void mpdm_semaphore__destroy(mpdm_t v)
 #endif
 
     v->data = NULL;
+
+    return v;
 }
 
 
@@ -330,9 +334,11 @@ void mpdm_semaphore_post(mpdm_t sem)
 
 /** threads **/
 
-void mpdm_thread__destroy(mpdm_t v)
+mpdm_t mpdm_thread__destroy(mpdm_t v)
 {
     v->data = NULL;
+
+    return v;
 }
 
 

@@ -20,15 +20,17 @@
 
 #include "mpdm.h"
 
-void mpdm_function__destroy(mpdm_t v)
+mpdm_t mpdm_function__destroy(mpdm_t v)
 {
     v->data = NULL;
+
+    return v;
 }
 
 
-void mpdm_program__destroy(mpdm_t v)
+mpdm_t mpdm_program__destroy(mpdm_t v)
 {
-    mpdm_array__destroy(v);
+    return mpdm_array__destroy(v);
 }
 
 
@@ -93,13 +95,13 @@ mpdm_t mpdm_bool(int b)
 }
 
 
-mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a)
+mpdm_t mpdm_new_x(mpdm_type_t type, const void *f, mpdm_t a)
 {
     mpdm_t r = NULL;
 
     switch (type) {
     case MPDM_TYPE_FUNCTION:
-        r = mpdm_new(type, (const void *)f, 0);
+        r = mpdm_new(type, f, 0);
         break;
 
     case MPDM_TYPE_PROGRAM:
@@ -265,8 +267,8 @@ mpdm_t mpdm_set(mpdm_t set, mpdm_t v, mpdm_t i)
 mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 {
     mpdm_t r = NULL;
-    mpdm_t(*func2) (mpdm_t, mpdm_t);
-    mpdm_t(*func3) (mpdm_t, mpdm_t, mpdm_t);
+    mpdm_func2_t *func2;
+    mpdm_func3_t *func3;
 
     mpdm_ref(c);
     mpdm_ref(args);
@@ -274,7 +276,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
 
     switch (mpdm_type(c)) {
     case MPDM_TYPE_FUNCTION:
-        if ((func2 = (mpdm_t(*)(mpdm_t, mpdm_t)) (c->data)) != NULL)
+        if ((func2 = (mpdm_func2_t *)c->data) != NULL)
             r = func2(args, ctxt);
 
         break;
@@ -285,7 +287,7 @@ mpdm_t mpdm_exec(mpdm_t c, mpdm_t args, mpdm_t ctxt)
            2nd its optional additional information (i.e. the bytecode) */
         r = mpdm_get_i(c, 0);
 
-        if ((func3 = (mpdm_t(*)(mpdm_t, mpdm_t, mpdm_t)) (r->data)) != NULL)
+        if ((func3 = (mpdm_func3_t *)r->data) != NULL)
             r = func3(mpdm_get_i(c, 1), args, ctxt);
 
         break;

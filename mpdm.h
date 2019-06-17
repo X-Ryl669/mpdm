@@ -44,6 +44,11 @@ struct mpdm_val {
     const void *data;   /* the real data */
 };
 
+/* function typedefs */
+typedef mpdm_t mpdm_func1_t(mpdm_t);
+typedef mpdm_t mpdm_func2_t(mpdm_t, mpdm_t);
+typedef mpdm_t mpdm_func3_t(mpdm_t, mpdm_t, mpdm_t);
+
 /* value type testing macros */
 
 #define MPDM_CAN_EXEC(v)    (mpdm_type(v) == MPDM_TYPE_FUNCTION || \
@@ -69,15 +74,15 @@ struct mpdm_val {
 #define MPDM_NMBS(s,n)  mpdm_new_mbstowcs(s, n)
 #define MPDM_2MBS(s)    mpdm_new_wcstombs(s)
 
-#define MPDM_X(f)       mpdm_new_x(MPDM_TYPE_FUNCTION, (void *)f, NULL)
+#define MPDM_X(f)       mpdm_new_x(MPDM_TYPE_FUNCTION, f, NULL)
 #define MPDM_X2(f,a)    mpdm_new_x(MPDM_TYPE_PROGRAM, f, a)
 
 #define MPDM_F(f)       mpdm_new_f(f)
 
-mpdm_t (*mpdm_destroy)(mpdm_t);
+mpdm_func1_t *mpdm_destroy;
 
 mpdm_t mpdm_real_destroy(mpdm_t v);
-void mpdm_dummy__destroy(mpdm_t v);
+mpdm_t mpdm_dummy__destroy(mpdm_t v);
 mpdm_t mpdm_new(mpdm_type_t type, const void *data, int size);
 mpdm_type_t mpdm_type(mpdm_t v);
 wchar_t *mpdm_type_wcs(mpdm_t v);
@@ -98,7 +103,7 @@ extern wchar_t * (*mpdm_dump_1) (const mpdm_t v, int l, wchar_t *ptr, int *size)
 mpdm_t mpdm_dumper(const mpdm_t v);
 void mpdm_dump(const mpdm_t v);
 
-void mpdm_array__destroy(mpdm_t a);
+mpdm_t mpdm_array__destroy(mpdm_t a);
 mpdm_t mpdm_new_a(int size);
 mpdm_t mpdm_expand(mpdm_t a, int index, int num);
 mpdm_t mpdm_collapse(mpdm_t a, int index, int num);
@@ -153,7 +158,7 @@ mpdm_t mpdm_sscanf(const mpdm_t str, const mpdm_t fmt, int offset);
 mpdm_t mpdm_tr(mpdm_t str, mpdm_t s1, mpdm_t s2);
 mpdm_t mpdm_escape(mpdm_t v, wchar_t low, wchar_t high, mpdm_t f);
 
-void mpdm_object__destroy(mpdm_t a);
+mpdm_t mpdm_object__destroy(mpdm_t a);
 mpdm_t mpdm_new_o(void);
 mpdm_t mpdm_get_wcs(const mpdm_t o, const wchar_t *i);
 int mpdm_exists(const mpdm_t h, const mpdm_t i);
@@ -185,7 +190,7 @@ int mpdm_pclose(mpdm_t fd);
 mpdm_t mpdm_home_dir(void);
 mpdm_t mpdm_app_dir(void);
 mpdm_t mpdm_connect(mpdm_t host, mpdm_t serv);
-void mpdm_file__destroy(mpdm_t v);
+mpdm_t mpdm_file__destroy(mpdm_t v);
 mpdm_t mpdm_new_f(FILE * f);
 int mpdm_close(mpdm_t fd);
 
@@ -193,7 +198,7 @@ extern int mpdm_regex_offset;
 extern int mpdm_regex_size;
 extern int mpdm_sregex_count;
 
-void mpdm_regex__destroy(mpdm_t v);
+mpdm_t mpdm_regex__destroy(mpdm_t v);
 mpdm_t mpdm_regcomp(mpdm_t r);
 mpdm_t mpdm_regex(const mpdm_t v, const mpdm_t r, int offset);
 mpdm_t mpdm_sregex(const mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
@@ -201,26 +206,26 @@ mpdm_t mpdm_sregex(const mpdm_t v, const mpdm_t r, const mpdm_t s, int offset);
 void mpdm_sleep(int msecs);
 double mpdm_time(void);
 mpdm_t mpdm_random(mpdm_t v);
-void mpdm_mutex__destroy(mpdm_t v);
+mpdm_t mpdm_mutex__destroy(mpdm_t v);
 mpdm_t mpdm_new_mutex(void);
 void mpdm_mutex_lock(mpdm_t mutex);
 void mpdm_mutex_unlock(mpdm_t mutex);
-void mpdm_semaphore__destroy(mpdm_t v);
+mpdm_t mpdm_semaphore__destroy(mpdm_t v);
 mpdm_t mpdm_new_semaphore(int init_value);
 void mpdm_semaphore_wait(mpdm_t sem);
 void mpdm_semaphore_post(mpdm_t sem);
-void mpdm_thread__destroy(mpdm_t v);
+mpdm_t mpdm_thread__destroy(mpdm_t v);
 mpdm_t mpdm_exec_thread(mpdm_t c, mpdm_t args, mpdm_t ctxt);
 unsigned char *mpdm_gzip_inflate(unsigned char *cbuf, size_t cz, size_t *dz);
 unsigned char *mpdm_read_tar_mem(const char *fn, const char *tar,
                                  const char *tar_e, size_t *z);
 unsigned char *mpdm_read_tar_file(const char *fn, FILE *f, size_t *z);
 
-void mpdm_function__destroy(mpdm_t v);
-void mpdm_program__destroy(mpdm_t v);
+mpdm_t mpdm_function__destroy(mpdm_t v);
+mpdm_t mpdm_program__destroy(mpdm_t v);
 int mpdm_is_true(mpdm_t v);
 mpdm_t mpdm_bool(int b);
-mpdm_t mpdm_new_x(mpdm_type_t type, void *f, mpdm_t a);
+mpdm_t mpdm_new_x(mpdm_type_t type, const void *f, mpdm_t a);
 int mpdm_count(mpdm_t v);
 mpdm_t mpdm_get(mpdm_t set, mpdm_t i);
 mpdm_t mpdm_del(mpdm_t set, mpdm_t i);
