@@ -74,6 +74,9 @@ struct mpdm_val {
 
 #define MPDM_F(f)       mpdm_new_f(f)
 
+mpdm_t (*mpdm_destroy)(mpdm_t);
+
+mpdm_t mpdm_real_destroy(mpdm_t v);
 void mpdm_dummy__destroy(mpdm_t v);
 mpdm_t mpdm_new(mpdm_type_t type, const void *data, int size);
 mpdm_type_t mpdm_type(mpdm_t v);

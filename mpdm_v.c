@@ -45,6 +45,9 @@ struct {
     { L"real",      mpdm_dummy__destroy }
 };
 
+/* pointer to the destroy function */
+mpdm_t (*mpdm_destroy)(mpdm_t) = NULL;
+
 
 /** code **/
 
@@ -54,7 +57,7 @@ void mpdm_dummy__destroy(mpdm_t v)
 }
 
 
-static mpdm_t destroy_value(mpdm_t v)
+mpdm_t mpdm_real_destroy(mpdm_t v)
 /* destroys a value */
 {
     /* destroy type */
@@ -141,7 +144,7 @@ mpdm_t mpdm_ref(mpdm_t v)
 mpdm_t mpdm_unref(mpdm_t v)
 {
     if (v != NULL && --v->ref <= 0)
-        v = destroy_value(v);
+        v = mpdm_destroy(v);
 
     return v;
 }
@@ -314,6 +317,9 @@ extern char *mpdm_build_timestamp;
 int mpdm_startup(void)
 {
     mpdm_t r, v;
+
+    /* set the pointer to the destroy function */
+    mpdm_destroy = mpdm_real_destroy;
 
     r = mpdm_root();
 
