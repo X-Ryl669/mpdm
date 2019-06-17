@@ -471,7 +471,7 @@ unsigned char *mpdm_read_tar_mem(const char *fn, const char *tar,
     unsigned char *data = NULL;
 
     while (!data && tar < tar_e && *tar) {
-        sscanf(&tar[124], "%lo", z);
+        sscanf(&tar[124], "%lo", (long *)z);
 
         if (strcmp(fn, tar) == 0)
             data = memcpy(calloc(*z + 1, 1), tar + 512, *z);
@@ -489,7 +489,7 @@ unsigned char *mpdm_read_tar_file(const char *fn, FILE *f, size_t *z)
     char tar[512];
 
     while (!data && fread(tar, sizeof(tar), 1, f) && *tar) {
-        sscanf(&tar[124], "%lo", z);
+        sscanf(&tar[124], "%lo", (long *)z);
 
         if (strcmp(fn, tar) == 0) {
             data = calloc(*z + 1, 1);
