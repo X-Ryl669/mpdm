@@ -67,9 +67,9 @@ static int switch_hash_func(const wchar_t *string, int mod)
 /* interface */
 
 
-void mpdm_object__destroy(mpdm_t o)
+mpdm_t mpdm_object__destroy(mpdm_t o)
 {
-    mpdm_array__destroy(o);
+    return mpdm_array__destroy(o);
 }
 
 
