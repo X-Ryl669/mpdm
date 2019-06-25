@@ -349,6 +349,8 @@ mpdm_t mpdm_sregex(mpdm_t v, const mpdm_t r, const mpdm_t s, int offset)
             mpdm_t w;
             int del, add;
 
+            mpdm_unrefnd(o);
+
             /* get match information before it gets possibly
                destroyed by mpdm_exec_1() or others */
             offset = mpdm_regex_offset;
