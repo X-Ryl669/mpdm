@@ -226,7 +226,7 @@ char *mpdm_wcstombs(const wchar_t *str, int *s)
 mpdm_t mpdm_new_wcs(const wchar_t *str, int size, int cpy)
 /* creates a new string value from a wcs */
 {
-    wchar_t *ptr = NULL;
+    mpdm_t v = NULL;
 
     /* a size of -1 means 'calculate it' */
     if (size == -1 && str != NULL)
@@ -234,14 +234,18 @@ mpdm_t mpdm_new_wcs(const wchar_t *str, int size, int cpy)
 
     /* create a copy? */
     if (size >= 0 && cpy) {
-        ptr = calloc(size + 1, sizeof(wchar_t));
+        wchar_t *ptr = calloc(size + 1, sizeof(wchar_t));
 
         /* if there is a source, copy it */
         if (str != NULL)
             wcsncpy(ptr, str, size);
-    }
 
-    return mpdm_new(MPDM_TYPE_STRING, ptr ? ptr : str, size);
+        v = mpdm_new(MPDM_TYPE_STRING, ptr, size);
+    }
+    else
+        v = mpdm_new(MPDM_TYPE_STRING, str, size);
+
+    return v;
 }
 
 
@@ -456,7 +460,7 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i,
             /* copy the reminder */
             ptr = mpdm_pokews(ptr, &s, str + offset + del);
 
-            *n = MPDM_NS(ptr, s);
+            *n = MPDM_ENS(ptr, s);
         }
     }
 
