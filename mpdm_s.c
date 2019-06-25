@@ -685,7 +685,7 @@ double mpdm_rval(mpdm_t v)
         break;
     }
 
-    mpdm_unrefnd(v);
+    mpdm_unref(v);
 
     return r;
 }
