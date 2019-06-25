@@ -456,7 +456,7 @@ mpdm_t mpdm_splice_s(const mpdm_t v, const mpdm_t i,
             /* copy the reminder */
             ptr = mpdm_pokews(ptr, &s, str + offset + del);
 
-            *n = MPDM_NS(ptr, s);
+            *n = ptr ? MPDM_ENS(ptr, s) : MPDM_S(L"");
         }
     }
 
