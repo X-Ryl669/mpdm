@@ -144,9 +144,9 @@ static mpdm_t regex1(mpdm_t cr, const mpdm_t v, int offset)
 
         /* and store the size */
         mpdm_regex_size = mpdm_size(w);
-
-        free(ptr);
     }
+
+    free(ptr);
 
     mpdm_unref(v);
     mpdm_unref(cr);
