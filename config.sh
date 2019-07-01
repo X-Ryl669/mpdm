@@ -30,7 +30,7 @@ while [ $# -gt 0 ] ; do
     --without-iconv)        WITHOUT_ICONV=1 ;;
     --without-wcwidth)      WITHOUT_WCWIDTH=1 ;;
     --without-zlib)         WITHOUT_ZLIB=1 ;;
-    --with-zlib)            WITHOUT_ZLIB=1 ;;
+    --with-zlib)            WITHOUT_ZLIB=0 ;;
     --help)                 CONFIG_HELP=1 ;;
 
     --mingw32-prefix=*)     MINGW32_PREFIX=`echo $1 | sed -e 's/--mingw32-prefix=//'`
