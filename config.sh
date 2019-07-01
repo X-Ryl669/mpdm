@@ -16,6 +16,8 @@ CONF_ARGS="$*"
 
 MINGW32_PREFIX=i686-w64-mingw32
 
+WITHOUT_ZLIB=1
+
 # parse arguments
 while [ $# -gt 0 ] ; do
 
@@ -28,6 +30,7 @@ while [ $# -gt 0 ] ; do
     --without-iconv)        WITHOUT_ICONV=1 ;;
     --without-wcwidth)      WITHOUT_WCWIDTH=1 ;;
     --without-zlib)         WITHOUT_ZLIB=1 ;;
+    --with-zlib)            WITHOUT_ZLIB=1 ;;
     --help)                 CONFIG_HELP=1 ;;
 
     --mingw32-prefix=*)     MINGW32_PREFIX=`echo $1 | sed -e 's/--mingw32-prefix=//'`
@@ -66,6 +69,7 @@ if [ "$CONFIG_HELP" = "1" ] ; then
     echo "--without-wcwidth       Disable system wcwidth() (use Marcus Kuhn's)."
     echo "--mingw32-prefix=PREFIX Prefix name for mingw32 ($MINGW32_PREFIX)."
     echo "--mingw32               Build using the mingw32 compiler."
+    echo "--with-zlib             Enable Zlib support."
     echo "--without-zlib          Disable Zlib support."
     echo
     echo "Environment variables:"
@@ -542,7 +546,7 @@ fi
 echo -n "Testing for zlib... "
 
 if [ "$WITHOUT_ZLIB" = "1" ] ; then
-    echo "Disabled by user"
+    echo "Disabled"
 else
     echo "#include <zlib.h>" > .tmp.c
     echo "int main(void) { z_stream zs; return 0; }" >> .tmp.c
