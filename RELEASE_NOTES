@@ -13,6 +13,8 @@ MPDM Release Notes
     - The old API (hash functions and array functions named
       mpdm_a...) is now disabled by default; if you still
       have old code, defined MPDM_OLD_COMPAT before mpdm.h.
+    - Disable Zlib support by default; enable with config
+      shell option `--with-zlib'.
  - Bug fixes:
     - Some memory leaks.
 
