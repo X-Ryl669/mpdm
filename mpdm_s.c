@@ -868,6 +868,9 @@ static wchar_t *json_s(wchar_t *o, int *l, mpdm_t v)
         if (*p == L'\\')
             o = mpdm_pokews(o, l, L"\\\\");
         else
+        if (*p == L'"')
+            o = mpdm_pokews(o, l, L"\\\"");
+        else
         if (*p < 32) {
             char tmp[7];
             wchar_t wtmp[7];
