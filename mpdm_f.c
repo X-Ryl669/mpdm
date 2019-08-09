@@ -1280,6 +1280,14 @@ long mpdm_ftell(const mpdm_t fd)
 }
 
 
+int mpdm_feof(const mpdm_t fd)
+{
+    struct mpdm_file *fs = (struct mpdm_file *) fd->data;
+
+    return feof(fs->in);
+}
+
+
 FILE *mpdm_get_filehandle(const mpdm_t fd)
 {
     FILE *f = NULL;
