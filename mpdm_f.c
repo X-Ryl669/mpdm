@@ -85,6 +85,7 @@ struct mpdm_file {
 
     int sock;
     int is_pipe;
+    int skip_wait;
 
     wchar_t eol[MAX_EOL + 1];
     int auto_chomp;
@@ -1906,10 +1907,11 @@ static int sysdep_pclose(const mpdm_t v)
     fs->hin = NULL;
     fs->hout = NULL;
 
-    /* waits until the process terminates */
-    WaitForSingleObject(fs->process, 1000);
-    GetExitCodeProcess(fs->process, &out);
-
+    if (!fs->skip_wait) {
+        /* waits until the process terminates */
+        WaitForSingleObject(fs->process, 1000);
+        GetExitCodeProcess(fs->process, &out);
+    } else fs->skip_wait = 0;
     return (int) out;
 }
 
@@ -1996,8 +1998,11 @@ static int sysdep_pclose(const mpdm_t v)
 /* unix-style pipe close */
 {
     int s = 0;
+    struct mpdm_file *fs = (struct mpdm_file *) v->data;
 
-    wait(&s);
+    if (!fs->skip_wait)
+        wait(&s);
+    else fs->skip_wait = 0;
 
     return s;
 }
@@ -2048,6 +2053,10 @@ mpdm_t mpdm_popen(const mpdm_t prg, const mpdm_t mode)
         if (!sysdep_popen(v, (char *) pr->data, rw)) {
             mpdm_void(v);
             v = NULL;
+        } else {
+            /* need to wait on first pclose call */
+            struct mpdm_file *fs = (struct mpdm_file *) v->data;
+            fs->skip_wait = 0;
         }
 
         mpdm_unref(md);
@@ -2086,6 +2095,8 @@ mpdm_t mpdm_popen2(const mpdm_t prg)
 
         ofs->in = ifs->out;
         ifs->out = NULL;
+	/* make sure that when closing write pipe, it does not wait for the child's end */ 
+	ofs->skip_wait = 1;
 
 #ifdef CONFOPT_WIN32
         ofs->hin = ifs->hout;
@@ -2421,10 +2432,11 @@ mpdm_t mpdm_new_f(FILE *f)
 
     fs = calloc(sizeof(struct mpdm_file), 1);
 
-    fs->sock    = -1;
-    fs->is_pipe = 0;
-    fs->in      = f;
-    fs->out     = f;
+    fs->sock      = -1;
+    fs->is_pipe   = 0;
+    fs->skip_wait = 0;
+    fs->in        = f;
+    fs->out       = f;
 
     /* default I/O functions */
     fs->f_read = read_auto;
